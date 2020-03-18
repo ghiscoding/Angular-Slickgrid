@@ -189,16 +189,29 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
     amount += '0';
   }
 
+  const decimalSplit = amount.split('.');
+  let integerNumber;
+  let decimalNumber;
+
   // do we want to display our number with a custom separator in each thousand position
   if (thousandSeparator) {
-    amount = thousandSeparatorFormatted(amount, thousandSeparator);
+    integerNumber = decimalSplit.length >= 1 ? thousandSeparatorFormatted(decimalSplit[0], thousandSeparator) : undefined;
+  } else {
+    integerNumber = decimalSplit.length >= 1 ? decimalSplit[0] : amount;
   }
 
   // when using a separator that is not a dot, replace it with the new separator
-  if (decimalSeparator !== '.') {
-    amount = amount.replace('.', decimalSeparator);
+  if (decimalSplit.length > 1) {
+    decimalNumber = decimalSplit[1];
   }
-  return amount;
+
+  let output = '';
+  if (integerNumber !== undefined && decimalNumber !== undefined) {
+    output = `${integerNumber}${decimalSeparator}${decimalNumber}`;
+  } else if (integerNumber !== undefined && integerNumber !== null) {
+    output = integerNumber;
+  }
+  return output;
 }
 
 /**
