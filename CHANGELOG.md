@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.11](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.10...v2.17.11) (2020-03-18)
+
+
+### Features
+
+* **sort:** add default sort field as grid option ([00b0751](https://github.com/ghiscoding/angular-slickgrid/commit/00b0751277a7d1c4311e56e282700a745c34275f))
+
+
+### Bug Fixes
+
+* **formatters:** decimalSeparator & thousandSeparator work tgt, fix [#411](https://github.com/ghiscoding/angular-slickgrid/issues/411) ([67318d5](https://github.com/ghiscoding/angular-slickgrid/commit/67318d53f4828a6631a3bf6c5174260005031399))
+* **tests:** fix failing Cypress E2E from last commit ([72870f4](https://github.com/ghiscoding/angular-slickgrid/commit/72870f4cdddd97f092aaff2fc3e6d312b1b54879))
+* **types:** fix TS type warnings ([af146fb](https://github.com/ghiscoding/angular-slickgrid/commit/af146fb73e30ed9bae2cb067fd653d06b5016cf8))
+
 ### [2.17.10](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.9...v2.17.10) (2020-03-03)
 
 
