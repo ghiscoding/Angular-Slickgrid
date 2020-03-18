@@ -369,13 +369,6 @@ describe('Service/Utilies', () => {
       expect(output).toBe('(123.00)');
     });
 
-    it('should return a formatted string wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
-      const input = -123;
-      const displayNegativeNumberWithParentheses = true;
-      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses);
-      expect(output).toBe('(123.00)');
-    });
-
     it('should return a formatted string and thousand separator wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
       const input = -12345678;
       const displayNegativeNumberWithParentheses = true;

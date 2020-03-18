@@ -208,7 +208,7 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
   let output = '';
   if (integerNumber !== undefined && decimalNumber !== undefined) {
     output = `${integerNumber}${decimalSeparator}${decimalNumber}`;
-  } else {
+  } else if (integerNumber !== undefined && integerNumber !== null) {
     output = integerNumber;
   }
   return output;
