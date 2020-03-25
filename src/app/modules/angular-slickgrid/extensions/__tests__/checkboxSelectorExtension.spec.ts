@@ -62,7 +62,10 @@ describe('checkboxSelectorExtension', () => {
     let columnsMock: Column[];
 
     beforeEach(() => {
-      columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
+      columnsMock = [
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 50 }
+      ];
       columnSelectionMock = { id: '_checkbox_selector', field: 'sel' };
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
@@ -125,6 +128,36 @@ describe('checkboxSelectorExtension', () => {
 
       expect(mockSelectionModel).toHaveBeenCalledWith(optionMock);
       expect(columnsMock[0]).toEqual(selectionColumn);
+      expect(columnsMock).toEqual([
+        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, field: 'sel', id: '_checkbox_selector', },
+        { cssClass: 'red', field: 'field1', id: 'field1', width: 100, },
+        { field: 'field2', id: 'field2', width: 50, }
+      ]);
+    });
+
+    it('should be able to change the position of the checkbox column to another column index position in the grid', () => {
+      const rowSelectionOptionMock = { selectActiveRow: true };
+      gridOptionsMock.checkboxSelector = { columnIndexPosition: 2, };
+      const selectionModelOptions = { ...gridOptionsMock, rowSelectionOptions: rowSelectionOptionMock };
+      const selectionColumn = { ...columnSelectionMock, excludeFromExport: true, excludeFromColumnPicker: true, excludeFromGridMenu: true, excludeFromQuery: true, excludeFromHeaderMenu: true };
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(selectionModelOptions);
+
+      // we can only spy after 1st "create" call, we'll only get a valid selectionColumn on 2nd "create" call
+      const instance = extension.create(columnsMock, gridOptionsMock);
+      jest.spyOn(instance, 'getColumnDefinition').mockReturnValue(columnSelectionMock);
+      expect(columnsMock[0]).not.toEqual(selectionColumn);
+
+      // do our expect here after 2nd "create" call, the selectionColumn flags will change only after this 2nd call
+      extension.create(columnsMock, gridOptionsMock);
+      extension.register();
+
+      expect(mockSelectionModel).toHaveBeenCalledWith(rowSelectionOptionMock);
+      expect(columnsMock[2]).toEqual(selectionColumn);
+      expect(columnsMock).toEqual([
+        { cssClass: 'red', field: 'field1', id: 'field1', width: 100, },
+        { field: 'field2', id: 'field2', width: 50, },
+        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, field: 'sel', id: '_checkbox_selector', },
+      ]);
     });
 
     it('should be able to pre-select rows', (done) => {

@@ -36,7 +36,14 @@ export class CheckboxSelectorExtension implements Extension {
         selectionColumn.excludeFromGridMenu = true;
         selectionColumn.excludeFromQuery = true;
         selectionColumn.excludeFromHeaderMenu = true;
-        columnDefinitions.unshift(selectionColumn);
+
+        // column index position in the grid
+        const columnPosition = gridOptions && gridOptions.checkboxSelector && gridOptions.checkboxSelector.columnIndexPosition || 0;
+        if (columnPosition > 0) {
+          columnDefinitions.splice(columnPosition, 0, selectionColumn);
+        } else {
+          columnDefinitions.unshift(selectionColumn);
+        }
       }
       return this._addon;
     }

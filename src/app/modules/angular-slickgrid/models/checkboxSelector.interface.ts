@@ -2,6 +2,9 @@ export interface CheckboxSelector {
   /** Defaults to "_checkbox_selector", you can provide a different column id used as the column header id */
   columnId?: string;
 
+  /** Defaults to 0, the column index position in the grid by default it will show as the first column (index 0) */
+  columnIndexPosition?: number;
+
   /** Provide a CSS class used by each row selection check boxes */
   cssClass?: string;
 
