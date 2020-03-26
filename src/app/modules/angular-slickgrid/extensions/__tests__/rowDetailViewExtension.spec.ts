@@ -139,7 +139,10 @@ describe('rowDetailViewExtension', () => {
 
     beforeEach(() => {
       gridOptionsMock.datasetIdPropertyName = 'id';
-      columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
+      columnsMock = [
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 50 }
+      ];
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
@@ -211,7 +214,30 @@ describe('rowDetailViewExtension', () => {
           field: 'sel',
           id: '_detail_selector'
         },
-        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' }
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 50 },
+      ]);
+    });
+
+    it('should expect the column to be at a different column index position when "columnIndexPosition" is defined', () => {
+      gridOptionsMock.rowDetailView.columnIndexPosition = 2;
+      const instance = extension.create(columnsMock, gridOptionsMock);
+      const spy = jest.spyOn(instance, 'getColumnDefinition').mockReturnValue({ id: '_detail_selector', field: 'sel' });
+      extension.create(columnsMock, gridOptionsMock);
+
+      expect(spy).toHaveBeenCalled();
+      expect(columnsMock).toEqual([
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 50 },
+        {
+          excludeFromColumnPicker: true,
+          excludeFromExport: true,
+          excludeFromGridMenu: true,
+          excludeFromHeaderMenu: true,
+          excludeFromQuery: true,
+          field: 'sel',
+          id: '_detail_selector'
+        },
       ]);
     });
   });

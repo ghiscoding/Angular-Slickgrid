@@ -117,14 +117,21 @@ export class RowDetailViewExtension implements Extension {
           // finally register the Row Detail View Plugin
           this._addon = new Slick.Plugins.RowDetailView(gridOptions.rowDetailView);
         }
-        const selectionColumn: Column = this._addon.getColumnDefinition();
-        if (typeof selectionColumn === 'object') {
-          selectionColumn.excludeFromExport = true;
-          selectionColumn.excludeFromColumnPicker = true;
-          selectionColumn.excludeFromGridMenu = true;
-          selectionColumn.excludeFromQuery = true;
-          selectionColumn.excludeFromHeaderMenu = true;
-          columnDefinitions.unshift(selectionColumn);
+        const iconColumn: Column = this._addon.getColumnDefinition();
+        if (typeof iconColumn === 'object') {
+          iconColumn.excludeFromExport = true;
+          iconColumn.excludeFromColumnPicker = true;
+          iconColumn.excludeFromGridMenu = true;
+          iconColumn.excludeFromQuery = true;
+          iconColumn.excludeFromHeaderMenu = true;
+
+          // column index position in the grid
+          const columnPosition = gridOptions && gridOptions.rowDetailView && gridOptions.rowDetailView.columnIndexPosition || 0;
+          if (columnPosition > 0) {
+            columnDefinitions.splice(columnPosition, 0, iconColumn);
+          } else {
+            columnDefinitions.unshift(iconColumn);
+          }
         }
       }
       return this._addon;

@@ -2,14 +2,21 @@ import { Type } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
 export interface RowDetailView {
-  /** A CSS class to be added to the row detail */
-  cssClass?: string;
-
   /** Defaults to true, which will collapse all row detail views when user calls a sort. Unless user implements a sort to deal with padding */
   collapseAllOnSort?: boolean;
 
   /** Extra classes to be added to the collapse Toggle */
   collapsedClass?: string;
+
+  /**
+   * Defaults to 0, the column index position in the grid by default it will show as the first column (index 0).
+   * Also note that the index position might vary if you use other extensions, after each extension is created,
+   * it will add an offset to take into consideration (1.CheckboxSelector, 2.RowDetail, 3.RowMove)
+   */
+  columnIndexPosition?: number;
+
+  /** A CSS class to be added to the row detail */
+  cssClass?: string;
 
   /** Extra classes to be added to the expanded Toggle */
   expandedClass?: string;
