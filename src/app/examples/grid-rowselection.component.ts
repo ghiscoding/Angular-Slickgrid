@@ -115,6 +115,9 @@ export class GridRowSelectionComponent implements OnInit {
       enableCheckboxSelector: true,
       enableFiltering: true,
       checkboxSelector: {
+        // optionally change the column index position of the icon (defaults to 0)
+        // columnIndexPosition: 1,
+
         // remove the unnecessary "Select All" checkbox in header when in single selection mode
         hideSelectAllCheckbox: true,
 
