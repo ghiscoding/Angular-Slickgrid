@@ -87,6 +87,9 @@ export class GridRowDetailComponent implements OnInit {
       },
       datasetIdPropertyName: 'rowId', // optionally use a different "id"
       rowDetailView: {
+        // optionally change the column index position of the icon (defaults to 0)
+        // columnIndexPosition: 1,
+
         // We can load the "process" asynchronously in 2 different ways (httpClient OR even Promise)
         process: (item) => this.simulateServerAsyncCall(item),
         // process: (item) => this.http.get(`api/item/${item.id}`),
