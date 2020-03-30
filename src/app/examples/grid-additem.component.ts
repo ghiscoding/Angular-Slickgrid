@@ -132,7 +132,7 @@ export class GridAddItemComponent implements OnInit {
       asyncEditorLoading: false,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       editable: true,
       enableColumnPicker: true,

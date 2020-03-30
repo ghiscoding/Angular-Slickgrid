@@ -78,7 +78,7 @@ export class GridRowDetailComponent implements OnInit {
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableFiltering: true,
       enableRowDetailView: true,

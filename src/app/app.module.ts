@@ -137,7 +137,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       enableAutoResize: true,
       autoResize: {
         containerId: 'grid-container',
-        sidePadding: 15
+        sidePadding: 10
       }
     })
   ],

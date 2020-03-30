@@ -136,7 +136,6 @@ const resizerServiceStub = {
   init: jest.fn(),
   dispose: jest.fn(),
   bindAutoResizeDataGrid: jest.fn(),
-  compensateHorizontalScroll: jest.fn(),
   resizeGrid: jest.fn(),
 } as unknown as ResizerService;
 

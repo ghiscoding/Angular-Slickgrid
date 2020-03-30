@@ -173,7 +173,7 @@ export class GridClientSideComponent implements OnInit {
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableExcelExport: true,
       enableExcelCopyBuffer: true,

@@ -92,7 +92,7 @@ export class GridAutoHeightComponent implements OnInit {
       autoHeight: true,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
 
       // enable the filtering but hide the user filter row since we use our own single filter

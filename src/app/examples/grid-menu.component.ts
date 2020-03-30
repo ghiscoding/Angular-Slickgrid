@@ -74,7 +74,7 @@ export class GridMenuComponent implements OnInit {
       enableGridMenu: true,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableFiltering: true,
       enableCellNavigation: true,

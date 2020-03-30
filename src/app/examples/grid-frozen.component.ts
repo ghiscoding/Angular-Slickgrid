@@ -132,7 +132,7 @@ export class GridFrozenComponent implements OnInit {
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
       enableExcelCopyBuffer: true,

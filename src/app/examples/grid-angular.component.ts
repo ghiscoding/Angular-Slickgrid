@@ -244,7 +244,7 @@ export class GridAngularComponent implements OnInit {
       autoCommitEdit: false,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       headerRowHeight: 45,
       rowHeight: 45, // increase row height so that the ng-select fits in the cell

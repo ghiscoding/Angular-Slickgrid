@@ -52,7 +52,7 @@ export class GridRowMoveComponent implements OnInit {
       enableAutoResize: true,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableCellNavigation: true,
       enableRowMoveManager: true,
@@ -100,15 +100,11 @@ export class GridRowMoveComponent implements OnInit {
 
   onMoveRows(e, args) {
     const extractedRows = [];
-    let left;
-    let right;
     const rows = args.rows;
     const insertBefore = args.insertBefore;
-    left = this.dataset.slice(0, insertBefore);
-    right = this.dataset.slice(insertBefore, this.dataset.length);
-    rows.sort((a, b) => {
-      return a - b;
-    });
+    const left = this.dataset.slice(0, insertBefore);
+    const right = this.dataset.slice(insertBefore, this.dataset.length);
+    rows.sort((a, b) => a - b);
 
     for (let i = 0; i < rows.length; i++) {
       extractedRows.push(this.dataset[rows[i]]);
@@ -124,15 +120,13 @@ export class GridRowMoveComponent implements OnInit {
         right.splice(row - insertBefore, 1);
       }
     }
-    this.dataset = left.concat(extractedRows.concat(right));
+    const updatedDataset = left.concat(extractedRows.concat(right));
     const selectedRows = [];
-
     for (let i = 0; i < rows.length; i++) {
       selectedRows.push(left.length + i);
     }
-
     this.angularGrid.slickGrid.resetActiveCell();
-    this.angularGrid.slickGrid.setData(this.dataset);
+    this.angularGrid.slickGrid.setData(updatedDataset);
     this.angularGrid.slickGrid.setSelectedRows(selectedRows);
     this.angularGrid.slickGrid.render();
   }

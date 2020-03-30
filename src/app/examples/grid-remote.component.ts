@@ -98,7 +98,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
       enableAutoResize: true,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableCellNavigation: true,
       enableColumnReorder: false,
