@@ -436,7 +436,7 @@ export class GridEditorComponent implements OnInit {
       autoCommitEdit: false,
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       editable: true,
       enableCellNavigation: true,

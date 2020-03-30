@@ -132,7 +132,7 @@ export class GridLocalizationComponent implements OnInit {
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
-        sidePadding: 15
+        sidePadding: 10
       },
       enableAutoResize: true,
       enableExcelCopyBuffer: true,

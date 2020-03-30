@@ -274,14 +274,6 @@ export function getHtmlElementOffset(element: HTMLElement): { top: number; left:
   return { top, left };
 }
 
-/** Get the browser's scrollbar width, this is different to each browser */
-export function getScrollBarWidth(): number {
-  const $outer = $('<div>').css({ visibility: 'hidden', width: 100, overflow: 'scroll' }).appendTo('body');
-  const widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth();
-  $outer.remove();
-  return Math.ceil(100 - widthWithScroll);
-}
-
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
