@@ -340,12 +340,13 @@ export class HeaderMenuExtension implements Extension {
   private sortColumn(event: Event, args: MenuCommandItemCallbackArgs, isSortingAsc = true) {
     if (args && args.column) {
       // get previously sorted columns
+      const columnDef = args.column;
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getCurrentColumnSorts(args.column.id + '');
 
       let emitterType: EmitterType;
 
       // add to the column array, the column sorted by the header menu
-      sortedColsWithoutCurrent.push({ sortCol: args.column, sortAsc: isSortingAsc });
+      sortedColsWithoutCurrent.push({ columnId: columnDef.id, sortCol: columnDef, sortAsc: isSortingAsc });
       if (this.sharedService.gridOptions.backendServiceApi) {
         this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
         emitterType = EmitterType.remote;
