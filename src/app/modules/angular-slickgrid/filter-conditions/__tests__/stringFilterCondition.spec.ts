@@ -69,6 +69,12 @@ describe('stringFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
+  it('should return True when search term is a substring of the cell value and the operator is Contains', () => {
+    const options = { dataKey: '', operator: 'Contains', cellValue: 'abbostford', fieldType: FieldType.string, searchTerms: ['bost'] } as FilterConditionOption;
+    const output = stringFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
   it('should return True when input value provided starts with same substring and the operator is empty string', () => {
     const options = { dataKey: '', operator: '', cellValue: 'abbostford', fieldType: FieldType.string, searchTerms: ['abb'] } as FilterConditionOption;
     const output = stringFilterCondition(options);
