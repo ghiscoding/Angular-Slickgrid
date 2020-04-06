@@ -9,12 +9,12 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 [![jest](https://jestjs.io/img/jest-badge.svg)](https://github.com/facebook/jest)
 
-## HELP with Tree Data feature
-I'm currently working on Tree Data structure, if anyone knows how to Filter/Sort a Tree Data structure (possibly by recursion), please HELP! 
-See more info in this [open issue](https://github.com/ghiscoding/Angular-Slickgrid/issues/178#issuecomment-609922579) and this Stack Overflow [question](https://stackoverflow.com/questions/61034229/how-to-filter-multiple-properties-of-a-parent-child-array-which-could-be-several)
-
 ### Brief introduction
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, this is the most active fork since the original @mleibman fork was closed some time ago by his author for personal reasons. Also worth to know, I also contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid), a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and it also means that jQuery is a dependecy. 
+
+## PLEASE HELP with Tree Data (new feature)
+I'm currently working on Tree Data structure, if anyone knows how to Filter/Sort a Tree Data structure (possibly by recursion), please HELP! 
+See more info in this [open issue](https://github.com/ghiscoding/Angular-Slickgrid/issues/178#issuecomment-609922579) and this Stack Overflow [question](https://stackoverflow.com/questions/61034229/how-to-filter-multiple-properties-of-a-parent-child-array-which-could-be-several)
 
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
