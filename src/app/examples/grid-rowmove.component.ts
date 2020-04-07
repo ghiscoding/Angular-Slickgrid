@@ -1,16 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ExtensionName, Formatters, GridOption } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   templateUrl: './grid-rowmove.component.html'
 })
 export class GridRowMoveComponent implements OnInit {
-  title = 'Example 17: Row Move Plugin';
+  title = 'Example 17: Row Move & Checkbox Selector';
   subTitle = `This example demonstrates using the <b>Slick.Plugins.RowMoveManager</b> plugin to easily move a row in the grid.<br/>
     <ul>
       <li>Click to select, Ctrl+Click to toggle selection, Shift+Click to select a range.</li>
       <li>Drag one or more rows by the handle (icon) to reorder</li>
+      <li>If you plan to use Row Selection + Row Move, then use "singleRowMove: true" and "disableRowSelection: true"</li>
+      <li>You can change "columnIndexPosition" to move the icon position of any extension (RowMove, RowDetail or RowSelector icon)</li>
+      <ul>
+        <li>You will also want to enable the DataView "syncGridSelection: true" to keep row selection even after a row move</li>
+      </ul>
+      <li>If you plan to use only Row Move, then you could keep default values (or omit them completely) of "singleRowMove: false" and "disableRowSelection: false"</li>
+      <ul>
+        <li>SingleRowMove has the name suggest will only move 1 row at a time, by default it will move any row(s) that are selected unless you disable the flag</li>
+      </ul>
     </ul>
   `;
 
@@ -28,18 +37,12 @@ export class GridRowMoveComponent implements OnInit {
     this.angularGrid = angularGrid;
   }
 
+  get rowMoveInstance(): any {
+    return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowMoveManager) || {};
+  }
+
   ngOnInit(): void {
     this.columnDefinitions = [
-      {
-        id: '#', field: '', name: '', width: 40,
-        behavior: 'selectAndMove',
-        selectable: false, resizable: false,
-        cssClass: 'cell-reorder dnd',
-        excludeFromExport: true,
-        excludeFromColumnPicker: true,
-        excludeFromHeaderMenu: true,
-        excludeFromGridMenu: true
-      },
       { id: 'title', name: 'Title', field: 'title' },
       { id: 'duration', name: 'Duration', field: 'duration', sortable: true },
       { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
@@ -55,13 +58,31 @@ export class GridRowMoveComponent implements OnInit {
         sidePadding: 10
       },
       enableCellNavigation: true,
-      enableRowMoveManager: true,
-      gridMenu: {
-        iconCssClass: 'fa fa-ellipsis-v',
+      enableCheckboxSelector: true,
+      enableRowSelection: true,
+      rowSelectionOptions: {
+        // True (Single Selection), False (Multiple Selections)
+        selectActiveRow: false
       },
+      dataView: {
+        syncGridSelection: true, // enable this flag so that the row selection follows the row even if we move it to another position
+      },
+      enableRowMoveManager: true,
       rowMoveManager: {
+        // when using Row Move + Row Selection, you want to enable the following 2 flags so it doesn't cancel row selection
+        singleRowMove: true,
+        disableRowSelection: true,
+        cancelEditOnDrag: true,
         onBeforeMoveRows: (e, args) => this.onBeforeMoveRow(e, args),
         onMoveRows: (e, args) => this.onMoveRows(e, args),
+
+        // you can change the move icon position of any extension (RowMove, RowDetail or RowSelector icon)
+        // note that you might have to play with the position when using multiple extension
+        // since it really depends on which extension get created first to know what their real position are
+        // columnIndexPosition: 1,
+
+        // you can also override the usability of the rows, for example make every 2nd row the only moveable rows,
+        // usabilityOverride: (row, dataContext, grid) => dataContext.id % 2 === 1
       },
       enableTranslate: true,
       i18n: this.translate
@@ -105,13 +126,10 @@ export class GridRowMoveComponent implements OnInit {
     const left = this.dataset.slice(0, insertBefore);
     const right = this.dataset.slice(insertBefore, this.dataset.length);
     rows.sort((a, b) => a - b);
-
     for (let i = 0; i < rows.length; i++) {
       extractedRows.push(this.dataset[rows[i]]);
     }
-
     rows.reverse();
-
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       if (row < insertBefore) {
@@ -120,14 +138,13 @@ export class GridRowMoveComponent implements OnInit {
         right.splice(row - insertBefore, 1);
       }
     }
-    const updatedDataset = left.concat(extractedRows.concat(right));
+    const tmpDataset = left.concat(extractedRows.concat(right));
     const selectedRows = [];
     for (let i = 0; i < rows.length; i++) {
       selectedRows.push(left.length + i);
     }
+
     this.angularGrid.slickGrid.resetActiveCell();
-    this.angularGrid.slickGrid.setData(updatedDataset);
-    this.angularGrid.slickGrid.setSelectedRows(selectedRows);
-    this.angularGrid.slickGrid.render();
+    this.dataset = tmpDataset;
   }
 }
