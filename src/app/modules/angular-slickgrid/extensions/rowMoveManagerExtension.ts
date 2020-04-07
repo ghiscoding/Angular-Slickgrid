@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CellArgs, Extension, ExtensionName, SlickEventHandler } from '../models/index';
+import { CellArgs, Column, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 
@@ -28,6 +28,53 @@ export class RowMoveManagerExtension implements Extension {
     }
   }
 
+  /**
+   * Create the plugin before the Grid creation to avoid having odd behaviors.
+   * Mostly because the column definitions might change after the grid creation, so we want to make sure to add it before then
+   */
+  create(columnDefinitions: Column[], gridOptions: GridOption) {
+    if (Array.isArray(columnDefinitions) && gridOptions) {
+      this._addon = this.loadAddonWhenNotExists(columnDefinitions, gridOptions);
+      const newRowMoveColumn: Column = this._addon.getColumnDefinition();
+      const rowMoveColDef = Array.isArray(columnDefinitions) && columnDefinitions.find((col: Column) => col && col.behavior === 'selectAndMove');
+      const finalRowMoveColumn = rowMoveColDef ? rowMoveColDef : newRowMoveColumn;
+
+      // set some exclusion properties since we don't want this column to be part of the export neither the list of column in the pickers
+      if (typeof finalRowMoveColumn === 'object') {
+        finalRowMoveColumn.excludeFromExport = true;
+        finalRowMoveColumn.excludeFromColumnPicker = true;
+        finalRowMoveColumn.excludeFromGridMenu = true;
+        finalRowMoveColumn.excludeFromQuery = true;
+        finalRowMoveColumn.excludeFromHeaderMenu = true;
+      }
+
+      // only add the new column if it doesn't already exist
+      if (!rowMoveColDef) {
+        // column index position in the grid
+        const columnPosition = gridOptions && gridOptions.rowMoveManager && gridOptions.rowMoveManager.columnIndexPosition || 0;
+        if (columnPosition > 0) {
+          columnDefinitions.splice(columnPosition, 0, finalRowMoveColumn);
+        } else {
+          columnDefinitions.unshift(finalRowMoveColumn);
+        }
+      }
+      return this._addon;
+    }
+    return null;
+  }
+
+  loadAddonWhenNotExists(columnDefinitions: Column[], gridOptions: GridOption): any {
+    if (Array.isArray(columnDefinitions) && gridOptions) {
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
+      this.extensionUtility.loadExtensionDynamically(ExtensionName.rowMoveManager);
+      if (!this._addon) {
+        this._addon = new Slick.RowMoveManager(gridOptions && gridOptions.rowMoveManager || { cancelEditOnDrag: true });
+      }
+      return this._addon;
+    }
+    return null;
+  }
+
   /** Get the instance of the SlickGrid addon (control or plugin). */
   getAddonInstance() {
     return this._addon;
@@ -45,7 +92,6 @@ export class RowMoveManagerExtension implements Extension {
         this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
       }
 
-      this._addon = new Slick.RowMoveManager(this.sharedService.gridOptions.rowMoveManager || { cancelEditOnDrag: true });
       this.sharedService.grid.registerPlugin(this._addon);
 
       // hook all events

@@ -147,8 +147,8 @@ export class ExtensionService {
       }
 
       // Row Selection Plugin
-      // this extension should be registered BEFORE the Checkbox Selector & Row Detail since it can be use by these 2 plugins
-      if (!this.getExtensionByName(ExtensionName.rowSelection) && (this.sharedService.gridOptions.enableRowSelection || this.sharedService.gridOptions.enableCheckboxSelector || this.sharedService.gridOptions.enableRowDetailView)) {
+      // this extension should be registered BEFORE the CheckboxSelector, RowDetail or RowMoveManager since it can be use by these 2 plugins
+      if (!this.getExtensionByName(ExtensionName.rowSelection) && (this.sharedService.gridOptions.enableRowSelection || this.sharedService.gridOptions.enableCheckboxSelector || this.sharedService.gridOptions.enableRowDetailView || this.sharedService.gridOptions.enableRowMoveManager)) {
         if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
           const instance = this.rowSelectionExtension.register();
           this._extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, addon: instance, instance });
@@ -235,11 +235,12 @@ export class ExtensionService {
       }
 
       // Row Move Manager Plugin
-      if (this.sharedService.gridOptions.enableRowMoveManager) {
-        if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
-          const instance = this.rowMoveManagerExtension.register();
-          this._extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, addon: instance, instance });
-        }
+      if (this.sharedService.gridOptions.enableRowMoveManager && this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
+        const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
+        this.rowMoveManagerExtension.register(rowSelectionExtension);
+        const createdExtension = this.getCreatedExtensionByName(ExtensionName.rowMoveManager); // get the instance from when it was really created earlier
+        const instance = createdExtension && createdExtension.instance;
+        this._extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, addon: instance, instance });
       }
 
       // manually register other plugins
@@ -260,8 +261,8 @@ export class ExtensionService {
   }
 
   /**
-   * Bind/Create certain plugins before the Grid creation, else they might behave oddly.
-   * Mostly because the column definitions might change after the grid creation
+   * Bind/Create certain plugins before the Grid creation to avoid having odd behaviors.
+   * Mostly because the column definitions might change after the grid creation, so we want to make sure to add it before then
    * @param columnDefinitions
    * @param options
    */
@@ -270,6 +271,12 @@ export class ExtensionService {
       if (!this.getCreatedExtensionByName(ExtensionName.checkboxSelector)) {
         const checkboxInstance = this.checkboxSelectorExtension.create(columnDefinitions, options);
         this._extensionCreatedList.push({ name: ExtensionName.checkboxSelector, instance: checkboxInstance });
+      }
+    }
+    if (options.enableRowMoveManager) {
+      if (!this.getCreatedExtensionByName(ExtensionName.rowMoveManager)) {
+        const rowMoveInstance = this.rowMoveManagerExtension.create(columnDefinitions, options);
+        this._extensionCreatedList.push({ name: ExtensionName.rowMoveManager, instance: rowMoveInstance });
       }
     }
     if (options.enableRowDetailView) {
