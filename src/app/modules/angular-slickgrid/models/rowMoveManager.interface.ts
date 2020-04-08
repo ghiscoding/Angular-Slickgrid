@@ -22,7 +22,7 @@ export interface RowMoveManager {
   singleRowMove?: boolean;
 
   /**  Width of the column */
-  width?: string;
+  width?: number;
 
   /** Override the logic for showing (or not) the move icon (use case example: only every 2nd row is moveable) */
   usabilityOverride?: (row: number, dataContext: any, grid: any) => boolean;
