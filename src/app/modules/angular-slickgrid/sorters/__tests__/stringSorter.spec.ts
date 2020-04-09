@@ -1,4 +1,4 @@
-import { SortDirectionNumber } from '../../models/sortDirectionNumber.enum';
+import { Column, SortDirectionNumber } from '../../models';
 import { stringSorter } from '../stringSorter';
 
 describe('the String Sorter', () => {
@@ -42,5 +42,23 @@ describe('the String Sorter', () => {
     const inputArray = ['amazon', null, 'zebra', '', null, '@at', 'John', 'Abe', 'abc'];
     inputArray.sort((value1, value2) => stringSorter(value1, value2, direction));
     expect(inputArray).toEqual(['zebra', 'amazon', 'abc', 'John', 'Abe', '@at', '', null, null]);
+  });
+
+  it('should return a sorted ascending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set', () => {
+    // from MDN specification quote: All undefined elements are sorted to the end of the array.
+    const columnDef = { id: 'name', field: 'name', valueCouldBeUndefined: true } as Column;
+    const direction = SortDirectionNumber.asc;
+    const inputArray = ['amazon', undefined, 'zebra', undefined, '', '@at', 'John', 'Abe', 'abc'];
+    inputArray.sort((value1, value2) => stringSorter(value1, value2, direction, columnDef));
+    expect(inputArray).toEqual(['', '@at', 'Abe', 'John', 'abc', 'amazon', 'zebra', undefined, undefined]);
+  });
+
+  it('should return a sorted descending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set', () => {
+    // from MDN specification quote: All undefined elements are sorted to the end of the array.
+    const columnDef = { id: 'name', field: 'name', valueCouldBeUndefined: true } as Column;
+    const direction = SortDirectionNumber.desc;
+    const inputArray = ['amazon', undefined, 'zebra', undefined, '', '@at', 'John', 'Abe', 'abc'];
+    inputArray.sort((value1, value2) => stringSorter(value1, value2, direction, columnDef));
+    expect(inputArray).toEqual(['zebra', 'amazon', 'abc', 'John', 'Abe', '@at', '', undefined, undefined]);
   });
 });
