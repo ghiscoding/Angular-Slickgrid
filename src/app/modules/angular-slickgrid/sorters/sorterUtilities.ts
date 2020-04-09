@@ -9,7 +9,7 @@ export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, 
     case FieldType.float:
     case FieldType.integer:
     case FieldType.number:
-      sortResult = Sorters.numeric(value1, value2, sortDirection);
+      sortResult = Sorters.numeric(value1, value2, sortDirection, sortColumn);
       break;
     case FieldType.date:
     case FieldType.dateIso:
@@ -37,13 +37,13 @@ export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, 
     case FieldType.dateTimeUsShort:
     case FieldType.dateTimeUsShortAmPm:
     case FieldType.dateTimeUsShortAM_PM:
-      sortResult = getAssociatedDateSorter(fieldType).call(this, value1, value2, sortDirection);
+      sortResult = getAssociatedDateSorter(fieldType).call(this, value1, value2, sortDirection, sortColumn);
       break;
     case FieldType.object:
       sortResult = Sorters.objectString(value1, value2, sortDirection, sortColumn);
       break;
     default:
-      sortResult = Sorters.string(value1, value2, sortDirection);
+      sortResult = Sorters.string(value1, value2, sortDirection, sortColumn);
       break;
   }
 
