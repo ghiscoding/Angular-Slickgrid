@@ -612,6 +612,17 @@ describe('FilterService', () => {
       expect(output).toBe(true);
     });
 
+    it('should return True when the searchTerms is equal to the operator', () => {
+      const mockColumn1 = { id: 'age', field: 'age', filterable: true } as Column;
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1]);
+
+      service.init(gridStub);
+      const columnFilters = { age: { columnDef: mockColumn1, columnId: 'age', operator: '<=', searchTerms: ['<='] } };
+      const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+      expect(output).toBe(true);
+    });
+
     it('should return False when input value from datacontext is not equal to the searchTerms', () => {
       const searchValue = 'Johnny';
       const mockColumn1 = { id: 'firstName', field: 'firstName', filterable: true } as Column;

@@ -311,8 +311,8 @@ export class FilterService {
         }
       }
 
-      // no need to query if search value is empty
-      if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && searchValues.length === 0))) {
+      // no need to query if search value is empty or if the search value is in fact equal to the operator
+      if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && (searchValues.length === 0 || searchValues.length === 1 && operator === searchValues[0])))) {
         return true;
       }
 
