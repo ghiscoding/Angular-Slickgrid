@@ -106,7 +106,7 @@ export class GridGroupingComponent implements OnInit {
         minWidth: 70,
         width: 100,
         filterable: true,
-        filter: { model: Filters.compoundInput },
+        filter: { model: Filters.compoundInputNumber },
         type: FieldType.number,
         sortable: true,
         exportWithFormatter: true,
