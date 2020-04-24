@@ -260,29 +260,40 @@ export class SortService {
 
   sortComparer(sortColumns: ColumnSort[], dataRow1: any, dataRow2: any) {
     if (Array.isArray(sortColumns)) {
-      for (let i = 0, l = sortColumns.length; i < l; i++) {
-        const columnSortObj = sortColumns[i];
-        if (columnSortObj && columnSortObj.sortCol) {
-          const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-          const sortField = columnSortObj.sortCol.queryFieldSorter || columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
-          const fieldType = columnSortObj.sortCol.type || FieldType.string;
-          let value1 = dataRow1[sortField];
-          let value2 = dataRow2[sortField];
+      for (const sortColumn of sortColumns) {
+        if (sortColumn && sortColumn.sortCol) {
+          const columnDef = sortColumn.sortCol;
+          const querySortField = sortColumn.sortCol;
+          const sortDirection = sortColumn.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+          let queryFieldName1 = querySortField.queryFieldSorter || querySortField.queryField || querySortField.field;
+          let queryFieldName2 = queryFieldName1;
+          const fieldType = querySortField.type || FieldType.string;
+
+          // if user provided a query field name getter callback, we need to get the name on each item independently
+          if (typeof columnDef.queryFieldNameGetterFn === 'function') {
+            queryFieldName1 = columnDef.queryFieldNameGetterFn(dataRow1);
+            queryFieldName2 = columnDef.queryFieldNameGetterFn(dataRow2);
+          }
+
+          let value1 = dataRow1[queryFieldName1];
+          let value2 = dataRow2[queryFieldName2];
 
           // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-          if (sortField && sortField.indexOf('.') >= 0) {
-            value1 = getDescendantProperty(dataRow1, sortField);
-            value2 = getDescendantProperty(dataRow2, sortField);
+          if (queryFieldName1 && queryFieldName1.indexOf('.') >= 0) {
+            value1 = getDescendantProperty(dataRow1, queryFieldName1);
+          }
+          if (queryFieldName2 && queryFieldName2.indexOf('.') >= 0) {
+            value2 = getDescendantProperty(dataRow2, queryFieldName2);
           }
 
           // user could provide his own custom Sorter
-          if (columnSortObj.sortCol && columnSortObj.sortCol.sorter) {
-            const customSortResult = columnSortObj.sortCol.sorter(value1, value2, sortDirection, columnSortObj.sortCol);
+          if (querySortField && querySortField.sorter) {
+            const customSortResult = querySortField.sorter(value1, value2, sortDirection, querySortField);
             if (customSortResult !== SortDirectionNumber.neutral) {
               return customSortResult;
             }
           } else {
-            const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnSortObj.sortCol);
+            const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, querySortField);
             if (sortResult !== SortDirectionNumber.neutral) {
               return sortResult;
             }

@@ -184,6 +184,15 @@ export interface Column {
   queryField?: string;
 
   /**
+   * When you do not know at hand the name of the Field to use for querying,
+   * the lib will run your callback to find out which Field name you want to use by the logic you defined.
+   * Useful when you only know the Field name by executing a certain logic in order to get the Field name to query from.
+   * @param {string} item data context
+   * @return {string} name of the Field that will end up being used to query
+   */
+  queryFieldNameGetterFn?: (dataContext: any) => string;
+
+  /**
    * Similar to "queryField" but only used when Filtering (please note that it has higher precendence over "queryField").
    * Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering.
    */
