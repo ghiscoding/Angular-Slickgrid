@@ -274,14 +274,17 @@ export class FilterService {
       }
 
       const dataKey = columnDef.dataKey;
-      const fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field;
       const fieldType = columnDef.type || FieldType.string;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-      let cellValue = item[fieldName];
+      let queryFieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || '';
+      if (typeof columnDef.queryFieldNameGetterFn === 'function') {
+        queryFieldName = columnDef.queryFieldNameGetterFn(item);
+      }
+      let cellValue = item[queryFieldName];
 
       // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-      if (fieldName.indexOf('.') >= 0) {
-        cellValue = getDescendantProperty(item, fieldName);
+      if (queryFieldName && queryFieldName.indexOf('.') >= 0) {
+        cellValue = getDescendantProperty(item, queryFieldName);
       }
 
       // if we find searchTerms use them but make a deep copy so that we don't affect original array

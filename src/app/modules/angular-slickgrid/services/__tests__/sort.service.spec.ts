@@ -561,6 +561,24 @@ describe('SortService', () => {
       ]);
     });
 
+    it('should sort the data with 2 sorters which the second is by executing the "queryFieldNameGetterFn()" callback and sort by the field returned by it', () => {
+      const mockSortedCols = [
+        { sortCol: { id: 'address', field: 'address', queryField: 'lastName' }, sortAsc: true },
+        { sortCol: { id: 'random', field: 'random', queryFieldNameGetterFn: (dataContext) => 'zip' }, sortAsc: false },
+      ] as ColumnSort[];
+
+      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+
+      expect(dataset).toEqual([
+        { firstName: 'John', lastName: 'Doe', age: 22, address: { zip: 123456 } },
+        { firstName: 'Jane', lastName: 'Doe', age: 27, address: { zip: 123456 } },
+        { firstName: 'Christopher', lastName: 'McDonald', age: 40, address: { zip: 555555 } },
+        { firstName: 'Erla', lastName: 'Richard', age: 101, address: { zip: 444444 } },
+        { firstName: 'Barbara', lastName: 'Smith', age: 1, address: { zip: 222222 } },
+        { firstName: 'Jane', lastName: 'Smith', age: 40, address: { zip: 333333 } },
+      ]);
+    });
+
     it('should sort the data with a sorter that is a complex object (following the dot notation in its field name)', () => {
       const mockSortedCols = [
         { sortCol: { id: 'address', field: 'address.zip' }, sortAsc: true },

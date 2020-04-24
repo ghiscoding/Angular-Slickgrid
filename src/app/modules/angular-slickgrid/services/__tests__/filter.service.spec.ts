@@ -788,6 +788,42 @@ describe('FilterService', () => {
 
       expect(output).toBe(true);
     });
+
+    it('should execute "queryFieldNameGetterFn()" callback and return True when input value matches the full name', () => {
+      const mockColumn1 = { id: 'name', field: 'name', filterable: true, queryFieldNameGetterFn: (dataContext) => 'fullName' } as Column;
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1]);
+      jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(0);
+
+      service.init(gridStub);
+      const columnFilters = { name: { columnDef: mockColumn1, columnId: 'name', operator: 'EQ', searchTerms: ['John Doe'] } };
+      const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+      expect(output).toBe(true);
+    });
+
+    it('should execute "queryFieldNameGetterFn()" callback and return False when input value is not fullName but just the firstName', () => {
+      const mockColumn1 = { id: 'name', field: 'name', filterable: true, queryFieldNameGetterFn: (dataContext) => 'fullName' } as Column;
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1]);
+      jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(0);
+
+      service.init(gridStub);
+      const columnFilters = { name: { columnDef: mockColumn1, columnId: 'name', operator: 'EQ', searchTerms: ['John'] } };
+      const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+      expect(output).toBe(false);
+    });
+
+    it('should execute "queryFieldNameGetterFn()" callback and return False when input value is not fullName but just the lastName', () => {
+      const mockColumn1 = { id: 'name', field: 'name', filterable: true, queryFieldNameGetterFn: (dataContext) => 'fullName' } as Column;
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1]);
+      jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(0);
+
+      service.init(gridStub);
+      const columnFilters = { name: { columnDef: mockColumn1, columnId: 'name', operator: 'EQ', searchTerms: ['Doe'] } };
+      const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+      expect(output).toBe(false);
+    });
   });
 
   describe('onBackendFilterChange method', () => {
