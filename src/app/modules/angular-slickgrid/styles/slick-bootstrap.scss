@@ -299,6 +299,17 @@
         color: $slickgridHoverHeaderColor;
       }
 
+      /* when sorting is possible and there's not yet a sort applied on the column
+       we could display the sort ascending icon (with an opacity) as a hint */
+      &.ui-sortable-handle.ui-state-hover:not(.slick-header-column-sorted) {
+        .slick-sort-indicator:before {
+          content: $icon-sort-asc;
+          font-family: $icon-font-family;
+          font-size: $icon-sort-font-size;
+          opacity: $sort-indicator-hint-opacity;
+        }
+      }
+
       .slick-sort-indicator {
         background: none;
         font-family: $icon-font-family;
