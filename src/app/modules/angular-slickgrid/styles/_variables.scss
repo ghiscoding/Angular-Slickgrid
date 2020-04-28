@@ -123,6 +123,7 @@ $autocomplete-z-index:	                    1000 !default;
 $icon-sort-asc:                             "\f0d8" !default;
 $icon-sort-desc:                            "\f0d7" !default;
 $icon-sort-color:                           rgb(76, 128, 190) !default;
+$icon-sort-font-size:                       $icon-font-size !default;
 $icon-sort-position-right:                  10px !default;
 $icon-sort-position-top:                    ((15px * $header-row-count) - 15px) !default;
 $sort-indicator-number-font-size:           10px !default;
@@ -130,6 +131,7 @@ $sort-indicator-number-width:               8px !default;
 $sort-indicator-number-left:                auto !default;
 $sort-indicator-number-right:               0px !default;
 $sort-indicator-number-top:                 (13px * $header-row-count) !default;
+$sort-indicator-hint-opacity:               0.5 !default;
 
 /* Grouping Totals Formatter */
 $group-totals-formatter-color:              gray !default;
@@ -304,6 +306,7 @@ $header-menu-button-bg-color:               #ffffff !default;
 $header-menu-border:                        1px solid #BFBDBD !default;
 $header-menu-button-border:                 $header-menu-border !default;
 $header-menu-button-border-width:           0px !default;
+$header-menu-button-height:                 35px !default;
 $header-menu-button-icon:                   "\f13a" !default;
 $header-menu-button-padding:                0px !default;
 $header-menu-border-radius:                 2px !default;
@@ -333,7 +336,7 @@ $checkbox-selector-opacity-hover:           0.35 !default;
 
 /* Editors */
 $large-editor-background-color:             #ffffff !default;
-$large-editor-border:                       2px solid gray !default;
+$large-editor-border:                       2px solid #a0a0a0 !default;
 $large-editor-text-padding:                 5px !default;
 $large-editor-border-radius:                8px !default;
 $large-editor-textarea-height:              80px !default;

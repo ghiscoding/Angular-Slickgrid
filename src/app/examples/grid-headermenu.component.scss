@@ -3,6 +3,7 @@ $header-menu-button-border-width:         0px 1px;
 $header-menu-button-icon:                 "\f0d7";
 $header-menu-button-width:                16px;
 $header-menu-button-padding:              10px 0 0 3px;
+$sort-indicator-hint-opacity:             0;
 
 /* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
 @import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
