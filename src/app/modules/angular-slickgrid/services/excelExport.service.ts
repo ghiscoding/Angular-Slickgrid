@@ -32,8 +32,8 @@ export class ExcelExportService {
   private _dataView: any;
   private _grid: any;
   private _locales: Locale;
-  private _columnHeaders: KeyTitlePair[];
-  private _groupedHeaders: KeyTitlePair[];
+  private _columnHeaders: Array<KeyTitlePair>;
+  private _groupedColumnHeaders: Array<KeyTitlePair>;
   private _hasGroupedItems = false;
   private _excelExportOptions: ExcelExportOption;
   private _sheet: ExcelWorksheet;
@@ -246,7 +246,16 @@ export class ExcelExportService {
       columnHeaderStyleId = this._stylesheet.createFormat(columnHeaderStyle).id;
     }
 
-    // get all column headers (it might include a "Group by" title at A1 cell)
+    // when having Grouped Header Titles (in the pre-header), then make the cell Bold & Aligned Center
+    const boldCenterAlign = this._stylesheet.createFormat({ alignment: { horizontal: 'center' }, font: { bold: true } });
+    const boldCenterAlignId = boldCenterAlign && boldCenterAlign.id;
+
+    // get all Grouped Column Header Titles when defined (from pre-header row)
+    if (this._gridOptions.createPreHeaderPanel && this._gridOptions.showPreHeaderPanel && !this._gridOptions.enableDraggableGrouping) {
+      outputData.push(this.getColumnGroupedHeaderTitlesData(columns, { style: boldCenterAlignId }));
+    }
+
+    // get all Column Header Titles (it might include a "Group by" title at A1 cell)
     // also style the headers, defaults to Bold but user could pass his own style
     outputData.push(this.getColumnHeaderData(columns, { style: columnHeaderStyleId }));
 
@@ -280,10 +289,60 @@ export class ExcelExportService {
     return columnStyles;
   }
 
+  /**
+   * Get all Grouped Header Titles and their keys, translate the title when required, and format them in Bold
+   * @param {Array<object>} columns of the grid
+   */
+  private getColumnGroupedHeaderTitlesData(columns: Column[], metadata: ExcelMetadata): Array<ExcelCellFormat> {
+    let outputGroupedHeaderTitles: Array<ExcelCellFormat> = [];
+
+    // get all Column Header Titles
+    this._groupedColumnHeaders = this.getColumnGroupedHeaderTitles(columns) || [];
+    if (this._groupedColumnHeaders && Array.isArray(this._groupedColumnHeaders) && this._groupedColumnHeaders.length > 0) {
+      // add the header row + add a new line at the end of the row
+      outputGroupedHeaderTitles = this._groupedColumnHeaders.map((header) => ({ value: header.title, metadata }));
+    }
+
+    // merge necessary cells (any grouped header titles)
+    // dealing with the Excel column position is a bit tricky since the first 26 columns are single char (A,B,...) but after that it becomes double char (AA,AB,...)
+    // so we must first see if we are in the first section of 26 chars, if that is the case we just concatenate 1 (1st row) so it becomes (A1, B1, ...)
+    // but if we are over enumarating passed 26, we need an extra prefix (AA1, AB1, ...)
+    const charA = 'A'.charCodeAt(0);
+    let cellPositionStart = 'A';
+    let cellPositionEnd = '';
+    let lastIndex = 0;
+    const headersLn = this._groupedColumnHeaders.length;
+    for (let cellIndex = 0; cellIndex < headersLn; cellIndex++) {
+      // if we reached the last indenx, we are considered at the end
+      // else we check if next title is equal to current title, if so then we know it's a grouped header
+      // and we include it and continue looping until we reach the end
+      if ((cellIndex + 1) === headersLn || ((cellIndex + 1) < headersLn && this._groupedColumnHeaders[cellIndex].title !== this._groupedColumnHeaders[cellIndex + 1].title)) {
+        // calculate left prefix, divide by 26 and use modulo to find out what number add to A
+        // for example if we have cell index 54, we will do ((54/26) %26) => 2.0769, Math.floor is 2, then we do A which is 65 + 2 gives us B so final cell will be AB1
+        const leftCellCharCodePrefix = Math.floor((lastIndex / 26) % 26);
+        const leftCellCharacterPrefix = String.fromCharCode(charA + leftCellCharCodePrefix - 1);
+
+        const rightCellCharCodePrefix = Math.floor((cellIndex / 26) % 26);
+        const rightCellCharacterPrefix = String.fromCharCode(charA + rightCellCharCodePrefix - 1);
+
+        cellPositionEnd = String.fromCharCode(charA + (cellIndex % 26));
+        const leftCell = `${lastIndex > 26 ? leftCellCharacterPrefix : ''}${cellPositionStart}1`;
+        const rightCell = `${cellIndex > 26 ? rightCellCharacterPrefix : ''}${cellPositionEnd}1`;
+        this._sheet.mergeCells(leftCell, rightCell);
+
+        cellPositionStart = String.fromCharCode(cellPositionEnd.charCodeAt(0) + 1);
+        lastIndex = cellIndex;
+      }
+    }
+
+    return outputGroupedHeaderTitles;
+  }
+
   /** Get all column headers and format them in Bold */
-  private getColumnHeaderData(columns: Column[], metadata: ExcelMetadata): string[] | ExcelCellFormat[] {
+  private getColumnHeaderData(columns: Column[], metadata: ExcelMetadata): Array<string | ExcelCellFormat> {
     let outputHeaderTitles: ExcelCellFormat[] = [];
 
+    // get all Column Header Titles
     this._columnHeaders = this.getColumnHeaders(columns) || [];
     if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
       // add the header row + add a new line at the end of the row
@@ -321,34 +380,62 @@ export class ExcelExportService {
   }
 
   /**
+   * Get all Grouped Header Titles and their keys, translate the title when required.
+   * @param {Array<object>} columns of the grid
+   */
+  private getColumnGroupedHeaderTitles(columns: Column[]): Array<KeyTitlePair> {
+    const groupedColumnHeaders: Array<KeyTitlePair> = [];
+
+    if (columns && Array.isArray(columns)) {
+      // Populate the Grouped Column Header, pull the columnGroup(Key) defined
+      columns.forEach((columnDef: Column) => {
+        let groupedHeaderTitle = '';
+        if (columnDef.columnGroupKey && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
+          groupedHeaderTitle = this.translate.instant(columnDef.columnGroupKey);
+        } else {
+          groupedHeaderTitle = columnDef.columnGroup;
+        }
+        const skippedField = columnDef.excludeFromExport || false;
+
+        // if column width is 0px, then we consider that field as a hidden field and should not be part of the export
+        if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+          groupedColumnHeaders.push({
+            key: (columnDef.field || columnDef.id) as string,
+            title: groupedHeaderTitle || '',
+          });
+        }
+      });
+    }
+    return groupedColumnHeaders;
+  }
+
+  /**
    * Get all header titles and their keys, translate the title when required.
    * @param columns of the grid
    */
-  private getColumnHeaders(columns: Column[]): KeyTitlePair[] {
-    if (!columns || !Array.isArray(columns) || columns.length === 0) {
-      return null;
-    }
+  private getColumnHeaders(columns: Column[]): Array<KeyTitlePair> {
     const columnHeaders = [];
 
-    // Populate the Column Header, pull the name defined
-    columns.forEach((columnDef) => {
-      let headerTitle = '';
-      if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
-        headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
-      } else {
-        headerTitle = columnDef.name || titleCase(columnDef.field);
-      }
-      const skippedField = columnDef.excludeFromExport || false;
+    if (columns && Array.isArray(columns)) {
+      // Populate the Column Header, pull the name defined
+      columns.forEach((columnDef) => {
+        let headerTitle = '';
+        if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
+          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
+        } else {
+          headerTitle = columnDef.name || titleCase(columnDef.field);
+        }
+        const skippedField = columnDef.excludeFromExport || false;
 
-      // if column width is 0, then we consider that field as a hidden field and should not be part of the export
-      if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-        columnHeaders.push({
-          key: columnDef.field || columnDef.id,
-          title: headerTitle
-        });
-      }
-    });
-
+        // if column width is 0, then we consider that field as a hidden field and should not be part of the export
+        if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+          columnHeaders.push({
+            key: columnDef.field || columnDef.id,
+            title: headerTitle
+          });
+        }
+      });
+    }
     return columnHeaders;
   }
 
