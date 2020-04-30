@@ -414,30 +414,28 @@ export class ExcelExportService {
    * @param columns of the grid
    */
   private getColumnHeaders(columns: Column[]): Array<KeyTitlePair> {
-    if (!columns || !Array.isArray(columns) || columns.length === 0) {
-      return null;
-    }
     const columnHeaders = [];
 
-    // Populate the Column Header, pull the name defined
-    columns.forEach((columnDef) => {
-      let headerTitle = '';
-      if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
-        headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
-      } else {
-        headerTitle = columnDef.name || titleCase(columnDef.field);
-      }
-      const skippedField = columnDef.excludeFromExport || false;
+    if (columns && Array.isArray(columns)) {
+      // Populate the Column Header, pull the name defined
+      columns.forEach((columnDef) => {
+        let headerTitle = '';
+        if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
+          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
+        } else {
+          headerTitle = columnDef.name || titleCase(columnDef.field);
+        }
+        const skippedField = columnDef.excludeFromExport || false;
 
-      // if column width is 0, then we consider that field as a hidden field and should not be part of the export
-      if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-        columnHeaders.push({
-          key: columnDef.field || columnDef.id,
-          title: headerTitle
-        });
-      }
-    });
-
+        // if column width is 0, then we consider that field as a hidden field and should not be part of the export
+        if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+          columnHeaders.push({
+            key: columnDef.field || columnDef.id,
+            title: headerTitle
+          });
+        }
+      });
+    }
     return columnHeaders;
   }
 
