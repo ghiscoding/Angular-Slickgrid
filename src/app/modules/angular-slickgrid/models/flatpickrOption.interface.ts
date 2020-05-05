@@ -63,6 +63,12 @@ export interface FlatpickrOption {
   /** defaults to false, enables time picker */
   enableTime?: boolean;
 
+  /**
+   * callback method when Flapickr detects an error.
+   * For example if a minDate is specified and setDate is called with a date that is lower than minDate it will throw an error.
+   */
+  errorHandler?: (error: any) => void;
+
   /** Allows using a custom date formatting function instead of the built-in handling for date formats using dateFormat, altFormat, etc. */
   formatDate?: (dateObj: Date, format: string, locale: Locale) => string;
 
