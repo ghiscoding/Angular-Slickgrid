@@ -335,6 +335,10 @@ $checkbox-selector-opacity:                 0.15 !default;
 $checkbox-selector-opacity-hover:           0.35 !default;
 
 /* Editors */
+$editor-focus-border-color:                 lighten($primary-color, 10%) !default;
+$editor-focus-box-shadow:                   inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px rgba(lighten($primary-color, 3%), .3) !default;
+$date-editor-focus-border-color:            $editor-focus-border-color !default;
+$date-editor-focus-box-shadow:              $editor-focus-box-shadow !default;
 $large-editor-background-color:             #ffffff !default;
 $large-editor-border:                       2px solid #a0a0a0 !default;
 $large-editor-text-padding:                 5px !default;
@@ -343,7 +347,8 @@ $large-editor-textarea-height:              80px !default;
 $large-editor-textarea-width:               250px !default;
 $large-editor-button-text-align:            right !default;
 $large-editor-footer-spacing:               2px !default;
-$text-editor-border:                        initial !default;
+$text-editor-border:                        1px solid #e2e2e2 !default;
+$text-editor-border-radius:                 3px !default;
 $text-editor-background:                    #ffffff !default;
 $text-editor-margin-bottom:                 2px !default;
 $text-editor-margin-left:                   -2px !default; /* negative number to cancel inside padding */
@@ -353,9 +358,14 @@ $text-editor-padding-bottom:                0 !default;
 $text-editor-padding-left:                  2px !default;
 $text-editor-padding-right:                 0 !default;
 $text-editor-padding-top:                   0 !default;
+$text-editor-focus-border-color:            $editor-focus-border-color !default;
+$text-editor-focus-box-shadow:              $editor-focus-box-shadow !default;
+$text-editor-readonly-color:                #f0f0f0 !default;
 $slider-editor-height:                      24px !default;
 $slider-editor-runnable-track-padding:      0 6px !default;
 $slider-editor-number-padding:              4px 6px !default;
+$slider-editor-focus-border-color:          $editor-focus-border-color !default;
+$slider-editor-focus-box-shadow:            $editor-focus-box-shadow !default;
 
 /* Compound Filters */
 $compound-filter-bgcolor:                   #e4eacf !default;

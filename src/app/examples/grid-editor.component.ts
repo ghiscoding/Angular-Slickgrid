@@ -575,7 +575,7 @@ export class GridEditorComponent implements OnInit {
     }
   }
 
-  onCellValidation(e, args) {
+  onValidationError(e, args) {
     alert(args.validationResults.msg);
   }
 

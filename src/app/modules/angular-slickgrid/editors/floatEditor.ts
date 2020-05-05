@@ -1,6 +1,7 @@
 import { Constants } from '../constants';
 import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 import { setDeepValue, getDescendantProperty } from '../services/utilities';
+import { floatValidator } from '../editorValidators/floatValidator';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -184,59 +185,16 @@ export class FloatEditor implements Editor {
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
-    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
-    const floatNumber = !isNaN(elmValue as number) ? parseFloat(elmValue) : null;
-    const decPlaces = this.getDecimalPlaces();
-    const isRequired = this.columnEditor.required;
-    const minValue = this.columnEditor.minValue;
-    const maxValue = this.columnEditor.maxValue;
-    const errorMsg = this.columnEditor.errorMessage;
-    const mapValidation = {
-      '{{minValue}}': minValue,
-      '{{maxValue}}': maxValue,
-      '{{minDecimal}}': 0,
-      '{{maxDecimal}}': decPlaces
-    };
-    let isValid = true;
-    let outputMsg = '';
-
-    if (this.validator) {
-      return this.validator(elmValue, this.args);
-    } else if (isRequired && elmValue === '') {
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
-    } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
-      // when decimal value is 0 (which is the default), we accept 0 or more decimal values
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER;
-    } else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
-      // MIN & MAX Values provided
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched]);
-    } else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
-      // MIN VALUE ONLY
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched]);
-    } else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
-      // MAX VALUE ONLY
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched]);
-    } else if ((decPlaces > 0 && !new RegExp(`^[-+]?(\\d*(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched]);
-    }
-
-    return {
-      valid: isValid,
-      msg: outputMsg
-    };
+    const elmValue = (inputValue !== undefined) ? inputValue : (this._$input && this._$input.val && this._$input.val());
+    return floatValidator(elmValue, {
+      editorArgs: this.args,
+      errorMessage: this.columnEditor.errorMessage,
+      decimal: this.getDecimalPlaces(),
+      minValue: this.columnEditor.minValue,
+      maxValue: this.columnEditor.maxValue,
+      operatorConditionalType: this.columnEditor.operatorConditionalType,
+      required: this.columnEditor.required,
+      validator: this.validator,
+    });
   }
 }
