@@ -1,6 +1,7 @@
 import { Constants } from './../constants';
 import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
+import { integerValidator } from '../editorValidators/integerValidator';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -149,52 +150,14 @@ export class IntegerEditor implements Editor {
 
   validate(inputValue?: any): EditorValidatorOutput {
     const elmValue = (inputValue !== undefined) ? inputValue : this.getValue();
-    let intNumber = !isNaN(elmValue as number) ? parseInt(elmValue, 10) : null;
-    if (isNaN(intNumber)) {
-      intNumber = null;
-    }
-    const errorMsg = this.columnEditor.errorMessage;
-    const isRequired = this.columnEditor.required;
-    const minValue = this.columnEditor.minValue;
-    const maxValue = this.columnEditor.maxValue;
-    const mapValidation = {
-      '{{minValue}}': minValue,
-      '{{maxValue}}': maxValue
-    };
-    let isValid = true;
-    let outputMsg = '';
-
-    if (this.validator) {
-      return this.validator(elmValue, this.args);
-    } else if (isRequired && elmValue === '') {
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
-    } else if (elmValue && (isNaN(elmValue as number) || !/^[+-]?\d+$/.test(elmValue))) {
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_INTEGER;
-    } else if (minValue !== undefined && maxValue !== undefined && intNumber !== null && (intNumber < minValue || intNumber > maxValue)) {
-      // MIN & MAX Values provided
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched]);
-    } else if (minValue !== undefined && intNumber !== null && intNumber <= minValue) {
-      // MIN VALUE ONLY
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched]);
-    } else if (maxValue !== undefined && intNumber !== null && intNumber >= maxValue) {
-      // MAX VALUE ONLY
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      isValid = false;
-      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched]);
-    }
-
-    return {
-      valid: isValid,
-      msg: outputMsg
-    };
+    return integerValidator(elmValue, {
+      editorArgs: this.args,
+      errorMessage: this.columnEditor.errorMessage,
+      minValue: this.columnEditor.minValue,
+      maxValue: this.columnEditor.maxValue,
+      operatorConditionalType: this.columnEditor.operatorConditionalType,
+      required: this.columnEditor.required,
+      validator: this.validator,
+    });
   }
 }

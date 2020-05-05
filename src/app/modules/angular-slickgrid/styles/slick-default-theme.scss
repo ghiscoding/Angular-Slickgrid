@@ -55,7 +55,7 @@
 
      .slick-cell {
        background: inherit;
-
+       border: 1px transparent;
        padding-top: 3px;
        padding-bottom: 4px;
        padding-left: 4px;
@@ -83,11 +83,17 @@
          border: $cell-active-border;
 
          // We compensate for the all-around border (now 1px at top and left too!)
-         padding-top: 5px;
-         padding-left: 7px;
+         padding: $cell-padding;
 
          input.editor-text {
-           width: 100%;
+           width: calc(100% + 2px); // add 2px to cancel out negative margin-left transform
+           height: 100%;
+           outline: 0;
+           transform: translate(0, -2px);
+         }
+
+         input.dual-editor-text {
+           width: calc(50% + 1px - 5px); // 1px (is 2px / 2) and 5px (is space between the 2 inputs)
            height: 100%;
            outline: 0;
            transform: translate(0, -2px);
@@ -166,9 +172,6 @@
    // ----------------------------------------------
    // Excel-like header
    // ----------------------------------------------
-
-
-
 
    .header-overlay,
    .cell-overlay,

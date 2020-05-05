@@ -1,18 +1,54 @@
 @import './variables';
 
-.slick-cell.active  {
-	input.editor-text {
-    border: $text-editor-border;
-    background: $text-editor-background;
-    padding-bottom: $text-editor-padding-bottom;
-    padding-left: $text-editor-padding-left;
-    padding-right: $text-editor-padding-right;
-    padding-top: $text-editor-padding-top;
-    margin-left: $text-editor-margin-left;
-    margin-bottom: $text-editor-margin-bottom;
-    margin-right: $text-editor-margin-right;
-    margin-top: $text-editor-margin-top;
-	}
+.slick-row {
+  .slick-cell  {
+    &.active {
+      input.dual-editor-text,
+      input.editor-text {
+        border: $text-editor-border;
+        border-radius: $text-editor-border-radius;
+        background: $text-editor-background;
+        padding-bottom: $text-editor-padding-bottom;
+        padding-left: $text-editor-padding-left;
+        padding-right: $text-editor-padding-right;
+        padding-top: $text-editor-padding-top;
+        margin-left: $text-editor-margin-left;
+        margin-bottom: $text-editor-margin-bottom;
+        margin-right: $text-editor-margin-right;
+        margin-top: $text-editor-margin-top;
+
+        &:focus {
+          outline: 0;
+          border-color: $text-editor-focus-border-color;
+          box-shadow: $text-editor-focus-box-shadow;
+        }
+
+        &.right {
+          margin-left: calc(#{$text-editor-margin-left + 9px});
+        }
+
+        &[readonly] {
+          background-color: $text-editor-readonly-color;
+        }
+      }
+
+      .slider-editor-input {
+        &:focus {
+          outline: 0;
+          border-color: $slider-editor-focus-border-color;
+          box-shadow: $slider-editor-focus-box-shadow;
+        }
+      }
+
+      .flatpickr-alt-input.editor-text {
+        &:focus {
+          outline: 0;
+          border-color: $date-editor-focus-border-color;
+          box-shadow: $date-editor-focus-box-shadow;
+        }
+      }
+    }
+  }
 }
 
 /* Long Text Editor */

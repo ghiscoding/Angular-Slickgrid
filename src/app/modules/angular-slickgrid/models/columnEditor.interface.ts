@@ -43,6 +43,9 @@ export interface ColumnEditor {
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Editor */
   customStructure?: CollectionCustomStructure;
 
+  /** number of decimal places, works only with Editors supporting it (input float, integer, range, slider) */
+  decimal?: number;
+
   /**
    * Options that could be provided to the Editor, example: { container: 'body', maxHeight: 250}
    *
@@ -84,6 +87,9 @@ export interface ColumnEditor {
    * Note that this will override the default placeholder configured in the global config
    */
   placeholder?: string;
+
+  /** Defaults to "inclusive", operator should be (inclusive or exclusive) when executing validation condition check against the minValue/maxValue. */
+  operatorConditionalType?: 'inclusive' | 'exclusive';
 
   /**
    * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).

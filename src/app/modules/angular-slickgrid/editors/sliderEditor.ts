@@ -1,6 +1,7 @@
 import { Constants } from '../constants';
 import { Column, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, ColumnEditor } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
+import { sliderValidator } from '../editorValidators/sliderValidator';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -168,38 +169,15 @@ export class SliderEditor implements Editor {
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
-    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
-    const isRequired = this.columnEditor.required;
-    const minValue = this.columnEditor.minValue;
-    const maxValue = this.columnEditor.maxValue;
-    const errorMsg = this.columnEditor.errorMessage;
-    const mapValidation = {
-      '{{minValue}}': minValue,
-      '{{maxValue}}': maxValue
-    };
-
-    if (this.validator) {
-      return this.validator(elmValue, this.args);
-    } else if (isRequired && elmValue === '') {
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
-      };
-    } else if (minValue !== undefined && maxValue !== undefined && elmValue !== null && (elmValue < minValue || elmValue > maxValue)) {
-      // when decimal value is bigger than 0, we only accept the decimal values as that value set
-      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
-          return mapValidation[matched];
-        })
-      };
-    }
-
-    return {
-      valid: true,
-      msg: null
-    };
+    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val();
+    return sliderValidator(elmValue, {
+      editorArgs: this.args,
+      errorMessage: this.columnEditor.errorMessage,
+      minValue: this.columnEditor.minValue,
+      maxValue: this.columnEditor.maxValue,
+      required: this.columnEditor.required,
+      validator: this.validator,
+    });
   }
 
   //

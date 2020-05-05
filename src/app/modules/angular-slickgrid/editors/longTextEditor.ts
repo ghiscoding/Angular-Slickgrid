@@ -13,6 +13,7 @@ import {
   Locale,
 } from './../models/index';
 import { getDescendantProperty, getHtmlElementOffset, setDeepValue } from '../services/utilities';
+import { textValidator } from '../editorValidators/textValidator';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -199,26 +200,13 @@ export class LongTextEditor implements Editor {
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
-    const isRequired = this.columnEditor.required;
     const elmValue = (inputValue !== undefined) ? inputValue : this._$textarea && this._$textarea.val && this._$textarea.val();
-    const errorMsg = this.columnEditor.errorMessage;
-
-    if (this.validator) {
-      return this.validator(elmValue, this.args);
-    }
-
-    // by default the editor is almost always valid (except when it's required but not provided)
-    if (isRequired && elmValue === '') {
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
-      };
-    }
-
-    return {
-      valid: true,
-      msg: null
-    };
+    return textValidator(elmValue, {
+      editorArgs: this.args,
+      errorMessage: this.columnEditor.errorMessage,
+      required: this.columnEditor.required,
+      validator: this.validator,
+    });
   }
 
   // --
