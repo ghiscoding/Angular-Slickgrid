@@ -229,7 +229,7 @@ describe('DateEditor', () => {
         mockColumn.internalColumnEditor.validator = null;
         mockColumn.type = FieldType.dateTimeIsoAmPm;
         mockColumn.field = 'employee.startDate';
-        mockItemData = { id: 1, employee: { startDate: '2001-04-05T11:33:42.000Z' }, isActive: true };
+        mockItemData = { id: 1, employee: { startDate: new Date(Date.UTC(2001, 3, 5, 16, 11, 33, 0)) }, isActive: true };
 
         const newDate = '2001-01-02T16:02:02.000+05:00';
         editor = new DateEditor(editorArguments);
@@ -341,6 +341,24 @@ describe('DateEditor', () => {
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('should not throw any error when date is invalid when lower than required "minDate" defined in the "editorOptions" and "autoCommitEdit" is enabled', () => {
+        // change to allow input value only for testing purposes & use the regular flatpickr input to test that one too
+        mockColumn.internalColumnEditor.editorOptions = { minDate: 'today', altInput: true };
+        mockItemData = { id: 1, startDate: '500-01-02T11:02:02.000Z', isActive: true };
+        gridOptionMock.autoCommitEdit = true;
+        gridOptionMock.autoEdit = true;
+        gridOptionMock.editable = true;
+
+        editor = new DateEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        editor.flatInstance.toggle();
+        const editorInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr');
+
+        expect(editor.pickerOptions).toBeTruthy();
+        expect(editorInputElm.value).toBe('');
+        expect(editor.serializeValue()).toBe('');
       });
     });
 
