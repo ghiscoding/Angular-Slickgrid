@@ -43,7 +43,7 @@
     "bump-version": "npm --no-git-tag-version version",
     "prepare-release": "cross-env npm run changelog && npm run build && npm run doc",
     "release": "standard-version",
-    "sass-build-task:scss-compile": "node-sass --source-map true src/app/modules/angular-slickgrid/styles/ -o dist/styles/css",
+    "sass-build-task:scss-compile": "node-sass --output-style compressed true src/app/modules/angular-slickgrid/styles/ -o dist/styles/css",
     "sass-build-task:autoprefixer": "postcss dist/styles/css/*.css --use autoprefixer -d dist/styles/css",
     "sass:build": "npm-run-all -p sass-build-task:*",
     "sass:copy": "cross-env copyfiles -f src/app/modules/angular-slickgrid/styles/*.scss dist/styles/sass",
