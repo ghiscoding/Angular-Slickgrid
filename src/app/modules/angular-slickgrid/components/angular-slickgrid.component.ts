@@ -435,6 +435,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.subscriptions.push(
         this.translate.onLangChange.subscribe(() => {
           if (gridOptions.enableTranslate) {
+            if (!this._hideHeaderRowAfterPageLoad) {
+              // before translating, make sure the filter row is visible to avoid having other problems,
+              // because if it's not shown prior to translating then the filters won't be recreated after translating
+              this.grid.setHeaderRowVisibility(true);
+            }
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
             this.extensionService.translateColumnPicker();
@@ -768,6 +773,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
     if (this._hideHeaderRowAfterPageLoad) {
       this.showHeaderRow(false);
+      this.sharedService.hideHeaderRowAfterPageLoad = this._hideHeaderRowAfterPageLoad;
     }
 
     // after the DataView is created & updated execute some processes
@@ -936,6 +942,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (!options.enableFiltering && options.enablePagination && this._isLocalGrid) {
       options.enableFiltering = true;
       options.showHeaderRow = false;
+      this._hideHeaderRowAfterPageLoad = true;
+      this.sharedService.hideHeaderRowAfterPageLoad = true;
     }
     return options;
   }

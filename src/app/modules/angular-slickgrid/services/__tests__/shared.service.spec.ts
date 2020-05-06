@@ -208,4 +208,14 @@ describe('Shared Service', () => {
     expect(setSpy).toHaveBeenCalled();
     expect(columns).toEqual(mockColumns);
   });
+
+  it('should call "hideHeaderRowAfterPageLoad" GETTER and expect a boolean value to be returned', () => {
+    const flag = service.hideHeaderRowAfterPageLoad;
+    expect(flag).toEqual(false);
+  });
+
+  it('should call "hideHeaderRowAfterPageLoad" GETTER and SETTER expect same value to be returned', () => {
+    service.hideHeaderRowAfterPageLoad = true;
+    expect(service.hideHeaderRowAfterPageLoad).toEqual(true);
+  });
 });
