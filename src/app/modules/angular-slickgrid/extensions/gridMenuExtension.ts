@@ -198,7 +198,7 @@ export class GridMenuExtension implements Extension {
     const backendApi = this.sharedService.gridOptions.backendServiceApi || null;
     const gridMenuCustomItems: Array<GridMenuItem | 'divider'> = [];
 
-    if (this.sharedService.gridOptions && (this.sharedService.gridOptions.enableFiltering && this.sharedService.gridOptions.showHeaderRow)) {
+    if (this.sharedService.gridOptions && (this.sharedService.gridOptions.enableFiltering && !this.sharedService.hideHeaderRowAfterPageLoad)) {
       // show grid menu: Clear all Filters
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
         const commandName = 'clear-filter';
