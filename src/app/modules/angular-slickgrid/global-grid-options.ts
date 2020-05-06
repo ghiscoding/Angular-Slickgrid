@@ -160,13 +160,13 @@ export const GlobalGridOptions: Partial<GridOption> = {
     pageSize: 25,
     totalItems: 0
   },
-  // @ts-ignore
   // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
+  // @ts-ignore
   rowDetailView: {
     cssClass: 'detail-view-toggle',
     panelRows: 1,
     keyPrefix: '__',
-    useRowClick: true,
+    useRowClick: false,
     useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
   },
