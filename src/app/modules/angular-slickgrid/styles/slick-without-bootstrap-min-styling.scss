@@ -1,0 +1,129 @@
+@import './variables';
+
+/** Bootstrap buttons styling copied and changed slightly for Material Design */
+.btn {
+  cursor: pointer;
+  font-family:  $font-family;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: $primary-color;
+}
+
+.btn-xs,
+.btn-group-xs>.btn {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.slick-pane {
+  font-family:  $font-family;
+
+  .form-control {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  }
+
+  .input-group .form-control {
+    border-radius: 4px;
+  }
+  .input-group .form-control {
+    position: relative;
+    z-index: 2;
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .input-group {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+  }
+  .input-group-addon {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .input-group-addon, .input-group-btn {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .input-group .form-control, .input-group-addon, .input-group-btn {
+    display: table-cell;
+  }
+  .input-group-addon:last-child {
+    border-left: 0;
+  }
+  .input-group .form-control:last-child,
+  .input-group-addon:last-child,
+  .input-group-btn:first-child>.btn-group:not(:first-child)>.btn,
+  .input-group-btn:first-child>.btn:not(:first-child),
+  .input-group-btn:last-child>.btn,
+  .input-group-btn:last-child>.btn-group>.btn,
+  .input-group-btn:last-child>.dropdown-toggle {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .input-group .form-control:first-child,
+  .input-group-addon:first-child,
+  .input-group-btn:first-child > .btn,
+  .input-group-btn:first-child > .btn-group > .btn,
+  .input-group-btn:first-child > .dropdown-toggle,
+  .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+  .input-group-btn:last-child > .btn-group:not(:last-child) > .btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .input-group-addon:not(:first-child):not(:last-child),
+  .input-group-btn:not(:first-child):not(:last-child),
+  .input-group .form-control:not(:first-child):not(:last-child) {
+    border-radius: 0;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+
+  *, :after, :before {
+    box-sizing: border-box;
+  }
+
+  .form-control:focus{
+    outline: 0;
+    border-color: lighten($primary-color, 10%);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px rgba(lighten($primary-color, 3%), .3);
+  }
+}

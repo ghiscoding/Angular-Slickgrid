@@ -33,6 +33,7 @@
   border-left: $container-border-left;
   border-right: $container-border-right;
   position: relative;
+  font-family: $font-family;
 
   @mixin resetSlickCell() {
     padding: $cell-padding;
@@ -65,9 +66,14 @@
     .slick-row {
       position: absolute;
       width: 100%;
+      color: $cell-text-color;
+      font-family: $cell-font-family;
+      font-weight: $cell-font-weight;
 
       &:hover {
         background-color: $row-mouse-hover-color;
+        box-shadow: $row-mouse-hover-box-shadow;
+        z-index: $row-mouse-hover-z-index;
       }
       &.active {
         padding: $cell-padding;
@@ -149,6 +155,7 @@
       border-bottom: $cell-border-bottom;
       border-left: $cell-border-left;
       border-right: $cell-border-right;
+      box-shadow: $cell-box-shadow;
     }
 
     .even {
@@ -168,12 +175,10 @@
       }
       table {
         height: 100%;
-        border: 0 none;
         padding: 0;
         background: none;
       }
       td {
-        border: 0 none;
         padding: 0;
         vertical-align: middle;
         text-align: left;
@@ -189,6 +194,11 @@
         height: 100%;
         padding: 0;
       }
+      .slick-group-title {
+        height: $draggable-group-title-height;
+        line-height: $draggable-group-title-line-height;
+        vertical-align: $draggable-group-title-vertical-align;
+      }
       .slick-group-toggle {
         color: $icon-group-color;
         font-weight: $icon-group-font-weight;
@@ -198,15 +208,19 @@
         cursor: pointer;
 
         &.expanded:before {
+          display: inline-block;
           content: $icon-group-expanded;
           font-family: $icon-font-family;
           font-size: $icon-group-font-size;
+          width: $icon-group-width;
         }
 
         &.collapsed:before {
+          display: inline-block;
           content: $icon-group-collapsed;
           font-family: $icon-font-family;
           font-size: $icon-group-font-size;
+          width: $icon-group-width;
         }
       }
     }
@@ -248,8 +262,10 @@
   }
 
   .slick-header-columns {
-    background: $table-background;
+    background: none;
+    background-color: $header-background-color;
     width: calc(100% - #{$header-scroll-width-to-remove});
+    height: calc(#{$preheader-height} + #{$cell-padding-top-bottom} - #{$preheader-border-top} - #{$preheader-border-bottom});
 
     .slick-header-sortable {
       .slick-column-name {
@@ -260,10 +276,10 @@
       height: $header-column-height;
       line-height: $font-size-base;
       margin: 0;
-      border-top: $header-border-top;
-      border-right: $header-border-right;
-      border-bottom: $header-border-bottom;
-      border-left: $header-border-left;
+      border-top: $header-column-border-top;
+      border-right: $header-column-border-right;
+      border-bottom: $header-column-border-bottom;
+      border-left: $header-column-border-left;
       white-space: normal;
       &.ui-state-default {
         @include resetSlickCell();
@@ -274,9 +290,10 @@
 
       @mixin ResetColumns () {
         /* like TH  */
-        background: $table-background;
+        background: $header-background-color;
         font-family: $font-family;
         color: $header-text-color;
+        font-size: $header-font-size;
         font-weight: $header-font-weight;
         a, a:visited {
           color: $text-color;
@@ -307,6 +324,8 @@
           font-family: $icon-font-family;
           font-size: $icon-sort-font-size;
           opacity: $sort-indicator-hint-opacity;
+          display: inline-block;
+          width: $icon-sort-width;
         }
       }
 
@@ -334,15 +353,20 @@
         right: $sort-indicator-number-right;
         top: $sort-indicator-number-top;
       }
-      .slick-sort-indicator-asc {
-        &:before {
+      .slick-sort-indicator-asc:before {
           content: $icon-sort-asc;
-        }
+          font-family: $icon-font-family;
+          font-size: $icon-sort-font-size;
+          opacity: 1;
+          display: inline-block;
+          width: $icon-sort-width;
       }
-      .slick-sort-indicator-desc {
-        &:before {
-          content: $icon-sort-desc;
-        }
+      .slick-sort-indicator-desc:before {
+        content: $icon-sort-desc;
+        display: inline-block;
+        opacity: 1;
+        font-size: $icon-sort-font-size;
+        width: $icon-sort-width;
       }
       .slick-resizable-handle {
         width: 7px;
@@ -350,26 +374,41 @@
         z-index: 1;
       }
       .slick-resizable-handle:hover {
-        border-right: $header-resizable-hover;
-        right: 0;
+        border-bottom: $header-resizable-hover-border-bottom;
+        border-left: $header-resizable-hover-border-left;
+        border-right: $header-resizable-hover-border-right;
+        border-top: $header-resizable-hover-border-top;
+        width: $header-resizable-hover-width;
+        border-radius: $header-resizable-hover-border-radius;
+        right: $header-resizable-hover-right;
+        height: $header-resizable-hover-height;
+        top: $header-resizable-hover-top;
+        opacity: $header-resizable-hover-opacity;
       }
     }
   }
 
   /** Header Grouping **/
   .slick-preheader-panel.ui-state-default  {
-    .slick-header-column {
-      border-left: $preheader-border-left;
-      border-right: $preheader-border-right;
-      border-bottom: $preheader-border-bottom;
+    border-bottom: $preheader-border-bottom;
+
+    .slick-header-columns {
       border-top: $preheader-border-top;
-      font-size: $preheader-font-size;
-    }
-    .slick-header-column:first-child {
-      border-left: $preheader-border-left-first-element;
-    }
-    .slick-header-column:last-child {
-      border-right: $preheader-border-right-last-element;
+
+      .slick-header-column {
+        height: calc(#{$preheader-height} - #{$cell-padding-top-bottom});
+        border-left: $preheader-border-left;
+        border-right: $preheader-border-right;
+        font-size: $preheader-font-size;
+        justify-content: $preheader-grouped-title-justify;
+        display: $preheader-grouped-title-display;
+      }
+      .slick-header-column:first-child {
+        border-left: $preheader-border-left-first-element;
+      }
+      .slick-header-column:last-child {
+        border-right: $preheader-border-right-last-element;
+      }
     }
   }
 

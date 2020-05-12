@@ -67,6 +67,13 @@
 
   .slick-pane-header {
     display: block;
+    background-color: $header-background-color;
+    border-bottom: $header-border-bottom;
+  }
+
+  .slick-pane-top {
+    box-sizing: border-box;
+    border-top: $slick-pane-top-border-top;
   }
 
   .slick-viewport {
