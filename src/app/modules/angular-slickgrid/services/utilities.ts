@@ -115,7 +115,7 @@ export function charArraysEqual(a: any[], b: any[], orderMatters: boolean = fals
     return false;
   }
 
-  if (!orderMatters) {
+  if (!orderMatters && a.sort && b.sort) {
     a.sort();
     b.sort();
   }
