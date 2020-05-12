@@ -14,6 +14,8 @@
     font-weight: $footer-left-font-weight;
     text-align: $footer-left-text-align;
     padding: $footer-left-padding;
+    width: $footer-left-width;
+    float: $footer-left-float;
   }
 
   .right-footer.metrics {
@@ -23,6 +25,8 @@
     font-weight: $footer-right-font-weight;
     text-align: $footer-right-text-align;
     padding: $footer-right-padding;
+    width: $footer-right-width;
+    float: $footer-right-float;
     .separator {
       margin: $footer-right-separator-margin;
     }

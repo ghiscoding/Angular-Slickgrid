@@ -6,6 +6,7 @@
 // ----------------------------------------------
 
 .slick-columnpicker {
+  font-family:  $font-family;
   background-color: $column-picker-background-color;
   border: $column-picker-border;
   border-radius: $column-picker-border-radius;
@@ -19,16 +20,22 @@
   z-index: 2000;
 	overflow: auto;
   resize: both;
+  width: auto;
+  padding-right: 24px; /* trick to cheat the width to include extra scrollbar width in addition to auto width */
 
   > .close {
     float: right;
+    position: absolute;
+    cursor: $column-picker-close-btn-cursor;
     width: $column-picker-close-btn-width;
     height: $column-picker-close-btn-height;
     margin: $column-picker-close-btn-margin;
     padding: $column-picker-close-btn-padding;
-
+    font-size: $column-picker-close-btn-font-size;
     background-color: $column-picker-close-btn-bg-color;
     border: $column-picker-close-btn-border;
+    right: $column-picker-close-btn-position-right;
+    top: $column-picker-close-btn-position-top;
 
     > span {
       opacity: $column-picker-close-btn-opacity;
@@ -72,6 +79,7 @@
   }
 
   li {
+    width: calc(100% + 24px - 6px); /* trick to cheat the width to include extra scrollbar width in addition to auto width */
     border: $column-picker-item-border;
     border-radius: $column-picker-item-border-radius;
     padding: $column-picker-item-padding;
@@ -106,7 +114,7 @@
     content: $column-picker-checkbox-icon-unchecked;
     color: $column-picker-checkbox-color;
     display: inline-block;
-    font-weight: bold;
+    font-weight: $column-picker-checkbox-font-weight;
     font-family: $icon-font-family;
     font-size: $column-picker-checkbox-size;
     opacity: $column-picker-checkbox-opacity; /* unchecked icon */
@@ -131,27 +139,32 @@
 // ----------------------------------------------
 
 .slick-gridmenu {
+  font-family:  $font-family;
   background-color: $grid-menu-background-color;
   border: $grid-menu-border;
   border-radius: $grid-menu-border-radius;
   padding: 6px;
   box-shadow: $grid-menu-box-shadow;
-  min-width: 200px;
+  min-width: $grid-menu-min-width;
   cursor: default;
   position:absolute;
   z-index: 2000;
 	overflow: auto;
-  resize: both;
+  width: max-content;
 
   > .close {
     float: right;
+    position: absolute;
+    cursor: $grid-menu-close-btn-cursor;
     width: $grid-menu-close-btn-width;
     height: $grid-menu-close-btn-height;
     margin: $grid-menu-close-btn-margin;
     padding: $grid-menu-close-btn-padding;
-
+    font-size: $grid-menu-close-btn-font-size;
     background-color: $grid-menu-close-btn-bg-color;
     border: $grid-menu-close-btn-border;
+    right: $grid-menu-close-btn-position-right;
+    top: $grid-menu-close-btn-position-top;
 
     > span {
       opacity: $grid-menu-close-btn-opacity;
@@ -194,11 +207,10 @@
   position: absolute;
   cursor: pointer;
   right: 0;
-  padding: 0 2px;
-  top: 0;
+  padding: $grid-menu-button-padding;
+  margin-top: $grid-menu-icon-top-margin;
   background-color: transparent;
   border: 0;
-  margin-top: 5px;
   width: 22px;
   font-size: $grid-menu-icon-font-size;
 }
@@ -251,10 +263,11 @@
 
 .slick-gridmenu-icon {
   display: inline-block;
-  width: 14px;
-  height: 14px;
+  font-size: $grid-menu-icon-font-size;
+  line-height: $grid-menu-icon-line-height;
+  margin-right: $grid-menu-icon-margin-right;
+  width: $grid-menu-icon-width;
   vertical-align: middle;
-  margin-right: 4px;
   background-repeat: no-repeat;
   background-position: center center;
 }
@@ -271,6 +284,7 @@
   }
 
   li {
+    width: auto;
     border: $grid-menu-item-border;
     border-radius: $grid-menu-item-border-radius;
     padding: $grid-menu-item-padding;
@@ -305,11 +319,11 @@
     content: $grid-menu-checkbox-icon-unchecked;
     color: $grid-menu-checkbox-color;
     display: inline-block;
-    font-weight: bold;
+    font-weight: $grid-menu-checkbox-font-weight;
     font-family: $icon-font-family;
     font-size: $grid-menu-checkbox-size;
     opacity: $grid-menu-checkbox-opacity; /* unchecked icon */
-    margin-right: 4px;
+    margin-right: $grid-menu-checkbox-margin-right;
     width: $grid-menu-checkbox-width;
   }
 

@@ -7,6 +7,7 @@
 
 .slick-cell-menu {
   position: absolute;
+  font-family:  $font-family;
   background: $cell-menu-bg-color;
   border: $cell-menu-border;
   border-radius: $cell-menu-border-radius;
@@ -20,12 +21,14 @@
 
   > .close {
     float: right;
+    cursor: pointer;
     background-color: $cell-menu-close-btn-bg-color;
     width: $cell-menu-close-btn-width;
     height: $cell-menu-close-btn-height;
     margin: $cell-menu-close-btn-margin;
     padding: $cell-menu-close-btn-padding;
     border: $cell-menu-close-btn-border;
+    font-size: $cell-menu-close-btn-font-size;
 
     > span {
       opacity: $cell-menu-close-btn-opacity;
@@ -49,6 +52,7 @@
     list-style: none outside none;
     margin: 0;
     width: $cell-menu-item-width;
+    height: $cell-menu-item-height;
 
     &:hover {
       border: $cell-menu-item-hover-border;
@@ -71,10 +75,11 @@
     }
 
     .slick-cell-menu-icon {
+      font-size: $cell-menu-icon-font-size;
       background-position: center center;
       background-repeat: no-repeat;
       display: inline-block;
-      height: $cell-menu-icon-height;
+      line-height: ($cell-menu-icon-font-size + 2px);
       margin-right: $cell-menu-icon-margin-right;
       vertical-align: middle;
       width: $cell-menu-icon-width;
@@ -181,7 +186,9 @@
       background-position: center center;
       background-repeat: no-repeat;
       display: inline-block;
+      font-size: $context-menu-icon-font-size;
       height: $context-menu-icon-height;
+      line-height: $context-menu-icon-line-height;
       margin-right: $context-menu-icon-margin-right;
       vertical-align: middle;
       width: $context-menu-icon-width;
@@ -272,24 +279,35 @@
   border: $header-menu-button-border;
   border-width: $header-menu-button-border-width;
   padding: $header-menu-button-padding;
+  color: $header-menu-button-icon-color;
 
   // The next few items are already defined in the slick-headermenu file and it should stay that way, *unless* you also replace the button image included there.
   bottom: 0;
-  right: 3px;
+  right: $header-menu-button-margin-right;
   top: 0;
   width: $header-menu-button-width;
 }
 .slick-header-menubutton:before {
-  font-family: $icon-font-family;
-  font-size: 14px;
+  display: inline-block;
   content: $header-menu-button-icon;
+  font-family: $icon-font-family;
+  font-size: $header-menu-button-icon-font-size;
+  font-weight: $header-menu-button-icon-font-weight;
+  width: $header-menu-button-icon-width;
 }
 
-.slick-header-column:hover {
+.slick-header-column {
+  // if user when to show header menu only while hovering, then the display var will be "none" else it could be "inline-block"
   .slick-header-menubutton {
-    display: inline-block;
+    display: $header-menu-display;
+  }
+  &:hover {
+    .slick-header-menubutton {
+      display: inline-block;
+    }
   }
 }
+
 .slick-header-menu {
   position: absolute;
   margin: 0;
@@ -357,10 +375,15 @@
   background-color: $header-menu-divider-color;
 }
 
+
 .slick-header-menuicon {
   background-position: center center;
   background-repeat: no-repeat;
   display: inline-block;
+  color: $header-menu-icon-font-color;
+  font-size: $header-menu-icon-font-size;
+  font-weight: $header-menu-icon-font-weight;
+  line-height: $header-menu-icon-line-height;
   height: $header-menu-icon-height;
   margin-right: $header-menu-icon-margin-right;
   vertical-align: middle;
@@ -395,9 +418,11 @@
 // Row Move Manager Plugin
 // ----------------------------------------------
 .slick-cell.cell-reorder:before {
+  display: inline-block;
   font-family: $icon-font-family;
   font-size: $row-move-plugin-size;
   content: $row-move-plugin-icon;
+  width: $row-move-plugin-icon-width;
 }
 .slick-cell.cell-reorder {
   cursor: $row-move-plugin-cursor;
@@ -423,13 +448,19 @@
   input[type=checkbox] + label:before,
   #filter-checkbox-selectall-container > input[type=checkbox] + label:before {
     cursor: pointer;
-    content: $checkbox-selector-icon;
-    color: $checkbox-selector-color;
+    content: $checkbox-selector-icon-unchecked;
+    background-color: $checkbox-selector-icon-bg-color;
+    color: $checkbox-selector-unchecked-color;
     display: inline-block;
-    font-weight: bold;
+    font-weight: $checkbox-selector-icon-font-weight;
     font-family: $icon-font-family;
     font-size: $checkbox-selector-size;
     opacity: $checkbox-selector-opacity; /* unchecked icon */
+    height: $checkbox-selector-icon-height;
+    width: $checkbox-selector-icon-width;
+    border: $checkbox-selector-icon-border;
+    border-radius: $checkbox-selector-icon-border-radius;
+    margin: $checkbox-selector-icon-margin;
   }
 
   input[type=checkbox] + label:hover:before,
@@ -439,7 +470,13 @@
 
   input[type=checkbox]:checked + label:before,
   #filter-checkbox-selectall-container > input[type=checkbox]:checked + label:before {
+    content: $checkbox-selector-icon-checked;
+    color: $checkbox-selector-checked-color;
     opacity: 1; /* checked icon */
+    height: $checkbox-selector-icon-height;
+    width: $checkbox-selector-icon-width;
+    border-radius: $checkbox-selector-icon-border;
+    border-radius: $checkbox-selector-icon-border-radius;
   }
 }
 
@@ -454,6 +491,19 @@
 .ms-choice {
   border: $multiselect-input-filter-border;
   background-color: transparent;
+
+  div {
+    &:before {
+      font-family: $icon-font-family;
+      font-size: $multiselect-icon-arrow-font-size;
+    }
+    &.open {
+      &:before {
+        font-family: $icon-font-family;
+        font-size: $multiselect-icon-arrow-font-size;
+      }
+    }
+  }
 
   span {
     font-size: $multiselect-input-filter-font-size;
@@ -480,27 +530,47 @@
 
     & + span:before {
       cursor: pointer;
-      color: $multiselect-icon-color;
+      color: $multiselect-icon-unchecked-color;
       content: $multiselect-icon-unchecked;
       display: inline-block;
       font-family: $icon-font-family;
       font-size: $multiselect-icon-font-size;
       font-weight: normal;
-      width: 20px;
+      height: $multiselect-icon-height;
+      width: $multiselect-icon-width;
+      border: $multiselect-icon-border;
+      border-radius: $multiselect-icon-border-radius;
+      margin: $multiselect-icon-margin;
       opacity: $multiselect-unchecked-opacity;
     }
 
     &:checked + span:before {
       content: $multiselect-icon-checked;
       opacity: 1;
+      height: $multiselect-icon-height;
+      width: $multiselect-icon-width;
+      border: $multiselect-icon-border;
+      border-radius: $multiselect-icon-border-radius;
+      margin: $multiselect-icon-margin;
     }
   }
   input[type="radio"] {
     & + span:before {
       content: $multiselect-icon-radio-unchecked;
+      height: $multiselect-icon-radio-height;
+      width: $multiselect-icon-radio-width;
+      border: $multiselect-icon-radio-border;
+      border-radius: $multiselect-icon-radio-border-radius;
+      margin: $multiselect-icon-radio-margin;
     }
     &:checked + span:before {
       content: $multiselect-icon-radio-checked;
+      color: $multiselect-icon-radio-color;
+      height: $multiselect-icon-radio-height;
+      width: $multiselect-icon-radio-width;
+      border: $multiselect-icon-radio-border;
+      border-radius: $multiselect-icon-radio-border-radius;
+      margin: $multiselect-icon-radio-margin;
     }
   }
   label {
@@ -520,6 +590,7 @@
   .ms-select-all {
     border-bottom: $multiselect-select-all-border-bottom;
     label {
+      display: inline-block;
       font-weight: normal;
       padding: 5px 8px;
       color: $multiselect-select-all-text-color;
@@ -544,6 +615,14 @@
     &:hover {
       background-color: $multiselect-ok-button-bg-hover-color;
       color: $multiselect-ok-button-text-hover-color;
+    }
+  }
+  .ms-search {
+    &:before {
+      font-family: $icon-font-family;
+      font-size: $multiselect-icon-font-size;
+      right: $multiselect-icon-search-margin-right;
+      position: absolute;
     }
   }
 }
@@ -842,7 +921,7 @@ input.slider-editor-input[type=range] {
 .slider-editor {
   .slider-value {
     padding: 0;
-    height: $header-input-height;
+    height: $slider-editor-height;
     .input-group-text {
       padding: $slider-editor-number-padding;
       font-size: $slider-filter-number-font-size;
@@ -918,8 +997,8 @@ input.slider-editor-input[type=range] {
 
 .slick-row {
   .detail-view-toggle {
-    display:          inline-block;
-    cursor:            pointer;
+    display: inline-block;
+    cursor: pointer;
 
     &.expand {
       display: inline-block;

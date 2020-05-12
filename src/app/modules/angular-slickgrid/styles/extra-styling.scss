@@ -1,0 +1,73 @@
+.pointer {
+  cursor: pointer;
+}
+
+.cell-effort-driven {
+  text-align: center;
+}
+
+.editable-field {
+  background-color: #e3f0fb !important;
+}
+.fake-hyperlink {
+  cursor: pointer;
+  color: $link-color;
+  &:hover {
+      text-decoration: underline;
+  }
+}
+
+.delete-icon {
+  &:hover {
+      color: #b14c4a;
+  }
+}
+.edit-icon,
+.info-icon {
+  &:hover {
+      color: rgb(0, 153, 255);
+  }
+}
+
+.font-10px {
+  font-size: 10px;
+}
+.font-12px {
+  font-size: 12px;
+}
+.font-14px {
+  font-size: 14px;
+}
+.font-16px {
+  font-size: 16px;
+}
+.font-18px {
+  font-size: 18px;
+}
+.font-20px {
+  font-size: 20px;
+}
+.font-22px {
+  font-size: 22px;
+}
+.font-24px {
+  font-size: 24px;
+}
+.font-26px {
+  font-size: 26px;
+}
+.font-28px {
+  font-size: 28px;
+}
+.font-30px {
+  font-size: 30px;
+}
+.font-32px {
+  font-size: 32px;
+}
+.font-34px {
+  font-size: 34px;
+}
+.font-36px {
+  font-size: 36px;
+}

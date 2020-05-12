@@ -80,7 +80,9 @@
        }
 
        &.active {
+         box-shadow: $cell-active-box-shadow;
          border: $cell-active-border;
+         z-index: $cell-active-z-index;
 
          // We compensate for the all-around border (now 1px at top and left too!)
          padding: $cell-padding;
@@ -172,6 +174,9 @@
    // ----------------------------------------------
    // Excel-like header
    // ----------------------------------------------
+
+
+
 
    .header-overlay,
    .cell-overlay,

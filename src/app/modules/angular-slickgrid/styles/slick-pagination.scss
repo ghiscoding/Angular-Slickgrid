@@ -76,21 +76,29 @@
         .icon-seek-first {
           &:before {
             content: $pagination-icon-seek-first;
+            display: block;
+            width: $pagination-icon-seek-first-width;
           }
         }
         .icon-seek-prev {
           &:before {
             content: $pagination-icon-seek-prev;
+            display: block;
+            width: $pagination-icon-seek-prev-width;
           }
         }
         .icon-seek-next {
           &:before {
             content: $pagination-icon-seek-next;
+            display: block;
+            width: $pagination-icon-seek-next-width;
           }
         }
         .icon-seek-end {
           &:before {
             content: $pagination-icon-seek-end;
+            display: block;
+            width: $pagination-icon-seek-end-width;
           }
         }
       }
