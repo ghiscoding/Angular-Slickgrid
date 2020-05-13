@@ -22,7 +22,8 @@ import {
   OperatorString,
   Pagination,
   RowDetailView,
-  RowMoveManager
+  RowMoveManager,
+  TreeDataOption,
 } from './index';
 import { CustomFooterOption } from './customFooterOption.interface';
 
@@ -256,6 +257,9 @@ export interface GridOption {
   /** Do we want to enable localization translation (i18n)? */
   enableTranslate?: boolean;
 
+  /** Do we want to enable Tree Data grid? */
+  enableTreeData?: boolean;
+
   /** Options for the ExcelCopyBuffer Extension */
   excelCopyBufferOptions?: ExcelCopyBufferOption;
 
@@ -425,6 +429,9 @@ export interface GridOption {
 
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;
+
+  /** Tree Data options to define how the tree data is structure */
+  treeDataOptions?: TreeDataOption;
 
   /** Defaults to false, when set to True will lead to multiple columns sorting without the need to hold or do shift-click to execute a multiple sort. */
   tristateMultiColumnSort?: boolean;

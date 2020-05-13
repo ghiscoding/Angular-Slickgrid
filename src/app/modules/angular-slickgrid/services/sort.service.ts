@@ -11,14 +11,18 @@ import {
   SortDirection,
   SortDirectionNumber,
   SortDirectionString,
+  TreeDataOption,
 } from './../models/index';
 import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
-import { getDescendantProperty } from './utilities';
+import { convertHierarchicalViewToParentChildArray, getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
+import { SharedService } from './shared.service';
+import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
+@Injectable()
 export class SortService {
   private _currentLocalSorters: CurrentSorter[] = [];
   private _eventHandler: SlickEventHandler;
@@ -29,7 +33,7 @@ export class SortService {
   onSortChanged = new Subject<CurrentSorter[]>();
   onSortCleared = new Subject<boolean>();
 
-  constructor() {
+  constructor(private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -73,6 +77,8 @@ export class SortService {
     this._grid = grid;
     this._dataView = dataView;
 
+    this.processTreeDataInitialSort();
+
     this._eventHandler.subscribe(grid.onSort, (e: any, args: any) => {
       if (args && (args.sortCols || args.sortCol)) {
         // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
@@ -82,7 +88,7 @@ export class SortService {
         // keep current sorters
         this._currentLocalSorters = []; // reset current local sorters
         if (Array.isArray(sortColumns)) {
-          sortColumns.forEach((sortColumn: { sortCol: Column, sortAsc: boolean }) => {
+          sortColumns.forEach((sortColumn: { sortCol: Column; sortAsc: boolean; }) => {
             if (sortColumn.sortCol) {
               this._currentLocalSorters.push({
                 columnId: sortColumn.sortCol.id,
@@ -221,6 +227,33 @@ export class SortService {
     return sortCols;
   }
 
+  /** Process the initial sort, typically it will sort ascending by the column that has the Tree Data unless user specifies a different initialSort */
+  processTreeDataInitialSort() {
+    // when a Tree Data view is defined, we must sort the data so that the UI works correctly
+    if (this._gridOptions && this._gridOptions.enableTreeData && this._gridOptions.treeDataOptions) {
+      // first presort it once by tree level
+      const treeDataOptions = this._gridOptions.treeDataOptions;
+      const columnWithTreeData = this._columnDefinitions.find((col: Column) => col && col.id === treeDataOptions.columnId);
+      if (columnWithTreeData) {
+        let sortDirection = SortDirection.ASC;
+        let sortTreeLevelColumn: ColumnSort = { columnId: treeDataOptions.columnId, sortCol: columnWithTreeData, sortAsc: true };
+
+        // user could provide a custom sort field id, if so get that column and sort by it
+        if (treeDataOptions && treeDataOptions.initialSort && treeDataOptions.initialSort.columnId) {
+          const initialSortColumnId = treeDataOptions.initialSort.columnId;
+          const initialSortColumn = this._columnDefinitions.find((col: Column) => col.id === initialSortColumnId);
+          sortDirection = (treeDataOptions.initialSort.direction || SortDirection.ASC).toUpperCase() as SortDirection;
+          sortTreeLevelColumn = { columnId: initialSortColumnId, sortCol: initialSortColumn, sortAsc: (sortDirection === SortDirection.ASC) } as ColumnSort;
+        }
+
+        // when we have a valid column with Tree Data, we can sort by that column
+        if (sortTreeLevelColumn && sortTreeLevelColumn.columnId) {
+          this.updateSorting([{ columnId: sortTreeLevelColumn.columnId || '', direction: sortDirection }]);
+        }
+      }
+    }
+  }
+
   onBackendSortChanged(event: Event, args: { multiColumnSort?: boolean; grid: any; sortCols: ColumnSort[]; clearSortTriggered?: boolean }) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to bind the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
@@ -245,63 +278,111 @@ export class SortService {
     executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitSortChanged.bind(this), this.httpCancelRequests$);
   }
 
+  /** When a Sort Changes on a Local grid (JSON dataset) */
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {
+    const isTreeDataEnabled = this._gridOptions && this._gridOptions.enableTreeData || false;
+
     if (grid && dataView) {
-      if (forceReSort) {
+      if (forceReSort && !isTreeDataEnabled) {
         dataView.reSort();
       }
 
-      dataView.sort(this.sortComparer.bind(this, sortColumns));
+      if (isTreeDataEnabled && this.sharedService && Array.isArray(this.sharedService.hierarchicalDataset)) {
+        const hierarchicalDataset = this.sharedService.hierarchicalDataset;
+        this.sortTreeData(hierarchicalDataset, sortColumns);
+        const dataViewIdIdentifier = this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+        const treeDataOpt: TreeDataOption = this._gridOptions && this._gridOptions.treeDataOptions || { columnId: '' };
+        const treeDataOptions = { ...treeDataOpt, identifierPropName: treeDataOpt.identifierPropName || dataViewIdIdentifier };
+        const sortedFlatArray = convertHierarchicalViewToParentChildArray(hierarchicalDataset, treeDataOptions);
+        dataView.setItems(sortedFlatArray, this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id');
+      } else {
+        dataView.sort(this.sortComparers.bind(this, sortColumns));
+      }
 
       grid.invalidate();
       grid.render();
     }
   }
 
-  sortComparer(sortColumns: ColumnSort[], dataRow1: any, dataRow2: any) {
+  sortComparers(sortColumns: ColumnSort[], dataRow1: any, dataRow2: any): number {
     if (Array.isArray(sortColumns)) {
       for (const sortColumn of sortColumns) {
-        if (sortColumn && sortColumn.sortCol) {
-          const columnDef = sortColumn.sortCol;
-          const querySortField = sortColumn.sortCol;
-          const sortDirection = sortColumn.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-          let queryFieldName1 = querySortField.queryFieldSorter || querySortField.queryField || querySortField.field;
-          let queryFieldName2 = queryFieldName1;
-          const fieldType = querySortField.type || FieldType.string;
-
-          // if user provided a query field name getter callback, we need to get the name on each item independently
-          if (typeof columnDef.queryFieldNameGetterFn === 'function') {
-            queryFieldName1 = columnDef.queryFieldNameGetterFn(dataRow1);
-            queryFieldName2 = columnDef.queryFieldNameGetterFn(dataRow2);
-          }
-
-          let value1 = dataRow1[queryFieldName1];
-          let value2 = dataRow2[queryFieldName2];
-
-          // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-          if (queryFieldName1 && queryFieldName1.indexOf('.') >= 0) {
-            value1 = getDescendantProperty(dataRow1, queryFieldName1);
-          }
-          if (queryFieldName2 && queryFieldName2.indexOf('.') >= 0) {
-            value2 = getDescendantProperty(dataRow2, queryFieldName2);
-          }
-
-          // user could provide his own custom Sorter
-          if (querySortField && querySortField.sorter) {
-            const customSortResult = querySortField.sorter(value1, value2, sortDirection, querySortField);
-            if (customSortResult !== SortDirectionNumber.neutral) {
-              return customSortResult;
-            }
-          } else {
-            const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, querySortField);
-            if (sortResult !== SortDirectionNumber.neutral) {
-              return sortResult;
-            }
-          }
+        const result = this.sortComparer(sortColumn, dataRow1, dataRow2);
+        if (result !== undefined) {
+          return result;
         }
       }
     }
     return SortDirectionNumber.neutral;
+  }
+
+  sortComparer(sortColumn: ColumnSort, dataRow1: any, dataRow2: any, querySortField?: string): number | undefined {
+    if (sortColumn && sortColumn.sortCol) {
+      const columnDef = sortColumn.sortCol;
+      const sortDirection = sortColumn.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+      let queryFieldName1 = querySortField || columnDef.queryFieldSorter || columnDef.queryField || columnDef.field;
+      let queryFieldName2 = queryFieldName1;
+      const fieldType = columnDef.type || FieldType.string;
+
+      // if user provided a query field name getter callback, we need to get the name on each item independently
+      if (typeof columnDef.queryFieldNameGetterFn === 'function') {
+        queryFieldName1 = columnDef.queryFieldNameGetterFn(dataRow1);
+        queryFieldName2 = columnDef.queryFieldNameGetterFn(dataRow2);
+      }
+
+      let value1 = dataRow1[queryFieldName1];
+      let value2 = dataRow2[queryFieldName2];
+
+      // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+      if (queryFieldName1 && queryFieldName1.indexOf('.') >= 0) {
+        value1 = getDescendantProperty(dataRow1, queryFieldName1);
+      }
+      if (queryFieldName2 && queryFieldName2.indexOf('.') >= 0) {
+        value2 = getDescendantProperty(dataRow2, queryFieldName2);
+      }
+
+      // user could provide his own custom Sorter
+      if (columnDef.sorter) {
+        const customSortResult = columnDef.sorter(value1, value2, sortDirection, columnDef);
+        if (customSortResult !== SortDirectionNumber.neutral) {
+          return customSortResult;
+        }
+      } else {
+        const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
+        if (sortResult !== SortDirectionNumber.neutral) {
+          return sortResult;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  sortTreeData(hierarchicalArray: any[], sortColumns: ColumnSort[]) {
+    if (Array.isArray(sortColumns)) {
+      for (const sortColumn of sortColumns) {
+        this.sortTreeChild(hierarchicalArray, sortColumn, 0);
+      }
+    }
+  }
+
+  /** Sort the Tree Children of a hierarchical dataset by recursion */
+  sortTreeChild(hierarchicalArray: any[], sortColumn: ColumnSort, treeLevel: number) {
+    const treeDataOptions = this._gridOptions && this._gridOptions.treeDataOptions;
+    const childrenPropName = treeDataOptions && treeDataOptions.childrenPropName || 'children';
+    hierarchicalArray.sort((a: any, b: any) => this.sortComparer(sortColumn, a, b) || SortDirectionNumber.neutral);
+
+    // when item has a child, we'll sort recursively
+    for (const item of hierarchicalArray) {
+      if (item) {
+        const hasChildren = item.hasOwnProperty(childrenPropName) && Array.isArray(item[childrenPropName]);
+        // when item has a child, we'll sort recursively
+        if (hasChildren) {
+          treeLevel++;
+          this.sortTreeChild(item[childrenPropName], sortColumn, treeLevel);
+          treeLevel--;
+        }
+      }
+    }
   }
 
   /**

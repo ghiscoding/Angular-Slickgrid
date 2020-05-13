@@ -21,11 +21,20 @@ const gridStub = {
 
 describe('Shared Service', () => {
   let mockColumns: Column[];
+  let mockHierarchicalDataset: any[];
   let mockGridOptions: GridOption;
   let service: SharedService;
 
   beforeEach(() => {
     mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+    mockHierarchicalDataset = [{
+      id: 11, file: 'Music', files: [{
+        id: 12, file: 'mp3', files: [
+          { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13T13:50:00Z', size: 98, }] },
+          { id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01T17:05:00Z', size: 85, }] },
+        ]
+      }]
+    }];
     mockGridOptions = { enableAutoResize: true };
     service = new SharedService();
   });
@@ -207,6 +216,27 @@ describe('Shared Service', () => {
     expect(getSpy).toHaveBeenCalled();
     expect(setSpy).toHaveBeenCalled();
     expect(columns).toEqual(mockColumns);
+  });
+
+  it('should call "hierarchicalDataset" GETTER and return a hierarchical dataset', () => {
+    const spy = jest.spyOn(service, 'hierarchicalDataset', 'get').mockReturnValue(mockHierarchicalDataset);
+
+    const columns = service.hierarchicalDataset;
+
+    expect(spy).toHaveBeenCalled();
+    expect(columns).toEqual(mockHierarchicalDataset);
+  });
+
+  it('should call "hierarchicalDataset" SETTER and expect GETTER to return the same', () => {
+    const getSpy = jest.spyOn(service, 'hierarchicalDataset', 'get');
+    const setSpy = jest.spyOn(service, 'hierarchicalDataset', 'set');
+
+    service.hierarchicalDataset = mockHierarchicalDataset;
+    const columns = service.hierarchicalDataset;
+
+    expect(getSpy).toHaveBeenCalled();
+    expect(setSpy).toHaveBeenCalled();
+    expect(columns).toEqual(mockHierarchicalDataset);
   });
 
   it('should call "hideHeaderRowAfterPageLoad" GETTER and expect a boolean value to be returned', () => {

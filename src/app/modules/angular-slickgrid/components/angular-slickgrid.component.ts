@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
-import { titleCase, unsubscribeAllObservables } from './../services/utilities';
+import { titleCase, unsubscribeAllObservables, convertParentChildArrayToHierarchicalView } from './../services/utilities';
 import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
   AngularGridInstance,
@@ -32,6 +32,7 @@ import {
   Pagination,
   ServicePagination,
   SlickEventHandler,
+  TreeDataOption,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
@@ -179,13 +180,32 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   get columnDefinitions(): Column[] {
     return this._columnDefinitions;
   }
+
   @Input()
+  get dataset(): any[] {
+    return this.dataView.getItems();
+  }
   set dataset(dataset: any[]) {
     this._dataset = dataset;
     this.refreshGridData(dataset);
   }
-  get dataset(): any[] {
+
+  @Input()
+  get datasetHierarchical(): any[] {
     return this.dataView.getItems();
+  }
+  set datasetHierarchical(hierarchicalDataset: any[]) {
+    this.sharedService.hierarchicalDataset = hierarchicalDataset;
+
+    if (this.filterService && this.filterService.clearFilters) {
+      this.filterService.clearFilters();
+    }
+
+    // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
+    if (this.sortService && this.sortService.processTreeDataInitialSort) {
+      this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
+      this.sortService.processTreeDataInitialSort();
+    }
   }
 
   get elementRef(): ElementRef {
@@ -341,6 +361,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           this.loadRowSelectionPresetWhenExists();
         }
         this._isDatasetInitialized = true;
+
+        // also update the hierarchical dataset
+        if (dataset.length > 0 && this.gridOptions.treeDataOptions) {
+          this.sharedService.hierarchicalDataset = this.SortComparer(dataset);
+        }
       }
 
       if (dataset) {
@@ -731,6 +756,26 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // initialize the SlickGrid grid
     this.grid.init();
 
+    // load the data in the DataView (unless it's a hierarchical dataset, if so it will be loaded after the initial tree sort)
+    if (Array.isArray(this.dataset) && !this.datasetHierarchical) {
+      this.dataView.setItems(this.dataset, this.gridOptions.datasetIdPropertyName);
+    }
+
+    if (this.gridOptions && this.gridOptions.enableTreeData) {
+      if (!this.gridOptions.treeDataOptions || !this.gridOptions.treeDataOptions.columnId) {
+        throw new Error('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName" (depending if your array is hierarchical or flat) for the Tree Data to work properly');
+      }
+
+      // anytime the flat dataset changes, we need to update our hierarchical dataset
+      // this could be triggered by a DataView setItems or updateItem
+      this._eventHandler.subscribe(this.dataView.onRowsChanged, () => {
+        const items = this.dataView.getItems();
+        if (items.length > 0 && !this._isDatasetInitialized) {
+          this.sharedService.hierarchicalDataset = this.SortComparer(items);
+        }
+      });
+    }
+
     if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
       this.onDataviewCreated.emit(this.dataView);
       this.dataView.beginUpdate();
@@ -837,6 +882,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       excelExportService: this.excelExportService,
       exportService: this.exportService,
       extensionService: this.extensionService,
+      extensionUtility: this.extensionUtility,
       filterService: this.filterService,
       gridEventService: this.gridEventService,
       gridStateService: this.gridStateService,
@@ -971,6 +1017,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       this.cd.detectChanges();
     }
+  }
+
+  private SortComparer(flatDataset: any[]): any[] {
+    const dataViewIdIdentifier = this.gridOptions && this.gridOptions.datasetIdPropertyName || 'id';
+    const treeDataOpt: TreeDataOption = this.gridOptions && this.gridOptions.treeDataOptions || { columnId: '' };
+    const treeDataOptions = { ...treeDataOpt, identifierPropName: treeDataOpt.identifierPropName || dataViewIdIdentifier };
+    return convertParentChildArrayToHierarchicalView(flatDataset, treeDataOptions);
   }
 
   /**
