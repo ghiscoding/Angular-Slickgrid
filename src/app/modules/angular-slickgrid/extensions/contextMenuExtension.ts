@@ -18,6 +18,7 @@ import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 import { ExportService } from '../services/export.service';
 import { ExcelExportService } from '../services/excelExport.service';
+import { TreeDataService } from '../services/treeData.service';
 import { exportWithFormatterWhenDefined } from '../services/export-utilities';
 
 // using external non-typed js libraries
@@ -34,6 +35,7 @@ export class ContextMenuExtension implements Extension {
     private exportService: ExportService,
     private extensionUtility: ExtensionUtility,
     private sharedService: SharedService,
+    private treeDataService: TreeDataService,
     @Optional() private translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
@@ -267,10 +269,12 @@ export class ContextMenuExtension implements Extension {
     // -- Grouping Commands
     if (gridOptions && (gridOptions.enableGrouping || gridOptions.enableDraggableGrouping || gridOptions.enableTreeData)) {
       // add a divider (separator) between the top sort commands and the other clear commands
-      menuCustomItems.push({ divider: true, command: '', positionOrder: 54 });
+      if (contextMenu && !contextMenu.hideCopyCellValueCommand) {
+        menuCustomItems.push({ divider: true, command: '', positionOrder: 54 });
+      }
 
       // show context menu: Clear Grouping
-      if (gridOptions && contextMenu && !contextMenu.hideClearAllGrouping) {
+      if (gridOptions && !gridOptions.enableTreeData && contextMenu && !contextMenu.hideClearAllGrouping) {
         const commandName = 'clear-grouping';
         if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           menuCustomItems.push(
@@ -280,17 +284,8 @@ export class ContextMenuExtension implements Extension {
               disabled: false,
               command: commandName,
               positionOrder: 55,
-              action: () => {
-                if (gridOptions.enableTreeData) {
-                  this.extensionUtility.toggleTreeDataCollapse(true);
-                } else {
-                  dataView.collapseAllGroups();
-                }
-              },
+              action: () => dataView.setGrouping([]),
               itemUsabilityOverride: () => {
-                if (gridOptions.enableTreeData) {
-                  return true;
-                }
                 // only enable the command when there's an actually grouping in play
                 const groupingArray = dataView && dataView.getGrouping && dataView.getGrouping();
                 return Array.isArray(groupingArray) && groupingArray.length > 0;
@@ -313,9 +308,9 @@ export class ContextMenuExtension implements Extension {
               positionOrder: 56,
               action: () => {
                 if (gridOptions.enableTreeData) {
-                  this.extensionUtility.toggleTreeDataCollapse(false);
+                  this.treeDataService.toggleTreeDataCollapse(true);
                 } else {
-                  dataView.expandAllGroups();
+                  dataView.collapseAllGroups();
                 }
               },
               itemUsabilityOverride: () => {
@@ -342,8 +337,17 @@ export class ContextMenuExtension implements Extension {
               disabled: false,
               command: commandName,
               positionOrder: 57,
-              action: () => dataView.expandAllGroups(),
+              action: () => {
+                if (gridOptions.enableTreeData) {
+                  this.treeDataService.toggleTreeDataCollapse(false);
+                } else {
+                  dataView.expandAllGroups();
+                }
+              },
               itemUsabilityOverride: () => {
+                if (gridOptions.enableTreeData) {
+                  return true;
+                }
                 // only enable the command when there's an actually grouping in play
                 const groupingArray = dataView && dataView.getGrouping && dataView.getGrouping();
                 return Array.isArray(groupingArray) && groupingArray.length > 0;

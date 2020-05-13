@@ -41,11 +41,13 @@ const gridOptionMock = {
 
 const dataViewStub = {
   getIdxById: jest.fn(),
+  getItemById: jest.fn(),
+  getItems: jest.fn(),
   refresh: jest.fn(),
+  reSort: jest.fn(),
   setFilter: jest.fn(),
   setFilterArgs: jest.fn(),
   sort: jest.fn(),
-  reSort: jest.fn(),
 };
 
 const backendServiceStub = {
@@ -71,7 +73,6 @@ const gridStub = {
   render: jest.fn(),
   setSortColumns: jest.fn(),
 };
-
 
 describe('FilterService', () => {
   let service: FilterService;
@@ -1098,6 +1099,150 @@ describe('FilterService', () => {
       service.setSortColumnIcons(mockSortColumns);
 
       expect(spy).toHaveBeenCalledWith(mockSortColumns);
+    });
+  });
+
+  describe('Tree Data View', () => {
+    beforeEach(() => {
+      gridOptionMock.enableTreeData = true;
+      gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files' };
+    });
+
+    it('should expect "setSortColumns" to have been called after init', () => {
+      const spySetSortCols = jest.spyOn(gridStub, 'setSortColumns');
+      service.init(gridStub);
+
+      expect(spySetSortCols).toHaveBeenCalledWith([{ columnId: 'file', sortAsc: true }]);
+    });
+
+    it('should create a filter and its metadata when "onHeaderRowCellRendered" event is triggered', () => {
+      const spySetSortCols = jest.spyOn(gridStub, 'setSortColumns');
+      const mockArgs = {
+        grid: gridStub,
+        column: { id: 'firstName', field: 'firstName', filterable: true } as Column,
+        node: document.getElementById(DOM_ELEMENT_ID),
+      };
+
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub, dataViewStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs, new Slick.EventData(), gridStub);
+      const columnFilters = service.getColumnFilters();
+      const filterMetadataArray = service.getFiltersMetadata();
+
+      expect(spySetSortCols).toHaveBeenCalledWith([{ columnId: 'file', sortAsc: true }]);
+      expect(columnFilters).toEqual({});
+      expect(filterMetadataArray.length).toBe(1);
+      expect(filterMetadataArray[0]).toContainEntry(['$filterElm', expect.anything()]);
+      expect(filterMetadataArray[0]).toContainEntry(['searchTerms', []]);
+    });
+
+    describe('bindLocalOnFilter method', () => {
+      let dataset = [];
+      let mockColumn1;
+      let mockColumn2;
+      let mockArgs1;
+      let mockArgs2;
+
+      beforeEach(() => {
+        gridStub.getColumns = jest.fn();
+        gridOptionMock.backendServiceApi = undefined;
+        dataset = [
+          { __parentId: null, __treeLevel: 0, dateModified: '2012-03-05T12:44:00.123Z', file: 'bucket-list.txt', id: 24, size: 0.5 },
+          { __hasChildren: true, __parentId: null, __treeLevel: 0, file: 'documents', id: 21 },
+          { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'misc', id: 9 },
+          { __parentId: 9, __treeLevel: 2, dateModified: '2015-02-26T16:50:00.123Z', file: 'todo.txt', id: 10, size: 0.4 },
+          { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'pdf', id: 4 },
+          { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'internet-bill.pdf', id: 6, size: 1.4 },
+          { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-21T10:22:00.123Z', file: 'map.pdf', id: 5, size: 3.1 },
+          { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-01T07:50:00.123Z', file: 'phone-bill.pdf', id: 23, size: 1.4 },
+          { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'txt', id: 2 },
+          { __parentId: 2, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'todo.txt', id: 3, size: 0.7 },
+          { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'xls', id: 7 },
+          { __parentId: 7, __treeLevel: 2, dateModified: '2014-10-02T14:50:00.123Z', file: 'compilation.xls', id: 8, size: 2.3 },
+          { __parentId: null, __treeLevel: 0, dateModified: '2015-03-03T03:50:00.123Z', file: 'something.txt', id: 18, size: 90 },
+        ];
+
+        gridOptionMock.enableFiltering = true;
+        gridOptionMock.backendServiceApi = undefined;
+        mockColumn1 = { id: 'file', name: 'file', field: 'file', filterable: true, filter: { model: Filters.inputText } };
+        mockColumn2 = { id: 'dateModified', name: 'dateModified', field: 'dateModified', filterable: true, filter: { model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }], } };
+        mockArgs1 = { grid: gridStub, column: mockColumn1, node: document.getElementById(DOM_ELEMENT_ID) };
+        mockArgs2 = { grid: gridStub, column: mockColumn2, node: document.getElementById(DOM_ELEMENT_ID) };
+        jest.spyOn(dataViewStub, 'getItems').mockReturnValue(dataset);
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1, mockColumn2]);
+      });
+
+      it('should return True when item is found and its parent is not collapsed', () => {
+        const spyRxjs = jest.spyOn(service.onFilterChanged, 'next');
+        const preFilterSpy = jest.spyOn(service, 'preFilterTreeData');
+        jest.spyOn(dataViewStub, 'getItemById').mockReturnValueOnce({ ...dataset[4], __collapsed: false })
+          .mockReturnValueOnce(dataset[5])
+          .mockReturnValueOnce(dataset[6]);
+
+        const mockItem1 = { __parentId: 4, id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1 };
+
+        service.init(gridStub);
+        service.bindLocalOnFilter(gridStub, dataViewStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
+
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['map'] } };
+        service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['map'] }], true, true, true);
+        const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['map',] }]);
+        expect(output).toBe(true);
+        expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
+        expect(preFilterSpy).toHaveReturnedWith([21, 4, 5]);
+      });
+
+      it('should return False when item is found BUT its parent is collapsed', () => {
+        const spyRxjs = jest.spyOn(service.onFilterChanged, 'next');
+        const preFilterSpy = jest.spyOn(service, 'preFilterTreeData');
+        jest.spyOn(dataViewStub, 'getItemById').mockReturnValueOnce({ ...dataset[4], __collapsed: true })
+          .mockReturnValueOnce(dataset[5])
+          .mockReturnValueOnce(dataset[6]);
+
+        const mockItem1 = { __parentId: 4, id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1 };
+
+        service.init(gridStub);
+        service.bindLocalOnFilter(gridStub, dataViewStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
+
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['map'] } };
+        service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['map'] }], true, true, true);
+        const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['map',] }]);
+        expect(output).toBe(false);
+        expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
+        expect(preFilterSpy).toHaveReturnedWith([21, 4, 5]);
+      });
+
+      it('should return False when item is not found in the dataset', () => {
+        const spyRxjs = jest.spyOn(service.onFilterChanged, 'next');
+        const preFilterSpy = jest.spyOn(service, 'preFilterTreeData');
+        jest.spyOn(dataViewStub, 'getItemById').mockReturnValueOnce({ ...dataset[4] })
+          .mockReturnValueOnce(dataset[5])
+          .mockReturnValueOnce(dataset[6]);
+
+        const mockItem1 = { __parentId: 4, id: 5, file: 'unknown.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1 };
+
+        service.init(gridStub);
+        service.bindLocalOnFilter(gridStub, dataViewStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
+        gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
+
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['unknown'] } };
+        service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['unknown'] }], true, true, true);
+        const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
+
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['unknown',] }]);
+        expect(output).toBe(false);
+        expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
+        expect(preFilterSpy).toHaveReturnedWith([]);
+      });
     });
   });
 });

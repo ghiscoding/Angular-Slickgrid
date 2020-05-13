@@ -146,27 +146,11 @@ export class GridTreeDataParentChildComponent implements OnInit {
   }
 
   collapseAll() {
-    this.angularGrid.extensionUtility.toggleTreeDataCollapse(true);
+    this.angularGrid.treeDataService.toggleTreeDataCollapse(true);
   }
 
   expandAll() {
-    this.angularGrid.extensionUtility.toggleTreeDataCollapse(false);
-  }
-
-  handleOnClick(event: any, args) {
-    if (event && args) {
-      const targetElm = event.target || {};
-      const hasToggleClass = targetElm.className.indexOf('toggle') >= 0 || false;
-      if (hasToggleClass) {
-        const item = this.dataViewObj.getItem(args.row);
-        if (item) {
-          item.__collapsed = !item.__collapsed ? true : false;
-          this.dataViewObj.updateItem(item.id, item);
-          this.gridObj.invalidate();
-        }
-        event.stopImmediatePropagation();
-      }
-    }
+    this.angularGrid.treeDataService.toggleTreeDataCollapse(false);
   }
 
   logExpandedStructure() {

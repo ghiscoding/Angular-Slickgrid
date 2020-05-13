@@ -10,9 +10,9 @@ import {
   GroupingAndColspanService,
   PaginationService,
   ResizerService,
-  SortService
+  SortService,
+  TreeDataService,
 } from '../services';
-import { ExtensionUtility } from '../extensions/extensionUtility';
 
 export interface AngularGridInstance {
   /** Slick DataView object */
@@ -35,9 +35,6 @@ export interface AngularGridInstance {
 
   /** Extension (Controls & Plugins) Service */
   extensionService: ExtensionService;
-
-  /** Extension Utility */
-  extensionUtility: ExtensionUtility;
 
   /** @deprecated, use `extensionService` instead. Plugin and Control Service */
   pluginService: ExtensionService;
@@ -71,4 +68,7 @@ export interface AngularGridInstance {
 
   /** Sort Service */
   sortService: SortService;
+
+  /** Tree Data View Service */
+  treeDataService: TreeDataService;
 }

@@ -19,6 +19,7 @@ import {
   ResizerService,
   SharedService,
   SortService,
+  TreeDataService,
 } from '../../services';
 import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
 import { Filters } from '../../filters';
@@ -145,6 +146,13 @@ const sortServiceStub = {
   dispose: jest.fn(),
   loadGridSorters: jest.fn(),
 } as unknown as SortService;
+
+const treeDataServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  handleOnCellClick: jest.fn(),
+  toggleTreeDataCollapse: jest.fn(),
+} as unknown as TreeDataService;
 
 const mockGroupItemMetaProvider = {
   init: jest.fn(),
@@ -286,6 +294,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       resizerServiceStub,
       sharedService,
       sortServiceStub,
+      treeDataServiceStub,
       translate,
       {} as GridOption
     );

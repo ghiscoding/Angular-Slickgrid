@@ -24,6 +24,7 @@ import {
   ResizerService,
   SharedService,
   SortService,
+  TreeDataService,
 } from '../../services';
 import {
   ExtensionUtility,
@@ -103,6 +104,13 @@ const sortServiceStub = {
   onSortCleared: new Subject<boolean>()
 } as unknown as SortService;
 
+const treeDataServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  handleOnCellClick: jest.fn(),
+  toggleTreeDataCollapse: jest.fn(),
+} as unknown as TreeDataService;
+
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
@@ -149,6 +157,7 @@ describe('App Component', () => {
         { provide: ExtensionUtility, useValue: extensionUtilityStub },
         { provide: GroupingAndColspanService, useValue: groupingAndColspanServiceStub },
         { provide: SortService, useValue: sortServiceStub },
+        { provide: TreeDataService, useValue: treeDataServiceStub },
       ],
       imports: [
         RouterTestingModule,

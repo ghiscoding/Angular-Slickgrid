@@ -138,23 +138,6 @@ export class ExtensionUtility {
     }
   }
 
-  toggleTreeDataCollapse(collapsing: boolean) {
-    if (this.sharedService) {
-      const grid = this.sharedService.grid;
-      const dataView = this.sharedService.dataView;
-      const gridOptions = this.sharedService.gridOptions;
-      const treeDataOptions = gridOptions && gridOptions.treeDataOptions;
-
-      if (gridOptions.enableTreeData) {
-        const items: any[] = dataView.getItems() || [];
-        const collapsedPropName = treeDataOptions && treeDataOptions.collapsedPropName || '__collapsed';
-        items.forEach((item: any) => item[collapsedPropName] = collapsing);
-        dataView.setItems(items);
-        grid.invalidate();
-      }
-    }
-  }
-
   /** Translate the an array of items from an input key and assign to the output key */
   translateItems(items: any[], inputKey: string, outputKey: string) {
     if (Array.isArray(items)) {

@@ -26,7 +26,6 @@
   </div>
 
   <angular-slickgrid gridId="grid28" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
-                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-                     (sgOnClick)="handleOnClick($event.detail.eventData, $event.detail.args)">
+                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>
