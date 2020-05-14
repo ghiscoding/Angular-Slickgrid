@@ -1,4 +1,4 @@
-import { DelimiterType, FileType, GridOption, OperatorType } from './models/index';
+import { Column, DelimiterType, FileType, GridOption, OperatorType } from './models/index';
 import { Filters } from './filters/index';
 
 /** Global Grid Options Defaults */
@@ -133,7 +133,16 @@ export const GlobalGridOptions: Partial<GridOption> = {
     iconToggleFilterCommand: 'fa fa-random',
     iconTogglePreHeaderCommand: 'fa fa-random',
     menuWidth: 16,
-    resizeOnShowHeaderRow: true
+    resizeOnShowHeaderRow: true,
+    useClickToRepositionMenu: false, // use icon location to reposition instead
+    headerColumnValueExtractor: (column: Column) => {
+      const headerGroup = column && column.columnGroup || '';
+      if (headerGroup) {
+        // when using Column Header Grouping, we'll prefix the column group title
+        return headerGroup + ' - ' + column.name;
+      }
+      return column && column.name || '';
+    }
   },
   headerMenu: {
     autoAlign: true,

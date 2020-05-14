@@ -4,6 +4,9 @@ import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
 
 export interface GridMenu {
+  /** Defaults to 0 (auto), minimum width of grid menu content (command, column list) */
+  contentMinWidth?: number;
+
   /** Array of Custom Items (title, command, disabled, ...) */
   customItems?: Array<GridMenuItem | 'divider'>;
 
@@ -88,7 +91,7 @@ export interface GridMenu {
   /** Defaults to False, which leads to leaving the menu open after a click */
   leaveOpen?: boolean;
 
-  /** Defaults to 16 pixels (only the number), which is the width in pixels of the Grid Menu icon */
+  /** Defaults to 16 pixels (only the number), which is the width in pixels of the Grid Menu icon container */
   menuWidth?: number;
 
   /** Defaults to False, which will resize the Header Row and remove the width of the Grid Menu icon from it's total width. */
@@ -100,8 +103,14 @@ export interface GridMenu {
   /** Same as "syncResizeTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   syncResizeTitleKey?: string;
 
+  /** Defaults to true, Use the Click offset to reposition the Grid Menu, when set to False it will use the icon offset to reposition the grid menu */
+  useClickToRepositionMenu?: boolean;
+
   // --
   // action/override callbacks
+
+  /** Callback method to override the column name output used by the ColumnPicker/GridMenu. */
+  headerColumnValueExtractor?: (column: Column) => string;
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
   menuUsabilityOverride?: (args: MenuCallbackArgs) => boolean;
