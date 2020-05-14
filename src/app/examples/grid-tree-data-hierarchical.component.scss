@@ -1,0 +1,22 @@
+// You can change the SVG color using their associated SASS $icon-color-mdi-XYZ
+$icon-width-mdi-plus: 14px;
+$icon-width-mdi-arrow-collapse: 14px;
+$icon-width-mdi-arrow-expand: 14px;
+$icon-width-mdi-close-thick: 12px;
+$icon-color-mdi-file-pdf-outline: #f14668;
+$icon-color-mdi-file-music-outline: #3298dc;
+$icon-color-mdi-file-excel-outline: #1E9F75;
+$icon-color-mdi-folder: orange;
+$icon-color-mdi-folder-open: orange;
+
+/* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
+@import '../modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss';
+@import url(//db.onlinewebfonts.com/c/0fadaa21fcac88ceee0bb8da992c221b?family=SalesforceSans-Regular);
+
+.icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    height: 1.5rem;
+    width: 1.5rem;
+}

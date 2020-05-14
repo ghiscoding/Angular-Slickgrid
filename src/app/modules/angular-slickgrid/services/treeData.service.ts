@@ -7,10 +7,10 @@ declare const Slick: any;
 
 @Injectable()
 export class TreeDataService {
-  _grid: any;
+  private _grid: any;
   private _eventHandler: SlickEventHandler;
 
-  constructor(private sharedService: SharedService) {
+  constructor() {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -63,18 +63,15 @@ export class TreeDataService {
   }
 
   toggleTreeDataCollapse(collapsing: boolean) {
-    if (this.sharedService) {
-      const grid = this.sharedService.grid;
-      const dataView = this.sharedService.dataView;
-      const gridOptions = this.sharedService.gridOptions;
-      const treeDataOptions = gridOptions && gridOptions.treeDataOptions;
+    if (this.gridOptions) {
+      const treeDataOptions = this.gridOptions.treeDataOptions;
 
-      if (gridOptions.enableTreeData) {
-        const items: any[] = dataView.getItems() || [];
+      if (this.gridOptions.enableTreeData) {
+        const items: any[] = this.dataView.getItems() || [];
         const collapsedPropName = treeDataOptions && treeDataOptions.collapsedPropName || '__collapsed';
         items.forEach((item: any) => item[collapsedPropName] = collapsing);
-        dataView.setItems(items);
-        grid.invalidate();
+        this.dataView.setItems(items);
+        this._grid.invalidate();
       }
     }
   }

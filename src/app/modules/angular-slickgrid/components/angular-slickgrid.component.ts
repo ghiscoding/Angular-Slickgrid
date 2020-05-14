@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
-import { titleCase, unsubscribeAllObservables, convertParentChildArrayToHierarchicalView } from './../services/utilities';
+import { convertParentChildArrayToHierarchicalView, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
   AngularGridInstance,
@@ -146,6 +146,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     gridOptions: GridOption;
   };
   subscriptions: Subscription[] = [];
+  private _datasetHierarchical: any[];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
@@ -194,7 +195,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   @Input()
   get datasetHierarchical(): any[] {
-    return this.dataView.getItems();
+    return this.sharedService.hierarchicalDataset;
   }
   set datasetHierarchical(hierarchicalDataset: any[]) {
     this.sharedService.hierarchicalDataset = hierarchicalDataset;
@@ -204,10 +205,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
-    if (this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
-      this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
-      this.sortService.processTreeDataInitialSort();
-    }
+    setTimeout(() => {
+      if (this.dataView && this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
+        this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
+        this.sortService.processTreeDataInitialSort();
+      }
+    }, 1);
   }
 
   get elementRef(): ElementRef {

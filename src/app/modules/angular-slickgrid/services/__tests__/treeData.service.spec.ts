@@ -1,11 +1,10 @@
-import { GridOption, SlickEventHandler, Column } from "../../models";
+import { GridOption, SlickEventHandler, Column } from '../../models/index';
 import { TreeDataService } from '../treeData.service';
-import { SharedService } from '../shared.service';
 
 declare var Slick: any;
 
-const gridOptionMock = {
-  enablePagination: true,
+const gridOptionsMock = {
+  enableTreeData: true,
   treeDataOptions: {
     columnId: 'file'
   }
@@ -13,6 +12,7 @@ const gridOptionMock = {
 
 const dataViewStub = {
   getItem: jest.fn(),
+  getItems: jest.fn(),
   refresh: jest.fn(),
   sort: jest.fn(),
   reSort: jest.fn(),
@@ -24,7 +24,7 @@ const gridStub = {
   autosizeColumns: jest.fn(),
   getColumnIndex: jest.fn(),
   getData: jest.fn(),
-  getOptions: () => gridOptionMock,
+  getOptions: () => gridOptionsMock,
   getColumns: jest.fn(),
   getSortColumns: jest.fn(),
   invalidate: jest.fn(),
@@ -37,15 +37,14 @@ const gridStub = {
 describe('SortService', () => {
   let service: TreeDataService;
   let slickgridEventHandler: SlickEventHandler;
-  const sharedService = new SharedService();
 
   beforeEach(() => {
-    service = new TreeDataService(sharedService);
+    service = new TreeDataService();
     slickgridEventHandler = service.eventHandler;
+    jest.spyOn(gridStub, 'getData').mockReturnValue(dataViewStub);
   });
 
   afterEach(() => {
-    delete gridOptionMock.backendServiceApi;
     jest.clearAllMocks();
     service.dispose();
   });
@@ -121,8 +120,7 @@ describe('SortService', () => {
 
     it('should toggle the collapsed custom class name to False when that custom class name was found to be True prior', () => {
       mockRowData.customCollapsed = true;
-      gridOptionMock.treeDataOptions.collapsedPropName = 'customCollapsed'
-      jest.spyOn(gridStub, 'getData').mockReturnValue(dataViewStub);
+      gridOptionsMock.treeDataOptions.collapsedPropName = 'customCollapsed';
       const spyGetItem = jest.spyOn(dataViewStub, 'getItem').mockReturnValue(mockRowData);
       const spyUptItem = jest.spyOn(dataViewStub, 'updateItem');
       const spyInvalidate = jest.spyOn(gridStub, 'invalidate');
@@ -137,9 +135,60 @@ describe('SortService', () => {
       expect(spyInvalidate).toHaveBeenCalled();
       expect(spyUptItem).toHaveBeenCalledWith(123, { ...mockRowData, customCollapsed: false });
     });
-  });
 
-  describe('toggleTreeDataCollapse method', () => {
-    // toggleTreeDataCollapse is all tested in the ContextMenuExtension unit test
+    describe('toggleTreeDataCollapse method', () => {
+      let itemsMock;
+
+      beforeEach(() => {
+        itemsMock = [{ file: 'myFile.txt', size: 0.5 }, { file: 'myMusic.txt', size: 5.3 }];
+        gridOptionsMock.treeDataOptions = {
+          columnId: 'file'
+        };
+        jest.clearAllMocks();
+      });
+
+      it('should collapse all items when calling the method with collapsing True', () => {
+        const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(itemsMock);
+        const dataSetItemsSpy = jest.spyOn(dataViewStub, 'setItems');
+
+        service.init(gridStub);
+        service.toggleTreeDataCollapse(true);
+
+        expect(dataGetItemsSpy).toHaveBeenCalled();
+        expect(dataSetItemsSpy).toHaveBeenCalledWith([
+          { __collapsed: true, file: 'myFile.txt', size: 0.5, },
+          { __collapsed: true, file: 'myMusic.txt', size: 5.3, },
+        ]);
+      });
+
+      it('should collapse all items with a custom collapsed property when calling the method with collapsing True', () => {
+        gridOptionsMock.treeDataOptions.collapsedPropName = 'customCollapsed';
+        const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(itemsMock);
+        const dataSetItemsSpy = jest.spyOn(dataViewStub, 'setItems');
+
+        service.init(gridStub);
+        service.toggleTreeDataCollapse(true);
+
+        expect(dataGetItemsSpy).toHaveBeenCalled();
+        expect(dataSetItemsSpy).toHaveBeenCalledWith([
+          { customCollapsed: true, file: 'myFile.txt', size: 0.5, },
+          { customCollapsed: true, file: 'myMusic.txt', size: 5.3, },
+        ]);
+      });
+
+      it('should expand all items when calling the method with collapsing False', () => {
+        const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(itemsMock);
+        const dataSetItemsSpy = jest.spyOn(dataViewStub, 'setItems');
+
+        service.init(gridStub);
+        service.toggleTreeDataCollapse(false);
+
+        expect(dataGetItemsSpy).toHaveBeenCalled();
+        expect(dataSetItemsSpy).toHaveBeenCalledWith([
+          { __collapsed: false, file: 'myFile.txt', size: 0.5, },
+          { __collapsed: false, file: 'myMusic.txt', size: 5.3, },
+        ]);
+      });
+    });
   });
 });

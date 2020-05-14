@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -8,22 +6,27 @@ import {
   Filters,
   Formatters,
   GridOption,
-  GridStateChange,
 } from './../modules/angular-slickgrid';
 
-function randomBetween(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 const NB_ITEMS = 200;
 
 @Component({
-  templateUrl: './grid-tree-data-parent-child.component.html'
+  templateUrl: './grid-tree-data-parent-child.component.html',
+  styleUrls: ['grid-tree-data-parent-child.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataParentChildComponent implements OnInit {
-  title = 'Example 28: Tree Data <small>(from a flat dataset with <code>parentId</code> references)</small>';
-  subTitle = `
-    Tree Data View with Parent/Child references and defined Tree Level "indent" property.
-  `;
+  title = 'Example 28: Tree Data <small>(from a flat dataset with <code>parentId</code> references) - Material Design Styling Theme</small>';
+  subTitle = `<ul>
+    <li>Styling - Material Theme - (you might need to refresh to see correct styling because of the browser cache)</li>
+    <li>It is assumed that your dataset will have Parent/Child references AND also Tree Level (indent) property.</li>
+    <li>Styling - Salesforce Theme</li>
+    <ul>
+      <li>The Material Design Theme was created with SASS and compiled in CSS (slickgrid-theme-material.scss)</li>
+      <li>We use a small subset of <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a></li>
+      <li>you might need to refresh the page to clear the browser cache and see the correct theme</li>
+    </ul>
+  </ul>`;
 
   angularGrid: AngularGridInstance;
   dataViewObj: any;
@@ -32,9 +35,8 @@ export class GridTreeDataParentChildComponent implements OnInit {
   columnDefinitions: Column[];
   dataset: any[];
   datasetHierarchical: any[] = [];
-  durationOrderByCount = false;
 
-  constructor(private http: HttpClient, private translate: TranslateService) { }
+  constructor() { }
 
   ngOnInit(): void {
     // define the grid options & columns and then create the grid itself
@@ -95,6 +97,38 @@ export class GridTreeDataParentChildComponent implements OnInit {
         columnId: 'title',
         levelPropName: 'indent',
         parentPropName: 'parentId'
+      },
+      // change header/cell row height for material design theme
+      headerRowHeight: 45,
+      rowHeight: 40,
+
+      // use Material Design SVG icons
+      contextMenu: {
+        iconCollapseAllGroupsCommand: 'mdi mdi-arrow-collapse',
+        iconExpandAllGroupsCommand: 'mdi mdi-arrow-expand',
+        iconClearGroupingCommand: 'mdi mdi-close',
+        iconCopyCellValueCommand: 'mdi mdi-content-copy',
+        iconExportCsvCommand: 'mdi mdi-download',
+        iconExportExcelCommand: 'mdi mdi-file-excel-outline text-success has-text-success',
+        iconExportTextDelimitedCommand: 'mdi mdi-download',
+      },
+      gridMenu: {
+        iconCssClass: 'mdi mdi-menu',
+        iconClearAllFiltersCommand: 'mdi mdi-filter-remove-outline',
+        iconClearAllSortingCommand: 'mdi mdi-swap-vertical text-danger',
+        iconExportCsvCommand: 'mdi mdi-download',
+        iconExportExcelCommand: 'mdi mdi-file-excel-outline text-success has-text-success',
+        iconExportTextDelimitedCommand: 'mdi mdi-download',
+        iconRefreshDatasetCommand: 'mdi mdi-sync',
+        iconToggleFilterCommand: 'mdi mdi-flip-vertical',
+        iconTogglePreHeaderCommand: 'mdi mdi-flip-vertical',
+      },
+      headerMenu: {
+        iconClearFilterCommand: 'mdi mdi mdi-filter-remove-outline text-danger',
+        iconClearSortCommand: 'mdi mdi-swap-vertical',
+        iconSortAscCommand: 'mdi mdi-sort-ascending',
+        iconSortDescCommand: 'mdi mdi-flip-v mdi-sort-descending',
+        iconColumnHideCommand: 'mdi mdi-close',
       }
     };
   }
@@ -133,16 +167,18 @@ export class GridTreeDataParentChildComponent implements OnInit {
     this.dataViewObj.addItem(newItem);
     this.dataset = this.dataViewObj.getItems();
 
-    // force a resort
+    // force a resort because of the tree data structure
     const titleColumn = this.columnDefinitions.find((col) => col.id === 'title');
     this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataViewObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
 
     // update dataset and re-render (invalidate) the grid
     this.gridObj.invalidate();
 
-    // scroll to the new row
-    const rowIndex = this.dataViewObj.getIdxById(newItem.id);
-    this.gridObj.scrollRowIntoView(rowIndex, false);
+    // scroll into the position, after insertion cycle, where the item was added
+    setTimeout(() => {
+      const rowIndex = this.dataViewObj.getRowById(newItem.id);
+      this.gridObj.scrollRowIntoView(rowIndex + 3);
+    }, 0);
   }
 
   collapseAll() {
