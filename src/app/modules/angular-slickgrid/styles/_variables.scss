@@ -65,8 +65,8 @@ $preheader-border-left:                         none !default;
 $preheader-border-left-first-element:           none !default;
 $preheader-border-right:                        none !default;
 $preheader-border-right-last-element:           none !default;
-$preheader-border-bottom:                       0 !default;
-$preheader-border-top:                          0 !default;
+$preheader-border-bottom:                       none !default;
+$preheader-border-top:                          none !default;
 $preheader-font-size:                           $font-size-base + 3px !default;
 $preheader-height:                              25px !default; /* full height is calculated with cell padding + borders (25px + 5px + 0px + 0px) = 30px must be set as preHeaderPanelHeight */
 $preheader-grouped-title-display:               inline-grid !default;

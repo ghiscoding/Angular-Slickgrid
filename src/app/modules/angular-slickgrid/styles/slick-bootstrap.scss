@@ -265,7 +265,7 @@
     background: none;
     background-color: $header-background-color;
     width: calc(100% - #{$header-scroll-width-to-remove});
-    height: calc(#{$preheader-height} + #{$cell-padding-top-bottom} - #{$preheader-border-top} - #{$preheader-border-bottom});
+    // height: calc(#{$preheader-height} + #{$cell-padding-top-bottom} - #{$preheader-border-top} - #{$preheader-border-bottom});
 
     .slick-header-sortable {
       .slick-column-name {
