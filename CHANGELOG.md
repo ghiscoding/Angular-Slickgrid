@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.18.6](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.5...v2.18.6) (2020-05-19)
+
+
+### Bug Fixes
+
+* **styling:** remove fixed header height ([9cef192](https://github.com/ghiscoding/angular-slickgrid/commit/9cef192a93aa9152f4954eca1ef4ac3c0f7a2d96))
+
 ### [2.18.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.4...v2.18.5) (2020-05-19)
 
 ### [2.18.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.3...v2.18.4) (2020-05-19)
