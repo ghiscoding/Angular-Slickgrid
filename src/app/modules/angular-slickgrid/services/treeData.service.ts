@@ -10,8 +10,16 @@ export class TreeDataService {
   private _grid: any;
   private _eventHandler: SlickEventHandler;
 
-  constructor() {
+  constructor(private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
+  }
+
+  get dataset(): any[] {
+    return this.dataView && this.dataView.getItems && this.dataView.getItems();
+  }
+
+  get datasetHierarchical(): any[] | undefined {
+    return this.sharedService.hierarchicalDataset;
   }
 
   get dataView(): any {

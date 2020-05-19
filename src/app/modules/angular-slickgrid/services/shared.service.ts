@@ -97,12 +97,12 @@ export class SharedService {
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  get hierarchicalDataset(): Column[] {
+  get hierarchicalDataset(): any[] {
     return this._hierarchicalDataset;
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  set hierarchicalDataset(hierarchicalDataset: Column[]) {
+  set hierarchicalDataset(hierarchicalDataset: any[]) {
     this._hierarchicalDataset = hierarchicalDataset;
   }
 }

@@ -16,13 +16,16 @@ const NB_ITEMS = 200;
   encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataParentChildComponent implements OnInit {
-  title = 'Example 28: Tree Data <small>(from a flat dataset with <code>parentId</code> references) - Material Design Styling Theme</small>';
+  title = 'Example 28: Tree Data <small>(from a flat dataset with <code>parentId</code> references)</small>';
   subTitle = `<ul>
-    <li>Styling - Material Theme - (you might need to refresh to see correct styling because of the browser cache)</li>
     <li>It is assumed that your dataset will have Parent/Child references AND also Tree Level (indent) property.</li>
-    <li>Styling - Salesforce Theme</li>
     <ul>
-      <li>The Material Design Theme was created with SASS and compiled in CSS (slickgrid-theme-material.scss)</li>
+      <li>If you do not have the Tree Level (indent), you could call "convertParentChildArrayToHierarchicalView()" then call "convertHierarchicalViewToParentChildArray()"</li>
+      <li>You could also pass the result of "convertParentChildArrayToHierarchicalView()" to "dataset-hierarchical.bind" as defined in the next Hierarchical Example</li>
+    </ul>
+    <li><b>Styling - Material Theme</b></li>
+    <ul>
+      <li>The Material Theme was created with SASS and compiled in CSS (<a href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/slickgrid-theme-material.scss" target="_blank">slickgrid-theme-material.scss</a>), you can override any of its SASS variables</li>
       <li>We use a small subset of <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a></li>
       <li>you might need to refresh the page to clear the browser cache and see the correct theme</li>
     </ul>
@@ -159,23 +162,22 @@ export class GridTreeDataParentChildComponent implements OnInit {
       parentId: parentItemFound.id,
       title: `Task ${newId}`,
       duration: '1 day',
-      percentComplete: 0,
+      percentComplete: Math.round(Math.random() * 100),
       start: new Date(),
       finish: new Date(),
       effortDriven: false
     };
     this.dataViewObj.addItem(newItem);
-    this.dataset = this.dataViewObj.getItems();
+    const dataset = this.dataViewObj.getItems();
+    this.dataset = [...dataset]; // make a copy to trigger a dataset refresh
 
+    // add setTimeout to wait a full cycle because datasetChanged needs a full cycle
     // force a resort because of the tree data structure
-    const titleColumn = this.columnDefinitions.find((col) => col.id === 'title');
-    this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataViewObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
-
-    // update dataset and re-render (invalidate) the grid
-    this.gridObj.invalidate();
-
-    // scroll into the position, after insertion cycle, where the item was added
     setTimeout(() => {
+      const titleColumn = this.columnDefinitions.find(col => col.id === 'title');
+      this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataViewObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
+
+      // scroll into the position, after insertion cycle, where the item was added
       const rowIndex = this.dataViewObj.getRowById(newItem.id);
       this.gridObj.scrollRowIntoView(rowIndex + 3);
     }, 0);
@@ -190,11 +192,11 @@ export class GridTreeDataParentChildComponent implements OnInit {
   }
 
   logExpandedStructure() {
-    console.log('exploded array', this.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
+    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
   }
 
   logFlatStructure() {
-    console.log('flat array', this.dataViewObj.getItems() /* , JSON.stringify(outputFlatArray, null, 2) */);
+    console.log('flat array', this.angularGrid.treeDataService.dataset /* , JSON.stringify(outputFlatArray, null, 2) */);
   }
 
   mockData(count: number) {

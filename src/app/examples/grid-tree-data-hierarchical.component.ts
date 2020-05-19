@@ -16,12 +16,12 @@ import {
   encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataHierarchicalComponent implements OnInit {
-  title = 'Example 29: Tree Data <small>(from a Hierarchical Dataset) - Salesforce Styling Theme</small>';
+  title = 'Example 29: Tree Data <small>(from a Hierarchical Dataset)</small>';
   subTitle = `<ul>
     <li><b>NOTE:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
-    <li>Styling - Salesforce Theme</li>
+    <li><b>Styling - Salesforce Theme</b></li>
     <ul>
-      <li>The Salesforce Theme was created with SASS and compiled in CSS (slickgrid-theme-salesforce.scss)</li>
+      <li>The Salesforce Theme was created with SASS and compiled in CSS (<a href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss" target="_blank">slickgrid-theme-salesforce.scss</a>), you can override any of its SASS variables</li>
       <li>We use a small subset of <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a></li>
       <li>you might need to refresh the page to clear the browser cache and see the correct theme</li>
     </ul>
@@ -127,12 +127,11 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   }
 
   clearSearch() {
-    this.searchFile(new KeyboardEvent('keyup', { code: '', bubbles: true, cancelable: true }));
-    document.querySelector<HTMLInputElement>('input.search').value = '';
+    this.searchString = '';
+    this.updateFilter();
   }
 
-  searchFile(event: KeyboardEvent) {
-    this.searchString = (event.target as HTMLInputElement).value || '';
+  searchStringChanged() {
     this.updateFilter();
   }
 
@@ -220,11 +219,11 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   }
 
   logExpandedStructure() {
-    console.log('exploded array', this.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
+    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
   }
 
   logFlatStructure() {
-    console.log('flat array', this.dataViewObj.getItems() /* , JSON.stringify(outputFlatArray, null, 2) */);
+    console.log('flat array', this.angularGrid.treeDataService.dataset /* , JSON.stringify(outputFlatArray, null, 2) */);
   }
 
   mockDataset() {

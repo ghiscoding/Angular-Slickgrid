@@ -1,4 +1,5 @@
 import { GridOption, SlickEventHandler, Column } from '../../models/index';
+import { SharedService } from '../shared.service';
 import { TreeDataService } from '../treeData.service';
 
 declare var Slick: any;
@@ -37,9 +38,10 @@ const gridStub = {
 describe('SortService', () => {
   let service: TreeDataService;
   let slickgridEventHandler: SlickEventHandler;
+  const sharedService = new SharedService();
 
   beforeEach(() => {
-    service = new TreeDataService();
+    service = new TreeDataService(sharedService);
     slickgridEventHandler = service.eventHandler;
     jest.spyOn(gridStub, 'getData').mockReturnValue(dataViewStub);
   });
@@ -57,6 +59,23 @@ describe('SortService', () => {
     const spy = jest.spyOn(slickgridEventHandler, 'unsubscribeAll');
     service.dispose();
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should return dataset when defined', () => {
+    const mockDataset = [{ file: 'documents' }, { file: 'vacation.txt' }];
+    const spyGetItem = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockDataset);
+
+    service.init(gridStub);
+    const output = service.dataset;
+
+    expect(spyGetItem).toHaveBeenCalled();
+    expect(output).toEqual(mockDataset);
+  });
+
+  it('should return hierarchical dataset when defined', () => {
+    const mockHierarchical = [{ file: 'documents', files: [{ file: 'vacation.txt' }] }];
+    jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(mockHierarchical);
+    expect(service.datasetHierarchical).toEqual(mockHierarchical);
   });
 
   describe('handleOnCellClick method', () => {

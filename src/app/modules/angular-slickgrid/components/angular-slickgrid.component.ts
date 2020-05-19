@@ -146,7 +146,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     gridOptions: GridOption;
   };
   subscriptions: Subscription[] = [];
-  private _datasetHierarchical: any[];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
@@ -197,8 +196,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   get datasetHierarchical(): any[] {
     return this.sharedService.hierarchicalDataset;
   }
-  set datasetHierarchical(hierarchicalDataset: any[]) {
-    this.sharedService.hierarchicalDataset = hierarchicalDataset;
+  set datasetHierarchical(newHierarchicalDataset: any[]) {
+    this.sharedService.hierarchicalDataset = newHierarchicalDataset;
 
     if (this.filterService && this.filterService.clearFilters) {
       this.filterService.clearFilters();
@@ -446,7 +445,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param showing
    */
   showHeaderRow(showing = true) {
-    this.grid.setHeaderRowVisibility(showing);
+    this.grid.setHeaderRowVisibility(showing, false);
     return showing;
   }
 
@@ -580,17 +579,31 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         };
       });
 
-      // without this, filtering data with local dataset will not always show correctly
-      // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
-      // see commit: https://github.com/ghiscoding/Angular-Slickgrid/commit/bb62c0aa2314a5d61188ff005ccb564577f08805
-      if (gridOptions && gridOptions.enableFiltering && !gridOptions.enableRowDetailView) {
-        this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
+      // when dealing with Tree Data View, make sure we have necessary tree data options
+      if (this.gridOptions && this.gridOptions.enableTreeData && (!this.gridOptions.treeDataOptions || !this.gridOptions.treeDataOptions.columnId)) {
+        throw new Error('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName" (depending if your array is hierarchical or flat) for the Tree Data to work properly');
+      }
+
+      this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
+        // when dealing with Tree Data, anytime the flat dataset changes, we need to update our hierarchical dataset
+        // this could be triggered by a DataView setItems or updateItem
+        if (this.gridOptions && this.gridOptions.enableTreeData) {
+          const items = this.dataView.getItems();
+          if (Array.isArray(items) && items.length > 0 && !this._isDatasetInitialized) {
+            this.sharedService.hierarchicalDataset = this.treeDataSortComparer(items);
+          }
+        }
+
+        // filtering data with local dataset will not always show correctly unless we call this updateRow/render
+        // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
+        // see commit: https://github.com/ghiscoding/Angular-Slickgrid/commit/bb62c0aa2314a5d61188ff005ccb564577f08805
+        if (gridOptions && gridOptions.enableFiltering && !gridOptions.enableRowDetailView) {
           if (args && args.rows && Array.isArray(args.rows)) {
-            args.rows.forEach((row) => grid.updateRow(row));
+            args.rows.forEach((row: any) => grid.updateRow(row));
             grid.render();
           }
-        });
-      }
+        }
+      });
     }
 
     // does the user have a colspan callback?
@@ -768,22 +781,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.dataView.beginUpdate();
       this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
-
-      // when dealing with Tree Data View
-      if (this.gridOptions && this.gridOptions.enableTreeData) {
-        if (!this.gridOptions.treeDataOptions || !this.gridOptions.treeDataOptions.columnId) {
-          throw new Error('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName" (depending if your array is hierarchical or flat) for the Tree Data to work properly');
-        }
-
-        // anytime the flat dataset changes, we need to update our hierarchical dataset
-        // this could be triggered by a DataView setItems or updateItem
-        this._eventHandler.subscribe(this.dataView.onRowsChanged, () => {
-          const items = this.dataView.getItems();
-          if (items.length > 0 && !this._isDatasetInitialized) {
-            this.sharedService.hierarchicalDataset = this.treeDataSortComparer(items);
-          }
-        });
-      }
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
