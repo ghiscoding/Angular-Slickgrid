@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.12](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.11...v2.17.12) (2020-05-19)
+
+
+### Features
+
+* **editor:** add new Dual Input Editor & extract all Editor Validators ([#446](https://github.com/ghiscoding/angular-slickgrid/issues/446)) ([06f5dc9](https://github.com/ghiscoding/angular-slickgrid/commit/06f5dc9ba4826e2b018e71d4991ba04f6bec17a4))
+* **extension:** add column position option for checkbox row selector ([fc72ba0](https://github.com/ghiscoding/angular-slickgrid/commit/fc72ba0217712f5c085b2274dd0dbf3f41a6b6d4))
+* **extension:** add column position option for Row Detail icon ([#419](https://github.com/ghiscoding/angular-slickgrid/issues/419)) ([36bdcd1](https://github.com/ghiscoding/angular-slickgrid/commit/36bdcd1e9ff9cd6e931967445240e234dad86bbd))
+* **extension:** add latest slickgrid with RowMove improvements ([#428](https://github.com/ghiscoding/angular-slickgrid/issues/428)) ([4f4b231](https://github.com/ghiscoding/angular-slickgrid/commit/4f4b2316c668f23460212de5b7480d7f7f72dce4)), closes [#256](https://github.com/ghiscoding/angular-slickgrid/issues/256)
+* **grouping:** add missing Grouping interface properties, closes [#430](https://github.com/ghiscoding/angular-slickgrid/issues/430) ([#432](https://github.com/ghiscoding/angular-slickgrid/issues/432)) ([fe7a65a](https://github.com/ghiscoding/angular-slickgrid/commit/fe7a65add869f7b708dc8dbb75d3c39b5e753a8c))
+* **query:** add queryFieldNameGetterFn callback know which field to use ([#434](https://github.com/ghiscoding/angular-slickgrid/issues/434)) ([0d5a150](https://github.com/ghiscoding/angular-slickgrid/commit/0d5a150c324e000e1de5bc7ebeb846c6c48ba122))
+* **sort:** add valueCouldBeUndefined column flag to help sorting ([#429](https://github.com/ghiscoding/angular-slickgrid/issues/429)) ([dcd7a41](https://github.com/ghiscoding/angular-slickgrid/commit/dcd7a410602313dc65559091a0945cca599f8269))
+* **style:** add Sort icon hint on hover when column is sortable ([#435](https://github.com/ghiscoding/angular-slickgrid/issues/435)) ([a746c2d](https://github.com/ghiscoding/angular-slickgrid/commit/a746c2d5e3f78a5c7f759ae94b2d0c1c698231ee))
+* **styling:** add CSS/SASS Material Design & Salesforce styling themes ([#454](https://github.com/ghiscoding/angular-slickgrid/issues/454)) ([0030763](https://github.com/ghiscoding/angular-slickgrid/commit/00307637bed9dd575f250af3919a4949f6902ce3))
+* **translate:** add namespace prefix + separator grid option ([#462](https://github.com/ghiscoding/angular-slickgrid/issues/462)) ([c23370e](https://github.com/ghiscoding/angular-slickgrid/commit/c23370ed12e36edd64e1d897210f09ec8f2827f3))
+* **treeData:** add new Tree Data View feature, closes [#178](https://github.com/ghiscoding/angular-slickgrid/issues/178) ([#455](https://github.com/ghiscoding/angular-slickgrid/issues/455)) ([3250bde](https://github.com/ghiscoding/angular-slickgrid/commit/3250bde0696a81913d196a2f97dfca5f6e53ab5b))
+
+
+### Bug Fixes
+
+* **editor:** disregard Flatpickr error on Date Editor and fix output format ([#445](https://github.com/ghiscoding/angular-slickgrid/issues/445)) ([96e2973](https://github.com/ghiscoding/angular-slickgrid/commit/96e2973745b77237306fdbb7cd3ed504224a5147))
+* **export:** add grouped header title (from pre-header) into exports ([#436](https://github.com/ghiscoding/angular-slickgrid/issues/436)) ([a315f85](https://github.com/ghiscoding/angular-slickgrid/commit/a315f859ca842db7ef8cb53205bfd7117c802f48))
+* **export:** remove unsupported file type, closes [#452](https://github.com/ghiscoding/angular-slickgrid/issues/452) ([#458](https://github.com/ghiscoding/angular-slickgrid/issues/458)) ([c00b6ab](https://github.com/ghiscoding/angular-slickgrid/commit/c00b6ab3915eb02dafed48d9bf51fa6b29e285f3))
+* **filter:** string filter should also work when using Contains ([#427](https://github.com/ghiscoding/angular-slickgrid/issues/427)) ([2c0765b](https://github.com/ghiscoding/angular-slickgrid/commit/2c0765bcc95c22620645d82810e021fc9f622d93))
+* **filter:** when entering filter operator it shouldn't do any filtering ([#431](https://github.com/ghiscoding/angular-slickgrid/issues/431)) ([9d53315](https://github.com/ghiscoding/angular-slickgrid/commit/9d5331505fab44c5f1d977631d85092c84329675))
+* **formatter:** exportWithFormatter should work with undefined item prop ([#457](https://github.com/ghiscoding/angular-slickgrid/issues/457)) ([3cfcab1](https://github.com/ghiscoding/angular-slickgrid/commit/3cfcab1f63b1bfa5625bceb4151e0ac6aa02675c))
+* **gridMenu:** column picker list should include grouped header titles ([#460](https://github.com/ghiscoding/angular-slickgrid/issues/460)) ([e4a34a0](https://github.com/ghiscoding/angular-slickgrid/commit/e4a34a0dff7c330afaa746b3b79a4ce7e0425a7d))
+* **gridMenu:** command "Togge Filter" disappeared, fixes [#438](https://github.com/ghiscoding/angular-slickgrid/issues/438) ([#448](https://github.com/ghiscoding/angular-slickgrid/issues/448)) ([b10c5be](https://github.com/ghiscoding/angular-slickgrid/commit/b10c5bee31129263df9fcd7c17c5a6e4e06eb9d1))
+* **gridService:** crud methods should support custom dataset id ([#453](https://github.com/ghiscoding/angular-slickgrid/issues/453)) ([2c91f35](https://github.com/ghiscoding/angular-slickgrid/commit/2c91f353537de738d71e7d7fd97151831d167943))
+* **pagination:** passing custom pagination sizes should work, fixes [#456](https://github.com/ghiscoding/angular-slickgrid/issues/456) ([#459](https://github.com/ghiscoding/angular-slickgrid/issues/459)) ([0367625](https://github.com/ghiscoding/angular-slickgrid/commit/0367625b926ea05d4afee970ce0b02c5939d15e2))
+* **resizer:** remove scrollbar measure compensate patch ([#424](https://github.com/ghiscoding/angular-slickgrid/issues/424)) ([bca1f0b](https://github.com/ghiscoding/angular-slickgrid/commit/bca1f0b5520cd9ed1b97ce1730feaeeda7953cb4))
+* **rowDetail:** use latest SlickGrid to fix issue with id, fixes [#440](https://github.com/ghiscoding/angular-slickgrid/issues/440) ([#449](https://github.com/ghiscoding/angular-slickgrid/issues/449)) ([8f16559](https://github.com/ghiscoding/angular-slickgrid/commit/8f1655940d9359b17307bc874301cc7ff86d0ecd))
+* **sort:** header menu sorting should include columnId property ([0c47038](https://github.com/ghiscoding/angular-slickgrid/commit/0c47038367d4d5aa4b0dd572b860e7de87901650))
+
 ### [2.17.11](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.10...v2.17.11) (2020-03-18)
 
 
