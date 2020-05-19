@@ -20,11 +20,11 @@
 # Tests, Report & Coverage
 *.spec.ts
 /test
+**/docs
 **/node_modules
 **/coverage
 **/jest-coverage
 **/mochawesome-report
-**/dist
 **/*.tgz
 **/junit.xml
 **/test-report.xml
