@@ -426,6 +426,12 @@ export interface GridOption {
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;
 
+  /** Namespace Translation Prefix, you can also optionally change the separator by setting "translationNamespaceSeparator" (defaults to ":") */
+  translationNamespace?: string;
+
+  /** Defaults to ":", Separator to use between the Namespace Prefix */
+  translationNamespaceSeparator?: string;
+
   /** Defaults to false, when set to True will lead to multiple columns sorting without the need to hold or do shift-click to execute a multiple sort. */
   tristateMultiColumnSort?: boolean;
 

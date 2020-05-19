@@ -22,7 +22,7 @@ import {
 import { Constants } from './../constants';
 import { Locale } from './../models/locale.interface';
 import { CollectionService } from './../services/collection.service';
-import { castToPromise, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
+import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -477,10 +477,11 @@ export class SelectFilter implements Filter {
       options.single = false;
       options.okButton = true;
       options.addTitle = true; // show tooltip of all selected items while hovering the filter
-      options.countSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('X_OF_Y_SELECTED') || this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
-      options.allSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('ALL_SELECTED') || this._locales && this._locales.TEXT_ALL_SELECTED;
-      options.okButtonText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('OK') || this._locales && this._locales.TEXT_OK;
-      options.selectAllText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('SELECT_ALL') || this._locales && this._locales.TEXT_SELECT_ALL;
+      const translationPrefix = getTranslationPrefix(this.gridOptions);
+      options.countSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}X_OF_Y_SELECTED`) || this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
+      options.allSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}ALL_SELECTED`) || this._locales && this._locales.TEXT_ALL_SELECTED;
+      options.okButtonText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}OK`) || this._locales && this._locales.TEXT_OK;
+      options.selectAllText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}SELECT_ALL`) || this._locales && this._locales.TEXT_SELECT_ALL;
       options.selectAllDelimiter = ['', '']; // remove default square brackets of default text "[Select All]" => "Select All"
     }
 
