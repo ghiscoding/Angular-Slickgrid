@@ -15,6 +15,7 @@ module.exports = {
   coverageDirectory: './test/jest-coverage/',
   coveragePathIgnorePatterns: [
     'example-data.js',
+    'global-grid-options.ts',
     'jest-global-mocks.ts',
     'jest-pretest.ts',
     'polyfills.ts',
