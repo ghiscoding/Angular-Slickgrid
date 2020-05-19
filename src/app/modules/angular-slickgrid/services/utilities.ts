@@ -3,7 +3,7 @@ import { first } from 'rxjs/operators';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
-import { FieldType, OperatorString, OperatorType } from '../models/index';
+import { FieldType, GridOption, OperatorString, OperatorType } from '../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -272,6 +272,14 @@ export function getHtmlElementOffset(element: HTMLElement): { top: number; left:
     left = rect.left + window.pageXOffset;
   }
   return { top, left };
+}
+
+/** Get Translation Prefix, defaults to an empty string */
+export function getTranslationPrefix(gridOptions?: GridOption): string {
+  if (gridOptions && gridOptions.translationNamespace) {
+    return gridOptions.translationNamespace + (gridOptions.translationNamespaceSeparator || '');
+  }
+  return '';
 }
 
 /**

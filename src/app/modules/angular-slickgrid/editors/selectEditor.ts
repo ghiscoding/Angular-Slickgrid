@@ -20,7 +20,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { charArraysEqual, findOrDefault, getDescendantProperty, htmlEncode, setDeepValue, unsubscribeAllObservables } from '../services/utilities';
+import { charArraysEqual, findOrDefault, getDescendantProperty, getTranslationPrefix, htmlEncode, setDeepValue, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -126,9 +126,11 @@ export class SelectEditor implements Editor {
       libOptions.selectAllDelimiter = ['', ''];
 
       if (this._translate && this._translate.instant && this._translate.currentLang) {
-        libOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
-        libOptions.allSelected = this._translate.instant('ALL_SELECTED');
-        libOptions.selectAllText = this._translate.instant('SELECT_ALL');
+        const translationPrefix = getTranslationPrefix(this.gridOptions);
+        libOptions.countSelected = this._translate.instant(`${translationPrefix}X_OF_Y_SELECTED`);
+        libOptions.allSelected = this._translate.instant(`${translationPrefix}ALL_SELECTED`);
+        libOptions.selectAllText = this._translate.instant(`${translationPrefix}SELECT_ALL`);
+        libOptions.okButtonText = this._translate.instant(`${translationPrefix}OK`);
       } else {
         libOptions.countSelected = this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
         libOptions.allSelected = this._locales && this._locales.TEXT_ALL_SELECTED;

@@ -21,7 +21,7 @@ import {
 } from '../models/index';
 import { Constants } from '../constants';
 import { exportWithFormatterWhenDefined } from './export-utilities';
-import { addWhiteSpaces, sanitizeHtmlToText, titleCase, mapMomentDateFormatWithFieldType } from './utilities';
+import { addWhiteSpaces, getTranslationPrefix, mapMomentDateFormatWithFieldType, sanitizeHtmlToText, titleCase } from './utilities';
 
 // using external non-typed js libraries
 declare let $: any;
@@ -360,7 +360,7 @@ export class ExcelExportService {
     // Group By text, it could be set in the export options or from translation or if nothing is found then use the English constant text
     let groupByColumnHeader = this._excelExportOptions.groupingColumnHeaderTitle;
     if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
-      groupByColumnHeader = this.translate.instant('GROUP_BY');
+      groupByColumnHeader = this.translate.instant(`${getTranslationPrefix(this._gridOptions)}GROUP_BY`);
     } else if (!groupByColumnHeader) {
       groupByColumnHeader = this._locales && this._locales.TEXT_GROUP_BY;
     }

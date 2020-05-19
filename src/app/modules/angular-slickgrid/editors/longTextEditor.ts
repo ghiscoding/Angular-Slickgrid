@@ -12,7 +12,7 @@ import {
   KeyCode,
   Locale,
 } from './../models/index';
-import { getDescendantProperty, getHtmlElementOffset, setDeepValue } from '../services/utilities';
+import { getDescendantProperty, getHtmlElementOffset, getTranslationPrefix, setDeepValue } from '../services/utilities';
 import { textValidator } from '../editorValidators/textValidator';
 
 // using external non-typed js libraries
@@ -81,9 +81,11 @@ export class LongTextEditor implements Editor {
   init(): void {
     let cancelText = '';
     let saveText = '';
+
     if (this._translate && this._translate.instant && this._translate.currentLang) {
-      cancelText = this._translate.instant('CANCEL');
-      saveText = this._translate.instant('SAVE');
+      const translationPrefix = getTranslationPrefix(this.gridOptions);
+      cancelText = this._translate.instant(`${translationPrefix}CANCEL`);
+      saveText = this._translate.instant(`${translationPrefix}SAVE`);
     } else {
       cancelText = this._locales && this._locales.TEXT_CANCEL;
       saveText = this._locales && this._locales.TEXT_SAVE;

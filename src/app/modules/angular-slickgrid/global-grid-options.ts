@@ -180,5 +180,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     saveDetailViewOnScroll: false,
   },
   rowHeight: 35,
-  topPanelHeight: 35
+  topPanelHeight: 35,
+  translationNamespaceSeparator: ':',
 };

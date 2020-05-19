@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { Constants } from '../constants';
 import { GridOption, Locale } from './../models/index';
 import { PaginationService } from '../services/pagination.service';
-import { unsubscribeAllObservables } from '../services/utilities';
+import { getTranslationPrefix, unsubscribeAllObservables } from '../services/utilities';
 
 @Component({
   selector: 'slick-pagination',
@@ -16,6 +16,7 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
 
   private subscriptions: Subscription[] = [];
   private _enableTranslate = false;
+  private _gridOptions: GridOption;
   private _locales: Locale;
 
   // text translations (handled by ngx-translate or by custom locale)
@@ -63,9 +64,9 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    const gridOptions: GridOption = this.gridOptions || {};
-    this._enableTranslate = gridOptions && gridOptions.enableTranslate || false;
-    this._locales = gridOptions && gridOptions.locales || Constants.locales;
+    this._gridOptions = this.gridOptions || {};
+    this._enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
+    this._locales = this._gridOptions && this._gridOptions.locales || Constants.locales;
 
     if (this._enableTranslate && !this.translate) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
@@ -125,10 +126,11 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   /** Translate all the texts shown in the UI, use ngx-translate service when available or custom locales when service is null */
   private translateAllUiTexts(locales: Locale) {
     if (this._enableTranslate && this.translate && this.translate.instant && this.translate.currentLang) {
-      this.textItemsPerPage = this.translate.instant('ITEMS_PER_PAGE');
-      this.textItems = this.translate.instant('ITEMS');
-      this.textOf = this.translate.instant('OF');
-      this.textPage = this.translate.instant('PAGE');
+      const translationPrefix = getTranslationPrefix(this._gridOptions);
+      this.textItemsPerPage = this.translate.instant(`${translationPrefix}ITEMS_PER_PAGE`);
+      this.textItems = this.translate.instant(`${translationPrefix}ITEMS`);
+      this.textOf = this.translate.instant(`${translationPrefix}OF`);
+      this.textPage = this.translate.instant(`${translationPrefix}PAGE`);
     } else if (locales) {
       this.textItemsPerPage = locales.TEXT_ITEMS_PER_PAGE || 'TEXT_ITEMS_PER_PAGE';
       this.textItems = locales.TEXT_ITEMS || 'TEXT_ITEMS';

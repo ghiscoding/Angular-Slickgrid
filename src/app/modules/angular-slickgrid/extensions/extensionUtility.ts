@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import { ExtensionName } from '../models/index';
 import { SharedService } from '../services/shared.service';
+import { getTranslationPrefix } from '../services/utilities';
 
 declare function require(name: string);
 
@@ -96,22 +97,24 @@ export class ExtensionUtility {
 
     const title = picker && picker[propName];
     const titleKey = picker && picker[`${propName}Key`];
+    const gridOptions = this.sharedService.gridOptions;
+    const translationPrefix = getTranslationPrefix(gridOptions);
 
     if (titleKey && this.translate && this.translate.currentLang && this.translate.instant) {
       output = this.translate.instant(titleKey || ' ');
     } else {
       switch (propName) {
         case 'customTitle':
-          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('COMMANDS' || ' ') || locales && locales.TEXT_COMMANDS;
+          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}COMMANDS` || ' ') || locales && locales.TEXT_COMMANDS;
           break;
         case 'columnTitle':
-          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('COLUMNS' || ' ') || locales && locales.TEXT_COLUMNS;
+          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}COLUMNS` || ' ') || locales && locales.TEXT_COLUMNS;
           break;
         case 'forceFitTitle':
-          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('FORCE_FIT_COLUMNS' || ' ') || locales && locales.TEXT_FORCE_FIT_COLUMNS;
+          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}FORCE_FIT_COLUMNS` || ' ') || locales && locales.TEXT_FORCE_FIT_COLUMNS;
           break;
         case 'syncResizeTitle':
-          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('SYNCHRONOUS_RESIZE' || ' ') || locales && locales.TEXT_SYNCHRONOUS_RESIZE;
+          output = title || enableTranslate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}SYNCHRONOUS_RESIZE` || ' ') || locales && locales.TEXT_SYNCHRONOUS_RESIZE;
           break;
         default:
           output = title;
