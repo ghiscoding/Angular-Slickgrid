@@ -14,7 +14,7 @@ import {
   SearchTerm,
 } from './../models/index';
 import { Constants } from './../constants';
-import { mapOperatorToShorthandDesignation, mapOperatorType } from '../services/utilities';
+import { getTranslationPrefix, mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -166,19 +166,20 @@ export class CompoundInputFilter implements Filter {
   }
 
   private getOptionValues(): { operator: OperatorString, description: string }[] {
+    const translationPrefix = getTranslationPrefix(this.gridOptions);
     const type = (this.columnDef.type && this.columnDef.type) ? this.columnDef.type : FieldType.string;
     let optionValues = [];
 
     switch (type) {
       case FieldType.string:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
-          { operator: '=' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('EQUALS') || this._locales && this._locales.TEXT_EQUALS },
-          { operator: 'a*' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('STARTS_WITH') || this._locales && this._locales.TEXT_STARTS_WITH },
-          { operator: '*z' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('ENDS_WITH') || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}CONTAINS`) || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '=' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}EQUALS`) || this._locales && this._locales.TEXT_EQUALS },
+          { operator: 'a*' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}STARTS_WITH`) || this._locales && this._locales.TEXT_STARTS_WITH },
+          { operator: '*z' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}ENDS_WITH`) || this._locales && this._locales.TEXT_CONTAINS },
           /*
-          { operator: 'IN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
-          { operator: 'NIN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
+          { operator: 'IN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}IN_COLLECTION_SEPERATED_BY_COMMA`) },
+          { operator: 'NIN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}NOT_IN_COLLECTION_SEPERATED_BY_COMMA`) },
           */
         ];
         break;

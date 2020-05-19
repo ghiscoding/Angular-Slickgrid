@@ -25,8 +25,10 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
     fieldProperty = (props.length > 0) ? props[0] : columnDef.field;
   }
 
-  if (dataContext && dataContext.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined) {
-    const formattedData = exportCustomFormatter(row, col, dataContext[fieldProperty], columnDef, dataContext, grid);
+  const cellValue = dataContext.hasOwnProperty(fieldProperty) ? dataContext[fieldProperty] : null;
+
+  if (dataContext && exportCustomFormatter !== undefined) {
+    const formattedData = exportCustomFormatter(row, col, cellValue, columnDef, dataContext, grid);
     output = formattedData as string;
     if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
       output = formattedData.text;
@@ -34,8 +36,8 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
     if (output === null || output === undefined) {
       output = '';
     }
-  } else if (isEvaluatingFormatter && dataContext.hasOwnProperty(fieldProperty) && columnDef.formatter) {
-    const formattedData = columnDef.formatter(row, col, dataContext[fieldProperty], columnDef, dataContext, grid);
+  } else if (isEvaluatingFormatter && columnDef.formatter) {
+    const formattedData = columnDef.formatter(row, col, cellValue, columnDef, dataContext, grid);
     output = formattedData as string;
     if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
       output = formattedData.text;
@@ -44,7 +46,7 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
       output = '';
     }
   } else {
-    output = (!dataContext.hasOwnProperty(fieldProperty)) ? '' : dataContext[fieldProperty];
+    output = (!dataContext.hasOwnProperty(fieldProperty)) ? '' : cellValue;
     if (output === null || output === undefined) {
       output = '';
     }

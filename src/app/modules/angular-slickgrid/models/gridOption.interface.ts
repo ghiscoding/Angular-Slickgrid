@@ -430,6 +430,12 @@ export interface GridOption {
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;
 
+  /** Namespace Translation Prefix, you can also optionally change the separator by setting "translationNamespaceSeparator" (defaults to ":") */
+  translationNamespace?: string;
+
+  /** Defaults to ":", Separator to use between the Namespace Prefix */
+  translationNamespaceSeparator?: string;
+
   /** Tree Data options to define how the tree data is structure */
   treeDataOptions?: TreeDataOption;
 

@@ -79,10 +79,15 @@ export class GridMenuComponent implements OnInit {
       enableFiltering: true,
       enableCellNavigation: true,
       gridMenu: {
-        menuUsabilityOverride: (args) => {
-          // we could disable the menu entirely by returning false
-          return true;
-        },
+        // we could disable the menu entirely by returning false depending on some code logic
+        menuUsabilityOverride: (args) => true,
+
+        // use the click event position to reposition the grid menu (defaults to false)
+        // basically which offset do we want to use for reposition the grid menu,
+        // option1 is where we clicked (true) or option2 is where the icon button is located (false and is the defaults)
+        // you probably want to set this to True if you use an external grid menu button BUT set to False when using default grid menu
+        useClickToRepositionMenu: true,
+
         // all titles optionally support translation keys, if you wish to use that feature then use the title properties with the 'Key' suffix (e.g: titleKey)
         // example "customTitle" for a plain string OR "customTitleKey" to use a translation key
         customTitleKey: 'CUSTOM_COMMANDS',
