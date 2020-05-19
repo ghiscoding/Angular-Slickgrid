@@ -12,10 +12,6 @@
 ### Brief introduction
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, this is the most active fork since the original @mleibman fork was closed some time ago by his author for personal reasons. Also worth to know, I also contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid), a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and it also means that jQuery is a dependecy. 
 
-## PLEASE HELP with Tree Data (new feature)
-I'm currently working on Tree Data structure, if anyone knows how to Filter/Sort a Tree Data structure (possibly by recursion), please HELP! 
-See more info in this [open issue](https://github.com/ghiscoding/Angular-Slickgrid/issues/178#issuecomment-609922579) and this Stack Overflow [question](https://stackoverflow.com/questions/61034229/how-to-filter-multiple-properties-of-a-parent-child-array-which-could-be-several)
-
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
@@ -23,7 +19,15 @@ See more info in this [open issue](https://github.com/ghiscoding/Angular-Slickgr
 [MIT License](LICENSE)
 
 ### Like it? :star: it
-You like and use this great library `Angular-Slickgrid`? Please upvote :star: and if you want to contribute then please feel free to do so. :smile:
+You like and use this great library `Angular-Slickgrid`? Be sure to upvote :star: and feel free to contribute. :smile:
+
+### Like my work?
+If you like my work, you can also support me with caffeine :coffee:
+[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
+I certainly spent a lot of time drinking coffee to build and keep adding features for this great library.
+
+### It's Fully Tested with [Jest](https://jestjs.io/)
+Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~8200 lines of code (~2400 unit tests) that are now fully tested with [Jest](https://jestjs.io/).
 
 ## Installation
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
@@ -48,9 +52,6 @@ npm start
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
-### It's Fully Tested
-Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~8200 lines of code (~2400 unit tests) that are now fully tested with [Jest](https://jestjs.io/).
-
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
@@ -64,10 +65,6 @@ You like the library and would like contribute? That would be awesome, the first
 
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
-
-## Like my work?
-If you like my work, you can also support me with caffeine :coffee:
-[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
 
 ## Main features
 You can see some screenshots below and the instructions down below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).

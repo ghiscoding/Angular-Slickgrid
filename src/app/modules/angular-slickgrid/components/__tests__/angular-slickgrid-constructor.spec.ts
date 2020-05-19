@@ -19,6 +19,7 @@ import {
   ResizerService,
   SharedService,
   SortService,
+  TreeDataService,
 } from '../../services';
 import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
 import { Filters } from '../../filters';
@@ -87,6 +88,7 @@ const mockGraphqlService = {
 } as unknown as GraphqlService;
 
 const filterServiceStub = {
+  clearFilters: jest.fn(),
   dispose: jest.fn(),
   init: jest.fn(),
   bindBackendOnFilter: jest.fn(),
@@ -144,7 +146,15 @@ const sortServiceStub = {
   bindLocalOnSort: jest.fn(),
   dispose: jest.fn(),
   loadGridSorters: jest.fn(),
+  processTreeDataInitialSort: jest.fn(),
 } as unknown as SortService;
+
+const treeDataServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  handleOnCellClick: jest.fn(),
+  toggleTreeDataCollapse: jest.fn(),
+} as unknown as TreeDataService;
 
 const mockGroupItemMetaProvider = {
   init: jest.fn(),
@@ -169,7 +179,7 @@ const mockDataView = {
   getPagingInfo: jest.fn(),
   mapIdsToRows: jest.fn(),
   mapRowsToIds: jest.fn(),
-  onRowsChanged: jest.fn(),
+  onRowsChanged: new Slick.Event(),
   onRowCountChanged: jest.fn(),
   onSetItemsCalled: jest.fn(),
   reSort: jest.fn(),
@@ -286,6 +296,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       resizerServiceStub,
       sharedService,
       sortServiceStub,
+      treeDataServiceStub,
       translate,
       {} as GridOption
     );
@@ -611,7 +622,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions = { showHeaderRow: false } as GridOption;
         component.ngAfterViewInit();
 
-        expect(gridSpy).toHaveBeenCalledWith(false);
+        expect(gridSpy).toHaveBeenCalledWith(false, false);
       });
 
       it('should initialize groupingAndColspanService when "createPreHeaderPanel" grid option is enabled and "enableDraggableGrouping" is disabled', () => {
@@ -659,7 +670,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should destroy customElement and its DOM element when requested', () => {
+      it('should destroy component and its DOM element when requested', () => {
         const spy = jest.spyOn(component, 'destroyGridContainerElm');
 
         component.ngAfterViewInit();
@@ -1166,7 +1177,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
         component.showHeaderRow(true);
 
-        expect(spy).toHaveBeenCalledWith(true);
+        expect(spy).toHaveBeenCalledWith(true, false);
       });
 
       it('should show the header row when "showHeaderRow" is called with argument False', () => {
@@ -1175,7 +1186,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
         component.showHeaderRow(false);
 
-        expect(spy).toHaveBeenCalledWith(false);
+        expect(spy).toHaveBeenCalledWith(false, false);
       });
     });
 
@@ -1391,6 +1402,52 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.showPagination).toBeFalsy();
           done();
         });
+      });
+    });
+
+    describe('Tree Data View', () => {
+      it('should throw an error when enableTreeData is enabled without passing a "columnId"', (done) => {
+        try {
+          component.gridOptions = { enableTreeData: true, treeDataOptions: {} } as GridOption;
+          component.ngAfterViewInit();
+        } catch (e) {
+          expect(e.toString()).toContain('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName"');
+          component.destroy();
+          done();
+        }
+      });
+
+      it('should change flat dataset and expect  being called with other methods', () => {
+        const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
+        const mockHierarchical = [{ id: 0, file: 'documents', files: [{ id: 1, file: 'vacation.txt' }] }];
+        const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
+
+        component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file', parentPropName: 'parentId', childrenPropName: 'files' } } as GridOption;
+        component.ngAfterViewInit();
+        component.dataset = mockFlatDataset;
+
+        expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);
+      });
+
+      it('should change hierarchical dataset and expect processTreeDataInitialSort being called with other methods', (done) => {
+        const mockHierarchical = [{ id: 0, file: 'documents', files: [{ id: 1, file: 'vacation.txt' }] }];
+        const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
+        const clearFilterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
+        const setItemsSpy = jest.spyOn(mockDataView, 'setItems');
+        const processSpy = jest.spyOn(sortServiceStub, 'processTreeDataInitialSort');
+
+        component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file' } } as GridOption;
+        component.datasetHierarchical = mockHierarchical;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(component.datasetHierarchical).toEqual(mockHierarchical);
+          expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);
+          expect(clearFilterSpy).toHaveBeenCalled();
+          expect(processSpy).toHaveBeenCalled();
+          expect(setItemsSpy).toHaveBeenCalledWith([], 'id');
+          done();
+        }, 2);
       });
     });
   });

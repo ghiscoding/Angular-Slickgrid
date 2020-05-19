@@ -6,7 +6,11 @@ import {
   addWhiteSpaces,
   castToPromise,
   charArraysEqual,
+  convertHierarchicalViewToParentChildArray,
+  convertParentChildArrayToHierarchicalView,
   decimalFormatted,
+  deepCopy,
+  findItemInHierarchicalStructure,
   findOrDefault,
   formatNumber,
   getDescendantProperty,
@@ -173,6 +177,97 @@ describe('Service/Utilies', () => {
     });
   });
 
+  describe('convertParentChildArrayToHierarchicalView method', () => {
+    it('should take a parent/child array and return a hierarchical array structure', () => {
+      const input = [
+        { id: 18, size: 90, dateModified: '2015-03-03', file: 'something.txt', parentId: null, },
+        { id: 11, file: 'Music', parentId: null, },
+        { id: 12, file: 'mp3', parentId: 11, },
+        { id: 16, file: 'rock', parentId: 12, },
+        { id: 17, dateModified: '2015-05-13', file: 'soft.mp3', size: 98, parentId: 16, },
+        { id: 14, file: 'pop', parentId: 12, },
+        { id: 15, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, parentId: 14, },
+      ];
+
+      const output = convertParentChildArrayToHierarchicalView(input, { parentPropName: 'parentId', childrenPropName: 'files' });
+
+      expect(output).toEqual([
+        {
+          id: 11, file: 'Music', files: [{
+            id: 12, file: 'mp3', files: [
+              { id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
+              { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
+            ]
+          }]
+        },
+        { id: 18, file: 'something.txt', dateModified: '2015-03-03', size: 90, },
+      ]);
+    });
+  });
+
+  describe('convertHierarchicalViewToParentChildArray method', () => {
+    let mockColumns;
+
+    beforeEach(() => {
+      mockColumns = [
+        { id: 18, file: 'something.txt', dateModified: '2015-03-03', size: 90 },
+        {
+          id: 11, file: 'Music', files: [{
+            id: 12, file: 'mp3', files: [
+              { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
+              { id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
+            ]
+          }]
+        },
+      ];
+    });
+
+    it('should return a flat array from a hierarchical structure', () => {
+      const output = convertHierarchicalViewToParentChildArray(mockColumns, { childrenPropName: 'files' });
+      expect(output).toEqual([
+        { id: 18, size: 90, __treeLevel: 0, dateModified: '2015-03-03', file: 'something.txt', __parentId: null, },
+        { id: 11, __treeLevel: 0, file: 'Music', __parentId: null, __hasChildren: true, },
+        { id: 12, __treeLevel: 1, file: 'mp3', __parentId: 11, __hasChildren: true, },
+        { id: 16, __treeLevel: 2, file: 'rock', __parentId: 12, __hasChildren: true, },
+        { id: 17, __treeLevel: 3, dateModified: '2015-05-13', file: 'soft.mp3', size: 98, __parentId: 16, },
+        { id: 14, __treeLevel: 2, file: 'pop', __parentId: 12, __hasChildren: true, },
+        { id: 15, __treeLevel: 3, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, __parentId: 14, },
+      ]);
+    });
+  });
+
+  describe('findItemInHierarchicalStructure method', () => {
+    let mockColumns;
+
+    beforeEach(() => {
+      mockColumns = [
+        { id: 18, file: 'something.txt', dateModified: '2015-03-03', size: 90 },
+        {
+          id: 11, file: 'Music', files: [{
+            id: 12, file: 'mp3', files: [
+              { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
+              { id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
+            ]
+          }]
+        },
+      ];
+    });
+
+    it('should throw an error when the children property name argument is missing', () => {
+      expect(() => findItemInHierarchicalStructure(mockColumns, x => x.file === 'pop', '')).toThrowError('findRecursive requires parameter "childrenPropertyName"');
+    });
+
+    it('should find an item from a hierarchical array', () => {
+      const item = findItemInHierarchicalStructure(mockColumns, x => x.file === 'pop', 'files');
+      expect(item).toEqual({ id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] });
+    });
+
+    it('should return undefined when item is not found', () => {
+      const item = findItemInHierarchicalStructure(mockColumns, x => x.file === 'pop2', 'files');
+      expect(item).toEqual(undefined);
+    });
+  });
+
   describe('castToPromise method', () => {
     it('should throw an error when argument provided is not a Promise neither an Observable', async () => {
       expect(() => castToPromise(null)).toThrowError('Something went wrong,');
@@ -285,6 +380,39 @@ describe('Service/Utilies', () => {
       const input = 1234567890.44566;
       const output = decimalFormatted(input, 2, 4, '.', ',');
       expect(output).toBe('1,234,567,890.4457');
+    });
+  });
+
+  describe('deepCopy method', () => {
+    it('should return original input when it is not an object neither an array', () => {
+      const msg = 'hello world';
+      const age = 20;
+
+      expect(deepCopy(msg)).toBe(msg);
+      expect(deepCopy(age)).toBe(age);
+    });
+
+    it('should do a deep copy of an object with properties having objects and changing object property should not affect original object', () => {
+      const obj1 = { firstName: 'John', lastName: 'Doe', address: { zip: 123456 } };
+      const obj2 = deepCopy(obj1);
+      obj2.address.zip = 789123;
+
+      expect(obj1.address.zip).toBe(123456);
+      expect(obj2.address.zip).toBe(789123);
+    });
+
+    it('should do a deep copy of an array of objects with properties having objects and changing object property should not affect original object', () => {
+      const obj1 = { firstName: 'John', lastName: 'Doe', address: { zip: 123456 } };
+      const obj2 = { firstName: 'Jane', lastName: 'Doe', address: { zip: 222222 } };
+      const arr1 = [obj1, obj2];
+      const arr2 = deepCopy(arr1);
+      arr2[0].address.zip = 888888;
+      arr2[1].address.zip = 999999;
+
+      expect(arr1[0].address.zip).toBe(123456);
+      expect(arr1[1].address.zip).toBe(222222);
+      expect(arr2[0].address.zip).toBe(888888);
+      expect(arr2[1].address.zip).toBe(999999);
     });
   });
 

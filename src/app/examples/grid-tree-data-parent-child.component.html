@@ -1,0 +1,33 @@
+<div class="container-fluid">
+  <h2 [innerHTML]="title"></h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <button (click)="addNewRow()" class="btn btn-info btn-sm">
+        <span class="icon mdi mdi-plus"></span>
+        <span>Add New Item (in 1st group)</span>
+      </button>
+      <button (click)="collapseAll()" class="btn btn-default btn-sm">
+        <span class="icon mdi mdi-arrow-collapse"></span>
+        <span>Collapse All</span>
+      </button>
+      <button (click)="expandAll()" class="btn btn-default btn-sm">
+        <span class="icon mdi mdi-arrow-expand"></span>
+        <span>Expand All</span>
+      </button>
+      <button (click)="logFlatStructure()" class="btn btn-default btn-sm">
+        <span>Log Flag Structure</span>
+      </button>
+      <button (click)="logExpandedStructure()" class="btn btn-default btn-sm">
+        <span>Log Expanded Structure</span>
+      </button>
+    </div>
+  </div>
+
+  <br />
+
+  <angular-slickgrid gridId="grid28" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
+  </angular-slickgrid>
+</div>

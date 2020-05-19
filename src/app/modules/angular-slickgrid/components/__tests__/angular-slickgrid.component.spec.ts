@@ -7,7 +7,7 @@ import { AngularSlickgridComponent } from '../angular-slickgrid.component';
 import { SlickPaginationComponent } from '../slick-pagination.component';
 import { SlickgridConfig } from '../../slickgrid-config';
 import { FilterFactory } from '../../filters/filterFactory';
-import { CurrentFilter, CurrentSorter } from '../../models';
+import { CurrentFilter, CurrentSorter, GridOption } from '../../models';
 import {
   AngularUtilService,
   CollectionService,
@@ -24,6 +24,7 @@ import {
   ResizerService,
   SharedService,
   SortService,
+  TreeDataService,
 } from '../../services';
 import {
   ExtensionUtility,
@@ -42,6 +43,11 @@ import {
   RowMoveManagerExtension,
   RowSelectionExtension,
 } from '../../extensions';
+import * as utilities from '../../services/utilities';
+
+const mockConvertParentChildArray = jest.fn();
+// @ts-ignore
+utilities.convertParentChildArrayToHierarchicalView = mockConvertParentChildArray;
 
 const excelExportServiceStub = {
   init: jest.fn(),
@@ -103,6 +109,13 @@ const sortServiceStub = {
   onSortCleared: new Subject<boolean>()
 } as unknown as SortService;
 
+const treeDataServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  handleOnCellClick: jest.fn(),
+  toggleTreeDataCollapse: jest.fn(),
+} as unknown as TreeDataService;
+
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
@@ -149,6 +162,7 @@ describe('App Component', () => {
         { provide: ExtensionUtility, useValue: extensionUtilityStub },
         { provide: GroupingAndColspanService, useValue: groupingAndColspanServiceStub },
         { provide: SortService, useValue: sortServiceStub },
+        { provide: TreeDataService, useValue: treeDataServiceStub },
       ],
       imports: [
         RouterTestingModule,
@@ -187,6 +201,27 @@ describe('App Component', () => {
 
     expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
     expect(gridContainerElm.id).toBe('grid1');
+  });
+
+  it('should convert parent/child dataset to hierarchical dataset when Tree Data is enabled and "onRowsChanged" was triggered', async (done) => {
+    const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
+    const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
+
+    component.gridId = 'grid1';
+    component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file' } } as GridOption;
+    component.dataset = mockFlatDataset;
+    fixture.detectChanges();
+    const gridPaneElm = document.querySelector<HTMLDivElement>('.gridPane');
+    const gridContainerElm = document.querySelector<HTMLDivElement>('.slickgrid-container');
+
+    expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
+    expect(gridContainerElm.id).toBe('grid1');
+
+    setTimeout(() => {
+      expect(hierarchicalSpy).toHaveBeenCalled();
+      expect(mockConvertParentChildArray).toHaveBeenCalled();
+      done();
+    }, 51)
   });
 
   it('should define grid height & width and expect them to be used in the view', () => {

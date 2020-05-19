@@ -1,0 +1,45 @@
+<div class="container-fluid">
+  <h2 [innerHTML]="title"></h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <div class="row">
+    <div class="col-md-7">
+      <button (click)="addNewFile()" class="btn btn-info btn-sm">
+        <span class="icon mdi mdi-plus"></span>
+        <span>Add New Pop Song</span>
+      </button>
+      <button (click)="collapseAll()" class="btn btn-default btn-sm">
+        <span class="icon mdi mdi-arrow-collapse"></span>
+        <span>Collapse All</span>
+      </button>
+      <button (click)="expandAll()" class="btn btn-default btn-sm">
+        <span class="icon mdi mdi-arrow-expand"></span>
+        <span>Expand All</span>
+      </button>
+      <button (click)="logFlatStructure()" class="btn btn-default btn-sm">
+        <span>Log Flag Structure</span>
+      </button>
+      <button (click)="logExpandedStructure()" class="btn btn-default btn-sm">
+        <span>Log Expanded Structure</span>
+      </button>
+    </div>
+
+    <div class="col-md-5">
+      <div class="input-group">
+        <input type="text" class="form-control search-string" data-test="search-string"
+               [(ngModel)]="searchString" (ngModelChange)="searchStringChanged()">
+        <div class="input-group-btn">
+          <button class="btn btn-default" data-test="clear-search-string" (click)="clearSearch()">
+            <span class="icon mdi mdi-close-thick"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <angular-slickgrid gridId="grid29" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+                     [datasetHierarchical]="datasetHierarchical" (onAngularGridCreated)="angularGridReady($event)">
+  </angular-slickgrid>
+</div>

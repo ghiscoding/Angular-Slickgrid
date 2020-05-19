@@ -15,6 +15,7 @@ import {
   FilterArguments,
   FilterCallbackArg,
   FilterChangedArgs,
+  FilterConditionOption,
   GridOption,
   KeyCode,
   OperatorString,
@@ -30,8 +31,8 @@ import { FilterFactory } from '../filters/filterFactory';
 import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
-declare var Slick: any;
-declare var $: any;
+declare const Slick: any;
+declare const $: any;
 
 // timer for keeping track of user typing waits
 let timer: any;
@@ -47,6 +48,7 @@ export class FilterService {
   private _dataView: any;
   private _grid: any;
   private _onSearchChange: SlickEvent;
+  private _tmpPreFilteredData: number[];
   private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
@@ -83,6 +85,10 @@ export class FilterService {
 
   init(grid: any): void {
     this._grid = grid;
+
+    if (this._gridOptions && this._gridOptions.enableTreeData && this._gridOptions.treeDataOptions) {
+      this._grid.setSortColumns([{ columnId: this._gridOptions.treeDataOptions.columnId, sortAsc: true }]);
+    }
   }
 
   dispose() {
@@ -118,6 +124,20 @@ export class FilterService {
           filter.destroy(true);
         }
       });
+    }
+  }
+
+  /**
+   * When clearing or disposing of all filters, we need to loop through all columnFilters and delete them 1 by 1
+   * only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+   */
+  resetColumnFilters() {
+    if (typeof this._columnFilters === 'object') {
+      for (const columnId in this._columnFilters) {
+        if (columnId && this._columnFilters[columnId]) {
+          delete this._columnFilters[columnId];
+        }
+      }
     }
   }
 
@@ -159,8 +179,17 @@ export class FilterService {
     dataView.setFilter(this.customLocalFilter.bind(this));
 
     this._eventHandler.subscribe(this._onSearchChange, (e: KeyboardEvent, args: any) => {
+      const isGridWithTreeData = this._gridOptions && this._gridOptions.enableTreeData || false;
+
+      // When using Tree Data, we need to do it in 2 steps
+      // step 1. we need to prefilter (search) the data prior, the result will be an array of IDs which are the node(s) and their parent nodes when necessary.
+      // step 2. calling the DataView.refresh() is what triggers the final filtering, with "customLocalFilter()" which will decide which rows should persist
+      if (isGridWithTreeData) {
+        this._tmpPreFilteredData = this.preFilterTreeData(this._dataView.getItems(), this._columnFilters);
+      }
+
       const columnId = args.columnId;
-      if (columnId != null) {
+      if (columnId !== null) {
         dataView.refresh();
       }
       // emit an onFilterChanged event when it's not called by a clear filter
@@ -214,6 +243,9 @@ export class FilterService {
       }
     });
 
+    // also reset the columnFilters object and remove any filters from the object
+    this.resetColumnFilters();
+
     // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
     if (this._dataView && this._grid) {
       this._dataView.refresh();
@@ -246,121 +278,224 @@ export class FilterService {
     }
   }
 
-  customLocalFilter(item: any, args: any) {
+  /** Local Grid Filter search */
+  customLocalFilter(item: any, args: any): boolean {
     const dataView = args && args.dataView;
-    for (const columnId of Object.keys(args.columnFilters)) {
-      const columnFilter = args.columnFilters[columnId];
-      let columnIndex = args.grid.getColumnIndex(columnId);
-      let columnDef = args.grid.getColumns()[columnIndex];
+    const grid = args && args.grid;
+    const isGridWithTreeData = this._gridOptions && this._gridOptions.enableTreeData || false;
+    const columnFilters = args && args.columnFilters || {};
+    let treeDataOptions;
 
-      // it might be a hidden column, if so it won't be part of the getColumns (because it we hide a column via setColumns)
-      // when that happens we can try to get the column definition from all defined columns
-      if (!columnDef && this.sharedService && Array.isArray(this.sharedService.allColumns)) {
-        columnIndex = this.sharedService.allColumns.findIndex((col) => col.field === columnId);
-        columnDef = this.sharedService.allColumns[columnIndex];
-      }
+    // when the column is a Tree Data structure and the parent is collapsed, we won't go further and just continue with next row
+    // so we always run this check even when there are no filter search, the reason is because the user might click on the expand/collapse
+    if (isGridWithTreeData && this._gridOptions && this._gridOptions.treeDataOptions) {
+      treeDataOptions = this._gridOptions.treeDataOptions;
+      const collapsedPropName = treeDataOptions.collapsedPropName || '__collapsed';
+      const parentPropName = treeDataOptions.parentPropName || '__parentId';
+      const dataViewIdIdentifier = this._gridOptions.datasetIdPropertyName || 'id';
 
-      // if we still don't have a column definition then we should return then row anyway (true)
-      if (!columnDef) {
-        return true;
-      }
-
-      // Row Detail View plugin, if the row is padding we just get the value we're filtering on from it's parent
-      if (this._gridOptions.enableRowDetailView) {
-        const metadataPrefix = this._gridOptions.rowDetailView && this._gridOptions.rowDetailView.keyPrefix || '__';
-        if (item[`${metadataPrefix}isPadding`] && item[`${metadataPrefix}parent`]) {
-          item = item[`${metadataPrefix}parent`];
+      if (item[parentPropName] !== null) {
+        let parent = this._dataView.getItemById(item[parentPropName]);
+        while (parent) {
+          if (parent[collapsedPropName]) {
+            return false; // don't display any row that have their parent collapsed
+          }
+          parent = this._dataView.getItemById(parent[parentPropName]);
         }
       }
 
-      const dataKey = columnDef.dataKey;
-      const fieldType = columnDef.type || FieldType.string;
-      const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-      let queryFieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || '';
-      if (typeof columnDef.queryFieldNameGetterFn === 'function') {
-        queryFieldName = columnDef.queryFieldNameGetterFn(item);
+      // filter out any row items that aren't part of our pre-processed "preFilterTreeData()" result
+      if (Array.isArray(this._tmpPreFilteredData)) {
+        return this._tmpPreFilteredData.includes(item[dataViewIdIdentifier]); // return true when found, false otherwise
       }
-      let cellValue = item[queryFieldName];
+    } else {
+      if (typeof columnFilters === 'object') {
+        for (const columnId of Object.keys(columnFilters)) {
+          const columnFilter = columnFilters[columnId] as ColumnFilter;
+          const conditionOptions = this.getFilterConditionOptionsOrBoolean(item, columnFilter, columnId, grid, dataView);
+          if (typeof conditionOptions === 'boolean') {
+            return conditionOptions;
+          }
 
-      // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-      if (queryFieldName && queryFieldName.indexOf('.') >= 0) {
-        cellValue = getDescendantProperty(item, queryFieldName);
-      }
-
-      // if we find searchTerms use them but make a deep copy so that we don't affect original array
-      // we might have to overwrite the value(s) locally that are returned
-      // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
-      const searchValues = (columnFilter && columnFilter.searchTerms) ? $.extend(true, [], columnFilter.searchTerms) : null;
-
-      let fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
-
-      let matches = null;
-      if (fieldType !== FieldType.object) {
-        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
-        matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
-      }
-
-      let operator = columnFilter.operator || ((matches) ? matches[1] : '');
-      const searchTerm = (!!matches) ? matches[2] : '';
-      const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
-
-      if (searchValues && searchValues.length > 1) {
-        fieldSearchValue = searchValues.join(',');
-      } else if (typeof fieldSearchValue === 'string') {
-        // escaping the search value
-        fieldSearchValue = fieldSearchValue.replace(`'`, `''`); // escape single quotes by doubling them
-        if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
-          operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
+          if (!FilterConditions.executeMappedCondition(conditionOptions as FilterConditionOption)) {
+            return false;
+          }
         }
-      }
-
-      // no need to query if search value is empty or if the search value is in fact equal to the operator
-      if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && (searchValues.length === 0 || searchValues.length === 1 && operator === searchValues[0])))) {
-        return true;
-      }
-
-      // if search value has a regex match we will only keep the value without the operator
-      // in this case we need to overwrite the returned search values to truncate operator from the string search
-      if (Array.isArray(matches) && matches.length >= 1 && (Array.isArray(searchValues) && searchValues.length === 1)) {
-        searchValues[0] = searchTerm;
-      }
-
-      // filter search terms should always be string type (even though we permit the end user to input numbers)
-      // so make sure each term are strings, if user has some default search terms, we will cast them to string
-      if (searchValues && Array.isArray(searchValues) && fieldType !== FieldType.object) {
-        for (let k = 0, ln = searchValues.length; k < ln; k++) {
-          // make sure all search terms are strings
-          searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
-        }
-      }
-
-      // when using localization (i18n), we should use the formatter output to search as the new cell value
-      if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
-        const rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
-        cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item, this._grid);
-      }
-
-      // make sure cell value is always a string
-      if (typeof cellValue === 'number') {
-        cellValue = cellValue.toString();
-      }
-
-      const conditionOptions = {
-        dataKey,
-        fieldType,
-        searchTerms: searchValues,
-        cellValue,
-        operator: operator as OperatorString,
-        cellValueLastChar: lastValueChar,
-        filterSearchType
-      };
-
-      if (!FilterConditions.executeMappedCondition(conditionOptions)) {
-        return false;
       }
     }
 
+    // if it reaches here, that means the row is valid and passed all filter
     return true;
+  }
+
+  getFilterConditionOptionsOrBoolean(item: any, columnFilter: ColumnFilter, columnId: string | number, grid: any, dataView: any): FilterConditionOption | boolean {
+    let columnIndex = grid.getColumnIndex(columnId) as number;
+    let columnDef = grid.getColumns()[columnIndex] as Column;
+
+    // it might be a hidden column, if so it won't be part of the getColumns (because it we hide a column via setColumns)
+    // when that happens we can try to get the column definition from all defined columns
+    if (!columnDef && this.sharedService && Array.isArray(this.sharedService.allColumns)) {
+      columnIndex = this.sharedService.allColumns.findIndex((col) => col.field === columnId);
+      columnDef = this.sharedService.allColumns[columnIndex];
+    }
+
+    // if we still don't have a column definition then we should return then row anyway (true)
+    if (!columnDef) {
+      return true;
+    }
+
+    // Row Detail View plugin, if the row is padding we just get the value we're filtering on from it's parent
+    if (this._gridOptions.enableRowDetailView) {
+      const metadataPrefix = this._gridOptions.rowDetailView && this._gridOptions.rowDetailView.keyPrefix || '__';
+      if (item[`${metadataPrefix}isPadding`] && item[`${metadataPrefix}parent`]) {
+        item = item[`${metadataPrefix}parent`];
+      }
+    }
+
+    const dataKey = columnDef.dataKey;
+    let queryFieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || '';
+    if (typeof columnDef.queryFieldNameGetterFn === 'function') {
+      queryFieldName = columnDef.queryFieldNameGetterFn(item);
+    }
+    const fieldType = columnDef.type || FieldType.string;
+    const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
+    let cellValue = item[queryFieldName];
+
+    // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+    if (queryFieldName && queryFieldName.indexOf('.') >= 0) {
+      cellValue = getDescendantProperty(item, queryFieldName);
+    }
+
+    // if we find searchTerms use them but make a deep copy so that we don't affect original array
+    // we might have to overwrite the value(s) locally that are returned
+    // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
+    const searchValues: SearchTerm[] = (columnFilter && columnFilter.searchTerms) ? $.extend(true, [], columnFilter.searchTerms) : [];
+    let fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
+
+    let matches = null;
+    if (fieldType !== FieldType.object) {
+      fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+      matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+    }
+
+    let operator = columnFilter.operator || ((matches) ? matches[1] : '');
+    const searchTerm = (!!matches) ? matches[2] : '';
+    const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
+
+    if (searchValues && searchValues.length > 1) {
+      fieldSearchValue = searchValues.join(',');
+    } else if (typeof fieldSearchValue === 'string') {
+      // escaping the search value
+      fieldSearchValue = fieldSearchValue.replace(`'`, `''`); // escape single quotes by doubling them
+      if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+        operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
+      }
+    }
+
+    // no need to query if search value is empty or if the search value is in fact equal to the operator
+    if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && (searchValues.length === 0 || searchValues.length === 1 && operator === searchValues[0])))) {
+      return true;
+    }
+
+    // if search value has a regex match we will only keep the value without the operator
+    // in this case we need to overwrite the returned search values to truncate operator from the string search
+    if (Array.isArray(matches) && matches.length >= 1 && (Array.isArray(searchValues) && searchValues.length === 1)) {
+      searchValues[0] = searchTerm;
+    }
+
+    // filter search terms should always be string type (even though we permit the end user to input numbers)
+    // so make sure each term are strings, if user has some default search terms, we will cast them to string
+    if (searchValues && Array.isArray(searchValues) && fieldType !== FieldType.object) {
+      for (let k = 0, ln = searchValues.length; k < ln; k++) {
+        // make sure all search terms are strings
+        searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
+      }
+    }
+
+    // when using localization (i18n), we should use the formatter output to search as the new cell value
+    if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
+      const rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
+      cellValue = (columnDef && typeof columnDef.formatter === 'function') ? columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item, this._grid) : '';
+    }
+
+    // make sure cell value is always a string
+    if (typeof cellValue === 'number') {
+      cellValue = cellValue.toString();
+    }
+
+    const currentCellValue = cellValue;
+    return {
+      dataKey,
+      fieldType,
+      searchTerms: searchValues,
+      cellValue: currentCellValue,
+      operator: operator as OperatorString,
+      cellValueLastChar: lastValueChar,
+      filterSearchType
+    } as FilterConditionOption;
+  }
+
+  /**
+   * When using Tree Data, we need to prefilter (search) the data prior, the result will be an array of IDs which are the node(s) and their parent nodes when necessary.
+   * This will then be passed to the DataView setFilter(customLocalFilter), which will itself loop through the list of IDs and display/hide the row if found that array of IDs
+   * We do this in 2 steps so that we can still use the DataSet setFilter()
+   */
+  preFilterTreeData(inputArray: any[], columnFilters: ColumnFilters) {
+    const treeDataOptions = this._gridOptions && this._gridOptions.treeDataOptions;
+    const parentPropName = treeDataOptions && treeDataOptions.parentPropName || '__parentId';
+    const dataViewIdIdentifier = this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+
+    const treeObj = {};
+    const filteredChildrenAndParents: any[] = [];
+
+    if (Array.isArray(inputArray)) {
+      for (let i = 0; i < inputArray.length; i++) {
+        treeObj[inputArray[i][dataViewIdIdentifier]] = inputArray[i];
+        // as the filtered data is then used again as each subsequent letter
+        // we need to delete the .__used property, otherwise the logic below
+        // in the while loop (which checks for parents) doesn't work:
+        delete treeObj[inputArray[i][dataViewIdIdentifier]].__used;
+      }
+
+      for (let i = 0; i < inputArray.length; i++) {
+        const item = inputArray[i];
+        let matchFilter = true; // valid until proven otherwise
+
+        // loop through all column filters and execute filter condition(s)
+        for (const columnId of Object.keys(columnFilters)) {
+          const columnFilter = columnFilters[columnId] as ColumnFilter;
+          const conditionOptionResult = this.getFilterConditionOptionsOrBoolean(item, columnFilter, columnId, this._grid, this._dataView);
+
+          if (conditionOptionResult) {
+            const conditionResult = (typeof conditionOptionResult === 'boolean') ? conditionOptionResult : FilterConditions.executeMappedCondition(conditionOptionResult as FilterConditionOption);
+            if (conditionResult) {
+              // don't return true since we still need to check other keys in columnFilters
+              continue;
+            }
+          }
+          matchFilter = false;
+          continue;
+        }
+
+        // build an array from the matched filters, anything valid from filter condition
+        // will be pushed to the filteredChildrenAndParents array
+        if (matchFilter) {
+          const len = filteredChildrenAndParents.length;
+          // add child (id):
+          filteredChildrenAndParents.splice(len, 0, item[dataViewIdIdentifier]);
+          let parent = treeObj[item[parentPropName]] || false;
+          while (parent) {
+            // only add parent (id) if not already added:
+            parent.__used || filteredChildrenAndParents.splice(len, 0, parent[dataViewIdIdentifier]);
+            // mark each parent as used to not use them again later:
+            treeObj[parent[dataViewIdIdentifier]].__used = true;
+            // try to find parent of the current parent, if exists:
+            parent = treeObj[parent[parentPropName]] || false;
+          }
+        }
+      }
+    }
+    return filteredChildrenAndParents;
   }
 
   getColumnFilters() {
@@ -509,7 +644,7 @@ export class FilterService {
    * @param triggerEvent defaults to True, do we want to emit a filter changed event?
    * @param triggerBackendQuery defaults to True, which will query the backend.
    */
-  updateFilters(filters: CurrentFilter[], emitChangedEvent = true, triggerBackendQuery = true) {
+  updateFilters(filters: CurrentFilter[], emitChangedEvent = true, triggerBackendQuery = true, triggerOnSearchChangeEvent = false) {
     if (!this._filtersMetadata || this._filtersMetadata.length === 0 || !this._gridOptions || !this._gridOptions.enableFiltering) {
       throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filterable Columns defined in your grid and "enableFiltering" set in your Grid Options');
     }
@@ -527,6 +662,10 @@ export class FilterService {
           const newOperator = newFilter.operator || uiFilter.defaultOperator;
           this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newOperator);
           uiFilter.setValues(newFilter.searchTerms, newOperator);
+
+          if (triggerOnSearchChangeEvent) {
+            this.callbackSearchEvent(null, { columnDef: uiFilter.columnDef, operator: newOperator, searchTerms: newFilter.searchTerms, shouldTriggerQuery: true });
+          }
         }
       });
 

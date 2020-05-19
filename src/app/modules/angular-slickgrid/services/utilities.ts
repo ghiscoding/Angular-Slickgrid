@@ -41,6 +41,176 @@ export function addWhiteSpaces(nbSpaces: number): string {
 }
 
 /**
+ * Convert a flat array (with "parentId" references) into a hierarchical dataset structure (where children are array(s) inside their parent objects)
+ * @param flatArray input array (flat dataset)
+ * @param options you can provide the following options:: "parentPropName" (defaults to "parent"), "childrenPropName" (defaults to "children") and "identifierPropName" (defaults to "id")
+ * @return roots - hierarchical data view array
+ */
+export function convertParentChildArrayToHierarchicalView(flatArray: any[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; }): any[] {
+  const childrenPropName = options && options.childrenPropName || 'children';
+  const parentPropName = options && options.parentPropName || '__parentId';
+  const identifierPropName = options && options.identifierPropName || 'id';
+  const hasChildrenFlagPropName = '__hasChildren';
+  const treeLevelPropName = '__treeLevel';
+  const inputArray: any[] = $.extend(true, [], flatArray);
+
+  const roots: any[] = []; // things without parent
+
+  // make them accessible by guid on this map
+  const all = {};
+
+  inputArray.forEach((item) => all[item[identifierPropName]] = item);
+
+  // connect childrens to its parent, and split roots apart
+  Object.keys(all).forEach((id) => {
+    const item = all[id];
+    if (item[parentPropName] === null || !item.hasOwnProperty(parentPropName)) {
+      delete item[parentPropName];
+      roots.push(item);
+    } else if (item[parentPropName] in all) {
+      const p = all[item[parentPropName]];
+      if (!(childrenPropName in p)) {
+        p[childrenPropName] = [];
+      }
+      delete item[parentPropName];
+      p[childrenPropName].push(item);
+    }
+
+    // delete any unnecessary properties that were possibly created in the flat array but shouldn't be part of the tree data
+    delete item[treeLevelPropName];
+    delete item[hasChildrenFlagPropName];
+  });
+
+  return roots;
+}
+
+/**
+ * Convert a hierarchical array (with children) into a flat array structure array (where the children are pushed as next indexed item in the array)
+ * @param hierarchicalArray - input hierarchical array
+ * @param options - you can provide "childrenPropName" (defaults to "children")
+ * @return output - Parent/Child array
+ */
+export function convertHierarchicalViewToParentChildArray(hierarchicalArray: any[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; }): any[] {
+  const outputArray: any[] = [];
+  convertHierarchicalViewToParentChildArrayByReference($.extend(true, [], hierarchicalArray), outputArray, options, 0);
+
+  // the output array is the one passed as reference
+  return outputArray;
+}
+
+/**
+ * Convert a hierarchical array (with children) into a flat array structure array but using the array as the output (the array is the pointer reference)
+ * @param hierarchicalArray - input hierarchical array
+ * @param outputArrayRef - output array passed (and modified) by reference
+ * @param options - you can provide "childrenPropName" (defaults to "children")
+ * @param treeLevel - tree level number
+ * @param parentId - parent ID
+ */
+export function convertHierarchicalViewToParentChildArrayByReference(hierarchicalArray: any[], outputArrayRef: any[], options?: { childrenPropName?: string; parentPropName?: string; hasChildrenFlagPropName?: string; treeLevelPropName?: string; identifierPropName?: string; }, treeLevel = 0, parentId?: string) {
+  const childrenPropName = options && options.childrenPropName || 'children';
+  const identifierPropName = options && options.identifierPropName || 'id';
+  const hasChildrenFlagPropName = options && options.hasChildrenFlagPropName || '__hasChildren';
+  const treeLevelPropName = options && options.treeLevelPropName || '__treeLevel';
+  const parentPropName = options && options.parentPropName || '__parentId';
+
+  if (Array.isArray(hierarchicalArray)) {
+    for (const item of hierarchicalArray) {
+      if (item) {
+        const itemExist = outputArrayRef.find((itm: any) => itm[identifierPropName] === item[identifierPropName]);
+        if (!itemExist) {
+          item[treeLevelPropName] = treeLevel; // save tree level ref
+          item[parentPropName] = parentId || null;
+          outputArrayRef.push(item);
+        }
+        if (Array.isArray(item[childrenPropName])) {
+          treeLevel++;
+          convertHierarchicalViewToParentChildArrayByReference(item[childrenPropName], outputArrayRef, options, treeLevel, item[identifierPropName]);
+          treeLevel--;
+          item[hasChildrenFlagPropName] = true;
+          delete item[childrenPropName]; // remove the children property
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Create an immutable clone of an array or object
+ * (c) 2019 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * @param  {Array|Object} obj The array or object to copy
+ * @return {Array|Object}     The clone of the array or object
+ */
+export function deepCopy(obj: any) {
+  /**
+   * Create an immutable copy of an object
+   * @return {Object}
+   */
+  const cloneObj = () => {
+    // Create new object
+    const clone = {};
+
+    // Loop through each item in the original
+    // Recursively copy it's value and add to the clone
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clone[key] = deepCopy(obj[key]);
+      }
+    }
+    return clone;
+  };
+
+  /**
+   * Create an immutable copy of an array
+   * @return {Array}
+   */
+  const cloneArr = () => {
+    return obj.map((item: any) => deepCopy(item));
+  };
+
+  // -- init --//
+  // Get object type
+  const type = Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
+
+  // If an object
+  if (type === 'object') {
+    return cloneObj();
+  }
+  // If an array
+  if (type === 'array') {
+    return cloneArr();
+  }
+  // Otherwise, return it as-is
+  return obj;
+}
+
+/**
+ * Find an item from a hierarchical view structure (a parent that can have children array which themseleves can children and so on)
+ * @param hierarchicalArray
+ * @param predicate
+ * @param childrenPropertyName
+ */
+export function findItemInHierarchicalStructure(hierarchicalArray: any, predicate: (item: any) => boolean, childrenPropertyName: string): any {
+  if (!childrenPropertyName) {
+    throw new Error('findRecursive requires parameter "childrenPropertyName"');
+  }
+  const initialFind = hierarchicalArray.find(predicate);
+  const elementsWithChildren = hierarchicalArray.filter((x: any) => x.hasOwnProperty(childrenPropertyName) && x[childrenPropertyName]);
+  if (initialFind) {
+    return initialFind;
+  } else if (elementsWithChildren.length) {
+    const childElements: any[] = [];
+    elementsWithChildren.forEach((item: any) => {
+      if (item.hasOwnProperty(childrenPropertyName)) {
+        childElements.push(...item[childrenPropertyName]);
+      }
+    });
+    return findItemInHierarchicalStructure(childElements, predicate, childrenPropertyName);
+  }
+  return undefined;
+}
+
+/**
  * HTML decode using jQuery with a <div>
  * Create a in-memory div, set it's inner text(which jQuery automatically encodes)
  * then grab the encoded contents back out.  The div never exists on the page.

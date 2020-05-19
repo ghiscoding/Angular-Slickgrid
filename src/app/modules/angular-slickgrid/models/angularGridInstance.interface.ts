@@ -10,7 +10,8 @@ import {
   GroupingAndColspanService,
   PaginationService,
   ResizerService,
-  SortService
+  SortService,
+  TreeDataService,
 } from '../services';
 
 export interface AngularGridInstance {
@@ -67,4 +68,7 @@ export interface AngularGridInstance {
 
   /** Sort Service */
   sortService: SortService;
+
+  /** Tree Data View Service */
+  treeDataService: TreeDataService;
 }

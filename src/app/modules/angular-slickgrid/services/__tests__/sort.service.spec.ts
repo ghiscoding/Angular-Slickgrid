@@ -13,7 +13,8 @@ import {
 } from '../../models';
 import { Sorters } from '../../sorters';
 import { SortService } from '../sort.service';
-import * as utilities from '../../services/backend-utilities';
+import * as utilities from '../backend-utilities';
+import { SharedService } from '../shared.service';
 
 declare var Slick: any;
 
@@ -35,6 +36,7 @@ const dataViewStub = {
   refresh: jest.fn(),
   sort: jest.fn(),
   reSort: jest.fn(),
+  setItems: jest.fn(),
 };
 
 const backendServiceStub = {
@@ -63,9 +65,10 @@ const gridStub = {
 describe('SortService', () => {
   let service: SortService;
   let slickgridEventHandler: SlickEventHandler;
+  const sharedService = new SharedService();
 
   beforeEach(() => {
-    service = new SortService();
+    service = new SortService(sharedService);
     slickgridEventHandler = service.eventHandler;
   });
 
@@ -314,20 +317,20 @@ describe('SortService', () => {
     it('should throw an error when backend service is missing', () => {
       gridOptionMock.backendServiceApi.service = undefined;
       service.bindBackendOnSort(gridStub, dataViewStub);
-      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
+      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub, sortCols: [] })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
     });
 
     it('should throw an error when backend "process" method is missing', () => {
       gridOptionMock.backendServiceApi.process = undefined;
       service.bindBackendOnSort(gridStub, dataViewStub);
-      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
+      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub, sortCols: [] })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
     });
 
     it('should use an empty grid option object when grid "getOptions" method is not available', () => {
       gridStub.getOptions = undefined;
 
       service.bindBackendOnSort(gridStub, dataViewStub);
-      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
+      expect(() => service.onBackendSortChanged(undefined, { grid: gridStub, sortCols: [] })).toThrowError('BackendServiceApi requires at least a "process" function and a "service" defined');
     });
 
     it('should execute the "onError" method when the Promise throws an error', (done) => {
@@ -513,7 +516,7 @@ describe('SortService', () => {
         { sortCol: { id: 'age', field: 'age', type: FieldType.number }, sortAsc: true },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'Barbara', lastName: 'Smith', age: 1, address: { zip: 222222 } },
@@ -531,7 +534,7 @@ describe('SortService', () => {
         { sortCol: { id: 'firstName', field: 'firstName', width: 100 }, sortAsc: false },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'John', lastName: 'Doe', age: 22, address: { zip: 123456 } },
@@ -549,7 +552,7 @@ describe('SortService', () => {
         { sortCol: { id: 'random', field: 'random', queryFieldSorter: 'firstName' }, sortAsc: false },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'John', lastName: 'Doe', age: 22, address: { zip: 123456 } },
@@ -567,7 +570,7 @@ describe('SortService', () => {
         { sortCol: { id: 'random', field: 'random', queryFieldNameGetterFn: (dataContext) => 'zip' }, sortAsc: false },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'John', lastName: 'Doe', age: 22, address: { zip: 123456 } },
@@ -584,7 +587,7 @@ describe('SortService', () => {
         { sortCol: { id: 'address', field: 'address.zip' }, sortAsc: true },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'John', lastName: 'Doe', age: 22, address: { zip: 123456 } },
@@ -602,7 +605,7 @@ describe('SortService', () => {
         { sortCol: { id: 'firstName', field: 'firstName', width: 100 }, sortAsc: true },
       ] as ColumnSort[];
 
-      dataset.sort((row1, row2) => service.sortComparer(mockSortedCols, row1, row2));
+      dataset.sort((row1, row2) => service.sortComparers(mockSortedCols, row1, row2));
 
       expect(dataset).toEqual([
         { firstName: 'Jane', lastName: 'Doe', age: 27, address: { zip: 123456 } },
@@ -703,6 +706,175 @@ describe('SortService', () => {
       expect(emitSpy).not.toHaveBeenCalled();
       expect(backendUpdateSpy).toHaveBeenCalledWith(undefined, mockNewSorters);
       expect(mockRefreshBackendDataset).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Tree Data View', () => {
+    let mockSortedCol: ColumnSort;
+    const mockColumns = [
+      { id: 'firstName', field: 'firstName' },
+      { id: 'lastName', field: 'lastName' },
+      { id: 'file', field: 'file', name: 'Files' }
+    ] as Column[];
+
+    beforeEach(() => {
+      gridOptionMock.enableSorting = true;
+      mockSortedCol = { sortCol: { id: 'lastName', field: 'lastName', width: 100 }, sortAsc: true, grid: gridStub };
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+    });
+
+    afterEach(() => {
+      gridOptionMock.enableTreeData = false;
+    });
+
+    it('should execute "processTreeDataInitialSort" and expect "updateSorting" to be called', () => {
+      gridOptionMock.enableTreeData = true;
+      gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files' };
+
+      const spyEmitSort = jest.spyOn(service.onSortChanged, 'next');
+      const spyCurrentSort = jest.spyOn(service, 'getCurrentLocalSorters');
+      const spyOnLocalSort = jest.spyOn(service, 'onLocalSortChanged');
+      const spyUpdateSorting = jest.spyOn(service, 'updateSorting');
+      const mockSortedCols: ColumnSort[] = [
+        { sortAsc: true, sortCol: { id: 'lastName', field: 'lastName', width: 100 } },
+        { sortAsc: false, sortCol: { id: 'file', field: 'file', width: 75 } }
+      ];
+
+      service.bindLocalOnSort(gridStub, dataViewStub);
+      gridStub.onSort.notify({ multiColumnSort: true, sortCols: mockSortedCols, grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(spyCurrentSort).toHaveBeenCalled();
+      expect(spyUpdateSorting).toHaveBeenCalledWith([{ columnId: 'file', direction: 'ASC' }]);
+      expect(spyEmitSort).toHaveBeenCalledWith([
+        { columnId: 'lastName', direction: 'ASC' },
+        { columnId: 'file', direction: 'DESC' },
+      ]);
+      expect(spyOnLocalSort).toHaveBeenCalledWith(gridStub, dataViewStub, mockSortedCols);
+    });
+
+    it('should set an "initialSort" and expect "updateSorting" to be called with different sort tree column', () => {
+      gridOptionMock.enableTreeData = true;
+      gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files', initialSort: { columnId: 'firstName', direction: 'DESC' } };
+
+      const spyEmitSort = jest.spyOn(service.onSortChanged, 'next');
+      const spyCurrentSort = jest.spyOn(service, 'getCurrentLocalSorters');
+      const spyOnLocalSort = jest.spyOn(service, 'onLocalSortChanged');
+      const spyUpdateSorting = jest.spyOn(service, 'updateSorting');
+      const mockSortedCols: ColumnSort[] = [
+        { sortAsc: true, sortCol: { id: 'lastName', field: 'lastName', width: 100 } },
+        { sortAsc: false, sortCol: { id: 'file', field: 'file', width: 75 } }
+      ];
+
+      service.bindLocalOnSort(gridStub, dataViewStub);
+      gridStub.onSort.notify({ multiColumnSort: true, sortCols: mockSortedCols, grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(spyCurrentSort).toHaveBeenCalled();
+      expect(spyUpdateSorting).toHaveBeenCalledWith([{ columnId: 'firstName', direction: 'DESC' }]);
+      expect(spyEmitSort).toHaveBeenCalledWith([
+        { columnId: 'lastName', direction: 'ASC' },
+        { columnId: 'file', direction: 'DESC' },
+      ]);
+      expect(spyOnLocalSort).toHaveBeenCalledWith(gridStub, dataViewStub, mockSortedCols);
+    });
+
+    describe('Hierarchical Dataset', () => {
+      let dataset = [];
+      const expectedSortedAscDataset = [
+        { __parentId: null, __treeLevel: 0, dateModified: '2012-03-05T12:44:00.123Z', file: 'bucket-list.txt', id: 24, size: 0.5 },
+        { __hasChildren: true, __parentId: null, __treeLevel: 0, file: 'documents', id: 21 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'misc', id: 9 },
+        { __parentId: 9, __treeLevel: 2, dateModified: '2015-02-26T16:50:00.123Z', file: 'todo.txt', id: 10, size: 0.4 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'pdf', id: 4 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'internet-bill.pdf', id: 6, size: 1.4 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-21T10:22:00.123Z', file: 'map.pdf', id: 5, size: 3.1 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-01T07:50:00.123Z', file: 'phone-bill.pdf', id: 23, size: 1.4 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'txt', id: 2 },
+        { __parentId: 2, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'todo.txt', id: 3, size: 0.7 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'xls', id: 7 },
+        { __parentId: 7, __treeLevel: 2, dateModified: '2014-10-02T14:50:00.123Z', file: 'compilation.xls', id: 8, size: 2.3 },
+        { __parentId: null, __treeLevel: 0, dateModified: '2015-03-03T03:50:00.123Z', file: 'something.txt', id: 18, size: 90 },
+      ];
+      const expectedSortedDescDataset = [
+        { __parentId: null, __treeLevel: 0, dateModified: '2015-03-03T03:50:00.123Z', file: 'something.txt', id: 18, size: 90 },
+        { __hasChildren: true, __parentId: null, __treeLevel: 0, file: 'documents', id: 21 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'xls', id: 7 },
+        { __parentId: 7, __treeLevel: 2, dateModified: '2014-10-02T14:50:00.123Z', file: 'compilation.xls', id: 8, size: 2.3 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'txt', id: 2 },
+        { __parentId: 2, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'todo.txt', id: 3, size: 0.7 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'pdf', id: 4 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-01T07:50:00.123Z', file: 'phone-bill.pdf', id: 23, size: 1.4 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-21T10:22:00.123Z', file: 'map.pdf', id: 5, size: 3.1 },
+        { __parentId: 4, __treeLevel: 2, dateModified: '2015-05-12T14:50:00.123Z', file: 'internet-bill.pdf', id: 6, size: 1.4 },
+        { __hasChildren: true, __parentId: 21, __treeLevel: 1, file: 'misc', id: 9 },
+        { __parentId: 9, __treeLevel: 2, dateModified: '2015-02-26T16:50:00.123Z', file: 'todo.txt', id: 10, size: 0.4 },
+        { __parentId: null, __treeLevel: 0, dateModified: '2012-03-05T12:44:00.123Z', file: 'bucket-list.txt', id: 24, size: 0.5 },
+      ];
+
+      beforeEach(() => {
+        dataset = [
+          { id: 24, file: 'bucket-list.txt', dateModified: '2012-03-05T12:44:00.123Z', size: 0.5 },
+          { id: 18, file: 'something.txt', dateModified: '2015-03-03T03:50:00.123Z', size: 90 },
+          {
+            id: 21, file: 'documents', files: [
+              { id: 2, file: 'txt', files: [{ id: 3, file: 'todo.txt', dateModified: '2015-05-12T14:50:00.123Z', size: 0.7, }] },
+              {
+                id: 4, file: 'pdf', files: [
+                  { id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1, },
+                  { id: 6, file: 'internet-bill.pdf', dateModified: '2015-05-12T14:50:00.123Z', size: 1.4, },
+                  { id: 23, file: 'phone-bill.pdf', dateModified: '2015-05-01T07:50:00.123Z', size: 1.4, },
+                ]
+              },
+              { id: 9, file: 'misc', files: [{ id: 10, file: 'todo.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4, }] },
+              { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
+            ]
+          },
+        ];
+        sharedService.hierarchicalDataset = dataset;
+      });
+
+      it('should call onLocalSortChanged with a hierarchical dataset and expect DataView "setItems" method be called once with sorted ASC dataset', () => {
+        gridOptionMock.enableTreeData = true;
+        gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files', };
+        jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(dataset);
+
+        const spySetItems = jest.spyOn(dataViewStub, 'setItems');
+        const spyEmitSort = jest.spyOn(service.onSortChanged, 'next');
+        const spyCurrentSort = jest.spyOn(service, 'getCurrentLocalSorters');
+        const spyUpdateSorting = jest.spyOn(service, 'updateSorting');
+
+        service.bindLocalOnSort(gridStub, dataViewStub);
+
+        expect(spyCurrentSort).toHaveBeenCalled();
+        expect(spyUpdateSorting).toHaveBeenCalledWith([{ columnId: 'file', direction: 'ASC' }]);
+        expect(spyEmitSort).toHaveBeenCalledWith([{ columnId: 'file', direction: 'ASC' }]);
+        expect(spySetItems).toHaveBeenCalledTimes(1);
+        expect(spySetItems).toHaveBeenCalledWith(expectedSortedAscDataset, 'id');
+      });
+
+      it('should call onLocalSortChanged with a hierarchical dataset and expect DataView "setItems" method be called twice (1st is always ASC, then 2nd by our defined sort of DSEC)', () => {
+        gridOptionMock.enableTreeData = true;
+        gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files', };
+        jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(dataset);
+
+        const spySetItems = jest.spyOn(dataViewStub, 'setItems');
+        const spyEmitSort = jest.spyOn(service.onSortChanged, 'next');
+        const spyCurrentSort = jest.spyOn(service, 'getCurrentLocalSorters');
+        const spyOnLocalSort = jest.spyOn(service, 'onLocalSortChanged');
+        const spyUpdateSorting = jest.spyOn(service, 'updateSorting');
+        const mockSortedCols: ColumnSort[] = [{ sortAsc: false, sortCol: { id: 'file', field: 'file' } }];
+
+        service.bindLocalOnSort(gridStub, dataViewStub);
+        gridStub.onSort.notify({ multiColumnSort: true, sortCols: mockSortedCols, grid: gridStub }, new Slick.EventData(), gridStub);
+
+        expect(spyCurrentSort).toHaveBeenCalled();
+        expect(spyUpdateSorting).toHaveBeenCalledWith([{ columnId: 'file', direction: 'ASC' }]);
+        expect(spyEmitSort).toHaveBeenCalledWith([{ columnId: 'file', direction: 'ASC' }]);
+        expect(spyOnLocalSort).toHaveBeenCalledWith(gridStub, dataViewStub, mockSortedCols);
+        expect(spySetItems).toHaveBeenCalledTimes(2);
+        expect(spySetItems).toHaveBeenNthCalledWith(1, expectedSortedAscDataset, 'id');
+        expect(spySetItems).toHaveBeenNthCalledWith(2, expectedSortedDescDataset, 'id');
+      });
+
     });
   });
 });
