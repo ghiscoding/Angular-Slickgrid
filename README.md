@@ -47,6 +47,8 @@ Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap3-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
+There are also 2 new Themes, Material & Salesforce that are available as well and if you wish to use SVG then take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
+
 #### Working Demo
 For a complete and working local demo, you can clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used for demoing both the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
@@ -58,11 +60,6 @@ npm start
 
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
-
-#### Material Theme
-Technically speaking, `Material` theme is not provided, but it should still work. 
-The styling might need some adjustments to make it look like `Material` but there's over 300+ [SASS variables](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/dist/styles/sass/_variables.scss), 
-so I'm sure making a Material Theme is totally doable and if you do, please contribute it as a new theme to the project. Thank you. 
 
 ### You want to help and contribute?
 You like the library and would like contribute? That would be awesome, the first thing you can do is head over to the [Version 2.x - Project](https://github.com/ghiscoding/Angular-Slickgrid/projects/1), there are some tasks that I would gladly like receiving help with. One of the biggest task is to increase Jest unit tests code coverage and/or more Cypress E2E tests.
@@ -81,7 +78,7 @@ Fear not, and just simply reference the `SlickGrid` and `DataView` objects, just
 
 ## Screenshots
 
-Screenshots from the demo app with the `Bootstrap` theme (that is the only available theme, but there is a lot of SASS variables to make it look like Material, or other theme if you wish to. If you create a new theme, please submit a PR).
+Screenshots from the demo app with the `Bootstrap` theme.
 
 ### Slickgrid example with Formatters (last column shown is a custom Formatter)
 
