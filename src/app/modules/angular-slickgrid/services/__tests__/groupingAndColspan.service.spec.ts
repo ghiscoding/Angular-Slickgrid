@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
 import { GridOption, SlickEventHandler, Column } from '../../models';
 import { ResizerService, GridDimension } from '../resizer.service';
+import { ExtensionUtility } from '../../extensions/extensionUtility';
 import { SharedService } from '../shared.service';
 
 declare var Slick: any;
@@ -23,6 +24,11 @@ const dataViewStub = {
   onRowCountChanged: new Slick.Event(),
   reSort: jest.fn(),
 };
+
+const mockExtensionUtility = {
+  loadExtensionDynamically: jest.fn(),
+  translateItems: jest.fn(),
+} as unknown as ExtensionUtility;
 
 const gridStub = {
   autosizeColumns: jest.fn(),
@@ -83,6 +89,7 @@ describe('GroupingAndColspanService', () => {
       providers: [
         GroupingAndColspanService,
         SharedService,
+        { provide: ExtensionUtility, useValue: mockExtensionUtility },
         { provide: ResizerService, useValue: resizerServiceStub },
       ],
       imports: [TranslateModule.forRoot()]
@@ -221,27 +228,20 @@ describe('GroupingAndColspanService', () => {
       // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 75);
     });
 
-    it('should call the "renderPreHeaderRowGroupingTitles" after triggering a translate language change', () => {
+    it('should call the "renderPreHeaderRowGroupingTitles" after calling the "translateGroupingAndColSpan" method', () => {
       gridOptionMock.enableTranslate = true;
       const renderSpy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
-      const translateSpy = jest.spyOn(service, 'translateItems');
+      const translateSpy = jest.spyOn(mockExtensionUtility, 'translateItems');
       const getColSpy = jest.spyOn(gridStub, 'getColumns');
       const setColSpy = jest.spyOn(gridStub, 'setColumns');
 
       service.init(gridStub, dataViewStub);
-      translate.use('fr');
+      service.translateGroupingAndColSpan();
 
       expect(getColSpy).toHaveBeenCalled();
       expect(setColSpy).toHaveBeenCalled();
       expect(translateSpy).toHaveBeenCalled();
       expect(renderSpy).toHaveBeenCalled();
-    });
-
-    it('should translate the items when "translateItems" is called', () => {
-      translate.use('fr');
-      service.translateItems(mockColumns, 'nameKey', 'name');
-
-      expect(mockColumns[3]).toEqual({ id: 'start', name: 'Début', nameKey: 'START', field: 'start' });
     });
 
     it('should render the pre-header row grouping title DOM element', () => {

@@ -76,6 +76,7 @@ export class ExtensionUtilityStub {
 const groupingAndColspanServiceStub = {
   init: jest.fn(),
   dispose: jest.fn(),
+  translateGroupingAndColSpan: jest.fn(),
 } as unknown as GroupingAndColspanService;
 
 const mockGraphqlService = {
@@ -1152,13 +1153,46 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const transContextMenuSpy = jest.spyOn(extensionServiceStub, 'translateContextMenu');
         const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
         const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+        const transGroupingColSpanSpy = jest.spyOn(groupingAndColspanServiceStub, 'translateGroupingAndColSpan');
+        const setHeaderRowSpy = jest.spyOn(mockGrid, 'setHeaderRowVisibility');
 
-        component.gridOptions = { enableTranslate: true } as GridOption;
+        component.gridOptions = { enableTranslate: true, createPreHeaderPanel: false, enableDraggableGrouping: false } as GridOption;
         component.ngAfterViewInit();
 
         translate.use('fr');
 
         setTimeout(() => {
+          expect(setHeaderRowSpy).not.toHaveBeenCalled();
+          expect(transGroupingColSpanSpy).not.toHaveBeenCalled();
+          expect(transCellMenuSpy).toHaveBeenCalled();
+          expect(transColHeaderSpy).toHaveBeenCalled();
+          expect(transColPickerSpy).toHaveBeenCalled();
+          expect(transContextMenuSpy).toHaveBeenCalled();
+          expect(transGridMenuSpy).toHaveBeenCalled();
+          expect(transHeaderMenuSpy).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should call "setHeaderRowVisibility", "translateGroupingAndColSpan" and other methods when locale changes', (done) => {
+        component.columnDefinitions = [{ id: 'firstName', field: 'firstName', filterable: true }];
+        const transCellMenuSpy = jest.spyOn(extensionServiceStub, 'translateCellMenu');
+        const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
+        const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
+        const transContextMenuSpy = jest.spyOn(extensionServiceStub, 'translateContextMenu');
+        const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
+        const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+        const transGroupingColSpanSpy = jest.spyOn(groupingAndColspanServiceStub, 'translateGroupingAndColSpan');
+        const setHeaderRowSpy = jest.spyOn(mockGrid, 'setHeaderRowVisibility');
+
+        component.gridOptions = { enableTranslate: true, createPreHeaderPanel: true, enableDraggableGrouping: false } as GridOption;
+        component.ngAfterViewInit();
+
+        translate.use('fr');
+
+        setTimeout(() => {
+          expect(setHeaderRowSpy).toHaveBeenCalledWith(true);
+          expect(transGroupingColSpanSpy).toHaveBeenCalled();
           expect(transCellMenuSpy).toHaveBeenCalled();
           expect(transColHeaderSpy).toHaveBeenCalled();
           expect(transColPickerSpy).toHaveBeenCalled();
