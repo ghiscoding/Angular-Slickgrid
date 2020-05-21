@@ -176,7 +176,7 @@ export class CompoundInputFilter implements Filter {
           { operator: '' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}CONTAINS`) || this._locales && this._locales.TEXT_CONTAINS },
           { operator: '=' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}EQUALS`) || this._locales && this._locales.TEXT_EQUALS },
           { operator: 'a*' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}STARTS_WITH`) || this._locales && this._locales.TEXT_STARTS_WITH },
-          { operator: '*z' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}ENDS_WITH`) || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '*z' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}ENDS_WITH`) || this._locales && this._locales.TEXT_ENDS_WITH },
           /*
           { operator: 'IN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}IN_COLLECTION_SEPERATED_BY_COMMA`) },
           { operator: 'NIN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}NOT_IN_COLLECTION_SEPERATED_BY_COMMA`) },
