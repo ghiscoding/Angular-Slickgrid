@@ -125,6 +125,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
+  private _isGridHavingFilters = false;
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
@@ -239,6 +240,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngAfterViewInit() {
     this.initialization();
+    if (this.columnDefinitions.findIndex((col) => col.filterable) > -1) {
+      this._isGridHavingFilters = true;
+    }
     this._isGridInitialized = true;
 
     // user must provide a "gridHeight" or use "autoResize: true" in the grid options
@@ -466,7 +470,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.subscriptions.push(
         this.translate.onLangChange.subscribe(() => {
           if (gridOptions.enableTranslate) {
-            if (!this._hideHeaderRowAfterPageLoad) {
+            if (!this._hideHeaderRowAfterPageLoad && this._isGridHavingFilters) {
               // before translating, make sure the filter row is visible to avoid having other problems,
               // because if it's not shown prior to translating then the filters won't be recreated after translating
               this.grid.setHeaderRowVisibility(true);
@@ -480,6 +484,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.translateCustomFooterTexts();
             this.translateColumnHeaderTitleKeys();
             this.translateColumnGroupKeys();
+            if (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping) {
+              this.groupingAndColspanService.translateGroupingAndColSpan();
+            }
           }
         })
       );

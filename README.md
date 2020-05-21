@@ -19,7 +19,7 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ### Like it? :star: it
-You like and use this great library `Angular-Slickgrid`? Be sure to upvote :star: and feel free to contribute. :smile:
+You like and use this great library `Angular-Slickgrid`? Be sure to upvote :star: and feel free to contribute. :construction_worker:
 
 ### Like my work?
 If you like my work, you can also support me with caffeine :coffee:
