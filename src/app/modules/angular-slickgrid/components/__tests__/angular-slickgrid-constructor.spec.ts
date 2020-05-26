@@ -1332,6 +1332,45 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         });
       });
 
+      it('should have a Custom Footer and custom texts when "showCustomFooter" is enabled with different metricTexts defined', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enableTranslate = false;
+        component.gridOptions.showCustomFooter = true;
+        component.gridOptions.customFooterOptions = {
+          metricTexts: {
+            items: 'some items',
+            lastUpdate: 'some last update',
+            of: 'some of'
+          }
+        }
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeTrue();
+          expect(component.customFooterOptions).toEqual({
+            dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
+            hideLastUpdateTimestamp: true,
+            hideTotalItemCount: false,
+            footerHeight: 20,
+            leftContainerClass: 'col-xs-12 col-sm-5',
+            metricSeparator: '|',
+            metricTexts: {
+              items: 'some items',
+              itemsKey: 'ITEMS',
+              lastUpdate: 'some last update',
+              of: 'some of',
+              ofKey: 'OF',
+            },
+            rightContainerClass: 'col-xs-6 col-sm-7',
+          });
+          done();
+        });
+      });
+
       it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
         const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
 
