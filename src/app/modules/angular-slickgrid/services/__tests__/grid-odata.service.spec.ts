@@ -720,6 +720,20 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
+    it('should return a query with a CSV string when the filter operator is IN ', () => {
+      const expectation = `$top=10&$filter=(Gender eq 'female' or Gender eq 'ma%2Fle')`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female', 'ma/le'], operator: 'IN' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
     it('should return a query with a CSV string when the filter operator is IN for numeric column type', () => {
       const expectation = `$top=10&$filter=(Id eq 100 or Id eq 101)`;
       const mockColumn = { id: 'id', field: 'id', type: FieldType.number } as Column;
@@ -739,6 +753,20 @@ describe('GridOdataService', () => {
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female', 'male'], operator: OperatorType.notIn },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query with a CSV string when the filter operator is NOT_IN', () => {
+      const expectation = `$top=10&$filter=(Gender ne 'female' and Gender ne 'ma%2Fle')`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female', 'ma/le'], operator: OperatorType.notIn },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);
