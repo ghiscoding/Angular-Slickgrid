@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.18.7](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.6...v2.18.7) (2020-05-26)
+
+
+### Features
+
+* **gridMenu:** update SlickGrid & add new Grid Menu options, fixes [#464](https://github.com/ghiscoding/angular-slickgrid/issues/464) ([#473](https://github.com/ghiscoding/angular-slickgrid/issues/473)) ([10f0b7d](https://github.com/ghiscoding/angular-slickgrid/commit/10f0b7d94f81569d238d411153aac4a559242302))
+
+
+### Bug Fixes
+
+* **footer:** custom footer metric texts could not be changed, fixes [#470](https://github.com/ghiscoding/angular-slickgrid/issues/470) ([#472](https://github.com/ghiscoding/angular-slickgrid/issues/472)) ([2681596](https://github.com/ghiscoding/angular-slickgrid/commit/2681596620d238eb738658f28dfb8d35968dd904))
+* **gridMenu:** command "Toggle Filter Row" header row ([#466](https://github.com/ghiscoding/angular-slickgrid/issues/466)) ([4858794](https://github.com/ghiscoding/angular-slickgrid/commit/48587941e758d9396f38f0d2edf2da8a22ebb93d)), closes [#448](https://github.com/ghiscoding/angular-slickgrid/issues/448)
+* **locale:** use correct locale text operator tooltip, closes [#468](https://github.com/ghiscoding/angular-slickgrid/issues/468) ([#469](https://github.com/ghiscoding/angular-slickgrid/issues/469)) ([d978946](https://github.com/ghiscoding/angular-slickgrid/commit/d978946391fd21bf1f30fdf9a612fe0621922ae7))
+* **odata:** encode URI also for IN/NIN operators, fixes [#463](https://github.com/ghiscoding/angular-slickgrid/issues/463) ([#471](https://github.com/ghiscoding/angular-slickgrid/issues/471)) ([92bf9e3](https://github.com/ghiscoding/angular-slickgrid/commit/92bf9e3498173cdc6bd9b0307328b7809c11263f))
+* **resizer:** check for undefined option instead of fallback ([#474](https://github.com/ghiscoding/angular-slickgrid/issues/474)) ([59975f0](https://github.com/ghiscoding/angular-slickgrid/commit/59975f042002eab4b49cde6b867dff3cdd881cc9))
+
 ### [2.18.6](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.5...v2.18.6) (2020-05-19)
 
 
