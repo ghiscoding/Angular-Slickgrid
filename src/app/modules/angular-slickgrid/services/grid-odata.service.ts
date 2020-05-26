@@ -328,7 +328,7 @@ export class GridOdataService implements BackendService {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
                 if (fieldType === FieldType.string) {
-                  const searchVal = searchTerms[j].replace(`'`, `''`);
+                  const searchVal = encodeURIComponent(searchTerms[j].replace(`'`, `''`));
                   tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
                 } else {
                   // Single quote escape is not needed for non string type
@@ -342,7 +342,7 @@ export class GridOdataService implements BackendService {
             } else {
               // example:: (Stage ne "Expired" and Stage ne "Renewal")
               for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
-                const searchVal = searchTerms[k].replace(`'`, `''`);
+                const searchVal = encodeURIComponent(searchTerms[k].replace(`'`, `''`));
                 tmpSearchTerms.push(`${fieldName} ne '${searchVal}'`);
               }
               searchBy = tmpSearchTerms.join(' and ');
