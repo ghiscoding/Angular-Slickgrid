@@ -28,6 +28,9 @@ export interface GridMenu {
   /** Same as "forceFitTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   forceFitTitleKey?: string;
 
+  /** Defaults to undefined, fixed height of the Grid Menu content, when provided it will be used instead of the max-height */
+  height?: number;
+
   /** Defaults to false, which will hide the "Clear all Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
   hideClearAllFiltersCommand?: boolean;
 
@@ -90,6 +93,9 @@ export interface GridMenu {
 
   /** Defaults to False, which leads to leaving the menu open after a click */
   leaveOpen?: boolean;
+
+  /** Defaults to 15, margin to use at the bottom of the grid menu to deduce from the max-height, only in effect when height is undefined */
+  marginBottom?: number;
 
   /** Defaults to 16 pixels (only the number), which is the width in pixels of the Grid Menu icon container */
   menuWidth?: number;
