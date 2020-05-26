@@ -95,7 +95,7 @@ export class ResizerService {
 
     // calculate bottom padding
     // if using pagination, we need to add the pagination height to this bottom padding
-    let bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
+    let bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding !== undefined) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
     if (bottomPadding && gridOptions.enablePagination) {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT;
     }
@@ -122,9 +122,9 @@ export class ResizerService {
     const availableHeight = gridHeight - gridOffsetTop - bottomPadding;
     const availableWidth = this._gridContainerElm.width() || window.innerWidth || 0;
     const maxHeight = autoResizeOptions && autoResizeOptions.maxHeight || undefined;
-    const minHeight = autoResizeOptions && autoResizeOptions.minHeight || DATAGRID_MIN_HEIGHT;
+    const minHeight = (autoResizeOptions && autoResizeOptions.minHeight !== undefined) ? autoResizeOptions.minHeight : DATAGRID_MIN_HEIGHT;
     const maxWidth = autoResizeOptions && autoResizeOptions.maxWidth || undefined;
-    const minWidth = autoResizeOptions && autoResizeOptions.minWidth || DATAGRID_MIN_WIDTH;
+    const minWidth = (autoResizeOptions && autoResizeOptions.minWidth !== undefined) ? autoResizeOptions.minWidth : DATAGRID_MIN_WIDTH;
 
     let newHeight = availableHeight;
     let newWidth = (autoResizeOptions && autoResizeOptions.sidePadding) ? availableWidth - autoResizeOptions.sidePadding : availableWidth;
