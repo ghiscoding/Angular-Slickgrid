@@ -54,6 +54,7 @@ export class TreeDataService {
       const targetElm = event.target || {};
       const treeDataOptions = this.gridOptions.treeDataOptions;
       const collapsedPropName = treeDataOptions && treeDataOptions.collapsedPropName || '__collapsed';
+      const dataViewIdIdentifier = this.gridOptions.datasetIdPropertyName || 'id';
 
       if (targetElm && targetElm.className) {
         const hasToggleClass = targetElm.className.indexOf('toggle') >= 0 || false;
@@ -61,7 +62,7 @@ export class TreeDataService {
           const item = this.dataView.getItem(args.row);
           if (item) {
             item[collapsedPropName] = !item[collapsedPropName] ? true : false;
-            this.dataView.updateItem(item.id, item);
+            this.dataView.updateItem(item[dataViewIdIdentifier], item);
             this._grid.invalidate();
           }
           event.stopImmediatePropagation();
