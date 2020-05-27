@@ -11,7 +11,7 @@ import { executeBackendProcessesCallback, onBackendError } from './backend-utili
 import { unsubscribeAllObservables } from './utilities';
 
 // using external non-typed js libraries
-y;
+declare const Slick: any;
 
 @Injectable()
 export class PaginationService {

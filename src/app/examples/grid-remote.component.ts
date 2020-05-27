@@ -4,7 +4,7 @@ import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularGridInstance, Column, Formatter, GridOption } from './../modules/angular-slickgrid';
 
-y;
+declare const Slick: any;
 
 const brandFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
   return dataContext && dataContext.brand && dataContext.brand.name || '';
