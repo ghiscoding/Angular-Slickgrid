@@ -25,7 +25,7 @@ import { CollectionService } from './../services/collection.service';
 import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class SelectFilter implements Filter {
   private _isMultipleSelect = true;

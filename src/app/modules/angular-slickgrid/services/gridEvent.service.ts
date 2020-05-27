@@ -1,7 +1,7 @@
 import { CellArgs, Column, GridOption, OnEventArgs, SlickEventHandler } from './../models/index';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 export class GridEventService {
   private _eventHandler: SlickEventHandler;

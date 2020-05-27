@@ -5,7 +5,7 @@ import { RowMoveManagerExtension } from '../rowMoveManagerExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const gridStub = {
   getOptions: jest.fn(),

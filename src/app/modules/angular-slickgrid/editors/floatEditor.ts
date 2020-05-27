@@ -1,10 +1,9 @@
-import { Constants } from '../constants';
 import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 import { setDeepValue, getDescendantProperty } from '../services/utilities';
 import { floatValidator } from '../editorValidators/floatValidator';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 const defaultDecimalPlaces = 0;
 

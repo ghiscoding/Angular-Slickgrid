@@ -19,7 +19,7 @@ declare function require(name: string);
 require('flatpickr');
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 /*
  * An example of a date picker editor using Flatpickr

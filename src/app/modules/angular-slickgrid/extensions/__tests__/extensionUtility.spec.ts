@@ -5,7 +5,7 @@ import { ExtensionUtility } from '../extensionUtility';
 import { ExtensionName, GridOption } from '../../models';
 import { SharedService } from '../../services/shared.service';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),

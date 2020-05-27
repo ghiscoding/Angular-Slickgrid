@@ -1,7 +1,7 @@
 import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 /*
  * An example of a 'detached' editor.

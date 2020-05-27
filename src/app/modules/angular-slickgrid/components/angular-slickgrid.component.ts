@@ -73,8 +73,8 @@ import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
 import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 
 // using external non-typed js libraries
-declare var Slick: any;
-declare var $: any;
+declare const Slick: any;
+declare const $: any;
 
 const slickgridEventPrefix = 'sg';
 

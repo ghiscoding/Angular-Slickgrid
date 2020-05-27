@@ -3,7 +3,7 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridService, ExtensionService, FilterService, GridStateService, SortService, SharedService } from '..';
 import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const mockSelectionModel = jest.fn().mockImplementation(() => ({
   init: jest.fn(),

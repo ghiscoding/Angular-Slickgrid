@@ -11,7 +11,7 @@ import { SharedService } from '../services/shared.service';
 import { addToArrayWhenNotExists, castToPromise, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
 const PRELOAD_CONTAINER_PREFIX = 'container_loading';

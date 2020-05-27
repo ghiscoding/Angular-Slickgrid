@@ -2,7 +2,7 @@ import { GridOption } from './../models/index';
 import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 // global constants, height/width are in pixels
 const DATAGRID_MIN_HEIGHT = 180;

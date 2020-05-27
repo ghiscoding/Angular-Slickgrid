@@ -9,7 +9,7 @@ import { ResizerService } from './resizer.service';
 declare let $: any;
 
 // using external non-typed js libraries
-declare var Slick: any;
+y;
 
 @Injectable()
 export class GroupingAndColspanService {

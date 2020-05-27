@@ -1,10 +1,9 @@
-import { Constants } from '../constants';
 import { Column, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, ColumnEditor } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
 import { sliderValidator } from '../editorValidators/sliderValidator';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;

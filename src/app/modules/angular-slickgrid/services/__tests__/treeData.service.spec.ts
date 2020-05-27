@@ -2,7 +2,7 @@ import { GridOption, SlickEventHandler, Column } from '../../models/index';
 import { SharedService } from '../shared.service';
 import { TreeDataService } from '../treeData.service';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const gridOptionsMock = {
   enableTreeData: true,

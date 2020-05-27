@@ -13,7 +13,7 @@ import {
 } from '../models/index';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;

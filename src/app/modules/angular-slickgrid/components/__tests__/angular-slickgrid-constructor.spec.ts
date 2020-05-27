@@ -38,7 +38,7 @@ const mockBackendError = jest.fn();
 // @ts-ignore
 utilities.onBackendError = mockBackendError;
 
-declare var Slick: any;
+declare const Slick: any;
 jest.mock('flatpickr', () => { });
 const sharedService = new SharedService();
 

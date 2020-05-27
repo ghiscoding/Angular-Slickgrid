@@ -23,7 +23,7 @@ import { exportWithFormatterWhenDefined } from '../services/export-utilities';
 import { getTranslationPrefix } from '../services/utilities';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 @Injectable()
 export class ContextMenuExtension implements Extension {

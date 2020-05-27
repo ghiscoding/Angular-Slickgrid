@@ -24,8 +24,8 @@ import { refreshBackendDataset } from '../services/backend-utilities';
 import { getTranslationPrefix } from '../services/utilities';
 
 // using external non-typed js libraries
-declare var Slick: any;
-declare var $: any;
+declare const Slick: any;
+declare const $: any;
 
 @Injectable()
 export class GridMenuExtension implements Extension {

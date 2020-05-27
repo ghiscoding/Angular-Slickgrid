@@ -1,7 +1,7 @@
 import { GroupItemMetaProviderExtension } from '../groupItemMetaProviderExtension';
 import { SharedService } from '../../services/shared.service';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const gridStub = {
   getOptions: jest.fn(),

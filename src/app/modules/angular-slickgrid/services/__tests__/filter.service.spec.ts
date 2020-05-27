@@ -25,7 +25,7 @@ const mockRefreshBackendDataset = jest.fn();
 // @ts-ignore
 utilities.refreshBackendDataset = mockRefreshBackendDataset;
 
-declare var Slick: any;
+declare const Slick: any;
 const DOM_ELEMENT_ID = 'row-detail123';
 
 const gridOptionMock = {

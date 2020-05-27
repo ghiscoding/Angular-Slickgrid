@@ -14,7 +14,7 @@ import {
 } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class CustomAngularComponentFilter implements Filter {
   private _shouldTriggerQuery = true;

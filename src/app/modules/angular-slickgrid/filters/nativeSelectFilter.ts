@@ -13,7 +13,7 @@ import {
 import { Optional } from '@angular/core';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class NativeSelectFilter implements Filter {
   private _clearFilterTriggered = false;

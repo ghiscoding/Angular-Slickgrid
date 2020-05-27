@@ -8,7 +8,7 @@ import { ResizerService, GridDimension } from '../resizer.service';
 import { ExtensionUtility } from '../../extensions/extensionUtility';
 import { SharedService } from '../shared.service';
 
-declare var Slick: any;
+declare const Slick: any;
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';

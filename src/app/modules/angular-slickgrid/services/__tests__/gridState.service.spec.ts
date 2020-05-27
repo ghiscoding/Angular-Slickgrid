@@ -20,7 +20,7 @@ import {
   GridStateType,
 } from '../../models';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const gridOptionMock = {
   enableAutoResize: true

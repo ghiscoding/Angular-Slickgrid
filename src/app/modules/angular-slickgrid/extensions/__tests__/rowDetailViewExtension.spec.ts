@@ -9,7 +9,7 @@ import { FilterService, SortService, AngularUtilService } from '../../services';
 import { Column, CurrentFilter } from '../../models';
 import { of, Subject } from 'rxjs';
 
-declare var Slick: any;
+declare const Slick: any;
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
 const PRELOAD_CONTAINER_PREFIX = 'container_loading';
 

@@ -18,7 +18,7 @@ import { SharedService } from '../services/shared.service';
 import { ExtensionUtility } from './extensionUtility';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 @Injectable()
 export class CellMenuExtension implements Extension {

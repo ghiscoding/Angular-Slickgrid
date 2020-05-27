@@ -1,7 +1,7 @@
 import { GridEventService } from '../gridEvent.service';
 import { Column } from '../../models';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const dataViewStub = {
   refresh: jest.fn(),

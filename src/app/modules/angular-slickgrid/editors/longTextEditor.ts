@@ -16,7 +16,7 @@ import { getDescendantProperty, getHtmlElementOffset, getTranslationPrefix, setD
 import { textValidator } from '../editorValidators/textValidator';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 /*
  * An example of a 'detached' editor.

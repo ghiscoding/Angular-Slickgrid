@@ -17,7 +17,7 @@ import { Constants } from './../constants';
 import { getTranslationPrefix, mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class CompoundInputFilter implements Filter {
   private _clearFilterTriggered = false;

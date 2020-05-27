@@ -8,7 +8,7 @@ import { ExcelExportService, ExportService, TreeDataService } from '../../servic
 import { Column, DelimiterType, FileType, GridOption, MenuCommandItem, MenuCommandItemCallbackArgs, MenuOptionItemCallbackArgs } from '../../models';
 import { Formatters } from '../../formatters';
 
-declare var Slick: any;
+declare const Slick: any;
 const gridUid = 'slickgrid_124343';
 
 const excelExportServiceStub = {

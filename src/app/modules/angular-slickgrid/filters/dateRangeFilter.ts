@@ -24,7 +24,7 @@ declare function require(name: string): any;
 require('flatpickr');
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class DateRangeFilter implements Filter {
   private _clearFilterTriggered = false;

@@ -6,7 +6,7 @@ import { FilterService, GridService } from '../index';
 import { Column, GridOption, CurrentFilter } from '../../models';
 import * as utilities from '../backend-utilities';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const mockExecuteBackendProcess = jest.fn();
 // @ts-ignore

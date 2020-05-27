@@ -7,7 +7,7 @@ import { SharedService } from '../../services/shared.service';
 import { Column, ColumnSort } from '../../models';
 import { FilterService, SortService } from '../../services';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const filterServiceStub = {
   clearFilterByColumnId: jest.fn(),

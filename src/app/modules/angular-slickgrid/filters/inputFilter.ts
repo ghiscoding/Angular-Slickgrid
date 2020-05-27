@@ -11,7 +11,7 @@ import {
 } from './../models/index';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 export class InputFilter implements Filter {
   protected _clearFilterTriggered = false;

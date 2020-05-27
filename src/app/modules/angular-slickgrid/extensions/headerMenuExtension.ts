@@ -22,7 +22,7 @@ import { getTranslationPrefix } from '../services/utilities';
 import { ExtensionUtility } from './extensionUtility';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 @Injectable()
 export class HeaderMenuExtension implements Extension {

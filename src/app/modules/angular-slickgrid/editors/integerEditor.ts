@@ -1,10 +1,9 @@
-import { Constants } from './../constants';
 import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
 import { integerValidator } from '../editorValidators/integerValidator';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 /*
  * An example of a 'detached' editor.

@@ -7,7 +7,7 @@ import { SharedService } from '../../services/shared.service';
 import { EditCommand, Formatter, SelectedRange } from '../../models';
 import { Formatters } from '../../formatters';
 
-declare var Slick: any;
+declare const Slick: any;
 
 const gridStub = {
   getData: jest.fn(),

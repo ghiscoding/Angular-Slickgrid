@@ -19,7 +19,7 @@ import { getDescendantProperty, castToPromise } from '../services/utilities';
 import { Subscription, Subject, Observable } from 'rxjs';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 @Injectable()
 export class AutoCompleteFilter implements Filter {

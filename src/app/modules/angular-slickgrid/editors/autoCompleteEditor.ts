@@ -10,12 +10,11 @@ import {
   FieldType,
   KeyCode,
 } from './../models/index';
-import { Constants } from './../constants';
 import { findOrDefault, getDescendantProperty, setDeepValue } from '../services/utilities';
 import { textValidator } from '../editorValidators/textValidator';
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 // minimum length of chars to type before starting to start querying
 const MIN_LENGTH = 3;

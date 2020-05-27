@@ -23,7 +23,7 @@ interface DropDownServiceParams {
 }
 
 // using external non-typed js libraries
-declare var $: any;
+declare const $: any;
 
 // Boostrap dropdown service
 @Injectable()

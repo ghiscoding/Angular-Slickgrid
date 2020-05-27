@@ -14,8 +14,8 @@ import { sanitizeHtmlToText } from '../services/utilities';
 import { SharedService } from '../services/shared.service';
 
 // using external non-typed js libraries
-declare var Slick: any;
-declare var $: any;
+declare const Slick: any;
+declare const $: any;
 
 @Injectable()
 export class CellExternalCopyManagerExtension implements Extension {

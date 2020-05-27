@@ -17,7 +17,7 @@ import { SharedService } from './shared.service';
 import { SortService } from './sort.service';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 let highlightTimerEnd: any;
 const GridServiceDeleteOptionDefaults: GridServiceDeleteOption = { triggerEvent: true };
 const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, position: 'top', resortGrid: false, selectRow: false, triggerEvent: true };

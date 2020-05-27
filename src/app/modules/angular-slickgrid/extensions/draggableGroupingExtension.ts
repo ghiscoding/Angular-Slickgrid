@@ -5,7 +5,7 @@ import { ExtensionUtility } from './extensionUtility';
 import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
-declare var Slick: any;
+declare const Slick: any;
 
 @Injectable()
 export class DraggableGroupingExtension implements Extension {

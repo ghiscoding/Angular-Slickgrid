@@ -20,8 +20,8 @@ import { CustomTitleFormatterComponent } from './custom-titleFormatter.component
 import { FilterNgSelectComponent } from './filter-ng-select.component';
 
 // using external non-typed js libraries
-declare var Slick: any;
-declare var $: any;
+declare const Slick: any;
+declare const $: any;
 
 const NB_ITEMS = 100;
 
