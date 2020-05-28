@@ -154,7 +154,7 @@ export class DualInputEditor implements Editor {
     }
 
     const input = document.createElement('input') as HTMLInputElement;
-    input.id = `item-${itemId}`;
+    input.id = `item-${itemId}-${position}`;
     input.className = `dual-editor-text editor-${columnId} ${position.replace(/input/gi, '')}`;
     if (fieldType === 'readonly') {
       // when the custom type is defined as readonly, we'll make a readonly text input
