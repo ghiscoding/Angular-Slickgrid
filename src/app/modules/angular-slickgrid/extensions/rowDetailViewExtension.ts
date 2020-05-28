@@ -348,7 +348,8 @@ export class RowDetailViewExtension implements Extension {
         id: args.item[this.datasetIdPropName],
         dataContext: args.item
       };
-      addToArrayWhenNotExists(this._views, viewInfo);
+      const idPropName = this.gridOptions.datasetIdPropertyName || 'id';
+      addToArrayWhenNotExists(this._views, viewInfo, idPropName);
     } else {
       // collapsing, so dispose of the View/Component
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view[this.datasetIdPropName] === args.item[this.datasetIdPropName]);

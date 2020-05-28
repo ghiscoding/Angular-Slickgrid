@@ -47,6 +47,12 @@ describe('Service/Utilies', () => {
       expect(array).toEqual([{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }]);
     });
 
+    it('should add an item to the array when input item has custom Id property and is not in the array', () => {
+      const array = [{ customId: 1, firstName: 'John' }];
+      addToArrayWhenNotExists(array, { customId: 2, firstName: 'Jane' });
+      expect(array).toEqual([{ customId: 1, firstName: 'John' }, { customId: 2, firstName: 'Jane' }]);
+    });
+
     it('should add an item to the array when input item is not an object and and is not in the array', () => {
       const array = ['John'];
       addToArrayWhenNotExists(array, 'Jane');

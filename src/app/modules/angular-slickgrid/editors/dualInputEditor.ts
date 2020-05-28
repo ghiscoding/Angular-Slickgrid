@@ -8,6 +8,7 @@ import {
   EditorArguments,
   EditorValidator,
   EditorValidatorOutput,
+  GridOption,
   KeyCode,
   SlickEventHandler,
 } from '../models/index';
@@ -34,11 +35,15 @@ export class DualInputEditor implements Editor {
   /** SlickGrid Grid object */
   grid: any;
 
+  /** Grid options */
+  gridOptions: GridOption;
+
   constructor(private args: EditorArguments) {
     if (!args) {
-      throw new Error('[Slickgrid-Universal] Something is wrong with this grid, an Editor must always have valid arguments.');
+      throw new Error('[Angular-Slickgrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
+    this.gridOptions = (this.grid.getOptions() || {}) as GridOption;
     this.init();
     this._eventHandler = new Slick.EventHandler();
     this._eventHandler.subscribe(this.grid.onValidationError, () => this._isValueSaveCalled = true);
@@ -82,7 +87,7 @@ export class DualInputEditor implements Editor {
 
   init() {
     if (!this.editorParams || !this.editorParams.leftInput || !this.editorParams.leftInput.field || !this.editorParams.rightInput || !this.editorParams.rightInput.field) {
-      throw new Error(`[Slickgrid-Universal] Please make sure that your Combo Input Editor has params defined with "leftInput" and "rightInput" (example: { editor: { model: Editors.comboInput, params: { leftInput: { field: 'firstName' }, { rightSide: { field: 'lastName' } }}}`);
+      throw new Error(`[Angular-Slickgrid] Please make sure that your Combo Input Editor has params defined with "leftInput" and "rightInput" (example: { editor: { model: Editors.comboInput, params: { leftInput: { field: 'firstName' }, { rightSide: { field: 'lastName' } }}}`);
     }
     this._leftFieldName = this.editorParams && this.editorParams.leftInput && this.editorParams.leftInput.field;
     this._rightFieldName = this.editorParams && this.editorParams.rightInput && this.editorParams.rightInput.field;
@@ -140,7 +145,8 @@ export class DualInputEditor implements Editor {
   createInput(position: 'leftInput' | 'rightInput'): HTMLInputElement {
     const editorSideParams = this.editorParams[position];
     const columnId = this.columnDef && this.columnDef.id;
-    const itemId = this.args && this.args.item && this.args.item.id || 0;
+    const idPropName = this.gridOptions.datasetIdPropertyName || 'id';
+    const itemId = this.args && this.args.item && this.args.item[idPropName] || 0;
 
     let fieldType = editorSideParams.type || 'text';
     if (fieldType === 'float' || fieldType === 'integer') {
@@ -148,7 +154,7 @@ export class DualInputEditor implements Editor {
     }
 
     const input = document.createElement('input') as HTMLInputElement;
-    input.id = `item-${itemId}`;
+    input.id = `item-${itemId}-${position}`;
     input.className = `dual-editor-text editor-${columnId} ${position.replace(/input/gi, '')}`;
     if (fieldType === 'readonly') {
       // when the custom type is defined as readonly, we'll make a readonly text input

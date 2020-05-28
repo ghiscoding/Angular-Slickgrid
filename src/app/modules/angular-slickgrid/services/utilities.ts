@@ -12,11 +12,12 @@ declare const $: any;
  * Add an item to an array only when the item does not exists, when the item is an object we will be using their "id" to compare
  * @param inputArray
  * @param inputItem
+ * @param itemIdPropName
  */
-export function addToArrayWhenNotExists(inputArray: any[], inputItem: any) {
+export function addToArrayWhenNotExists(inputArray: any[], inputItem: any, itemIdPropName = 'id') {
   let arrayRowIndex = -1;
-  if (typeof inputItem === 'object' && inputItem.hasOwnProperty('id')) {
-    arrayRowIndex = inputArray.findIndex((item) => item.id === inputItem.id);
+  if (typeof inputItem === 'object' && inputItem.hasOwnProperty(itemIdPropName)) {
+    arrayRowIndex = inputArray.findIndex((item) => item[itemIdPropName] === inputItem[itemIdPropName]);
   } else {
     arrayRowIndex = inputArray.findIndex((item) => item === inputItem);
   }
