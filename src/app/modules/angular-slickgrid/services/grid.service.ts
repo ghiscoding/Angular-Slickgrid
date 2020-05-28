@@ -155,25 +155,27 @@ export class GridService {
     this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
 
     const item = this._dataView.getItem(rowNumber);
-    if (item && item.id) {
+    const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
+
+    if (item && item[idPropName]) {
       item.rowClass = 'highlight';
-      this._dataView.updateItem(item.id, item);
+      this._dataView.updateItem(item[idPropName], item);
       this.renderGrid();
 
       // fade out
       clearTimeout(highlightTimerEnd);
       highlightTimerEnd = setTimeout(() => {
         item.rowClass = 'highlight-end';
-        this._dataView.updateItem(item.id, item);
+        this._dataView.updateItem(item[idPropName], item);
         this.renderGrid();
       }, fadeOutDelay);
 
       // delete the row's CSS highlight classes once the delay is passed
       setTimeout(() => {
-        if (item && item.id) {
+        if (item && item[idPropName]) {
           delete item.rowClass;
-          if (this._dataView.getIdxById(item.id) !== undefined) {
-            this._dataView.updateItem(item.id, item);
+          if (this._dataView.getIdxById(item[idPropName]) !== undefined) {
+            this._dataView.updateItem(item[idPropName], item);
             this.renderGrid();
           }
         }
@@ -321,10 +323,10 @@ export class GridService {
 
       // find the row number in the grid and if user wanted to see highlighted row
       // we need to do it here after resort and get each row number because it possibly changes after the sort
-      rowNumber = this._dataView.getRowById(item.id);
+      rowNumber = this._dataView.getRowById(item[idPropName]);
     } else {
       // scroll to row index 0 when inserting on top else scroll to the bottom where it got inserted
-      rowNumber = (options && options.position === 'bottom') ? this._dataView.getRowById(item.id) : 0;
+      rowNumber = (options && options.position === 'bottom') ? this._dataView.getRowById(item[idPropName]) : 0;
       this._grid.scrollRowIntoView(rowNumber);
     }
 
@@ -353,6 +355,7 @@ export class GridService {
    */
   addItems(items: any | any[], options?: GridServiceInsertOption): number[] {
     options = { ...GridServiceInsertOptionDefaults, ...options };
+    const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
     const rowNumbers: number[] = [];
 
     // loop through all items to add
@@ -372,7 +375,7 @@ export class GridService {
 
     // get row numbers of all new inserted items
     // we need to do it after resort and get each row number because it possibly changed after the sort
-    items.forEach((item: any) => rowNumbers.push(this._dataView.getRowById(item.id)));
+    items.forEach((item: any) => rowNumbers.push(this._dataView.getRowById(item[idPropName])));
 
     // if user wanted to see highlighted row
     if (options.highlightRow) {
@@ -429,7 +432,7 @@ export class GridService {
     if (!item || !item.hasOwnProperty(idPropName)) {
       throw new Error(`Deleting an item requires the item to include an "${idPropName}" property`);
     }
-    return this.deleteItemById(item.id, options);
+    return this.deleteItemById(item[idPropName], options);
   }
 
   /**
@@ -440,16 +443,17 @@ export class GridService {
    */
   deleteItems(items: any | any[], options?: GridServiceDeleteOption): number[] | string[] {
     options = { ...GridServiceDeleteOptionDefaults, ...options };
+    const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
 
     // when it's not an array, we can call directly the single item delete
     if (!Array.isArray(items)) {
       this.deleteItem(items, options);
-      return [items.id];
+      return [items[idPropName]];
     }
     const itemIds = [];
     items.forEach((item: any) => {
-      if (item && item.id !== undefined) {
-        itemIds.push(item.id);
+      if (item && item[idPropName] !== undefined) {
+        itemIds.push(item[idPropName]);
       }
       this.deleteItem(item, { ...options, triggerEvent: false });
     });

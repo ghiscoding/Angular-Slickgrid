@@ -66,7 +66,7 @@ describe('DualInputEditor', () => {
       try {
         editor = new DualInputEditor(null);
       } catch (e) {
-        expect(e.toString()).toContain(`[Slickgrid-Universal] Something is wrong with this grid, an Editor must always have valid arguments.`);
+        expect(e.toString()).toContain(`[Angular-Slickgrid] Something is wrong with this grid, an Editor must always have valid arguments.`);
         done();
       }
     });
@@ -74,9 +74,9 @@ describe('DualInputEditor', () => {
     it('should throw an error when initialize the editor without the requires params leftInput/rightInput', (done) => {
       try {
         // @ts-ignore
-        editor = new DualInputEditor({});
+        editor = new DualInputEditor({ grid: gridStub });
       } catch (e) {
-        expect(e.toString()).toContain(`[Slickgrid-Universal] Please make sure that your Combo Input Editor has params defined with "leftInput" and "rightInput"`);
+        expect(e.toString()).toContain(`[Angular-Slickgrid] Please make sure that your Combo Input Editor has params defined with "leftInput" and "rightInput"`);
         done();
       }
     });
