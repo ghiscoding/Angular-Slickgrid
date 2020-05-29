@@ -14,7 +14,7 @@ export const sumTotalsDollarBoldFormatter: GroupTotalsFormatter = (totals: any, 
   const thousandSeparator = getValueFromParamsOrFormatterOptions('thousandSeparator', columnDef, grid, '');
   const displayNegativeNumberWithParentheses = getValueFromParamsOrFormatterOptions('displayNegativeNumberWithParentheses', columnDef, grid, false);
 
-  if (val != null && !isNaN(+val)) {
+  if (val !== null && val !== undefined && !isNaN(+val)) {
     const formattedNumber = formatNumber(val, minDecimal, maxDecimal, displayNegativeNumberWithParentheses, '$', '', decimalSeparator, thousandSeparator);
     return `<b>${prefix}${formattedNumber}${suffix}</b>`;
   }

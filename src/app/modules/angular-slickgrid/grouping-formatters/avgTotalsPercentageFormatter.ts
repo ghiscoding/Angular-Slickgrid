@@ -14,7 +14,7 @@ export const avgTotalsPercentageFormatter: GroupTotalsFormatter = (totals: any, 
   const thousandSeparator = getValueFromParamsOrFormatterOptions('thousandSeparator', columnDef, grid, '');
   const displayNegativeNumberWithParentheses = getValueFromParamsOrFormatterOptions('displayNegativeNumberWithParentheses', columnDef, grid, false);
 
-  if (val != null && !isNaN(+val)) {
+  if (val !== null && val !== undefined && !isNaN(+val)) {
     if (val < 0) {
       val = Math.abs(val);
       if (!displayNegativeNumberWithParentheses) {

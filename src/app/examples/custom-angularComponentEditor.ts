@@ -161,7 +161,7 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   isValueChanged() {
-    return (!(this.componentRef.instance.selectedId === '' && this.defaultId == null)) && (this.componentRef.instance.selectedId !== this.defaultId);
+    return (!(this.componentRef.instance.selectedId === '' && (this.defaultId === null || this.defaultId === undefined))) && (this.componentRef.instance.selectedId !== this.defaultId);
   }
 
   validate(): EditorValidatorOutput {

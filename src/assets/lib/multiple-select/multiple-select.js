@@ -403,7 +403,7 @@
       }).off('keyup').on('keyup', function (e) {
         // enter or space
         // Avoid selecting/deselecting if no choices made
-        if (that.options.filterAcceptOnEnter && (e.which === 13 || e.which == 32) && that.$searchInput.val()) {
+        if (that.options.filterAcceptOnEnter && (e.which === 13 || e.which === 32) && that.$searchInput.val()) {
           that.$selectAll.click();
           that.close();
           that.focus();

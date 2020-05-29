@@ -25,7 +25,7 @@ const myUppercaseFormatter: Formatter = (row, cell, value, columnDef, dataContex
 const myUppercaseGroupTotalFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column) => {
   const field = columnDef.field || '';
   const val = totals.sum && totals.sum[field];
-  if (val != null && !isNaN(+val)) {
+  if (val !== null && val !== undefined && !isNaN(+val)) {
     return `Custom: ${val}`;
   }
   return '';

@@ -14,8 +14,8 @@ export class MinAggregator implements Aggregator {
 
   accumulate(item: any) {
     const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
-    if (val != null && val !== '' && !isNaN(val)) {
-      if (this._min == null || val < this._min) {
+    if (val !== null && val !== undefined && val !== '' && !isNaN(val)) {
+      if (this._min === null || this._min === undefined || val < this._min) {
         this._min = parseFloat(val);
       }
     }

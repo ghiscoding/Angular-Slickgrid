@@ -229,9 +229,9 @@ export class ExportService {
     // loop through all the grid rows of data
     for (let rowNumber = 0; rowNumber < lineCount; rowNumber++) {
       const itemObj = this._dataView.getItem(rowNumber);
-      if (itemObj != null) {
+      if (itemObj) {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
-        if (itemObj[this.datasetIdName] != null) {
+        if (itemObj[this.datasetIdName] !== null && itemObj[this.datasetIdName] !== undefined) {
           // get regular row item data
           outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {

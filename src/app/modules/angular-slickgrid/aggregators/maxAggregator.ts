@@ -14,8 +14,8 @@ export class MaxAggregator implements Aggregator {
 
   accumulate(item: any) {
     const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
-    if (val != null && val !== '' && !isNaN(val)) {
-      if (this._max == null || val > this._max) {
+    if (val !== null && val !== undefined && val !== '' && !isNaN(val)) {
+      if (this._max === null || this._max === undefined || val > this._max) {
         this._max = parseFloat(val);
       }
     }
