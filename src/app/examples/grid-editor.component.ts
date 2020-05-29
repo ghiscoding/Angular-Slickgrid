@@ -41,7 +41,7 @@ const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) =
   // don't use "editor" property since that one is what SlickGrid uses internally by it's editor factory
   const columnEditor = args && args.column && args.column.internalColumnEditor;
 
-  if (value == null || value === undefined || !value.length) {
+  if (value === null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
     return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number' };
@@ -644,6 +644,7 @@ export class GridEditorComponent implements OnInit {
 
   undo() {
     const command = this._commandQueue.pop();
+    const item = this.angularGrid.dataView.getItem(command.row);
     if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.gridObj.gotoCell(command.row, command.cell, false);

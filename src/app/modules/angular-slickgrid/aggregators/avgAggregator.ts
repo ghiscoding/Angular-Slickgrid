@@ -19,7 +19,7 @@ export class AvgAggregator implements Aggregator {
   accumulate(item: any) {
     const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
     this._count++;
-    if (val != null && val !== '' && !isNaN(val)) {
+    if (val !== null && val !== undefined && val !== '' && !isNaN(val)) {
       this._nonNullCount++;
       this._sum += parseFloat(val);
     }
