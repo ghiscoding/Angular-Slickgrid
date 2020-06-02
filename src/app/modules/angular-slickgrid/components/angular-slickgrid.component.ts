@@ -935,7 +935,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo();
         const pagingTotalRows = slickPagingInfo && slickPagingInfo.totalRows;
-        if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== pagingTotalRows) {
+        if (slickPagingInfo && slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== pagingTotalRows) {
           this.totalItems = pagingTotalRows;
         }
       }
