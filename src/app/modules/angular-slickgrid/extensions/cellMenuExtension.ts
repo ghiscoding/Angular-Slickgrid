@@ -13,6 +13,7 @@ import {
   MenuOptionItem,
   Locale,
   SlickEventHandler,
+  SlickGrid,
 } from '../models/index';
 import { SharedService } from '../services/shared.service';
 import { ExtensionUtility } from './extensionUtility';
@@ -98,17 +99,17 @@ export class CellMenuExtension implements Extension {
           });
         }
         if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onAfterMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: SlickGrid; }) => {
             this.sharedService.gridOptions.cellMenu.onAfterMenuShow(event, args);
           });
         }
         if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: SlickGrid; }) => {
             this.sharedService.gridOptions.cellMenu.onBeforeMenuShow(event, args);
           });
         }
         if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuClose === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: SlickGrid; menu: any; }) => {
             this.sharedService.gridOptions.cellMenu.onBeforeMenuClose(event, args);
           });
         }

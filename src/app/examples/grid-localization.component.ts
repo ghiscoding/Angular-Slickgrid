@@ -10,7 +10,8 @@ import {
   Formatter,
   Formatters,
   GridOption,
-  GridStateChange
+  GridStateChange,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 1500;
@@ -61,7 +62,7 @@ export class GridLocalizationComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
-  gridObj: any;
+  gridObj: SlickGrid;
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent

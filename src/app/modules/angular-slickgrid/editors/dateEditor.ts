@@ -11,6 +11,7 @@ import {
   FieldType,
   FlatpickrOption,
   GridOption,
+  SlickGrid,
 } from './../models/index';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
@@ -38,7 +39,7 @@ export class DateEditor implements Editor {
   originalDate: string;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
   /** Grid options */
   gridOptions: GridOption;

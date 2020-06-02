@@ -337,8 +337,11 @@ export interface SlickGrid {
    * Sets an active cell.
    * @param row A row index.
    * @param cell A column index.
+   * @param optionEditMode Option Edit Mode is Auto-Edit?
+   * @param preClickModeOn Pre-Click Mode is Enabled?
+   * @param suppressActiveCellChangedEvent Are we suppressing Active Cell Changed Event (defaults to false)
    */
-  setActiveCell(row: number, cell: number): void;
+  setActiveCell(row: number, cell: number, optionEditMode?: boolean, preClickModeOn?: boolean, suppressActiveCellChangedEvent?: boolean): void;
 
   /** Sets an active viewport node */
   setActiveViewportNode(element: HTMLElement): void;

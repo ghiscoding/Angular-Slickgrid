@@ -11,6 +11,7 @@ import {
   HtmlElementPosition,
   KeyCode,
   Locale,
+  SlickGrid,
 } from './../models/index';
 import { getDescendantProperty, getHtmlElementOffset, getTranslationPrefix, setDeepValue } from '../services/utilities';
 import { textValidator } from '../editorValidators/textValidator';
@@ -30,7 +31,7 @@ export class LongTextEditor implements Editor {
   defaultValue: any;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
   /** Grid options */
   gridOptions: GridOption;

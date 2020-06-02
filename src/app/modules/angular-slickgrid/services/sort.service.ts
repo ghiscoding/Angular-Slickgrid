@@ -8,6 +8,7 @@ import {
   FieldType,
   GridOption,
   SlickEventHandler,
+  SlickGrid,
   SortDirection,
   SortDirectionNumber,
   SortDirectionString,
@@ -26,8 +27,8 @@ declare const Slick: any;
 export class SortService {
   private _currentLocalSorters: CurrentSorter[] = [];
   private _eventHandler: SlickEventHandler;
-  private _dataView: any;
-  private _grid: any;
+  private _dataView: DataView;
+  private _grid: SlickGrid;
   private _isBackendGrid = false;
   private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
   onSortChanged = new Subject<CurrentSorter[]>();
@@ -254,7 +255,7 @@ export class SortService {
     }
   }
 
-  onBackendSortChanged(event: Event, args: { multiColumnSort?: boolean; grid: any; sortCols: ColumnSort[]; clearSortTriggered?: boolean }) {
+  onBackendSortChanged(event: Event, args: { multiColumnSort?: boolean; grid: SlickGrid; sortCols: ColumnSort[]; clearSortTriggered?: boolean }) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to bind the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
     }

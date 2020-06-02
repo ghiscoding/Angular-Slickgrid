@@ -8,12 +8,14 @@ import {
   CurrentPagination,
   CurrentRowSelection,
   CurrentSorter,
+  DataView,
   ExtensionName,
   GridOption,
   GridState,
   GridStateChange,
   GridStateType,
   SlickEventHandler,
+  SlickGrid,
 } from './../models/index';
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
@@ -31,8 +33,8 @@ export class GridStateService {
   private _eventHandler: SlickEventHandler;
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
-  private _dataView: any;
-  private _grid: any;
+  private _dataView: DataView;
+  private _grid: SlickGrid;
   private _subscriptions: Subscription[] = [];
   private _selectedRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
   private _selectedFilteredRowDataContextIds: Array<number | string> | undefined = []; // used with row selection

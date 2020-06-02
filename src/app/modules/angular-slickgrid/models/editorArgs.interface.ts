@@ -1,9 +1,9 @@
-import { Column, ElementPosition } from './index';
+import { Column, ElementPosition, SlickGrid } from './index';
 
 export interface EditorArgs {
   column: Column;
   container: HTMLDivElement;
-  grid: any;
+  grid: SlickGrid;
   gridPosition: ElementPosition;
   item: any;
   position: ElementPosition;

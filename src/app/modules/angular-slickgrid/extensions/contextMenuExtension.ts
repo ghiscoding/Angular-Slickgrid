@@ -13,6 +13,7 @@ import {
   MenuCommandItemCallbackArgs,
   MenuOptionItemCallbackArgs,
   SlickEventHandler,
+  SlickGrid,
 } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
@@ -113,17 +114,17 @@ export class ContextMenuExtension implements Extension {
           });
         }
         if (contextMenu && typeof contextMenu.onBeforeMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: SlickGrid; }) => {
             contextMenu.onBeforeMenuShow(event, args);
           });
         }
         if (contextMenu && typeof contextMenu.onBeforeMenuClose === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: SlickGrid; menu: any; }) => {
             contextMenu.onBeforeMenuClose(event, args);
           });
         }
         if (contextMenu && typeof contextMenu.onAfterMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: SlickGrid; }) => {
             contextMenu.onAfterMenuShow(event, args);
           });
         }

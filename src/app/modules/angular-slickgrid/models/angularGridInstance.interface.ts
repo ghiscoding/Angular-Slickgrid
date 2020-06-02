@@ -1,4 +1,4 @@
-import { BackendService } from './index';
+import { BackendService, DataView, SlickGrid } from './index';
 import {
   ExcelExportService,
   ExportService,
@@ -16,10 +16,10 @@ import {
 
 export interface AngularGridInstance {
   /** Slick DataView object */
-  dataView: any;
+  dataView: DataView;
 
   /** Slick Grid object */
-  slickGrid: any;
+  slickGrid: SlickGrid;
 
   // --
   // Methods

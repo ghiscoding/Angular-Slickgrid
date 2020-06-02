@@ -6,7 +6,7 @@ import { RowDetailViewExtension } from '../rowDetailViewExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { FilterService, SortService, AngularUtilService } from '../../services';
-import { Column, CurrentFilter } from '../../models';
+import { Column, CurrentFilter, SlickGrid } from '../../models';
 import { of, Subject } from 'rxjs';
 
 declare const Slick: any;
@@ -96,11 +96,11 @@ describe('rowDetailViewExtension', () => {
       viewComponent: null,
       onExtensionRegistered: jest.fn(),
       onAsyncResponse: (e: Event, args: { item: any; detailView?: any }) => { },
-      onAsyncEndUpdate: (e: Event, args: { item: any; grid: any; }) => { },
-      onAfterRowDetailToggle: (e: Event, args: { item: any; expandedRows: any[]; grid: any; }) => { },
-      onBeforeRowDetailToggle: (e: Event, args: { item: any; grid: any; }) => { },
-      onRowOutOfViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => { },
-      onRowBackToViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => { },
+      onAsyncEndUpdate: (e: Event, args: { item: any; grid: SlickGrid; }) => { },
+      onAfterRowDetailToggle: (e: Event, args: { item: any; expandedRows: any[]; grid: SlickGrid; }) => { },
+      onBeforeRowDetailToggle: (e: Event, args: { item: any; grid: SlickGrid; }) => { },
+      onRowOutOfViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: SlickGrid; }) => { },
+      onRowBackToViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: SlickGrid; }) => { },
     }
   } as GridOption;
 

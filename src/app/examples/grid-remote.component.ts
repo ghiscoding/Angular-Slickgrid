@@ -2,7 +2,7 @@ import 'slickgrid/lib/jquery.jsonp-2.4.min';
 import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, Formatter, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, DataView, Formatter, GridOption, SlickGrid } from './../modules/angular-slickgrid';
 
 declare const Slick: any;
 
@@ -51,7 +51,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   customDataView: any;
-  gridObj: any;
+  gridObj: SlickGrid;
   gridOptions: GridOption;
   dataset = [];
   loaderDataView: any;
@@ -70,7 +70,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     this.gridObj.setSortColumn('score', false);
 
     // notify of a change to preload the first page
-    this.gridObj.onViewportChanged.notify();
+    this.gridObj.onViewportChanged.notify({});
   }
 
   ngOnDestroy() {

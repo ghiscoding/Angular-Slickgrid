@@ -14,6 +14,7 @@ import {
   MenuCommandItem,
   MenuCommandItemCallbackArgs,
   SlickEventHandler,
+  SlickGrid,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
 import { SortService } from '../services/sort.service';
@@ -94,12 +95,12 @@ export class HeaderMenuExtension implements Extension {
           }
         });
         if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: Event, args: { grid: any; column: Column; menu: any; }) => {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: Event, args: { grid: SlickGrid; column: Column; menu: any; }) => {
             this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
           });
         }
         if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onAfterMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (e: Event, args: { grid: any; column: Column; menu: any; }) => {
+          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (e: Event, args: { grid: SlickGrid; column: Column; menu: any; }) => {
             this.sharedService.gridOptions.headerMenu.onAfterMenuShow(e, args);
           });
         }

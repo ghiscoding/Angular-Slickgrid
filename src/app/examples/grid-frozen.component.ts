@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption, SlickGrid } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-frozen.component.html',
@@ -25,7 +25,7 @@ export class GridFrozenComponent implements OnInit {
   frozenColumnCount = 2;
   frozenRowCount = 3;
   isFrozenBottom = false;
-  gridObj: any;
+  gridObj: SlickGrid;
 
   ngOnInit(): void {
     this.prepareDataGrid();

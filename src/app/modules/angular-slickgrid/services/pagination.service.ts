@@ -3,7 +3,7 @@ import { Subscription, isObservable, Subject } from 'rxjs';
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
 
-import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, GridOption, Pagination, ServicePagination } from '../models';
+import { BackendServiceApi, CurrentPagination, DataView, GraphqlResult, GraphqlPaginatedResult, Pagination, ServicePagination, SlickGrid } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
 import { SharedService } from './shared.service';
@@ -31,8 +31,8 @@ export class PaginationService {
   onPaginationChanged = new Subject<ServicePagination>();
   onPaginationVisibilityChanged = new Subject<{ visible: boolean }>();
 
-  dataView: any;
-  grid: any;
+  dataView: DataView;
+  grid: SlickGrid;
 
   /** Constructor */
   constructor(private filterService: FilterService, private gridService: GridService, private sharedService: SharedService) { }

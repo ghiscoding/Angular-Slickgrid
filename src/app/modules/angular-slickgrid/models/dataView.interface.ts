@@ -78,7 +78,7 @@ export interface DataView {
   getItemById: <T = any>(id: string | number) => T;
 
   /** Get an item in the dataset by its row index */
-  getItemByIdx(idx: number): number;
+  getItemByIdx: <T = any>(idx: number) => T;
 
   /** Get row index in the dataset by its Id */
   getIdxById(id: string | number): number;

@@ -7,6 +7,7 @@ import {
   OperatorType,
   OperatorString,
   SearchTerm,
+  SlickGrid,
 } from './../models/index';
 
 // using external non-typed js libraries
@@ -23,7 +24,7 @@ export class SliderFilter implements Filter {
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   private $filterElm: any;
-  grid: any;
+  grid: SlickGrid;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;

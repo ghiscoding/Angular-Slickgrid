@@ -14,15 +14,16 @@ import {
   FieldType,
   GridOption,
   OdataOption,
+  OdataSortingOption,
+  OperatorString,
+  OperatorType,
   Pagination,
   PaginationChangedArgs,
+  SearchTerm,
   SortChangedArgs,
   SortDirection,
   SortDirectionString,
-  OperatorType,
-  OdataSortingOption,
-  OperatorString,
-  SearchTerm
+  SlickGrid,
 } from './../models/index';
 import { OdataQueryBuilderService } from './odataQueryBuilder.service';
 
@@ -35,7 +36,7 @@ export class GridOdataService implements BackendService {
   private _currentPagination: CurrentPagination;
   private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
-  private _grid: any;
+  private _grid: SlickGrid;
   private _odataService: OdataQueryBuilderService;
   options: Partial<OdataOption>;
   pagination: Pagination | undefined;
@@ -427,7 +428,7 @@ export class GridOdataService implements BackendService {
       currentSorters.forEach((sorter) => sorter.direction = sorter.direction.toLowerCase() as SortDirectionString);
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-      const tmpSorterArray = currentSorters.map((sorter) => {
+      const tmpSorterArray: ColumnSort[] = currentSorters.map((sorter) => {
         const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
 
         odataSorters.push({

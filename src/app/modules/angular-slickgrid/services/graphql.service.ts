@@ -18,13 +18,14 @@ import {
   GraphqlSortingOption,
   GridOption,
   MultiColumnSort,
+  OperatorString,
   OperatorType,
   Pagination,
   PaginationChangedArgs,
   SortChangedArgs,
   SortDirection,
   SortDirectionString,
-  OperatorString
+  SlickGrid,
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
@@ -36,7 +37,7 @@ export class GraphqlService implements BackendService {
   private _currentPagination: CurrentPagination;
   private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
-  private _grid: any;
+  private _grid: SlickGrid;
   private _datasetIdPropName = 'id';
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;

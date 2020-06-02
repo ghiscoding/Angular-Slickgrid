@@ -9,6 +9,7 @@ import {
   ColumnFilter,
   ColumnFilters,
   CurrentFilter,
+  DataView,
   EmitterType,
   FieldType,
   Filter,
@@ -23,6 +24,7 @@ import {
   SearchTerm,
   SlickEvent,
   SlickEventHandler,
+  SlickGrid,
 } from './../models/index';
 import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
@@ -45,8 +47,8 @@ export class FilterService {
   private _firstColumnIdRendered = '';
   private _filtersMetadata: any[] = [];
   private _columnFilters: ColumnFilters = {};
-  private _dataView: any;
-  private _grid: any;
+  private _dataView: DataView;
+  private _grid: SlickGrid;
   private _onSearchChange: SlickEvent;
   private _tmpPreFilteredData: number[];
   private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
@@ -697,7 +699,7 @@ export class FilterService {
   // -------------------
 
   /** Add all created filters (from their template) to the header row section area */
-  private addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: HTMLElement }, isFilterFirstRender = true) {
+  private addFilterTemplateToHeaderRow(args: { column: Column; grid: SlickGrid; node: HTMLElement }, isFilterFirstRender = true) {
     const columnDef = args.column;
     const columnId = columnDef && columnDef.id || '';
 

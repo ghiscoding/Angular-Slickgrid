@@ -18,6 +18,7 @@ import {
   OperatorString,
   SearchTerm,
   SelectOption,
+  SlickGrid,
 } from './../models/index';
 import { Constants } from './../constants';
 import { Locale } from './../models/locale.interface';
@@ -41,7 +42,7 @@ export class SelectFilter implements Filter {
   /** The JQuery DOM element */
   $filterElm: any;
 
-  grid: any;
+  grid: SlickGrid;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;

@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { GridOption, SlickGrid } from './../models/index';
 import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
@@ -20,7 +20,7 @@ export interface GridDimension {
 export class ResizerService {
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
-  private _grid: any;
+  private _grid: SlickGrid;
   private _gridDomElm: any;
   private _gridContainerElm: any;
   private _lastDimensions: GridDimension;

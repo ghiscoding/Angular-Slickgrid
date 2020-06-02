@@ -1,6 +1,8 @@
+import { SlickGrid } from './slickGrid.interface';
+
 export interface CellArgs {
   row: number;
   cell: number;
-  grid: any; // TODO replace by the Slickgrid Object
+  grid: SlickGrid;
   item?: any;
 }

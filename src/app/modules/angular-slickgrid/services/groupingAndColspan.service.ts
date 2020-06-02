@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Column, GridOption, SlickEventHandler } from './../models/index';
+import { Column, GridOption, SlickEventHandler, SlickGrid } from './../models/index';
 import { ExtensionUtility } from '../extensions/extensionUtility';
 import { ResizerService } from './resizer.service';
 
@@ -14,7 +14,7 @@ declare const Slick: any;
 @Injectable()
 export class GroupingAndColspanService {
   private _eventHandler: SlickEventHandler;
-  private _grid: any;
+  private _grid: SlickGrid;
 
   constructor(private extensionUtility: ExtensionUtility, private resizerService: ResizerService, @Optional() private translate: TranslateService) {
     this._eventHandler = new Slick.EventHandler();

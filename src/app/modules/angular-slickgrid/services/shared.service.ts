@@ -1,12 +1,12 @@
 import { Subject } from 'rxjs';
 
-import { Column, CurrentPagination, GridOption } from '../models';
+import { Column, CurrentPagination, GridOption, SlickGrid } from '../models';
 
 export class SharedService {
   private _allColumns: Column[];
-  private _dataView: any;
+  private _dataView: DataView;
   private _groupItemMetadataProvider: any;
-  private _grid: any;
+  private _grid: SlickGrid;
   private _gridOptions: GridOption;
   private _currentPagination: CurrentPagination;
   private _hideHeaderRowAfterPageLoad = false;
