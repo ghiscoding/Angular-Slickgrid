@@ -6,6 +6,7 @@ import {
   ExtensionName,
   ExtensionModel,
   Column,
+  SlickGrid,
 } from '../../models';
 import {
   AutoTooltipExtension,
@@ -36,7 +37,7 @@ const gridStub = {
   onColumnsResized: jest.fn(),
   registerPlugin: jest.fn(),
   setSelectedRows: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 const extensionStub = {
   create: jest.fn(),

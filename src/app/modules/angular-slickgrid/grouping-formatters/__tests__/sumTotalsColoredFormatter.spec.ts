@@ -1,11 +1,11 @@
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, SlickGrid } from '../../models';
 import { sumTotalsColoredFormatter } from '../sumTotalsColoredFormatter';
 
 describe('sumTotalsColoredFormatter', () => {
   // stub some methods of the SlickGrid Grid instance
   const gridStub = {
     getOptions: jest.fn()
-  };
+  } as unknown as SlickGrid;
 
   it('should display an empty string when no value is provided', () => {
     const output = sumTotalsColoredFormatter({}, {} as Column);
@@ -78,7 +78,7 @@ describe('sumTotalsColoredFormatter', () => {
   });
 
   it('should display a negative sum with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
     const columnDef = { id: 'column3', field: 'column3' } as Column;
     const totals = { sum: { column1: 123, column2: 345, column3: -2.4 } };
     const output = sumTotalsColoredFormatter(totals, columnDef, gridStub);
@@ -106,7 +106,7 @@ describe('sumTotalsColoredFormatter', () => {
   });
 
   it('should display an sum number with user defined minimum & maximum decimal count in his grid option', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { minDecimal: 0, maxDecimal: 3, displayNegativeNumberWithParentheses: true } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { minDecimal: 0, maxDecimal: 3, displayNegativeNumberWithParentheses: true } } as GridOption);
     const totals = { sum: { column1: 123.45678, column2: 345, column3: -2.45 } };
 
     const output1 = sumTotalsColoredFormatter(totals, { id: 'column1', field: 'column1' } as Column, gridStub);

@@ -14,6 +14,7 @@ import {
   FieldType,
   CurrentSorter,
   OdataOption,
+  SlickGrid,
 } from '../../models';
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
@@ -40,7 +41,7 @@ const gridStub = {
   registerPlugin: jest.fn(),
   setSelectedRows: jest.fn(),
   setSortColumns: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('GridOdataService', () => {
   let mockColumns: Column[];

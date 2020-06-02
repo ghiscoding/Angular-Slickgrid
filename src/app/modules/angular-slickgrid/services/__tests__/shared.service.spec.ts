@@ -1,12 +1,12 @@
 import { SharedService } from '..';
-import { Column, CurrentPagination, GridOption } from '../../models';
+import { Column, CurrentPagination, DataView, GridOption, SlickGrid } from '../../models';
 
 jest.mock('flatpickr', () => { });
 
 const dataviewStub = {
   onRowCountChanged: jest.fn(),
   onRowsChanged: jest.fn(),
-};
+} as unknown as DataView;
 
 const gridStub = {
   autosizeColumns: jest.fn(),
@@ -17,7 +17,7 @@ const gridStub = {
   onColumnsReordered: jest.fn(),
   onColumnsResized: jest.fn(),
   registerPlugin: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('Shared Service', () => {
   let mockColumns: Column[];

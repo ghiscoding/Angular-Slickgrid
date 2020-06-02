@@ -4,14 +4,14 @@ import { GridOption } from '../../models/gridOption.interface';
 import { ColumnPickerExtension } from '../columnPickerExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column } from '../../models';
+import { Column, SlickGrid } from '../../models';
 
 declare const Slick: any;
 
 const gridStub = {
   getOptions: jest.fn(),
   registerPlugin: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),

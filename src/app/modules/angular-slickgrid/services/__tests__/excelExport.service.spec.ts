@@ -4,13 +4,15 @@ import * as moment from 'moment-mini';
 
 import {
   Column,
+  DataView,
+  ExcelExportOption,
+  FieldType,
   FileType,
   Formatter,
   GridOption,
-  FieldType,
   GroupTotalsFormatter,
+  SlickGrid,
   SortDirectionNumber,
-  ExcelExportOption,
 } from '../../models';
 import { ExcelExportService } from '../excelExport.service';
 import { Formatters } from '../../formatters/index';
@@ -46,7 +48,7 @@ const dataViewStub = {
   getItem: jest.fn(),
   getLength: jest.fn(),
   setGrouping: jest.fn(),
-};
+} as unknown as DataView;
 
 const mockGridOptions = {
   enableExcelExport: true,
@@ -59,7 +61,7 @@ const gridStub = {
   getOptions: () => mockGridOptions,
   getColumns: jest.fn(),
   getGrouping: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('ExcelExportService', () => {
   let mockColumns: Column[];

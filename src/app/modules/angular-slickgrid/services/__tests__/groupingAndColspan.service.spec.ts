@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
-import { GridOption, SlickEventHandler, Column } from '../../models';
+import { Column, DataView, GridOption, SlickEventHandler, SlickGrid } from '../../models';
 import { ResizerService, GridDimension } from '../resizer.service';
 import { ExtensionUtility } from '../../extensions/extensionUtility';
 import { SharedService } from '../shared.service';
@@ -23,7 +23,7 @@ const dataViewStub = {
   sort: jest.fn(),
   onRowCountChanged: new Slick.Event(),
   reSort: jest.fn(),
-};
+} as unknown as DataView;
 
 const mockExtensionUtility = {
   loadExtensionDynamically: jest.fn(),
@@ -48,7 +48,7 @@ const gridStub = {
   render: jest.fn(),
   setColumns: jest.fn(),
   setSortColumns: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 const resizerServiceStub = {
   init: jest.fn(),
@@ -153,7 +153,7 @@ describe('GroupingAndColspanService', () => {
       ];
       gridStub.getColumns = jest.fn();
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      jest.spyOn(gridStub, 'getPreHeaderPanel').mockReturnValue(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns"></div>`);
+      jest.spyOn(gridStub, 'getPreHeaderPanel').mockReturnValue(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns"></div>` as unknown as HTMLElement);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" on initial load even when there are no column definitions', () => {

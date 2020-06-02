@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Column, FilterArguments, GridOption } from '../../models';
+import { Column, FilterArguments, GridOption, SlickGrid } from '../../models';
 import { Filters } from '..';
 import { CompoundInputNumberFilter } from '../compoundInputNumberFilter';
 
@@ -19,7 +19,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getHeaderRowColumn: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('CompoundInputNumberFilter', () => {
   let divContainer: HTMLDivElement;

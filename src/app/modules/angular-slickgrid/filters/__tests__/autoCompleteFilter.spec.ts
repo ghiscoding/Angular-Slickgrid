@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+
 import { Filters } from '..';
 import { AutoCompleteFilter } from '../autoCompleteFilter';
-import { AutocompleteOption, Column, FieldType, FilterArguments, GridOption, OperatorType } from '../../models';
+import { AutocompleteOption, Column, FieldType, FilterArguments, GridOption, OperatorType, SlickGrid } from '../../models';
 import { CollectionService } from './../../services/collection.service';
 import { of, Subject } from 'rxjs';
 
@@ -21,7 +22,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getHeaderRowColumn: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('AutoCompleteFilter', () => {
   let divContainer: HTMLDivElement;
