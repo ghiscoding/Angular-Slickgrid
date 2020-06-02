@@ -448,6 +448,7 @@ export interface SlickGrid {
   onAutosizeColumns: SlickEvent;
   onBeforeAppendCell: SlickEvent;
   onBeforeCellEditorDestroy: SlickEvent;
+  onBeforeColumnsResize: SlickEvent;
   onBeforeDestroy: SlickEvent;
   onBeforeEditCell: SlickEvent;
   onBeforeHeaderCellDestroy: SlickEvent;
