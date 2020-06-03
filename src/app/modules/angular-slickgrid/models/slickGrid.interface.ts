@@ -454,6 +454,7 @@ export interface SlickGrid {
   onCellChange: SlickEvent;
   onCellCssStylesChanged: SlickEvent;
   onClick: SlickEvent;
+  onColumnsDrag: SlickEvent;
   onColumnsReordered: SlickEvent;
   onColumnsResized: SlickEvent;
   onContextMenu: SlickEvent;
