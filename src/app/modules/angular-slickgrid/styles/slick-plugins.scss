@@ -19,6 +19,13 @@
   overflow: auto;
   resize: both;
 
+  /* make sure that other UI frameworks aren't overriding our properties (Bulma was one of them affecting this) */
+  &.dropdown,
+  &.dropup {
+    display: inline-block;
+    position: absolute;
+  }
+
   > .close {
     float: right;
     cursor: pointer;
@@ -129,6 +136,13 @@
   display: inline-block;
   overflow: auto;
   resize: both;
+
+  /* make sure that other UI frameworks aren't overriding our properties (Bulma was one of them affecting this) */
+  &.dropdown,
+  &.dropup {
+    display: inline-block;
+    position: absolute;
+  }
 
   > .close {
     float: right;
