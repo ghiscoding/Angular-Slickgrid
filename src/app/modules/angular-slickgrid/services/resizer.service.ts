@@ -38,7 +38,7 @@ export class ResizerService {
     return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions && this._gridOptions.gridId;
   }
 
-  init(grid: any, fixedDimensions?: GridDimension): void {
+  init(grid: SlickGrid, fixedDimensions?: GridDimension): void {
     if (!grid || !this._gridOptions) {
       throw new Error(`
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.

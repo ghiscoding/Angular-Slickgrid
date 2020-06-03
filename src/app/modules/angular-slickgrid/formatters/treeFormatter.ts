@@ -1,7 +1,7 @@
-import { Column, Formatter, GridOption } from './../models/index';
+import { Column, Formatter, GridOption, SlickGrid } from './../models/index';
 import { getDescendantProperty, htmlEncode } from '../services/utilities';
 
-export const treeFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+export const treeFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: SlickGrid) => {
   const dataView = grid && grid.getData();
   const gridOptions = grid && grid.getOptions() as GridOption;
   const treeDataOptions = gridOptions && gridOptions.treeDataOptions;

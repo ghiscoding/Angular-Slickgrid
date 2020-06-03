@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Column, GridOption, SlickEventHandler, SlickGrid } from './../models/index';
+import { Column, DataView, GridOption, SlickEventHandler, SlickGrid } from './../models/index';
 import { ExtensionUtility } from '../extensions/extensionUtility';
 import { ResizerService } from './resizer.service';
 
@@ -35,7 +35,7 @@ export class GroupingAndColspanService {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
-  init(grid: any, dataView: any) {
+  init(grid: SlickGrid, dataView: DataView) {
     this._grid = grid;
 
     if (grid && this._gridOptions) {

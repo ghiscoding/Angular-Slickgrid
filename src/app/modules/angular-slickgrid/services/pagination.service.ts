@@ -79,7 +79,7 @@ export class PaginationService {
     return this._totalItems;
   }
 
-  init(grid: any, dataView: any, paginationOptions: Pagination, backendServiceApi?: BackendServiceApi) {
+  init(grid: SlickGrid, dataView: DataView, paginationOptions: Pagination, backendServiceApi?: BackendServiceApi) {
     this._availablePageSizes = paginationOptions.pageSizes;
     this.dataView = dataView;
     this.grid = grid;

@@ -47,7 +47,7 @@ export class GridService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  init(grid: any, dataView: any): void {
+  init(grid: SlickGrid, dataView: DataView): void {
     this._grid = grid;
     this._dataView = dataView;
   }

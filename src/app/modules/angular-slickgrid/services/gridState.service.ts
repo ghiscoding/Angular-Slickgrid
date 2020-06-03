@@ -76,7 +76,7 @@ export class GridStateService {
    * Initialize the Grid State Service
    * @param grid
    */
-  init(grid: any, dataView: any): void {
+  init(grid: SlickGrid, dataView: DataView): void {
     this._grid = grid;
     this._dataView = dataView;
     this.subscribeToAllGridChanges(grid);
@@ -155,7 +155,7 @@ export class GridStateService {
    * @param grid
    * @param currentColumns
    */
-  getAssociatedGridColumns(grid: any, currentColumns: CurrentColumn[]): Column[] {
+  getAssociatedGridColumns(grid: SlickGrid, currentColumns: CurrentColumn[]): Column[] {
     const columns: Column[] = [];
     const gridColumns: Column[] = grid.getColumns();
 
@@ -306,7 +306,7 @@ export class GridStateService {
    * Subscribe to all necessary SlickGrid or Service Events that deals with a Grid change,
    * when triggered, we will publish a Grid State Event with current Grid State
    */
-  subscribeToAllGridChanges(grid: any) {
+  subscribeToAllGridChanges(grid: SlickGrid) {
     // Subscribe to Event Emitter of Filter changed
     this._subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
@@ -395,7 +395,7 @@ export class GridStateService {
    * @param event name
    * @param grid
    */
-  private bindSlickGridColumnChangeEventToGridStateChange(eventName: string, grid: any) {
+  private bindSlickGridColumnChangeEventToGridStateChange(eventName: string, grid: SlickGrid) {
     const slickGridEvent = grid && grid[eventName];
 
     if (slickGridEvent && slickGridEvent.subscribe) {

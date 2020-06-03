@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Extension, ExtensionName, SlickEventHandler } from '../models/index';
+import { Extension, ExtensionName, SlickEventHandler, SlickGrid } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 
@@ -52,7 +52,7 @@ export class ColumnPickerExtension implements Extension {
         if (this.sharedService.gridOptions.columnPicker.onExtensionRegistered) {
           this.sharedService.gridOptions.columnPicker.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columns: any, grid: any }) => {
+        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columns: any, grid: SlickGrid }) => {
           if (this.sharedService.gridOptions.columnPicker && typeof this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
             this.sharedService.gridOptions.columnPicker.onColumnsChanged(e, args);
           }

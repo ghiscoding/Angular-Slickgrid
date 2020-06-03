@@ -42,7 +42,7 @@ export class TreeDataService {
     }
   }
 
-  init(grid: any) {
+  init(grid: SlickGrid) {
     this._grid = grid;
 
     // subscribe to the SlickGrid event and call the backend execution

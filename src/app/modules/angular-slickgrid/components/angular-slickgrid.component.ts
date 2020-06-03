@@ -459,7 +459,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   // private functions
   // ------------------
 
-  private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
+  private bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate && this.translate.onLangChange) {
       // translate some of them on first load, then on each language change
@@ -688,7 +688,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private bindResizeHook(grid: any, options: GridOption) {
+  private bindResizeHook(grid: SlickGrid, options: GridOption) {
     // expand/autofit columns on first page load
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
@@ -708,7 +708,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any) {
+  private executeAfterDataviewCreated(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {

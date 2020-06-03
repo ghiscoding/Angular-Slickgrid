@@ -1,8 +1,8 @@
-import { Column, Formatter } from './../models/index';
+import { Column, Formatter, SlickGrid } from './../models/index';
 import { formatNumber } from './../services/utilities';
 import { getValueFromParamsOrFormatterOptions } from './formatterUtilities';
 
-export const dollarColoredBoldFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+export const dollarColoredBoldFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: SlickGrid) => {
   const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
   const minDecimal = getValueFromParamsOrFormatterOptions('minDecimal', columnDef, grid, 2);
   const maxDecimal = getValueFromParamsOrFormatterOptions('maxDecimal', columnDef, grid, 4);

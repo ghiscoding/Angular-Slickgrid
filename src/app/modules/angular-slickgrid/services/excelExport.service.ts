@@ -61,7 +61,7 @@ export class ExcelExportService {
    * @param grid
    * @param dataView
    */
-  init(grid: any, dataView: any): void {
+  init(grid: SlickGrid, dataView: DataView): void {
     this._grid = grid;
     this._dataView = dataView;
 

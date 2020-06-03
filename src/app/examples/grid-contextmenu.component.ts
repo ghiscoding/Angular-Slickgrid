@@ -10,6 +10,7 @@ import {
   Formatter,
   Formatters,
   GridOption,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
@@ -46,7 +47,7 @@ const priorityExportFormatter: Formatter = (row, cell, value, columnDef, dataCon
   return translate && translate.instant && translate.instant(key);
 };
 
-const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
+const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: SlickGrid) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const translate = gridOptions.i18n;
 
