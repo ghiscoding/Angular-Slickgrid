@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GridRowDetailComponent } from './grid-rowdetail.component';
+import { DataView, SlickGrid } from '../modules/angular-slickgrid/models';
 
 @Component({
   templateUrl: './rowdetail-view.component.html'
@@ -18,8 +19,8 @@ export class RowDetailViewComponent {
 
   // you also have access to the following objects (it must match the exact property names shown below)
   addon: any; // row detail addon instance
-  grid: any;
-  dataView: any;
+  grid: SlickGrid;
+  dataView: DataView;
 
   // you can also optionally use the Parent Component reference
   // NOTE that you MUST provide it through the "parent" property in your "rowDetail" grid options

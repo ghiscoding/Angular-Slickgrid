@@ -11,6 +11,7 @@ import {
   Formatters,
   GridOption,
   OnEventArgs,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomActionFormatterComponent } from './custom-actionFormatter.component';
@@ -58,7 +59,7 @@ export class GridAngularComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  gridObj: any;
+  gridObj: SlickGrid;
   isAutoEdit = true;
   alertWarning: any;
   updatedObject: any;

@@ -4,11 +4,13 @@ import { Subject } from 'rxjs';
 import {
   CellArgs,
   Column,
+  DataView,
   GridOption,
   GridServiceDeleteOption,
   GridServiceInsertOption,
   GridServiceUpdateOption,
-  OnEventArgs
+  OnEventArgs,
+  SlickGrid,
 } from './../models/index';
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
@@ -25,8 +27,8 @@ const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow:
 
 @Injectable()
 export class GridService {
-  private _grid: any;
-  private _dataView: any;
+  private _grid: SlickGrid;
+  private _dataView: DataView;
   onItemAdded = new Subject<any | any[]>();
   onItemDeleted = new Subject<any | any[]>();
   onItemUpdated = new Subject<any | any[]>();
@@ -45,7 +47,7 @@ export class GridService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  init(grid: any, dataView: any): void {
+  init(grid: SlickGrid, dataView: DataView): void {
     this._grid = grid;
     this._dataView = dataView;
   }

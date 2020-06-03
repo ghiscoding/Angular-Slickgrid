@@ -15,6 +15,7 @@ import {
   GridOption,
   OnEventArgs,
   OperatorType,
+  SlickGrid,
   Sorters,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
@@ -90,7 +91,7 @@ export class GridEditorComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  gridObj: any;
+  gridObj: SlickGrid;
   isAutoEdit = true;
   alertWarning: any;
   updatedObject: any;

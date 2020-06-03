@@ -21,7 +21,22 @@ import {
   SortService,
   TreeDataService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
+import {
+  Column,
+  CurrentFilter,
+  CurrentSorter,
+  DataView,
+  GraphqlPaginatedResult,
+  GraphqlServiceApi,
+  GraphqlServiceOption,
+  GridOption,
+  GridState,
+  GridStateChange,
+  GridStateType,
+  Pagination,
+  ServicePagination,
+  SlickGrid,
+} from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
@@ -186,7 +201,7 @@ const mockDataView = {
   reSort: jest.fn(),
   setItems: jest.fn(),
   syncGridSelection: jest.fn(),
-};
+} as unknown as DataView;
 
 const mockDraggableGrouping = {
   constructor: jest.fn(),
@@ -225,7 +240,7 @@ const mockGrid = {
   onRendered: jest.fn(),
   onScroll: jest.fn(),
   onDataviewCreated: new Slick.Event(),
-};
+} as unknown as SlickGrid;
 
 const mockSlickCoreImplementation = jest.fn().mockImplementation(() => (mockSlickCore));
 const mockDataViewImplementation = jest.fn().mockImplementation(() => (mockDataView));
@@ -708,7 +723,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const expectedPageNumber = 3;
         const expectedTotalItems = 15;
         const refreshSpy = jest.spyOn(component, 'refreshGridData');
-        const getPagingSpy = jest.spyOn(mockDataView, 'getPagingInfo').mockReturnValue({ pageNum: 1, totalRows: expectedTotalItems });
+        const getPagingSpy = jest.spyOn(mockDataView, 'getPagingInfo').mockReturnValue({ pageNum: 1, pageSize: 10, totalRows: expectedTotalItems });
 
         const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
         component.gridOptions = {

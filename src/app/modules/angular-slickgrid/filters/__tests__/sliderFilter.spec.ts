@@ -1,4 +1,4 @@
-import { GridOption, FilterArguments, Column } from '../../models';
+import { GridOption, FilterArguments, Column, SlickGrid } from '../../models';
 import { Filters } from '..';
 import { SliderFilter } from '../sliderFilter';
 
@@ -17,7 +17,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getHeaderRowColumn: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('SliderFilter', () => {
   let divContainer: HTMLDivElement;

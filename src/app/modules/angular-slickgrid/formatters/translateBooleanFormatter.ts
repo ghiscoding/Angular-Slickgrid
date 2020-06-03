@@ -1,7 +1,7 @@
-import { Column, Formatter } from './../models/index';
+import { Column, Formatter, SlickGrid } from './../models/index';
 
 /** Takes a boolean value, cast it to upperCase string and finally translates it with the "ngx-translate" service */
-export const translateBooleanFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+export const translateBooleanFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: SlickGrid) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const translate = gridOptions.i18n || (columnDef && columnDef.params && columnDef.params.i18n);
 

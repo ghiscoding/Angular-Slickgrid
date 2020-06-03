@@ -1,10 +1,10 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, FilterCallback, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import { Column, FilterCallback, OperatorString, OperatorType, SearchTerm, SlickGrid } from './../models/index';
 
 export interface FilterArguments {
-  grid: any;
   columnDef: Column;
   callback: FilterCallback;
+  grid: SlickGrid;
   operator?: OperatorType | OperatorString;
   searchTerms?: SearchTerm[];
   i18n?: TranslateService;

@@ -21,6 +21,7 @@ import {
   BackendServiceOption,
   Column,
   CustomFooterOption,
+  DataView,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -33,6 +34,7 @@ import {
   ServicePagination,
   SlickEventHandler,
   TreeDataOption,
+  SlickGrid,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
@@ -129,8 +131,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
-  dataView: any;
-  grid: any;
+  dataView: DataView;
+  grid: SlickGrid;
   gridHeightString: string;
   gridWidthString: string;
   groupingDefinition: any = {};
@@ -457,7 +459,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   // private functions
   // ------------------
 
-  private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
+  private bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate && this.translate.onLangChange) {
       // translate some of them on first load, then on each language change
@@ -686,7 +688,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private bindResizeHook(grid: any, options: GridOption) {
+  private bindResizeHook(grid: SlickGrid, options: GridOption) {
     // expand/autofit columns on first page load
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
@@ -706,7 +708,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any) {
+  private executeAfterDataviewCreated(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
@@ -931,9 +933,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions) {
       this.totalItems = Array.isArray(this.dataset) ? this.dataset.length : 0;
       if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
-        const slickPagingInfo = this.dataView.getPagingInfo() || {};
-        if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== slickPagingInfo.totalRows) {
-          this.totalItems = slickPagingInfo.totalRows;
+        const slickPagingInfo = this.dataView.getPagingInfo();
+        const pagingTotalRows = slickPagingInfo && slickPagingInfo.totalRows;
+        if (slickPagingInfo && slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== pagingTotalRows) {
+          this.totalItems = pagingTotalRows;
         }
       }
       this.paginationOptions.totalItems = this.totalItems;

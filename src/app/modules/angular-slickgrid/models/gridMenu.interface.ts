@@ -2,6 +2,7 @@ import { Column } from './column.interface';
 import { GridMenuItem } from './gridMenuItem.interface';
 import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
+import { SlickGrid } from './slickGrid.interface';
 
 export interface GridMenu {
   /** Defaults to 0 (auto), minimum width of grid menu content (command, column list) */
@@ -129,16 +130,16 @@ export interface GridMenu {
   onExtensionRegistered?: (plugin: any) => void;
 
   /** SlickGrid Event fired After the menu is shown. */
-  onAfterMenuShow?: (e: Event, args: { grid: any; menu: any; columns: Column[] }) => void;
+  onAfterMenuShow?: (e: Event, args: { grid: SlickGrid; menu: any; columns: Column[] }) => void;
 
   /** SlickGrid Event fired Before the menu is shown. */
-  onBeforeMenuShow?: (e: Event, args: { grid: any; menu: any; columns: Column[] }) => void;
+  onBeforeMenuShow?: (e: Event, args: { grid: SlickGrid; menu: any; columns: Column[] }) => void;
 
   /** SlickGrid Event fired when any of the columns checkbox selection changes. */
-  onColumnsChanged?: (e: Event, args: { grid: any; allColumns: Column[]; columns: Column[]; }) => void;
+  onColumnsChanged?: (e: Event, args: { grid: SlickGrid; allColumns: Column[]; columns: Column[]; }) => void;
 
   /** SlickGrid Event fired when the menu is closing. */
-  onMenuClose?: (e: Event, args: { grid: any; menu: any; allColumns: Column[], visibleColumns: Column[] }) => void;
+  onMenuClose?: (e: Event, args: { grid: SlickGrid; menu: any; allColumns: Column[], visibleColumns: Column[] }) => void;
 
   /** SlickGrid Event fired on menu option clicked from the Command items list */
   onCommand?: (e: Event, args: MenuCommandItemCallbackArgs) => void;

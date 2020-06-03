@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { LongTextEditor } from '../longTextEditor';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, KeyCode } from '../../models';
+import { AutocompleteOption, Column, DataView, EditorArgs, EditorArguments, GridOption, KeyCode, SlickGrid } from '../../models';
 
 const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
@@ -12,7 +12,7 @@ const template = `<div id="${containerId}"></div>`;
 
 const dataViewStub = {
   refresh: jest.fn(),
-};
+} as unknown as DataView;
 
 const gridOptionMock = {
   autoCommitEdit: false,
@@ -32,7 +32,7 @@ const gridStub = {
   navigateNext: jest.fn(),
   navigatePrev: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('LongTextEditor', () => {
   let divContainer: HTMLDivElement;
@@ -75,7 +75,7 @@ describe('LongTextEditor', () => {
       commitChanges: jest.fn(),
       container: divContainer,
       columnMetaData: null,
-      dataView: dataViewStub,
+      dataView: dataViewStub as any,
       gridPosition: { top: 0, left: 0, bottom: 10, right: 10, height: 100, width: 100, visible: true },
       position: { top: 0, left: 0, bottom: 10, right: 10, height: 100, width: 100, visible: true },
     };

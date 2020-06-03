@@ -1,3 +1,5 @@
+import { SlickGrid } from './slickGrid.interface';
+
 export interface RowMoveManager {
   /** Defaults to false, option to cancel editing while dragging a row */
   cancelEditOnDrag?: boolean;
@@ -25,7 +27,7 @@ export interface RowMoveManager {
   width?: number;
 
   /** Override the logic for showing (or not) the move icon (use case example: only every 2nd row is moveable) */
-  usabilityOverride?: (row: number, dataContext: any, grid: any) => boolean;
+  usabilityOverride?: (row: number, dataContext: any, grid: SlickGrid) => boolean;
 
   // --
   // SlickGrid Events

@@ -1,4 +1,5 @@
 import { Column } from './column.interface';
+import { SlickGrid } from './slickGrid.interface';
 
 export interface GridMenuItem {
   /** A command identifier to be passed to the onCommand event callback handlers. */
@@ -38,11 +39,11 @@ export interface GridMenuItem {
   // action/override callbacks
 
   /** Optionally define a callback function that gets executed when item is chosen (and/or use the onCommand event) */
-  action?: (event: Event, callbackArgs: { command: string; grid: any; menu: any; columns: Column[]; visibleColumns: Column[] }) => void;
+  action?: (event: Event, callbackArgs: { command: string; grid: SlickGrid; menu: any; columns: Column[]; visibleColumns: Column[] }) => void;
 
   /** Callback method that user can override the default behavior of showing/hiding an item from the list. */
-  itemVisibilityOverride?: (args: { grid: any; menu: any; columns: Column[]; visibleColumns: Column[] }) => boolean;
+  itemVisibilityOverride?: (args: { grid: SlickGrid; menu: any; columns: Column[]; visibleColumns: Column[] }) => boolean;
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
-  itemUsabilityOverride?: (args: { grid: any; menu: any; columns: Column[]; visibleColumns: Column[] }) => boolean;
+  itemUsabilityOverride?: (args: { grid: SlickGrid; menu: any; columns: Column[]; visibleColumns: Column[] }) => boolean;
 }

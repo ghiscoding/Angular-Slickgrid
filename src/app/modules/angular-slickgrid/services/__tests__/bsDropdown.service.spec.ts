@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AngularUtilService } from '../angularUtil.service';
 import { BsDropDownService } from '../bsDropdown.service';
+import { SlickGrid } from '../../models';
 
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
@@ -15,7 +16,7 @@ const angularUtilServiceStub = {
 
 const gridStub = {
   getDataItem: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 // define a <div> container to simulate the grid container
 const gridTemplate =

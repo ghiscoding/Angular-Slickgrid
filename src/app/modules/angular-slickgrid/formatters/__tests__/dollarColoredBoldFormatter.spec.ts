@@ -1,10 +1,10 @@
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, SlickGrid } from '../../models';
 import { dollarColoredBoldFormatter } from '../dollarColoredBoldFormatter';
 
 describe('the DollarColoredBold Formatter', () => {
   const gridStub = {
     getOptions: jest.fn()
-  };
+  } as unknown as SlickGrid;
 
   it('should return an empty string when no value is provided', () => {
     const output = dollarColoredBoldFormatter(1, 1, '', {} as Column, {});
@@ -71,14 +71,14 @@ describe('the DollarColoredBold Formatter', () => {
   });
 
   it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
     const input = -2.4;
     const output = dollarColoredBoldFormatter(1, 1, input, {} as Column, {}, gridStub);
     expect(output).toBe(`<span style="color:red; font-weight:bold;">($2.40)</span>`);
   });
 
   it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled and thousand separator in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, decimalSeparator: ',', thousandSeparator: ' ' } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, decimalSeparator: ',', thousandSeparator: ' ' } } as GridOption);
     const input = -12345678.4;
     const output = dollarColoredBoldFormatter(1, 1, input, {} as Column, {}, gridStub);
     expect(output).toBe(`<span style="color:red; font-weight:bold;">($12 345 678,40)</span>`);

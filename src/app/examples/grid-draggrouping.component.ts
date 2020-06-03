@@ -3,6 +3,7 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
+  DataView,
   DelimiterType,
   FieldType,
   FileType,
@@ -12,6 +13,7 @@ import {
   Grouping,
   GroupingGetterFunction,
   GroupTotalFormatters,
+  SlickGrid,
   SortDirectionNumber,
   Sorters,
 } from './../modules/angular-slickgrid';
@@ -40,10 +42,10 @@ export class GridDraggableGroupingComponent implements OnInit {
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   dataset: any[];
-  dataviewObj: any;
+  dataviewObj: DataView;
   draggableGroupingPlugin: any;
   durationOrderByCount = false;
-  gridObj: any;
+  gridObj: SlickGrid;
   gridOptions: GridOption;
   processing = false;
   selectedGroupingFields: Array<string | GroupingGetterFunction> = ['', '', ''];

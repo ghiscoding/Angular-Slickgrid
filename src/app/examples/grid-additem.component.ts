@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, DataView, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs, SlickGrid } from './../modules/angular-slickgrid';
 
 @Component({
   styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
@@ -29,9 +29,9 @@ export class GridAddItemComponent implements OnInit {
   `;
 
   angularGrid: AngularGridInstance;
-  grid: any;
+  grid: SlickGrid;
   gridService: GridService;
-  dataView: any;
+  dataView: DataView;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];

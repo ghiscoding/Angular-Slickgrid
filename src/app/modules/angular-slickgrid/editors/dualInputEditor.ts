@@ -11,6 +11,7 @@ import {
   GridOption,
   KeyCode,
   SlickEventHandler,
+  SlickGrid,
 } from '../models/index';
 
 // using external non-typed js libraries
@@ -33,7 +34,7 @@ export class DualInputEditor implements Editor {
   originalRightValue: string | number;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
   /** Grid options */
   gridOptions: GridOption;

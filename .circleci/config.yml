@@ -1,4 +1,6 @@
 version: 2
+experimental:
+  pipelines: true
 jobs:
   build:
     working_directory: ~/angular-slickgrid

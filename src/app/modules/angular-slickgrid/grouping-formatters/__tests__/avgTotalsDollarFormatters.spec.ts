@@ -1,11 +1,11 @@
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, SlickGrid } from '../../models';
 import { avgTotalsDollarFormatter } from '../avgTotalsDollarFormatter';
 
 describe('avgTotalsDollarFormatter', () => {
   // stub some methods of the SlickGrid Grid instance
   const gridStub = {
     getOptions: jest.fn()
-  };
+  } as unknown as SlickGrid;
 
   it('should display an empty string when no value is provided', () => {
     const output = avgTotalsDollarFormatter({}, {} as Column);
@@ -69,7 +69,7 @@ describe('avgTotalsDollarFormatter', () => {
   });
 
   it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
     const columnDef = { id: 'column3', field: 'column3' } as Column;
     const totals = { avg: { column1: 123, column2: 345, column3: -2.4 } };
     const output = avgTotalsDollarFormatter(totals, columnDef, gridStub);
@@ -77,7 +77,7 @@ describe('avgTotalsDollarFormatter', () => {
   });
 
   it('should display a negative average with parentheses and thousand separator when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, thousandSeparator: ',' } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, thousandSeparator: ',' } } as GridOption);
     const columnDef = { id: 'column3', field: 'column3' } as Column;
     const totals = { avg: { column1: 123, column2: 345, column3: -12345678.4 } };
     const output = avgTotalsDollarFormatter(totals, columnDef, gridStub);
@@ -107,7 +107,7 @@ describe('avgTotalsDollarFormatter', () => {
   });
 
   it('should display an average number with user defined minimum & maximum decimal count in his grid option', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { minDecimal: 0, maxDecimal: 3, displayNegativeNumberWithParentheses: true } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { minDecimal: 0, maxDecimal: 3, displayNegativeNumberWithParentheses: true } } as GridOption);
     const totals = { avg: { column1: 123.45678, column2: 345, column3: -2.45 } };
 
     const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1' } as Column, gridStub);

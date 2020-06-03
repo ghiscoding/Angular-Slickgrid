@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
+  DataView,
   DelimiterType,
   FileType,
   Formatter,
   GridOption,
   Column,
   FieldType,
+  SlickGrid,
   SortDirectionNumber,
 } from '../../models';
 import { ExportService } from '../export.service';
@@ -23,7 +25,7 @@ function removeMultipleSpaces(textS) {
 
 const myBoldHtmlFormatter: Formatter = (row, cell, value, columnDef, dataContext) => value !== null ? { text: `<b>${value}</b>` } : null;
 const myUppercaseFormatter: Formatter = (row, cell, value, columnDef, dataContext) => value ? { text: value.toUpperCase() } : null;
-const myCustomObjectFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+const myCustomObjectFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
   let textValue = value && value.hasOwnProperty('text') ? value.text : value;
   const toolTip = value && value.hasOwnProperty('toolTip') ? value.toolTip : '';
   const cssClasses = value && value.hasOwnProperty('addClasses') ? [value.addClasses] : [''];
@@ -39,7 +41,7 @@ const dataViewStub = {
   getItem: jest.fn(),
   getLength: jest.fn(),
   setGrouping: jest.fn(),
-};
+} as unknown as DataView;
 
 const mockGridOptions = {
   enablePagination: true,
@@ -51,7 +53,7 @@ const gridStub = {
   getOptions: () => mockGridOptions,
   getColumns: jest.fn(),
   getGrouping: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('ExportService', () => {
   let mockColumns: Column[];

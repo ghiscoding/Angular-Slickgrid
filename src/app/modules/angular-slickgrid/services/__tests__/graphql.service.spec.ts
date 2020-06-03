@@ -3,18 +3,19 @@ import { GraphqlService } from './../graphql.service';
 import {
   Column,
   ColumnFilter,
+  ColumnFilters,
   ColumnSort,
   CurrentFilter,
+  CurrentSorter,
+  FieldType,
   FilterChangedArgs,
   GraphqlServiceApi,
   GraphqlServiceOption,
   GridOption,
   MultiColumnSort,
-  Pagination,
-  ColumnFilters,
   OperatorType,
-  FieldType,
-  CurrentSorter,
+  Pagination,
+  SlickGrid,
 } from '../../models';
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
@@ -45,7 +46,7 @@ const gridStub = {
   registerPlugin: jest.fn(),
   setSelectedRows: jest.fn(),
   setSortColumns: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('GraphqlService', () => {
   let mockColumns: Column[];

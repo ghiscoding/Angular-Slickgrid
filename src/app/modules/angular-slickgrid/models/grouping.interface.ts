@@ -6,14 +6,17 @@ import { SortDirectionNumber } from './sortDirectionNumber.enum';
 export type GroupingGetterFunction = (value: any) => string;
 
 export interface Grouping {
-  /** Getter of the Column to be Grouped */
-  getter?: string | GroupingGetterFunction;
-
   /** Grouping Aggregators array */
   aggregators?: Aggregator[];
 
+  /** Defaults to false, are we aggregating child grouping? */
+  aggregateChildGroups?: boolean;
+
   /** Defaults to false, are the Aggregator Collapsed when grid is loaded */
   aggregateCollapsed?: boolean;
+
+  /** Defaults to false, are we aggregating empty grouping? */
+  aggregateEmpty?: boolean;
 
   /** Defaults to false, is the Group Collapsed when grid is loaded */
   collapsed?: boolean;
@@ -26,6 +29,9 @@ export interface Grouping {
 
   /** String Formatter of the Grouping Header */
   formatter?: (g: GroupingFormatterItem) => string;
+
+  /** Getter of the Column to be Grouped */
+  getter?: string | GroupingGetterFunction;
 
   /** Defaults to false, lazy load the Group Totals Calculation */
   lazyTotalsCalculation?: boolean;

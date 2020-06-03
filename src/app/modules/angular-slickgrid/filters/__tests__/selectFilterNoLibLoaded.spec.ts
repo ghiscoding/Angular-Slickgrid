@@ -1,9 +1,9 @@
 // import 3rd party lib multiple-select for the tests
 // import '../../../../../assets/lib/multiple-select/multiple-select';
-
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { Column, FilterArguments, GridOption } from '../../models';
+
+import { Column, FilterArguments, GridOption, SlickGrid } from '../../models';
 import { CollectionService } from '../../services/collection.service';
 import { Filters } from '..';
 import { SelectFilter } from '../selectFilter';
@@ -27,7 +27,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getHeaderRowColumn: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('SelectFilter', () => {
   let divContainer: HTMLDivElement;

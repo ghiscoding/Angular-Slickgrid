@@ -10,13 +10,14 @@ import {
   Formatter,
   Formatters,
   GridOption,
-  GridStateChange
+  GridStateChange,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 1500;
 
 // create a custom translate Formatter (typically you would move that a separate file, for separation of concerns)
-const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
+const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: SlickGrid) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const translate = gridOptions.i18n;
 
@@ -61,7 +62,7 @@ export class GridLocalizationComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
-  gridObj: any;
+  gridObj: SlickGrid;
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent

@@ -11,6 +11,7 @@ import {
   OperatorType,
   OperatorString,
   SearchTerm,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
@@ -23,7 +24,7 @@ export class CustomAngularComponentFilter implements Filter {
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
 
-  grid: any;
+  grid: SlickGrid;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;

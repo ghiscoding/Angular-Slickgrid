@@ -2,10 +2,12 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
+  DataView,
   FieldType,
   Filters,
   Formatters,
   GridOption,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 200;
@@ -32,8 +34,8 @@ export class GridTreeDataParentChildComponent implements OnInit {
   </ul>`;
 
   angularGrid: AngularGridInstance;
-  dataViewObj: any;
-  gridObj: any;
+  dataViewObj: DataView;
+  gridObj: SlickGrid;
   gridOptions: GridOption;
   columnDefinitions: Column[];
   dataset: any[];

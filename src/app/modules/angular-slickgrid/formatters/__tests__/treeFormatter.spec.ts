@@ -1,16 +1,16 @@
-import { Column, GridOption } from '../../models/index';
+import { Column, DataView, GridOption, SlickGrid } from '../../models/index';
 import { treeFormatter } from '../treeFormatter';
 
 const dataViewStub = {
   getIdxById: jest.fn(),
   getItemByIdx: jest.fn(),
   getIdPropertyName: jest.fn(),
-};
+} as unknown as DataView;
 
 const gridStub = {
   getData: jest.fn(),
   getOptions: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('the Uppercase Formatter', () => {
   let dataset;

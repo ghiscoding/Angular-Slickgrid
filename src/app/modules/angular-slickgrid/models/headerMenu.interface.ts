@@ -1,5 +1,6 @@
 import { Column } from './column.interface';
 import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
+import { SlickGrid } from './slickGrid.interface';
 
 export interface HeaderMenu {
   /** Auto-align drop menu to the left when not enough viewport space to show on the right */
@@ -73,10 +74,10 @@ export interface HeaderMenu {
   onExtensionRegistered?: (plugin: any) => void;
 
   /** Fired After the header menu shows up. */
-  onAfterMenuShow?: (e: Event, args: { grid: any; column: Column; menu: any; }) => void;
+  onAfterMenuShow?: (e: Event, args: { grid: SlickGrid; column: Column; menu: any; }) => void;
 
   /** Fired Before the header menu shows up. */
-  onBeforeMenuShow?: (e: Event, args: { grid: any; column: Column; menu: any; }) => void;
+  onBeforeMenuShow?: (e: Event, args: { grid: SlickGrid; column: Column; menu: any; }) => void;
 
   /** Fired when a command is clicked */
   onCommand?: (e: Event, args: MenuCommandItemCallbackArgs) => void;

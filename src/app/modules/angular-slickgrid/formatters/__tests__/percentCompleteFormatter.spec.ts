@@ -1,10 +1,10 @@
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, SlickGrid } from '../../models';
 import { percentCompleteFormatter } from '../percentCompleteFormatter';
 
 describe('the Percent Complete Formatter', () => {
   const gridStub = {
     getOptions: jest.fn()
-  };
+  } as unknown as SlickGrid;
 
   it('should return an empty string when no value is provided', () => {
     const output = percentCompleteFormatter(1, 1, '', {} as Column, {});
@@ -59,14 +59,14 @@ describe('the Percent Complete Formatter', () => {
   });
 
   it('should display a negative percentage with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, minDecimal: 2 } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, minDecimal: 2 } } as GridOption);
     const input = -2.4;
     const output = percentCompleteFormatter(1, 1, input, {} as Column, {}, gridStub);
     expect(output).toBe(`<span style='color:red'>(2.40%)</span>`);
   });
 
   it('should display a negative average with thousand separator and parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
-    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, minDecimal: 2, decimalSeparator: ',', thousandSeparator: '_' } } as GridOption);
+    (gridStub.getOptions as jest.Mock).mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, minDecimal: 2, decimalSeparator: ',', thousandSeparator: '_' } } as GridOption);
     const input = -345678.024;
     const output = percentCompleteFormatter(1, 1, input, {} as Column, {}, gridStub);
     expect(output).toBe(`<span style='color:red'>(345_678,02%)</span>`);

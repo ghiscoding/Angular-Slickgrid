@@ -9,6 +9,7 @@ import {
   OperatorType,
   OperatorString,
   SearchTerm,
+  SlickGrid,
 } from './../models/index';
 import { Optional } from '@angular/core';
 
@@ -20,7 +21,7 @@ export class NativeSelectFilter implements Filter {
   private _shouldTriggerQuery = true;
   private _currentValues: any | any[] = [];
   $filterElm: any;
-  grid: any;
+  grid: SlickGrid;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;

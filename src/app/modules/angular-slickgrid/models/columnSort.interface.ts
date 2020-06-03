@@ -14,5 +14,5 @@ export interface ColumnSort {
   sortAsc: boolean;
 
   /** Column to be sorted */
-  sortCol: Column;
+  sortCol?: Column;
 }

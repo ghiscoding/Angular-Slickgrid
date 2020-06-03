@@ -2,12 +2,14 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
+  DataView,
   FieldType,
   Filters,
-  Formatters,
-  GridOption,
   findItemInHierarchicalStructure,
   Formatter,
+  Formatters,
+  GridOption,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -28,8 +30,8 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   `;
 
   angularGrid: AngularGridInstance;
-  dataViewObj: any;
-  gridObj: any;
+  dataViewObj: DataView;
+  gridObj: SlickGrid;
   gridOptions: GridOption;
   columnDefinitions: Column[];
   datasetHierarchical: any[] = [];

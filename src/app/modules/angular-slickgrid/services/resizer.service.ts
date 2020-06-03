@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { GridOption, SlickGrid } from './../models/index';
 import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
@@ -20,7 +20,7 @@ export interface GridDimension {
 export class ResizerService {
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
-  private _grid: any;
+  private _grid: SlickGrid;
   private _gridDomElm: any;
   private _gridContainerElm: any;
   private _lastDimensions: GridDimension;
@@ -38,7 +38,7 @@ export class ResizerService {
     return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions && this._gridOptions.gridId;
   }
 
-  init(grid: any, fixedDimensions?: GridDimension): void {
+  init(grid: SlickGrid, fixedDimensions?: GridDimension): void {
     if (!grid || !this._gridOptions) {
       throw new Error(`
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.

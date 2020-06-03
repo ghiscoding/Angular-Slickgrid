@@ -1,4 +1,5 @@
 import { Column } from './column.interface';
+import { SlickGrid } from './slickGrid.interface';
 
 export interface HeaderButtonItem {
   /** A command identifier to be passed to the onCommand event handlers. */
@@ -23,11 +24,11 @@ export interface HeaderButtonItem {
   // action/override callbacks
 
   /** Optionally define a callback function that gets executed when item is chosen (and/or use the onCommand event) */
-  action?: (event: Event, callbackArgs: { command: string; button: any; column: Column; grid: any; }) => void;
+  action?: (event: Event, callbackArgs: { command: string; button: any; column: Column; grid: SlickGrid; }) => void;
 
   /** Callback method that user can override the default behavior of showing/hiding an item from the list. */
-  itemVisibilityOverride?: (args: { node: any; column: Column; grid: any; }) => boolean;
+  itemVisibilityOverride?: (args: { node: any; column: Column; grid: SlickGrid; }) => boolean;
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
-  itemUsabilityOverride?: (args: { node: any; column: Column; grid: any; }) => boolean;
+  itemUsabilityOverride?: (args: { node: any; column: Column; grid: SlickGrid; }) => boolean;
 }

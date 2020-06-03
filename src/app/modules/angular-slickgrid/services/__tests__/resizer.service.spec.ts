@@ -1,4 +1,4 @@
-import { GridOption } from '../../models/gridOption.interface';
+import { GridOption, SlickGrid } from '../../models';
 import { ResizerService } from '../resizer.service';
 
 const DATAGRID_MIN_HEIGHT = 180;
@@ -29,7 +29,7 @@ const gridStub = {
   resizeCanvas: jest.fn(),
   getOptions: () => gridOptionMock,
   getUID: () => gridUid,
-};
+} as unknown as SlickGrid;
 
 // define a <div> container to simulate the grid container
 const template =

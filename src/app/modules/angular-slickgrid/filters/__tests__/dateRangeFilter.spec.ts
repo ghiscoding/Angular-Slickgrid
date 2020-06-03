@@ -1,7 +1,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { Column, FilterArguments, GridOption, FieldType } from '../../models';
+import { Column, FilterArguments, GridOption, FieldType, SlickGrid } from '../../models';
 import { Filters } from '..';
 import { DateRangeFilter } from '../dateRangeFilter';
 
@@ -20,7 +20,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getHeaderRowColumn: jest.fn(),
   render: jest.fn(),
-};
+} as unknown as SlickGrid;
 
 describe('DateRangeFilter', () => {
   let divContainer: HTMLDivElement;
