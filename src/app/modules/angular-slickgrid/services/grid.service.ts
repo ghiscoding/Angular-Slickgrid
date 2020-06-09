@@ -102,7 +102,7 @@ export class GridService {
     if (!this._grid || typeof this._grid.getDataItem !== 'function') {
       throw new Error(`We could not find SlickGrid Grid object or it's "getDataItem" method`);
     }
-    return this._grid.getDataItem<T>(rowNumber);
+    return this._grid.getDataItem(rowNumber);
   }
 
   /** Chain the item Metadata with our implementation of Metadata at given row index */
@@ -189,7 +189,7 @@ export class GridService {
       throw new Error('We could not find SlickGrid Grid object and/or "getDataItem" method');
     }
 
-    return this._grid.getDataItem<T>(index);
+    return this._grid.getDataItem(index);
   }
 
   /** Get the Data Item from an array of grid row indexes */
@@ -613,7 +613,7 @@ export class GridService {
 
     if (this._dataView.getIdxById(itemId) !== undefined) {
       // Update the item itself inside the dataView
-      this._dataView.updateItem<T>(itemId, item);
+      this._dataView.updateItem(itemId, item);
       this._grid.updateRow(rowNumber);
 
       // do we want to scroll to the row so that it shows in the Viewport (UI)
