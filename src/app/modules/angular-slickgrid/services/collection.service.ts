@@ -14,7 +14,7 @@ import { sortByFieldType } from '../sorters/sorterUtilities';
 import { uniqueArray } from './utilities';
 
 @Injectable()
-export class CollectionService {
+export class CollectionService<T = any> {
   constructor(@Optional() private translate: TranslateService) { }
 
   /**
@@ -22,8 +22,8 @@ export class CollectionService {
    * @param collection
    * @param filterByOptions
    */
-  filterCollection(collection: any[], filterByOptions: CollectionFilterBy | CollectionFilterBy[], filterResultBy: FilterMultiplePassType | FilterMultiplePassTypeString | null = FilterMultiplePassType.chain): any[] {
-    let filteredCollection: any[] = [];
+  filterCollection(collection: T[], filterByOptions: CollectionFilterBy | CollectionFilterBy[], filterResultBy: FilterMultiplePassType | FilterMultiplePassTypeString | null = FilterMultiplePassType.chain): T[] {
+    let filteredCollection: T[] = [];
 
     // when it's array, we will use the new filtered collection after every pass
     // basically if input collection has 10 items on 1st pass and 1 item is filtered out, then on 2nd pass the input collection will be 9 items
@@ -50,8 +50,8 @@ export class CollectionService {
    * @param collection
    * @param filterBy
    */
-  singleFilterCollection(collection: any[], filterBy: CollectionFilterBy): any[] {
-    let filteredCollection: any[] = [];
+  singleFilterCollection(collection: T[], filterBy: CollectionFilterBy): T[] {
+    let filteredCollection: T[] = [];
 
     if (filterBy) {
       const objectProperty = filterBy.property;
@@ -71,14 +71,14 @@ export class CollectionService {
           if (objectProperty) {
             filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) !== -1);
           } else {
-            filteredCollection = collection.filter((item) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) !== -1);
+            filteredCollection = collection.filter((item: any) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) !== -1);
           }
           break;
         case OperatorType.notContains:
           if (objectProperty) {
             filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) === -1);
           } else {
-            filteredCollection = collection.filter((item) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) === -1);
+            filteredCollection = collection.filter((item: any) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) === -1);
           }
           break;
         case OperatorType.notEqual:
@@ -101,12 +101,12 @@ export class CollectionService {
    * @param sortByOptions
    * @param enableTranslateLabel
    */
-  sortCollection(columnDef: Column, collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[] {
+  sortCollection(columnDef: Column, collection: T[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): T[] {
     if (enableTranslateLabel && (!this.translate || !this.translate.instant)) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 
-    let sortedCollection: any[] = [];
+    let sortedCollection: T[] = [];
 
     if (sortByOptions) {
       if (Array.isArray(sortByOptions)) {

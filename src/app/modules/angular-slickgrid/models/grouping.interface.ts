@@ -3,9 +3,9 @@ import { GroupingComparerItem } from './groupingComparerItem.interface';
 import { GroupingFormatterItem } from './groupingFormatterItem.interface';
 import { SortDirectionNumber } from './sortDirectionNumber.enum';
 
-export type GroupingGetterFunction = (value: any) => string;
+export type GroupingGetterFunction<T = any> = (value: T) => string;
 
-export interface Grouping {
+export interface Grouping<T = any> {
   /** Grouping Aggregators array */
   aggregators?: Aggregator[];
 
@@ -31,7 +31,7 @@ export interface Grouping {
   formatter?: (g: GroupingFormatterItem) => string;
 
   /** Getter of the Column to be Grouped */
-  getter?: string | GroupingGetterFunction;
+  getter?: string | GroupingGetterFunction<T>;
 
   /** Defaults to false, lazy load the Group Totals Calculation */
   lazyTotalsCalculation?: boolean;

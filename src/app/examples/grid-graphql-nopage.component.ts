@@ -17,6 +17,20 @@ import { Observable } from 'rxjs';
 
 const COUNTRIES_API = 'https://countries.trevorblades.com/';
 
+export interface Country {
+  countryCode: string;
+  countryName: string;
+  countryNative: string;
+  countryPhone: number;
+  countryCurrency: string;
+  countryEmoji: string;
+  continentCode: string;
+  continentName: string;
+  languageCode: string;
+  languageName: string;
+  languageNative: string;
+};
+
 @Component({
   templateUrl: './grid-graphql-nopage.component.html',
   styleUrls: ['./grid-graphql-nopage.component.scss'],
@@ -155,7 +169,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
         preProcess: () => !this.isDataLoaded ? this.displaySpinner(true) : '',
         process: (query) => this.getCountries(query),
-        postProcess: (result: GraphqlResult) => {
+        postProcess: (result: GraphqlResult<Country>) => {
           this.metrics = result.metrics;
           this.displaySpinner(false);
           this.isDataLoaded = true;
@@ -178,8 +192,8 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
   // --
 
   /** Calling the GraphQL backend API to get the Countries with the Query created by the "process" method of GraphqlService  */
-  getCountries(query: string): Observable<GraphqlResult> {
-    return this.http.post<GraphqlResult>(COUNTRIES_API, { query });
+  getCountries(query: string): Observable<GraphqlResult<Country>> {
+    return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query });
   }
 
   /**
@@ -189,7 +203,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    */
   getContinents() {
     const continentQuery = `query { continents { code, name  }}`;
-    return this.http.post<GraphqlResult>(COUNTRIES_API, { query: continentQuery });
+    return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query: continentQuery });
   }
 
   /**
@@ -199,6 +213,6 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    */
   getLanguages() {
     const languageQuery = `query { languages { code, name  }}`;
-    return this.http.post<GraphqlResult>(COUNTRIES_API, { query: languageQuery });
+    return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query: languageQuery });
   }
 }

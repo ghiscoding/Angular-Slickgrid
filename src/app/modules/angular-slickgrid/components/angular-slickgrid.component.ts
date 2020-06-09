@@ -20,6 +20,7 @@ import {
   BackendServiceApi,
   BackendServiceOption,
   Column,
+  ColumnEditor,
   CustomFooterOption,
   ExtensionName,
   GraphqlPaginatedResult,
@@ -914,7 +915,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
   private loadEditorCollectionAsync(column: Column) {
-    const collectionAsync = column && column.editor && column.editor.collectionAsync;
+    const collectionAsync = column && column.editor && (column.editor as ColumnEditor).collectionAsync;
     if (collectionAsync instanceof Observable) {
       this.subscriptions.push(
         collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
@@ -1083,14 +1084,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
    * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
    */
-  private updateEditorCollection(column: Column, newCollection: any[]) {
-    column.editor.collection = newCollection;
+  private updateEditorCollection<T = any>(column: Column<T>, newCollection: T[]) {
+    (column.editor as ColumnEditor).collection = newCollection;
 
     // find the new column reference pointer
     const columns = this.grid.getColumns();
     if (Array.isArray(columns)) {
       const columnRef: Column = columns.find((col: Column) => col.id === column.id);
-      columnRef.internalColumnEditor = column.editor;
+      columnRef.internalColumnEditor = column.editor as ColumnEditor;
     }
   }
 }
