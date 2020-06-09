@@ -138,7 +138,7 @@ export class DualInputEditor implements Editor {
     const columnId = this.columnDef && this.columnDef.id;
     const elements = document.querySelectorAll(`.dual-editor-text.editor-${columnId}`);
     if (elements.length > 0) {
-      elements.forEach((elm) => elm.removeEventListener('focusout', () => { }));
+      elements.forEach((elm) => elm.removeEventListener('focusout', this.handleFocusOut.bind(this)));
     }
   }
 
