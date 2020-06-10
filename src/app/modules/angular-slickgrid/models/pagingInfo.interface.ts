@@ -1,9 +1,9 @@
-import { DataView } from './dataView.interface';
+import { SlickDataView } from './slickDataView.interface';
 
 export interface PagingInfo {
   pageSize: number;
   pageNum: number;
   totalRows?: number;
   totalPages?: number;
-  dataView?: DataView;
+  dataView?: SlickDataView;
 }
