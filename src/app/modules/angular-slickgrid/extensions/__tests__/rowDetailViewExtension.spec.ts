@@ -6,7 +6,7 @@ import { RowDetailViewExtension } from '../rowDetailViewExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { FilterService, SortService, AngularUtilService } from '../../services';
-import { Column, CurrentFilter, DataView, SlickGrid } from '../../models';
+import { Column, CurrentFilter, SlickDataView, SlickGrid } from '../../models';
 import { of, Subject } from 'rxjs';
 
 declare const Slick: any;
@@ -33,7 +33,7 @@ const sortServiceStub = {
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridStub = {
   getOptions: jest.fn(),

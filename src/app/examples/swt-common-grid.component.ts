@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-  AngularSlickgridComponent, Column, DataView, FieldType, GridOption, BackendService,
-  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination, SlickGrid
+  AngularSlickgridComponent, Column, FieldType, GridOption, BackendService, BackendServiceOption,
+  FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination, SlickDataView, SlickGrid
 } from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -58,7 +58,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
   columnDefinitions: Column[] = [];
   dataset: any[];
   gridObj: SlickGrid;
-  dataviewObj: DataView;
+  dataviewObj: SlickDataView;
   isAutoEdit = false;
   updatedObject: any;
   isMultiSelect = true;

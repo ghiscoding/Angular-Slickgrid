@@ -3,7 +3,6 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
-  DataView,
   DelimiterType,
   FieldType,
   FileType,
@@ -12,6 +11,7 @@ import {
   GridOption,
   Grouping,
   GroupTotalFormatters,
+  SlickDataView,
   SlickGrid,
   SortDirectionNumber,
   Sorters,
@@ -38,7 +38,7 @@ export class GridGroupingComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
   gridObj: SlickGrid;
-  dataviewObj: DataView;
+  dataviewObj: SlickDataView;
   processing = false;
 
   constructor() { }

@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { SingleSelectEditor } from '../singleSelectEditor';
-import { Column, DataView, EditorArguments, GridOption, SlickGrid } from '../../models';
+import { Column, SlickDataView, EditorArguments, GridOption, SlickGrid } from '../../models';
 
 const containerId = 'demo-container';
 
@@ -14,7 +14,7 @@ const template = `<div id="${containerId}"></div>`;
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridOptionMock = {
   autoCommitEdit: false,

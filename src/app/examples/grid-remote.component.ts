@@ -2,7 +2,7 @@ import 'slickgrid/lib/jquery.jsonp-2.4.min';
 import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, DataView, Formatter, GridOption, SlickGrid } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Formatter, GridOption, SlickGrid } from './../modules/angular-slickgrid';
 
 declare const Slick: any;
 

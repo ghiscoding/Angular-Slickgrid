@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { DateEditor } from '../dateEditor';
-import { Column, DataView, EditorArgs, EditorArguments, GridOption, FieldType, SlickGrid } from '../../models';
+import { Column, SlickDataView, EditorArgs, EditorArguments, GridOption, FieldType, SlickGrid } from '../../models';
 import * as moment from 'moment-mini';
 
 const KEY_CHAR_A = 97;
@@ -13,7 +13,7 @@ const template = `<div id="${containerId}"></div>`;
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridOptionMock = {
   autoCommitEdit: false,

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { LongTextEditor } from '../longTextEditor';
-import { AutocompleteOption, Column, DataView, EditorArgs, EditorArguments, GridOption, KeyCode, SlickGrid } from '../../models';
+import { AutocompleteOption, Column, SlickDataView, EditorArgs, EditorArguments, GridOption, KeyCode, SlickGrid } from '../../models';
 
 const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
@@ -12,7 +12,7 @@ const template = `<div id="${containerId}"></div>`;
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridOptionMock = {
   autoCommitEdit: false,

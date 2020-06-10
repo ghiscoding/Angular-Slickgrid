@@ -5,7 +5,7 @@ import { ContextMenuExtension } from '../contextMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { ExcelExportService, ExportService, TreeDataService } from '../../services';
-import { Column, DataView, DelimiterType, FileType, GridOption, MenuCommandItem, SlickGrid } from '../../models';
+import { Column, SlickDataView, DelimiterType, FileType, GridOption, MenuCommandItem, SlickGrid } from '../../models';
 import { Formatters } from '../../formatters';
 
 declare const Slick: any;
@@ -27,7 +27,7 @@ const dataViewStub = {
   refresh: jest.fn(),
   setGrouping: jest.fn(),
   setItems: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridStub = {
   autosizeColumns: jest.fn(),

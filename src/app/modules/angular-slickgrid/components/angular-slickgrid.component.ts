@@ -21,7 +21,6 @@ import {
   BackendServiceOption,
   Column,
   CustomFooterOption,
-  DataView,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -34,6 +33,7 @@ import {
   ServicePagination,
   SlickEventHandler,
   TreeDataOption,
+  SlickDataView,
   SlickGrid,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
@@ -131,7 +131,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
-  dataView: DataView;
+  dataView: SlickDataView;
   grid: SlickGrid;
   gridHeightString: string;
   gridWidthString: string;
@@ -459,7 +459,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   // private functions
   // ------------------
 
-  private bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
+  private bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: SlickDataView) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate && this.translate.onLangChange) {
       // translate some of them on first load, then on each language change
@@ -708,7 +708,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private executeAfterDataviewCreated(grid: SlickGrid, gridOptions: GridOption, dataView: DataView) {
+  private executeAfterDataviewCreated(grid: SlickGrid, gridOptions: GridOption, dataView: SlickDataView) {
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {

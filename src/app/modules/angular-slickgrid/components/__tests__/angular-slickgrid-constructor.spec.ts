@@ -25,7 +25,7 @@ import {
   Column,
   CurrentFilter,
   CurrentSorter,
-  DataView,
+  SlickDataView,
   GraphqlPaginatedResult,
   GraphqlServiceApi,
   GraphqlServiceOption,
@@ -201,7 +201,7 @@ const mockDataView = {
   reSort: jest.fn(),
   setItems: jest.fn(),
   syncGridSelection: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const mockDraggableGrouping = {
   constructor: jest.fn(),

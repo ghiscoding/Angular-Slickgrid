@@ -4,13 +4,13 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { CellMenuExtension } from '../cellMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column, DataView, GridOption, SlickGrid } from '../../models';
+import { Column, SlickDataView, GridOption, SlickGrid } from '../../models';
 
 declare const Slick: any;
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridStub = {
   autosizeColumns: jest.fn(),

@@ -4,7 +4,7 @@ import { GridOption } from '../../models/gridOption.interface';
 import { HeaderMenuExtension } from '../headerMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column, ColumnSort, DataView, SlickGrid } from '../../models';
+import { Column, ColumnSort, SlickDataView, SlickGrid } from '../../models';
 import { FilterService, SortService } from '../../services';
 
 declare const Slick: any;
@@ -23,7 +23,7 @@ const sortServiceStub = {
 
 const dataViewStub = {
   refresh: jest.fn(),
-} as unknown as DataView;
+} as unknown as SlickDataView;
 
 const gridStub = {
   autosizeColumns: jest.fn(),
