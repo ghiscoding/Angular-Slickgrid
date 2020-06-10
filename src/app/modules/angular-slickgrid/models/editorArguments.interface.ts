@@ -1,10 +1,10 @@
-import { Column, ElementPosition, SlickGrid } from './index';
+import { Column, ElementPosition, SlickDataView, SlickGrid } from './index';
 
 export interface EditorArguments {
   column: Column;
   columnMetaData: any;
   container: HTMLDivElement;
-  dataView: DataView;
+  dataView: SlickDataView;
   event: Event;
   grid: SlickGrid;
   gridPosition: ElementPosition;

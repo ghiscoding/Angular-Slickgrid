@@ -1,10 +1,10 @@
 import { Subject } from 'rxjs';
 
-import { Column, CurrentPagination, DataView, GridOption, SlickGrid } from '../models';
+import { Column, CurrentPagination, SlickDataView, GridOption, SlickGrid } from '../models';
 
 export class SharedService {
   private _allColumns: Column[];
-  private _dataView: DataView;
+  private _dataView: SlickDataView;
   private _groupItemMetadataProvider: any;
   private _grid: SlickGrid;
   private _gridOptions: GridOption;
@@ -42,11 +42,11 @@ export class SharedService {
   }
 
   /** Getter for SlickGrid DataView object */
-  get dataView(): DataView {
+  get dataView(): SlickDataView {
     return this._dataView;
   }
   /** Setter for SlickGrid DataView object */
-  set dataView(dataView: DataView) {
+  set dataView(dataView: SlickDataView) {
     this._dataView = dataView;
   }
 

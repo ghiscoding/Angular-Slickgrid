@@ -9,7 +9,6 @@ import {
   ColumnFilter,
   ColumnFilters,
   CurrentFilter,
-  DataView,
   EmitterType,
   FieldType,
   Filter,
@@ -22,6 +21,7 @@ import {
   OperatorString,
   OperatorType,
   SearchTerm,
+  SlickDataView,
   SlickEvent,
   SlickEventHandler,
   SlickGrid,
@@ -47,7 +47,7 @@ export class FilterService {
   private _firstColumnIdRendered = '';
   private _filtersMetadata: any[] = [];
   private _columnFilters: ColumnFilters = {};
-  private _dataView: DataView;
+  private _dataView: SlickDataView;
   private _grid: SlickGrid;
   private _onSearchChange: SlickEvent;
   private _tmpPreFilteredData: number[];
@@ -147,7 +147,7 @@ export class FilterService {
    * Bind a backend filter hook to the grid
    * @param grid SlickGrid Grid object
    */
-  bindBackendOnFilter(grid: SlickGrid, dataView: DataView) {
+  bindBackendOnFilter(grid: SlickGrid, dataView: SlickDataView) {
     this._dataView = dataView;
     this._filtersMetadata = [];
 
@@ -173,7 +173,7 @@ export class FilterService {
    * @param grid SlickGrid Grid object
    * @param dataView
    */
-  bindLocalOnFilter(grid: SlickGrid, dataView: DataView) {
+  bindLocalOnFilter(grid: SlickGrid, dataView: SlickDataView) {
     this._filtersMetadata = [];
     this._dataView = dataView;
 
@@ -330,7 +330,7 @@ export class FilterService {
     return true;
   }
 
-  getFilterConditionOptionsOrBoolean(item: any, columnFilter: ColumnFilter, columnId: string | number, grid: SlickGrid, dataView: DataView): FilterConditionOption | boolean {
+  getFilterConditionOptionsOrBoolean(item: any, columnFilter: ColumnFilter, columnId: string | number, grid: SlickGrid, dataView: SlickDataView): FilterConditionOption | boolean {
     let columnIndex = grid.getColumnIndex(columnId) as number;
     let columnDef = grid.getColumns()[columnIndex] as Column;
 

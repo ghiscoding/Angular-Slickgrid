@@ -8,12 +8,12 @@ import {
   CurrentPagination,
   CurrentRowSelection,
   CurrentSorter,
-  DataView,
   ExtensionName,
   GridOption,
   GridState,
   GridStateChange,
   GridStateType,
+  SlickDataView,
   SlickEventHandler,
   SlickGrid,
 } from './../models/index';
@@ -33,7 +33,7 @@ export class GridStateService {
   private _eventHandler: SlickEventHandler;
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
-  private _dataView: DataView;
+  private _dataView: SlickDataView;
   private _grid: SlickGrid;
   private _subscriptions: Subscription[] = [];
   private _selectedRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
@@ -76,7 +76,7 @@ export class GridStateService {
    * Initialize the Grid State Service
    * @param grid
    */
-  init(grid: SlickGrid, dataView: DataView): void {
+  init(grid: SlickGrid, dataView: SlickDataView): void {
     this._grid = grid;
     this._dataView = dataView;
     this.subscribeToAllGridChanges(grid);

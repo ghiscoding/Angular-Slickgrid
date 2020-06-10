@@ -9,7 +9,6 @@ import { ExcelWorkbook } from './../models/excelWorkbook.interface';
 import { ExcelStylesheet } from './../models/excelStylesheet.interface';
 import {
   Column,
-  DataView,
   ExcelCellFormat,
   ExcelExportOption,
   ExcelMetadata,
@@ -19,6 +18,7 @@ import {
   GridOption,
   KeyTitlePair,
   Locale,
+  SlickDataView,
   SlickGrid,
 } from '../models/index';
 import { Constants } from '../constants';
@@ -31,7 +31,7 @@ declare let $: any;
 @Injectable()
 export class ExcelExportService {
   private _fileFormat = FileType.xlsx;
-  private _dataView: DataView;
+  private _dataView: SlickDataView;
   private _grid: SlickGrid;
   private _locales: Locale;
   private _columnHeaders: Array<KeyTitlePair>;
@@ -61,7 +61,7 @@ export class ExcelExportService {
    * @param grid
    * @param dataView
    */
-  init(grid: SlickGrid, dataView: DataView): void {
+  init(grid: SlickGrid, dataView: SlickDataView): void {
     this._grid = grid;
     this._dataView = dataView;
 

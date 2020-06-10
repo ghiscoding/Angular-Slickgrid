@@ -5,12 +5,12 @@ import { Subject } from 'rxjs';
 
 import {
   Column,
-  DataView,
   ExportOption,
   FileType,
   GridOption,
   KeyTitlePair,
   Locale,
+  SlickDataView,
   SlickGrid,
 } from './../models/index';
 import { Constants } from './../constants';
@@ -25,7 +25,7 @@ export class ExportService {
   private _delimiter = ',';
   private _fileFormat = FileType.csv;
   private _lineCarriageReturn = '\n';
-  private _dataView: DataView;
+  private _dataView: SlickDataView;
   private _grid: SlickGrid;
   private _locales: Locale;
   private _exportQuoteWrapper = '';
@@ -53,7 +53,7 @@ export class ExportService {
    * @param gridOptions
    * @param dataView
    */
-  init(grid: SlickGrid, dataView: DataView): void {
+  init(grid: SlickGrid, dataView: SlickDataView): void {
     this._grid = grid;
     this._dataView = dataView;
 

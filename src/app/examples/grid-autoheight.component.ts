@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, Injectable, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -7,6 +7,7 @@ import {
   Formatters,
   GridOption,
   OperatorString,
+  SlickDataView,
   SlickGrid,
 } from './../modules/angular-slickgrid';
 
@@ -29,7 +30,7 @@ export class GridAutoHeightComponent implements OnInit {
 
   angularGrid: AngularGridInstance;
   grid: SlickGrid;
-  dataView: DataView;
+  dataView: SlickDataView;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
