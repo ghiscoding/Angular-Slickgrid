@@ -25,7 +25,7 @@ jobs:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
           name: Upload Jest coverage to Codecov
-          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+          command: bash <(curl -s https://codecov.io/bash)
       - run:
           name: Start Dev WebServer
           command: yarn start
