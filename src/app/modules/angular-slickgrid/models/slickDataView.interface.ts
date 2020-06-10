@@ -3,7 +3,7 @@ import { PagingInfo } from './pagingInfo.interface';
 import { SlickEvent } from './slickEvent.interface';
 import { SlickGrid } from './slickGrid.interface';
 
-export interface DataView {
+export interface SlickDataView {
   // --
   // Available Methods
 
