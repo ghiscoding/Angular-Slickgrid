@@ -1,6 +1,7 @@
 import { CellMenu } from './cellMenu.interface';
 import { ColumnEditor } from './columnEditor.interface';
 import { ColumnFilter } from './columnFilter.interface';
+import { Editor } from './editor.interface';
 import { EditorValidator } from './editorValidator.interface';
 import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
@@ -11,9 +12,9 @@ import { MenuCommandItem } from './menuCommandItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
 
-export interface Column {
+export interface Column<T = any> {
   /** async background post-rendering formatter */
-  asyncPostRender?: (domCellNode: any, row: number, dataContext: any, columnDef: Column) => void;
+  asyncPostRender?: (domCellNode: any, row: number, dataContext: T, columnDef: Column) => void;
 
   /** Row Move Behavior, used by the Row Move Manager Plugin */
   behavior?: string;
@@ -37,7 +38,7 @@ export interface Column {
   colspan?: number | '*';
 
   /** Data key, for example this could be used as a property key for complex object comparison (e.g. dataKey: 'id') */
-  dataKey?: any;
+  dataKey?: string;
 
   /** Do we want default sort to be ascending? True by default */
   defaultSortAsc?: boolean;
@@ -148,7 +149,7 @@ export interface Column {
   internalColumnEditor?: ColumnEditor;
 
   /** Label key, for example this could be used as a property key for complex object label display (e.g. dataKey: 'name') */
-  labelKey?: any;
+  labelKey?: string;
 
   /** Maximum Width of the column in pixels (number only). */
   maxWidth?: number;
@@ -190,7 +191,7 @@ export interface Column {
    * @param {string} item data context
    * @return {string} name of the Field that will end up being used to query
    */
-  queryFieldNameGetterFn?: (dataContext: any) => string;
+  queryFieldNameGetterFn?: (dataContext: T) => string;
 
   /**
    * Similar to "queryField" but only used when Filtering (please note that it has higher precendence over "queryField").

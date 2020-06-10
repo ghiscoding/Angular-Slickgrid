@@ -154,7 +154,7 @@ export interface SlickGrid {
    * Returns the databinding item at a given position.
    * @param index Item index.
    */
-  getDataItem(index: number): any;
+  getDataItem<T = any>(index: number): T;
 
   /** Returns the size of the databinding source. */
   getDataLength(): number;

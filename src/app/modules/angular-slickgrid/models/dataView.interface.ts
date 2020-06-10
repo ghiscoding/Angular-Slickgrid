@@ -81,7 +81,7 @@ export interface DataView {
   getItemByIdx(idx: number): number;
 
   /** Get row index in the dataset by its Id */
-  getIdxById(id: string | number): number;
+  getIdxById(id: string | number): number | undefined;
 
   /** Get item metadata at specific index */
   getItemMetadata(index: number): any;
@@ -96,7 +96,7 @@ export interface DataView {
   getRowByItem(item: any): number;
 
   /** Get row number of an item in the dataset by its Id */
-  getRowById(id: string | number): number;
+  getRowById(id: string | number): number | undefined;
 
   /** Insert an item to the dataset before a specific index */
   insertItem(insertBefore: number, item: any): void;
@@ -173,7 +173,7 @@ export interface DataView {
   updateIdxById(startingIndex: number): void;
 
   /** Update an item in the dataset by its Id */
-  updateItem(id: string | number, item: any): void;
+  updateItem<T = any>(id: string | number, item: T): void;
 
   // ---------------------------
   // Available DataView Events
