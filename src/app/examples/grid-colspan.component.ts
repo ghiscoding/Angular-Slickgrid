@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, GridOption, AngularGridInstance } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-colspan.component.html',
@@ -18,6 +18,8 @@ export class GridColspanComponent implements OnInit {
   </ul>
   `;
 
+  angularGrid2: AngularGridInstance;
+  gridObj2: any;
   columnDefinitions1: Column[];
   columnDefinitions2: Column[];
   gridOptions1: GridOption;
@@ -28,6 +30,11 @@ export class GridColspanComponent implements OnInit {
   ngOnInit(): void {
     this.prepareGrid1();
     this.prepareGrid2();
+  }
+
+  angularGridReady2(angularGrid: AngularGridInstance) {
+    this.angularGrid2 = angularGrid;
+    this.gridObj2 = angularGrid.slickGrid;
   }
 
   prepareGrid1() {
@@ -49,7 +56,7 @@ export class GridColspanComponent implements OnInit {
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,
       explicitInitialization: true,
-      colspanCallback: this.renderDifferentColspan
+      colspanCallback: this.renderDifferentColspan,
     };
 
     this.dataset1 = this.getData(500);
@@ -57,6 +64,7 @@ export class GridColspanComponent implements OnInit {
 
   prepareGrid2() {
     this.columnDefinitions2 = [
+      { id: 'sel', name: '#', field: 'num', behavior: 'select', cssClass: 'cell-selection', width: 40, resizable: false, selectable: false },
       { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
       { id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor' },
       { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
@@ -73,7 +81,9 @@ export class GridColspanComponent implements OnInit {
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 25,
       explicitInitialization: true,
-      frozenColumn: 1,
+      frozenColumn: 2,
+      gridMenu: { hideClearFrozenColumnsCommand: false },
+      headerMenu: { hideFreezeColumnsCommand: false }
     };
 
     this.dataset2 = this.getData(500);
@@ -95,6 +105,11 @@ export class GridColspanComponent implements OnInit {
       };
     }
     return mockDataset;
+  }
+
+  setFrozenColumns2(frozenCols: number) {
+    this.gridObj2.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
+    this.gridOptions2 = this.gridObj2.getOptions();
   }
 
   /**

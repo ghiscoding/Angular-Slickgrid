@@ -201,6 +201,22 @@ export class GridMenuExtension implements Extension {
     const gridOptions = this.sharedService.gridOptions;
     const translationPrefix = getTranslationPrefix(gridOptions);
 
+    // show grid menu: Clear Frozen Columns
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearFrozenColumnsCommand) {
+      const commandName = 'clear-frozen-columns';
+      if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+        gridMenuCustomItems.push(
+          {
+            iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearFrozenColumnsCommand || 'fa fa-times',
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}CLEAR_FROZEN_COLUMNS`) : this._locales && this._locales.TEXT_CLEAR_FROZEN_COLUMNS,
+            disabled: false,
+            command: commandName,
+            positionOrder: 49
+          }
+        );
+      }
+    }
+
     if (this.sharedService.gridOptions && (this.sharedService.gridOptions.enableFiltering && !this.sharedService.hideHeaderRowAfterPageLoad)) {
       // show grid menu: Clear all Filters
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
@@ -352,6 +368,13 @@ export class GridMenuExtension implements Extension {
   private executeGridMenuInternalCustomCommands(e: Event, args: GridMenuItem) {
     if (args && args.command) {
       switch (args.command) {
+        case 'clear-frozen-columns':
+          const visibleColumns = [...this.sharedService.visibleColumns];
+          this.sharedService.grid.setOptions({ frozenColumn: -1 });
+          if (Array.isArray(visibleColumns) && Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length) {
+            this.sharedService.grid.setColumns(visibleColumns);
+          }
+          break;
         case 'clear-filter':
           this.filterService.clearFilters();
           this.sharedService.dataView.refresh();

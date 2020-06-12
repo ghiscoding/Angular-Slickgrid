@@ -17,6 +17,9 @@ export interface Locale {
   /** Text "Clear all Sorting" shown in Header Menu */
   TEXT_CLEAR_ALL_SORTING: string;
 
+  /** Text "Clear Frozen Columns" shown in Grid Menu */
+  TEXT_CLEAR_FROZEN_COLUMNS: string;
+
   /** Text "Columns" title displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_COLUMNS: string;
 
@@ -53,6 +56,9 @@ export interface Locale {
   /** Text "Force fit Columns" displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_FORCE_FIT_COLUMNS: string;
 
+  /** Text "Freeze Columns" shown in Header Menu (when enabled) */
+  TEXT_FREEZE_COLUMNS?: string;
+
   /** Text "Group by" shown in Export when using Grouping (when enabled) */
   TEXT_GROUP_BY: string;
 
@@ -65,11 +71,11 @@ export interface Locale {
   /** Text "items per page" displayed in the Pagination (when enabled) */
   TEXT_ITEMS_PER_PAGE?: string;
 
-  /** Text "of" displayed in the Pagination (when enabled) */
-  TEXT_OF?: string;
-
   /** Text "Last Update" displayed in the Footer (when enabled) */
   TEXT_LAST_UPDATE?: string;
+
+  /** Text "of" displayed in the Pagination (when enabled) */
+  TEXT_OF?: string;
 
   /** Text "OK" displayed in the Multiple Select Editor/Filter */
   TEXT_OK: string;
