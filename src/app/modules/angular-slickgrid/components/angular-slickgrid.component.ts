@@ -451,6 +451,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   showHeaderRow(showing = true) {
     this.grid.setHeaderRowVisibility(showing, false);
+    if (showing === true && this._isGridInitialized) {
+      this.grid.setColumns(this.columnDefinitions);
+    }
     return showing;
   }
 
@@ -471,11 +474,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.subscriptions.push(
         this.translate.onLangChange.subscribe(() => {
           if (gridOptions.enableTranslate) {
-            if (!this._hideHeaderRowAfterPageLoad && this._isGridHavingFilters) {
-              // before translating, make sure the filter row is visible to avoid having other problems,
-              // because if it's not shown prior to translating then the filters won't be recreated after translating
-              this.grid.setHeaderRowVisibility(true);
-            }
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
             this.extensionService.translateColumnPicker();
