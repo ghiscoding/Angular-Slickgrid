@@ -47,7 +47,7 @@ const gridStub = {
   setPreHeaderPanelVisibility: jest.fn(),
 };
 
-const mockAddon = jest.fn().mockImplementation(() => ({
+const mockGridMenuAddon = {
   init: jest.fn(),
   destroy: jest.fn(),
   showGridMenu: jest.fn(),
@@ -57,7 +57,8 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onAfterMenuShow: new Slick.Event(),
   onBeforeMenuShow: new Slick.Event(),
   onMenuClose: new Slick.Event(),
-}));
+};
+const mockAddon = jest.fn().mockImplementation(() => mockGridMenuAddon);
 
 jest.mock('slickgrid/controls/slick.gridmenu', () => mockAddon);
 Slick.Controls = {
@@ -574,6 +575,12 @@ describe('gridMenuExtension', () => {
     });
 
     describe('executeGridMenuInternalCustomCommands method', () => {
+      afterEach(() => {
+        jest.clearAllMocks();
+        extension.eventHandler.unsubscribeAll();
+        mockGridMenuAddon.onCommand = new Slick.Event();
+      });
+
       it('should call "clearFilters" and dataview refresh when the command triggered is "clear-filter"', () => {
         const filterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
         const refreshSpy = jest.spyOn(SharedService.prototype.dataView, 'refresh');
