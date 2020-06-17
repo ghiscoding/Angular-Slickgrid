@@ -184,9 +184,9 @@ export const GlobalGridOptions: Partial<GridOption> = {
  * else we'll simply return the column name title
  */
 function pickerHeaderColumnValueExtractor(column: Column) {
-  const headerGroup = column?.columnGroup || '';
+  const headerGroup = column && column.columnGroup || '';
   if (headerGroup) {
     return headerGroup + ' - ' + column.name;
   }
-  return column?.name ?? '';
+  return column && column.name || '';
 }
