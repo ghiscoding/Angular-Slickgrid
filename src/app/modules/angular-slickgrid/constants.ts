@@ -1,7 +1,8 @@
 import { Locale } from './models/locale.interface';
 
 export class Constants {
-  static locales: Locale = {
+  // English Locale texts when using only 1 Locale instead of I18N
+  static readonly locales: Locale = {
     TEXT_ALL_SELECTED: 'All Selected',
     TEXT_CANCEL: 'Cancel',
     TEXT_CLEAR_ALL_FILTERS: 'Clear all Filters',
@@ -40,14 +41,20 @@ export class Constants {
     TEXT_TOGGLE_PRE_HEADER_ROW: 'Toggle Pre-Header Row',
     TEXT_X_OF_Y_SELECTED: '# of % selected',
   };
-  static VALIDATION_REQUIRED_FIELD = 'Field is required';
-  static VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
-  static VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
-  static VALIDATION_EDITOR_INTEGER_BETWEEN = 'Please enter a valid integer number between {{minValue}} and {{maxValue}}';
-  static VALIDATION_EDITOR_INTEGER_MAX = 'Please enter a valid integer number that is lower than {{maxValue}}';
-  static VALIDATION_EDITOR_INTEGER_MIN = 'Please enter a valid integer number that is greater than {{minValue}}';
-  static VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
-  static VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
-  static VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
-  static VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
+
+  // some Validation default texts
+  static readonly VALIDATION_REQUIRED_FIELD = 'Field is required';
+  static readonly VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
+  static readonly VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
+  static readonly VALIDATION_EDITOR_INTEGER_BETWEEN = 'Please enter a valid integer number between {{minValue}} and {{maxValue}}';
+  static readonly VALIDATION_EDITOR_INTEGER_MAX = 'Please enter a valid integer number that is lower than {{maxValue}}';
+  static readonly VALIDATION_EDITOR_INTEGER_MAX_INCLUSIVE = 'Please enter a valid integer number that is lower than or equal to {{maxValue}}';
+  static readonly VALIDATION_EDITOR_INTEGER_MIN = 'Please enter a valid integer number that is greater than {{minValue}}';
+  static readonly VALIDATION_EDITOR_INTEGER_MIN_INCLUSIVE = 'Please enter a valid integer number that is greater than or equal to {{minValue}}';
+  static readonly VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+  static readonly VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+  static readonly VALIDATION_EDITOR_NUMBER_MAX_INCLUSIVE = 'Please enter a valid number that is lower than or equal to {{maxValue}}';
+  static readonly VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
+  static readonly VALIDATION_EDITOR_NUMBER_MIN_INCLUSIVE = 'Please enter a valid number that is greater than or equal to {{minValue}}';
+  static readonly VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 }
