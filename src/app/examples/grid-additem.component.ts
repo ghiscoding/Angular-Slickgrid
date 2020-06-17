@@ -164,7 +164,14 @@ export class GridAddItemComponent implements OnInit {
   }
 
   addNewItem(insertPosition?: 'top' | 'bottom') {
-    const newId = this.dataset.length;
+    const dataset = this.angularGrid.dataView.getItems();
+    let highestId = 0;
+    dataset.forEach(item => {
+      if (item.id > highestId) {
+        highestId = item.id;
+      }
+    });
+    const newId = highestId + 1;
     const randomYear = 2000 + Math.floor(Math.random() * 10);
     const randomMonth = Math.floor(Math.random() * 11);
     const randomDay = Math.floor((Math.random() * 29));
