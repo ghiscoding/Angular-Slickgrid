@@ -383,8 +383,14 @@ export class GridMenuExtension implements Extension {
           });
           break;
         case 'toggle-filter':
-          const showHeaderRow = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.showHeaderRow || false;
-          this.sharedService.grid.setHeaderRowVisibility(!showHeaderRow);
+          let showHeaderRow = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.showHeaderRow || false;
+          showHeaderRow = !showHeaderRow; // inverse show header flag
+          this.sharedService.grid.setHeaderRowVisibility(showHeaderRow);
+
+          // when displaying header row, we'll call "setColumns" which in terms will recreate the header row filters
+          if (showHeaderRow === true) {
+            this.sharedService.grid.setColumns(this.sharedService.columnDefinitions);
+          }
           break;
         case 'toggle-toppanel':
           const showTopPanel = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.showTopPanel || false;
