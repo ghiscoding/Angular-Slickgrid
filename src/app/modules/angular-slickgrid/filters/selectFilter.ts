@@ -451,6 +451,8 @@ export class SelectFilter implements Filter {
 
   /** Initialize the Multiple Select element and its options to use */
   protected initMultipleSelect() {
+    const isTranslateEnabled = this.gridOptions && this.gridOptions.enableTranslate;
+
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     const options: MultipleSelectOption = {
       autoAdjustDropHeight: true,
@@ -478,10 +480,10 @@ export class SelectFilter implements Filter {
       options.okButton = true;
       options.addTitle = true; // show tooltip of all selected items while hovering the filter
       const translationPrefix = getTranslationPrefix(this.gridOptions);
-      options.countSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}X_OF_Y_SELECTED`) || this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
-      options.allSelected = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}ALL_SELECTED`) || this._locales && this._locales.TEXT_ALL_SELECTED;
-      options.okButtonText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}OK`) || this._locales && this._locales.TEXT_OK;
-      options.selectAllText = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(`${translationPrefix}SELECT_ALL`) || this._locales && this._locales.TEXT_SELECT_ALL;
+      options.countSelected = (isTranslateEnabled && this.translate && this.translate.instant) ? this.translate.instant(`${translationPrefix}X_OF_Y_SELECTED`) : this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
+      options.allSelected = (isTranslateEnabled && this.translate && this.translate.instant) ? this.translate.instant(`${translationPrefix}ALL_SELECTED`) : this._locales && this._locales.TEXT_ALL_SELECTED;
+      options.okButtonText = (isTranslateEnabled && this.translate && this.translate.instant) ? this.translate.instant(`${translationPrefix}OK`) : this._locales && this._locales.TEXT_OK;
+      options.selectAllText = (isTranslateEnabled && this.translate && this.translate.instant) ? this.translate.instant(`${translationPrefix}SELECT_ALL`) : this._locales && this._locales.TEXT_SELECT_ALL;
       options.selectAllDelimiter = ['', '']; // remove default square brackets of default text "[Select All]" => "Select All"
     }
 
