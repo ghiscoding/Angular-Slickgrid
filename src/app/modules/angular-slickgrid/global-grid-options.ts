@@ -21,7 +21,8 @@ export const GlobalGridOptions: Partial<GridOption> = {
   columnPicker: {
     fadeSpeed: 0,
     hideForceFitButton: false,
-    hideSyncResizeButton: true
+    hideSyncResizeButton: true,
+    headerColumnValueExtractor: pickerHeaderColumnValueExtractor
   },
   cellMenu: {
     autoAdjustDrop: true,
@@ -135,14 +136,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     menuWidth: 16,
     resizeOnShowHeaderRow: true,
     useClickToRepositionMenu: false, // use icon location to reposition instead
-    headerColumnValueExtractor: (column: Column) => {
-      const headerGroup = column && column.columnGroup || '';
-      if (headerGroup) {
-        // when using Column Header Grouping, we'll prefix the column group title
-        return headerGroup + ' - ' + column.name;
-      }
-      return column && column.name || '';
-    }
+    headerColumnValueExtractor: pickerHeaderColumnValueExtractor
   },
   headerMenu: {
     autoAlign: true,
@@ -183,3 +177,16 @@ export const GlobalGridOptions: Partial<GridOption> = {
   topPanelHeight: 35,
   translationNamespaceSeparator: ':',
 };
+
+/**
+ * Value Extractor for both ColumnPicker & GridMenu Picker
+ * when using Column Header Grouping, we'll prefix the column group title
+ * else we'll simply return the column name title
+ */
+function pickerHeaderColumnValueExtractor(column: Column) {
+  const headerGroup = column && column.columnGroup || '';
+  if (headerGroup) {
+    return headerGroup + ' - ' + column.name;
+  }
+  return column && column.name || '';
+}
