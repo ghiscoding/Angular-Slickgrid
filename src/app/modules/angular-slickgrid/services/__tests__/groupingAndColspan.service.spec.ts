@@ -3,9 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
-import { GridOption, SlickEventHandler, Column } from '../../models';
+import { Column, ExtensionName, GridOption, SlickEventHandler } from '../../models';
 import { ResizerService, GridDimension } from '../resizer.service';
 import { ExtensionUtility } from '../../extensions/extensionUtility';
+import { ExtensionService } from '../extension.service';
 import { SharedService } from '../shared.service';
 
 declare const Slick: any;
@@ -24,6 +25,10 @@ const dataViewStub = {
   onRowCountChanged: new Slick.Event(),
   reSort: jest.fn(),
 };
+
+const extensionServiceStub = {
+  getExtensionByName: jest.fn()
+} as unknown as ExtensionService;
 
 const mockExtensionUtility = {
   loadExtensionDynamically: jest.fn(),
@@ -90,6 +95,7 @@ describe('GroupingAndColspanService', () => {
         GroupingAndColspanService,
         SharedService,
         { provide: ExtensionUtility, useValue: mockExtensionUtility },
+        { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: ResizerService, useValue: resizerServiceStub },
       ],
       imports: [TranslateModule.forRoot()]
@@ -225,7 +231,61 @@ describe('GroupingAndColspanService', () => {
 
       expect(spy).toHaveBeenCalledTimes(2);
       expect(setTimeout).toHaveBeenCalledTimes(1);
-      // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 75);
+      // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility from column picker', () => {
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+      const slickEvent1 = new Slick.Event();
+      const slickEvent2 = new Slick.Event();
+      const instanceMock = { onColumnsChanged: slickEvent1, onMenuClose: slickEvent2 };
+      const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      const extensionMock = { name: ExtensionName.columnPicker, addon: instanceMock, instance: instanceMock, class: null };
+      jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
+      service.init(gridStub, dataViewStub);
+
+      slickEvent1.notify({ columns: columnsMock }, new Slick.EventData(), gridStub);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(3);
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility from grid menu', () => {
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+      const slickEvent1 = new Slick.Event();
+      const slickEvent2 = new Slick.Event();
+      const instanceMock = { onColumnsChanged: slickEvent1, onMenuClose: slickEvent2 };
+      const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      const extensionMock = { name: ExtensionName.columnPicker, addon: instanceMock, instance: instanceMock, class: null };
+      jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
+      service.init(gridStub, dataViewStub);
+
+      slickEvent1.notify({ columns: columnsMock }, new Slick.EventData(), gridStub);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(3);
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility & closing the grid menu', () => {
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+      const slickEvent1 = new Slick.Event();
+      const slickEvent2 = new Slick.Event();
+      const instanceMock = { onColumnsChanged: slickEvent1, onMenuClose: slickEvent2 };
+      const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      const extensionMock = { name: ExtensionName.columnPicker, addon: instanceMock, instance: instanceMock, class: null };
+      jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
+      service.init(gridStub, dataViewStub);
+
+      slickEvent2.notify({ allColumns: columnsMock }, new Slick.EventData(), gridStub);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after calling the "translateGroupingAndColSpan" method', () => {
