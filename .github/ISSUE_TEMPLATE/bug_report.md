@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+<!-- YOU MUST FILL IN THIS TEMPLATE OR ELSE IT WILL BE AUTO-CLOSE BY THE BOT -->
+
 <!---
 Thanks for filing a Feature Request! However, before you submit, please read the following:
 1. Search open/closed issues before submitting a new one.

@@ -1,5 +1,5 @@
 # Comment that will be sent if an issue is judged to be closed
-comment: "This issue was automatically closed by our bot because it does not meet our issue template requirements. Please **fill in** the questions/sections required in the **issue template** before submitting a new issue. Thank you."
+comment: "This issue was automatically closed by our bot because it does not meet our issue template requirements. Please **fill in** the questions/sections which are tagged as <!--REQUIRED--> in the **issue template** before submitting a new issue... Please also consider asking any coding questions on Stack Overflow. Thank you."
 issueConfigs:
 # There can be several configs for different kind of issues.
 - content:
