@@ -169,7 +169,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filters: [
           // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
           { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
-          { columnId: 'name', searchTerms: ['John'], operator: OperatorType.startsWith },
+          { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
 
           // use a date range with 2 searchTerms values
