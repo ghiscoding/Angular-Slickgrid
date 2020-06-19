@@ -273,7 +273,7 @@ export class GridOdataService implements BackendService {
         const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
         let operator = columnFilter.operator || ((matches) ? matches[1] : '');
         let searchValue = (!!matches) ? matches[2] : '';
-        const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
+        const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' || operator === OperatorType.endsWith) ? '*' : '';
         const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
         // no need to query if search value is empty
@@ -350,9 +350,9 @@ export class GridOdataService implements BackendService {
                 searchBy = `(${searchBy})`;
               }
             }
-          } else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+          } else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*' || operator === OperatorType.startsWith || operator === OperatorType.endsWith) {
             // first/last character is a '*' will be a startsWith or endsWith
-            searchBy = (operator === '*' || operator === '*z') ? `endswith(${fieldName}, '${searchValue}')` : `startswith(${fieldName}, '${searchValue}')`;
+            searchBy = (operator === '*' || operator === '*z' || operator === OperatorType.endsWith) ? `endswith(${fieldName}, '${searchValue}')` : `startswith(${fieldName}, '${searchValue}')`;
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
             if (operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) {
@@ -535,7 +535,7 @@ export class GridOdataService implements BackendService {
     });
   }
 
-  private odataQueryVersionWrapper(queryType: 'dateTime' | 'substring', version: number, fieldName: string, searchValue: string): string {
+  private odataQueryVersionWrapper(queryType: 'dateTime' | 'substring', version: number, fieldName: string, searchValue = ''): string {
     let query = '';
     switch (queryType) {
       case 'dateTime':
@@ -556,16 +556,16 @@ export class GridOdataService implements BackendService {
    */
   private filterBySearchDate(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[], version: number): string {
     let query = '';
-    let searchValues: SearchTerm[];
+    let searchValues: SearchTerm[] = [];
     if (Array.isArray(searchTerms) && searchTerms.length > 1) {
       searchValues = searchTerms;
-      if (operator !== OperatorType.rangeExclusive && operator !== OperatorType.rangeInclusive) {
+      if (operator !== OperatorType.rangeExclusive && operator !== OperatorType.rangeInclusive && this._gridOptions.defaultFilterRangeOperator) {
         operator = this._gridOptions.defaultFilterRangeOperator;
       }
     }
 
     // single search value
-    if (!Array.isArray(searchValues) && Array.isArray(searchTerms) && searchTerms.length === 1 && searchTerms[0]) {
+    if (searchValues.length === 0 && Array.isArray(searchTerms) && searchTerms.length === 1 && searchTerms[0]) {
       const searchValue1 = this.odataQueryVersionWrapper('dateTime', version, fieldName, parseUtcDate(searchTerms[0] as string, true));
       if (searchValue1) {
         return `${fieldName} ${this.mapOdataOperator(operator)} ${searchValue1}`;
