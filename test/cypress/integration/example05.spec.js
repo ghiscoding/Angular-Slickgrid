@@ -56,7 +56,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 3, pageSize: 20 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 3, pageSize: 20 }, type: 'pagination' });
       });
     });
 
@@ -90,7 +90,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
       });
     });
 
@@ -123,7 +123,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
       });
     });
 
@@ -157,7 +157,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
       });
     });
 
@@ -191,7 +191,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
       });
     });
 
@@ -234,8 +234,8 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(2);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [], type: 'filter' });
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: [], type: 'filter' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
       });
     });
 
@@ -261,7 +261,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [], type: 'sorter' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: [], type: 'sorter' });
       });
     });
 
@@ -309,7 +309,7 @@ describe('Example 5 - OData Grid', () => {
         .click();
 
       cy.get('.search-filter.filter-name select')
-        .should('have.value', 'a*')
+        .should('have.value', 'a*');
 
       cy.get('.search-filter.filter-name')
         .find('input')
@@ -439,7 +439,7 @@ describe('Example 5 - OData Grid', () => {
         .click();
 
       cy.get('.search-filter.filter-name select')
-        .should('have.value', 'a*')
+        .should('have.value', 'a*');
 
       cy.get('.search-filter.filter-name')
         .find('input')
@@ -556,8 +556,8 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(2);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [{ columnId: 'name', searchTerms: ['x'] }], type: 'filter' });
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: [{ columnId: 'name', searchTerms: ['x'] }], type: 'filter' });
+        expect(win.console.log).to.be.calledWith('Client sample, Grid State changed:: ', { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
       });
     });
 

@@ -14,6 +14,7 @@ const filterServiceStub = {
 } as unknown as FilterService;
 
 const sortServiceStub = {
+  clearSortByColumnId: jest.fn(),
   clearSorting: jest.fn(),
   emitSortChanged: jest.fn(),
   getCurrentColumnSorts: jest.fn(),
@@ -396,58 +397,15 @@ describe('headerMenuExtension', () => {
         expect(filterSpy).toHaveBeenCalledWith(expect.anything(), columnsMock[0].id);
       });
 
-      it('should trigger the command "clear-sort" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {
-        const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-        const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols);
-        const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
+      it('should trigger the command "clear-sort" and expect "clearSortByColumnId" being called with event and column id', () => {
+        const clearSortSpy = jest.spyOn(sortServiceStub, 'clearSortByColumnId');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
-        const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
 
         const instance = extension.register();
         instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
 
-        expect(previousSortSpy).toHaveBeenCalled();
-        expect(backendSortSpy).toHaveBeenCalledWith(expect.anything(), { multiColumnSort: true, sortCols: [mockSortedCols[1]], grid: gridStub });
+        expect(clearSortSpy).toHaveBeenCalledWith(expect.anything(), columnsMock[0].id);
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setSortSpy).toHaveBeenCalled();
-      });
-
-      it('should trigger the command "clear-sort" and expect Sort Service to call "onLocalSortChanged" being called without the sorted column', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
-        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
-        const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-        const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols);
-        const localSortSpy = jest.spyOn(sortServiceStub, 'onLocalSortChanged');
-        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
-        const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
-
-        const instance = extension.register();
-        instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
-
-        expect(previousSortSpy).toHaveBeenCalled();
-        expect(localSortSpy).toHaveBeenCalledWith(gridStub, dataViewStub, [mockSortedCols[1]], true);
-        expect(onCommandSpy).toHaveBeenCalled();
-        expect(setSortSpy).toHaveBeenCalled();
-      });
-
-      it('should trigger the command "clear-sort" and expect "onSort" event triggered when no DataView is provided', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
-        const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-
-        jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(undefined);
-        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
-        const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols);
-        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
-        const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
-        const gridSortSpy = jest.spyOn(gridStub.onSort, 'notify');
-
-        const instance = extension.register();
-        instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
-
-        expect(previousSortSpy).toHaveBeenCalled();
-        expect(onCommandSpy).toHaveBeenCalled();
-        expect(setSortSpy).toHaveBeenCalled();
-        expect(gridSortSpy).toHaveBeenCalledWith([mockSortedCols[1]]);
       });
 
       it('should trigger the command "sort-asc" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {

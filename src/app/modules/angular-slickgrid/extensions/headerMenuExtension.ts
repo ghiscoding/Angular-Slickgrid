@@ -286,32 +286,7 @@ export class HeaderMenuExtension implements Extension {
   /** Clear the Sort on the current column (if it's actually sorted) */
   private clearColumnSort(event: Event, args: MenuCommandItemCallbackArgs) {
     if (args && args.column && this.sharedService) {
-      // get current sorted columns, prior to calling the new column sort
-      const allSortedCols: ColumnSort[] = this.sortService.getCurrentColumnSorts();
-      const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getCurrentColumnSorts(args.column.id + '');
-
-      if (Array.isArray(allSortedCols) && Array.isArray(sortedColsWithoutCurrent) && allSortedCols.length !== sortedColsWithoutCurrent.length) {
-        if (this.sharedService.gridOptions && this.sharedService.gridOptions.backendServiceApi) {
-          this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
-        } else if (this.sharedService.dataView) {
-          this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent, true);
-        } else {
-          // when using customDataView, we will simply send it as a onSort event with notify
-          const isMultiSort = this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
-          const sortOutput = isMultiSort ? sortedColsWithoutCurrent : sortedColsWithoutCurrent[0];
-          args.grid.onSort.notify(sortOutput);
-        }
-
-        // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-        const updatedSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
-          return {
-            columnId: col && col.sortCol && col.sortCol.id,
-            sortAsc: col && col.sortAsc,
-            sortCol: col && col.sortCol,
-          };
-        });
-        this.sharedService.grid.setSortColumns(updatedSortColumns); // add sort icon in UI
-      }
+      this.sortService.clearSortByColumnId(event, args.column.id);
     }
   }
 
