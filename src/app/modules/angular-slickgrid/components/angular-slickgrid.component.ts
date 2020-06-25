@@ -528,9 +528,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       // bind external filter (backend) unless specified to use the local one
       if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-        this.filterService.bindBackendOnFilter(grid, this.dataView);
+        this.filterService.bindBackendOnFilter(grid, dataView);
       } else {
-        this.filterService.bindLocalOnFilter(grid, this.dataView);
+        this.filterService.bindLocalOnFilter(grid, dataView);
       }
     }
 
