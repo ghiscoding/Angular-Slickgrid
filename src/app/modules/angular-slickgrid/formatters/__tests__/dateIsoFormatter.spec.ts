@@ -1,16 +1,8 @@
 import { Column } from '../../models';
 import { Formatters } from '../index';
-import * as moment from 'moment-mini';
+import * as moment from 'moment-timezone';
 
 describe('the Date ISO Formatter', () => {
-  beforeEach(() => {
-    jest.mock('moment', () => {
-      const moment = require.requireActual('moment-timezone');
-      moment.tz.setDefault('America/New_York'); // Whatever timezone you want
-      return moment;
-    });
-  });
-
   it('should return null when no value is provided', () => {
     const value = null;
     const result = Formatters.dateIso(0, 0, value, {} as Column, {});
@@ -36,7 +28,8 @@ describe('the Date ISO Formatter', () => {
   });
 
   it('should return a formatted date value without time date provided has TZ but we specifically mention to parse as UTC ', () => {
-    const value = moment('2099-12-31T00:00:00Z');
+    moment.tz.setDefault('America/New_York');
+    const value = moment('2099-12-31T00:00:00.000Z');
 
     const result1 = Formatters.dateIso(0, 0, value, { params: { parseDateAsUtc: true } } as Column, {});
     const result2 = Formatters.dateIso(0, 0, value, { params: { parseDateAsUtc: false } } as Column, {});
