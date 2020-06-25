@@ -533,6 +533,14 @@ describe('FloatEditor', () => {
 
         expect(validation).toEqual({ valid: true, msg: '' });
       });
+
+      it('should return True when field is required and field is a valid decimal value without 0 suffix', () => {
+        mockColumn.internalColumnEditor.required = true;
+        editor = new FloatEditor(editorArguments);
+        const validation = editor.validate('.5');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
     });
   });
 });
