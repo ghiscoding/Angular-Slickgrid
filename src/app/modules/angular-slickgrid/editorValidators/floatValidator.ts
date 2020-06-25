@@ -35,7 +35,7 @@ export function floatValidator(inputValue: any, options: FloatValidatorOptions):
   } else if (isRequired && inputValue === '') {
     isValid = false;
     outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
-  } else if (inputValue !== '' && (isNaN(inputValue as number) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(inputValue)))) {
+  } else if (inputValue !== '' && (isNaN(inputValue as number) || (decPlaces === 0 && !/^[-+]?(\d*(\.)?(\d)*)$/.test(inputValue)))) {
     // when decimal value is 0 (which is the default), we accept 0 or more decimal values
     isValid = false;
     outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER;
