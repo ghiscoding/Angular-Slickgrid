@@ -1,6 +1,5 @@
 import { Column } from '../../models';
 import { Formatters } from '../index';
-import * as moment from 'moment-timezone';
 
 describe('the Date ISO Formatter', () => {
   it('should return null when no value is provided', () => {
@@ -28,8 +27,7 @@ describe('the Date ISO Formatter', () => {
   });
 
   it('should return a formatted date value without time date provided has TZ but we specifically mention to parse as UTC ', () => {
-    moment.tz.setDefault('America/New_York');
-    const value = moment('2099-12-31T00:00:00.000Z');
+    const value = new Date('2099-12-31T00:00:00.000Z');
 
     const result1 = Formatters.dateIso(0, 0, value, { params: { parseDateAsUtc: true } } as Column, {});
     const result2 = Formatters.dateIso(0, 0, value, { params: { parseDateAsUtc: false } } as Column, {});
