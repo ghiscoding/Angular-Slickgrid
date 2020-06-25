@@ -2,14 +2,14 @@
   <div class="slick-pagination-nav">
     <nav aria-label="Page navigation">
       <ul class="pagination">
-        <li class="page-item" [ngClass]="(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''">
+        <li class="page-item" [ngClass]="isLeftPaginationDisabled ? 'disabled' : ''">
           <a class="page-link icon-seek-first fa fa-angle-double-left" aria-label="First"
-            (click)="changeToFirstPage($event)">
+             (click)="changeToFirstPage($event)">
           </a>
         </li>
-        <li class="page-item" [ngClass]="(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''">
+        <li class="page-item" [ngClass]="isLeftPaginationDisabled ? 'disabled' : ''">
           <a class="page-link icon-seek-prev fa fa-angle-left" aria-label="Previous"
-            (click)="changeToPreviousPage($event)">
+             (click)="changeToPreviousPage($event)">
           </a>
         </li>
       </ul>
@@ -18,20 +18,20 @@
     <div class="slick-page-number">
       <span>{{textPage}}</span>
       <input type="text" class="form-control" data-test="page-number-input" [value]="pageNumber" size="1"
-        [readOnly]="totalItems === 0" (change)="changeToCurrentPage($event)">
+             [readOnly]="totalItems === 0" (change)="changeToCurrentPage($event)">
       <span>{{textOf}}</span><span data-test="page-count"> {{pageCount}}</span>
     </div>
 
     <nav aria-label="Page navigation">
       <ul class="pagination">
-        <li class="page-item" [ngClass]="(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''">
+        <li class="page-item" [ngClass]="isRightPaginationDisabled ? 'disabled' : ''">
           <a class="page-link icon-seek-next text-center fa fa-lg fa-angle-right" aria-label="Next"
-            (click)="changeToNextPage($event)">
+             (click)="changeToNextPage($event)">
           </a>
         </li>
-        <li class="page-item" [ngClass]="(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''">
+        <li class="page-item" [ngClass]="isRightPaginationDisabled ? 'disabled' : ''">
           <a class="page-link icon-seek-end fa fa-lg fa-angle-double-right" aria-label="Last"
-            (click)="changeToLastPage($event)">
+             (click)="changeToLastPage($event)">
           </a>
         </li>
       </ul>
