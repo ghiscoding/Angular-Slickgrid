@@ -237,8 +237,8 @@ export class DualInputEditor implements Editor {
     if ((leftEditorParams && leftEditorParams.alwaysSaveOnEnterKey || rightEditorParams && rightEditorParams.alwaysSaveOnEnterKey) && lastKeyEvent === KeyCode.ENTER) {
       return true;
     }
-    const leftResult = (!(leftElmValue === '' && this.originalLeftValue === null)) && (leftElmValue !== this.originalLeftValue);
-    const rightResult = (!(rightElmValue === '' && this.originalRightValue === null)) && (rightElmValue !== this.originalRightValue);
+    const leftResult = (!(leftElmValue === '' && (this.originalLeftValue === null || this.originalLeftValue === undefined))) && (leftElmValue !== this.originalLeftValue);
+    const rightResult = (!(rightElmValue === '' && (this.originalRightValue === null || this.originalRightValue === undefined))) && (rightElmValue !== this.originalRightValue);
     return leftResult || rightResult;
   }
 

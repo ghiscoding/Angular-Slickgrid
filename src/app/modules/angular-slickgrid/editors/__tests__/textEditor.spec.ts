@@ -186,6 +186,7 @@ describe('TextEditor', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
 
         editor = new TextEditor(editorArguments);
+        editor.setValue('z');
         const editorElm = divContainer.querySelector<HTMLInputElement>('input.editor-title');
 
         editor.focus();
