@@ -130,7 +130,8 @@ export class ExcelExportService {
           this._sheet.setData(finalOutput);
           this._workbook.addWorksheet(this._sheet);
 
-          const excelBlob = await ExcelBuilder.Builder.createFile(this._workbook, { type: 'blob' });
+          const mimeType = this._fileFormat === FileType.xls ? 'application/vnd.ms-excel' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet ';
+          const excelBlob = await ExcelBuilder.Builder.createFile(this._workbook, { type: 'blob', mimeType });
           const downloadOptions = {
             filename: `${this._excelExportOptions.filename}.${this._fileFormat}`,
             format: this._fileFormat

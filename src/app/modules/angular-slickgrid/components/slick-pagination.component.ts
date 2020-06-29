@@ -40,6 +40,16 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
     return this.paginationService.dataTo;
   }
 
+  /** is the left side pagination disabled? */
+  get isLeftPaginationDisabled(): boolean {
+    return this.pageNumber === 1 || this.totalItems === 0;
+  }
+
+  /** is the right side pagination disabled? */
+  get isRightPaginationDisabled(): boolean {
+    return this.pageNumber === this.pageCount || this.totalItems === 0;
+  }
+
   get itemsPerPage(): number {
     return this.paginationService.itemsPerPage;
   }
@@ -80,20 +90,28 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
     }
   }
 
-  changeToFirstPage(event: any) {
-    this.paginationService.goToFirstPage(event);
+  changeToFirstPage(event: MouseEvent) {
+    if (!this.isLeftPaginationDisabled) {
+      this.paginationService.goToFirstPage(event);
+    }
   }
 
-  changeToLastPage(event: any) {
-    this.paginationService.goToLastPage(event);
+  changeToLastPage(event: MouseEvent) {
+    if (!this.isRightPaginationDisabled) {
+      this.paginationService.goToLastPage(event);
+    }
   }
 
-  changeToNextPage(event: any) {
-    this.paginationService.goToNextPage(event);
+  changeToNextPage(event: MouseEvent) {
+    if (!this.isRightPaginationDisabled) {
+      this.paginationService.goToNextPage(event);
+    }
   }
 
-  changeToPreviousPage(event: any) {
-    this.paginationService.goToPreviousPage(event);
+  changeToPreviousPage(event: MouseEvent) {
+    if (!this.isLeftPaginationDisabled) {
+      this.paginationService.goToPreviousPage(event);
+    }
   }
 
   changeToCurrentPage(event: any) {

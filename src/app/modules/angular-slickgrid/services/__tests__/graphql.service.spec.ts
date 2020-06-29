@@ -785,11 +785,39 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
+    it('should return a query with search having the operator EndsWith when the Column Filter was provided as EndsWith', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:EndsWith, value:"le"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumn = { id: 'gender', field: 'gender', filter: { operator: 'EndsWith' } } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['le'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
     it('should return a query with search having the operator StartsWith when the operator was provided as a*', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:StartsWith, value:"le"}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['le'], operator: 'a*' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query with search having the operator StartsWith when the operator was provided as StartsWith', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:StartsWith, value:"le"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['le'], operator: 'StartsWith' },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);

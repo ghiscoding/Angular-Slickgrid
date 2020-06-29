@@ -126,7 +126,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
-  private _isGridHavingFilters = false;
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
@@ -241,9 +240,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngAfterViewInit() {
     this.initialization();
-    if (this.columnDefinitions.findIndex((col) => col.filterable) > -1) {
-      this._isGridHavingFilters = true;
-    }
     this._isGridInitialized = true;
 
     // user must provide a "gridHeight" or use "autoResize: true" in the grid options
@@ -451,6 +447,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   showHeaderRow(showing = true) {
     this.grid.setHeaderRowVisibility(showing, false);
+    if (showing === true && this._isGridInitialized) {
+      this.grid.setColumns(this.columnDefinitions);
+    }
     return showing;
   }
 
@@ -471,11 +470,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.subscriptions.push(
         this.translate.onLangChange.subscribe(() => {
           if (gridOptions.enableTranslate) {
-            if (!this._hideHeaderRowAfterPageLoad && this._isGridHavingFilters) {
-              // before translating, make sure the filter row is visible to avoid having other problems,
-              // because if it's not shown prior to translating then the filters won't be recreated after translating
-              this.grid.setHeaderRowVisibility(true);
-            }
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
             this.extensionService.translateColumnPicker();
@@ -530,9 +524,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       // bind external filter (backend) unless specified to use the local one
       if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-        this.filterService.bindBackendOnFilter(grid, this.dataView);
+        this.filterService.bindBackendOnFilter(grid, dataView);
       } else {
-        this.filterService.bindLocalOnFilter(grid, this.dataView);
+        this.filterService.bindLocalOnFilter(grid, dataView);
       }
     }
 

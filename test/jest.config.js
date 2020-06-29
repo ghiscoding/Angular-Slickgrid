@@ -6,6 +6,7 @@ module.exports = {
     },
     __TRANSFORM_HTML__: true,
   },
+  globalSetup: '<rootDir>/test/jest-global-setup.js',
   collectCoverage: false,
   collectCoverageFrom: [
     'src/app/modules/**/*.{js,ts}',

@@ -589,6 +589,12 @@ describe('gridMenuExtension', () => {
     });
 
     describe('executeGridMenuInternalCustomCommands method', () => {
+      afterEach(() => {
+        jest.clearAllMocks();
+        extension.eventHandler.unsubscribeAll();
+        mockGridMenuAddon.onCommand = new Slick.Event();
+      });
+
       it('should call "clearFrozenColumns" when the command triggered is "clear-frozen-columns"', () => {
         const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
         const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
@@ -680,18 +686,21 @@ describe('gridMenuExtension', () => {
         gridOptionsMock.showHeaderRow = false;
         const gridSpy = jest.spyOn(SharedService.prototype.grid, 'setHeaderRowVisibility');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
+        const setColumnSpy = jest.spyOn(SharedService.prototype.grid, 'setColumns');
 
         const instance = extension.register();
         instance.onCommand.notify({ grid: gridStub, command: 'toggle-filter' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
         expect(gridSpy).toHaveBeenCalledWith(true);
+        expect(setColumnSpy).toHaveBeenCalledTimes(1);
 
         gridOptionsMock.showHeaderRow = true;
         instance.onCommand.notify({ grid: gridStub, command: 'toggle-filter' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
         expect(gridSpy).toHaveBeenCalledWith(false);
+        expect(setColumnSpy).toHaveBeenCalledTimes(1); // same as before, so count won't increase
       });
 
       it('should call the grid "setTopPanelVisibility" method when the command triggered is "toggle-toppanel"', () => {

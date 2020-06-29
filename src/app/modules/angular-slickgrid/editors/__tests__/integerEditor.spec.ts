@@ -425,11 +425,29 @@ describe('IntegerEditor', () => {
         editor = new IntegerEditor(editorArguments);
         const validation = editor.validate(3);
 
+        expect(validation).toEqual({ valid: false, msg: 'Please enter a valid integer number that is greater than or equal to 10' });
+      });
+
+      it('should return False when field is lower than a minValue defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.minValue = 10;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new IntegerEditor(editorArguments);
+        const validation = editor.validate(3);
+
         expect(validation).toEqual({ valid: false, msg: 'Please enter a valid integer number that is greater than 10' });
       });
 
       it('should return False when field is greater than a maxValue defined', () => {
         mockColumn.internalColumnEditor.maxValue = 10;
+        editor = new IntegerEditor(editorArguments);
+        const validation = editor.validate(33);
+
+        expect(validation).toEqual({ valid: false, msg: 'Please enter a valid integer number that is lower than or equal to 10' });
+      });
+
+      it('should return False when field is greater than a maxValue defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.maxValue = 10;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
         editor = new IntegerEditor(editorArguments);
         const validation = editor.validate(33);
 

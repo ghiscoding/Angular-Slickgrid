@@ -461,11 +461,29 @@ describe('FloatEditor', () => {
         editor = new FloatEditor(editorArguments);
         const validation = editor.validate(10);
 
+        expect(validation).toEqual({ valid: false, msg: 'Please enter a valid number that is greater than or equal to 10.2' });
+      });
+
+      it('should return False when field is lower than a minValue defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.minValue = 10.2;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new FloatEditor(editorArguments);
+        const validation = editor.validate(10);
+
         expect(validation).toEqual({ valid: false, msg: 'Please enter a valid number that is greater than 10.2' });
       });
 
       it('should return False when field is greater than a maxValue defined', () => {
         mockColumn.internalColumnEditor.maxValue = 10.2;
+        editor = new FloatEditor(editorArguments);
+        const validation = editor.validate(10.22);
+
+        expect(validation).toEqual({ valid: false, msg: 'Please enter a valid number that is lower than or equal to 10.2' });
+      });
+
+      it('should return False when field is greater than a maxValue defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.maxValue = 10.2;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
         editor = new FloatEditor(editorArguments);
         const validation = editor.validate(10.22);
 
@@ -512,6 +530,14 @@ describe('FloatEditor', () => {
         mockColumn.internalColumnEditor.required = true;
         editor = new FloatEditor(editorArguments);
         const validation = editor.validate(2.5);
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return True when field is required and field is a valid decimal value without 0 suffix', () => {
+        mockColumn.internalColumnEditor.required = true;
+        editor = new FloatEditor(editorArguments);
+        const validation = editor.validate('.5');
 
         expect(validation).toEqual({ valid: true, msg: '' });
       });
