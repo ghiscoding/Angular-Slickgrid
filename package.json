@@ -101,7 +101,7 @@
     "lodash.isequal": "^4.5.0",
     "moment-mini": "^2.22.1",
     "rxjs": "^6.3.3",
-    "slickgrid": "^2.4.24",
+    "slickgrid": "^2.4.25",
     "text-encoding-utf-8": "^1.0.2"
   },
   "devDependencies": {

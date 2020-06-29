@@ -56,7 +56,7 @@ export class ColumnPickerExtension implements Extension {
           if (this.sharedService.gridOptions.columnPicker && typeof this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
             this.sharedService.gridOptions.columnPicker.onColumnsChanged(e, args);
           }
-          if (args && Array.isArray(args.columns) && args.columns.length > this.sharedService.visibleColumns.length) {
+          if (args && Array.isArray(args.columns) && args.columns.length !== this.sharedService.visibleColumns.length) {
             this.sharedService.visibleColumns = args.columns;
           }
         });

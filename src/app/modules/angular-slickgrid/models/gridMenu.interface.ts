@@ -37,6 +37,9 @@ export interface GridMenu {
   /** Defaults to false, which will hide the "Clear all Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
   hideClearAllSortingCommand?: boolean;
 
+  /** Defaults to true, which will hide the "Clear Frozen Columns" command in the Grid Menu */
+  hideClearFrozenColumnsCommand?: boolean;
+
   /** Defaults to false, which will hide the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
   hideExportCsvCommand?: boolean;
 
@@ -69,6 +72,9 @@ export interface GridMenu {
 
   /** icon for the "Clear all Sorting" command */
   iconClearAllSortingCommand?: string;
+
+  /** icon for the "Clear Frozen Columns" command */
+  iconClearFrozenColumnsCommand?: string;
 
   /** icon for the "Export to CSV" command */
   iconExportCsvCommand?: string;
@@ -120,7 +126,6 @@ export interface GridMenu {
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
   menuUsabilityOverride?: (args: MenuCallbackArgs) => boolean;
-
 
   // --
   // Events

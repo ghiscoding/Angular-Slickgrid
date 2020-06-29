@@ -19,6 +19,16 @@
         Set
       </button>
     </span>
+  </div>
+
+  <div class="row col-sm-12">
+    <button class="btn btn-default btn-sm" (click)="setFrozenColumns(-1)" data-test="remove-frozen-column-button">
+      <i class="fa fa-times fa-lg"></i> Remove Frozen Columns
+    </button>
+    <button class="btn btn-default btn-sm" (click)="setFrozenColumns(2)" data-test="set-3frozen-columns">
+      <i class="fa fa-thumb-tack fa-lg"></i> Set 3 Frozen Columns
+    </button>
+
     <span style="margin-left: 15px">
       <button class="btn btn-default btn-sm" (click)="toggleFrozenBottomRows()">
         <i class="fa fa-random fa-lg"></i> Toggle Pinned Rows

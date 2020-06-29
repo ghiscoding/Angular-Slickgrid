@@ -33,6 +33,7 @@ const gridStub = {
   getOptions: jest.fn(),
   registerPlugin: jest.fn(),
   setColumns: jest.fn(),
+  setOptions: jest.fn(),
   setHeaderRowVisibility: jest.fn(),
   setTopPanelVisibility: jest.fn(),
   setPreHeaderPanelVisibility: jest.fn(),
@@ -73,6 +74,7 @@ describe('headerMenuExtension', () => {
       postProcess: jest.fn(),
     },
     headerMenu: {
+      hideFreezeColumnsCommand: false,
       hideForceFitButton: false,
       hideSyncResizeButton: true,
       onExtensionRegistered: jest.fn(),
@@ -109,6 +111,7 @@ describe('headerMenuExtension', () => {
         COMMANDS: 'Commandes',
         COLUMNS: 'Colonnes',
         FORCE_FIT_COLUMNS: 'Ajustement forcé des colonnes',
+        FREEZE_COLUMNS: 'Geler les colonnes',
         SYNCHRONOUS_RESIZE: 'Redimension synchrone',
         HIDE_COLUMN: 'Cacher la colonne',
         REMOVE_FILTER: 'Supprimer le filtre',
@@ -121,6 +124,7 @@ describe('headerMenuExtension', () => {
         COMMANDS: 'Commands',
         COLUMNS: 'Columns',
         FORCE_FIT_COLUMNS: 'Force fit columns',
+        FREEZE_COLUMNS: 'Freeze Columns',
         SYNCHRONOUS_RESIZE: 'Synchronous resize',
         HIDE_COLUMN: 'Hide Column',
         REMOVE_FILTER: 'Remove Filter',
@@ -164,6 +168,7 @@ describe('headerMenuExtension', () => {
           minWidth: 140,
           hideColumnHideCommand: false,
           hideForceFitButton: false,
+          hideFreezeColumnsCommand: false,
           hideSyncResizeButton: true,
           hideSortCommands: false,
           title: '',
@@ -254,8 +259,21 @@ describe('headerMenuExtension', () => {
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       });
 
+      it('should have the commands "frozen-columns" and "hide" in the header menu list', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, headerMenu: { hideFreezeColumnsCommand: false } } as unknown as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        expect(mockColumn.header.menu.items).not.toBeNull();
+        expect(mockColumn.header.menu.items).toEqual([
+          { iconCssClass: 'fa fa-thumb-tack', title: 'Geler les colonnes', command: 'freeze-columns', positionOrder: 48 },
+          { divider: true, command: '', positionOrder: 49 },
+          { iconCssClass: 'fa fa-times', title: 'Cacher la colonne', command: 'hide', positionOrder: 55 }
+        ]);
+      });
+
       it('should have the command "hide-column" in the header menu list', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, headerMenu: { hideColumnHideCommand: false } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, headerMenu: { hideFreezeColumnsCommand: true, hideColumnHideCommand: false } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
 
@@ -266,7 +284,7 @@ describe('headerMenuExtension', () => {
       });
 
       it('should expect all menu related to Sorting when "enableSorting" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableSorting: true, headerMenu: { hideColumnHideCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableSorting: true, headerMenu: { hideFreezeColumnsCommand: true, hideColumnHideCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
 
         extension.register();
@@ -295,12 +313,14 @@ describe('headerMenuExtension', () => {
 
         expect(mockColumn.header.menu.items).not.toBeNull();
         expect(mockColumn.header.menu.items).toEqual([
+          { iconCssClass: 'fa fa-thumb-tack', title: 'Geler les colonnes', command: 'freeze-columns', positionOrder: 48 },
+          { divider: true, command: '', positionOrder: 49 },
           { iconCssClass: 'fa fa-times', title: 'Cacher la colonne', command: 'hide', positionOrder: 55 }
         ]);
       });
 
       it('should expect all menu related to Filtering when "enableFiltering" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, headerMenu: { hideColumnHideCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, headerMenu: { hideFreezeColumnsCommand: true, hideColumnHideCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
 
         extension.register();
@@ -324,7 +344,15 @@ describe('headerMenuExtension', () => {
         const visibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
         const updatedColumnsMock = [{
           id: 'field1', field: 'field1', nameKey: 'TITLE', width: 100,
-          header: { menu: { items: [{ command: 'hide', iconCssClass: 'fa fa-times', positionOrder: 55, title: 'Cacher la colonne' }] } }
+          header: {
+            menu: {
+              items: [
+                { iconCssClass: 'fa fa-thumb-tack', title: 'Geler les colonnes', command: 'freeze-columns', positionOrder: 48 },
+                { divider: true, command: '', positionOrder: 49 },
+                { command: 'hide', iconCssClass: 'fa fa-times', positionOrder: 55, title: 'Cacher la colonne' }
+              ]
+            }
+          }
         }] as Column[];
 
         extension.hideColumn(columnsMock[1]);
@@ -341,6 +369,8 @@ describe('headerMenuExtension', () => {
           header: {
             menu: {
               items: [
+                { iconCssClass: 'fa fa-thumb-tack', title: 'Geler les colonnes', command: 'freeze-columns', positionOrder: 48 },
+                { divider: true, command: '', positionOrder: 49 },
                 { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', command: 'sort-asc', positionOrder: 50 },
                 { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', command: 'sort-desc', positionOrder: 51 },
                 { divider: true, command: '', positionOrder: 52 },
@@ -361,6 +391,8 @@ describe('headerMenuExtension', () => {
           header: {
             menu: {
               items: [
+                { iconCssClass: 'fa fa-thumb-tack', title: 'Freeze Columns', command: 'freeze-columns', positionOrder: 48 },
+                { divider: true, command: '', positionOrder: 49 },
                 { iconCssClass: 'fa fa-sort-asc', title: 'Sort Ascending', command: 'sort-asc', positionOrder: 50 },
                 { iconCssClass: 'fa fa-sort-desc', title: 'Sort Descending', command: 'sort-desc', positionOrder: 51 },
                 { divider: true, command: '', positionOrder: 52 },
@@ -375,6 +407,32 @@ describe('headerMenuExtension', () => {
     });
 
     describe('executeHeaderMenuInternalCommands method', () => {
+      it('should trigger the command "freeze-columns" and grid "setOptions" method to be called with current column position', () => {
+        const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+
+        const instance = extension.register();
+        instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
+
+        expect(onCommandSpy).toHaveBeenCalled();
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, alwaysShowVerticalScroll: false });
+        expect(setColumnsSpy).toHaveBeenCalled();
+      });
+
+      it('should trigger the command "freeze-columns" and grid "setOptions" method to be called with frozen column of -1 because the column found is not visible', () => {
+        const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+
+        const instance = extension.register();
+        instance.onCommand.notify({ column: columnsMock[1], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
+
+        expect(onCommandSpy).toHaveBeenCalled();
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, alwaysShowVerticalScroll: false });
+        expect(setColumnsSpy).toHaveBeenCalled();
+      });
+
       it('should trigger the command "hide" and expect the grid "autosizeColumns" method being called', () => {
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
         const autosizeSpy = jest.spyOn(SharedService.prototype.grid, 'autosizeColumns');

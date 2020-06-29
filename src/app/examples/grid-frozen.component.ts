@@ -77,14 +77,14 @@ export class GridFrozenComponent implements OnInit {
       {
         id: 'start', name: 'Start', field: 'start',
         minWidth: 100, width: 120,
-        filterable: true,
-        sortable: true
+        filterable: true, sortable: true,
+        formatter: Formatters.dateIso
       },
       {
         id: 'finish', name: 'Finish', field: 'finish',
         minWidth: 100, width: 120,
-        filterable: true,
-        sortable: true
+        filterable: true, sortable: true,
+        formatter: Formatters.dateIso
       },
       {
         id: 'cost', name: 'Cost | Duration', field: 'cost',
@@ -170,25 +170,25 @@ export class GridFrozenComponent implements OnInit {
         sortable: true
       },
       {
-        id: 'title1', name: 'Title1', field: 'title1',
+        id: 'title1', name: 'Title 1', field: 'title1',
         minWidth: 100, width: 120,
         filterable: true,
         sortable: true
       },
       {
-        id: 'title2', name: 'Title2', field: 'title2',
+        id: 'title2', name: 'Title 2', field: 'title2',
         minWidth: 100, width: 120,
         filterable: true,
         sortable: true
       },
       {
-        id: 'title3', name: 'Title3', field: 'title3',
+        id: 'title3', name: 'Title 3', field: 'title3',
         minWidth: 100, width: 120,
         filterable: true,
         sortable: true
       },
       {
-        id: 'title4', name: 'Title4', field: 'title4',
+        id: 'title4', name: 'Title 4', field: 'title4',
         minWidth: 100, width: 120,
         filterable: true,
         sortable: true
@@ -209,6 +209,9 @@ export class GridFrozenComponent implements OnInit {
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
       // frozenBottom: true, // if you want to freeze the bottom instead of the top, you can enable this property
+
+      gridMenu: { hideClearFrozenColumnsCommand: false },
+      headerMenu: { hideFreezeColumnsCommand: false }
     };
 
     // mock a dataset
@@ -219,18 +222,14 @@ export class GridFrozenComponent implements OnInit {
     // Set up some test columns.
     const mockDataset = [];
     for (let i = 0; i < 500; i++) {
-      const randomYear = 2000 + Math.floor(Math.random() * 10);
-      const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
-
       mockDataset[i] = {
         id: i,
         title: 'Task ' + i,
         cost: (i % 33 === 0) ? null : Math.random() * 10000,
         duration: i % 8 ? (Math.round(Math.random() * 100) + '') : null,
         percentComplete: Math.round(Math.random() * 100),
-        start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        start: new Date(2009, 0, 1),
+        finish: new Date(2009, 4, 5),
         effortDriven: (i % 5 === 0),
         title1: `Some Text ${Math.round(Math.random() * 25)}`,
         title2: `Some Text ${Math.round(Math.random() * 25)}`,
@@ -274,6 +273,11 @@ export class GridFrozenComponent implements OnInit {
 
   onValidationError(e, args) {
     alert(args.validationResults.msg);
+  }
+
+  setFrozenColumns(frozenCols: number) {
+    this.gridObj.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
+    this.gridOptions = this.gridObj.getOptions();
   }
 
   /** toggle dynamically, through slickgrid "setOptions()" the top/bottom pinned location */
