@@ -5,6 +5,7 @@
 [![npm version](https://badge.fury.io/js/angular-slickgrid.svg)](//npmjs.com/package/angular-slickgrid)
 [![NPM downloads](https://img.shields.io/npm/dy/angular-slickgrid.svg)](https://npmjs.org/package/angular-slickgrid)
 [![gzip size](http://img.badgesize.io/https://npmcdn.com/angular-slickgrid/bundles/angular-slickgrid.umd.js?compression=gzip)](https://npmcdn.com/angular-slickgrid/bundles/angular-slickgrid.umd.js)
+
 [![CircleCI](https://circleci.com/gh/ghiscoding/Angular-Slickgrid/tree/master.svg?style=shield)](https://circleci.com/gh/ghiscoding/workflows/Angular-Slickgrid/tree/master)
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 [![jest](https://jestjs.io/img/jest-badge.svg)](https://github.com/facebook/jest)
