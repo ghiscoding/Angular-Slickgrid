@@ -49,6 +49,13 @@ export class GroupingAndColspanService {
         this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
         this.resizerService.onGridAfterResize.subscribe(() => this.renderPreHeaderRowGroupingTitles());
 
+        this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
+          // when user changes frozen columns dynamically (e.g. from header menu), we need to re-render the pre-header of the grouping titles
+          if (args && args.optionsBefore && args.optionsAfter && args.optionsBefore.frozenColumn !== args.optionsAfter.frozenColumn) {
+            setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 0);
+          }
+        });
+
         // for both picker (columnPicker/gridMenu) we also need to re-create after hiding/showing columns
         const columnPickerExtension = this.extensionService.getExtensionByName(ExtensionName.columnPicker);
         if (columnPickerExtension && columnPickerExtension.instance && columnPickerExtension.instance.onColumnsChanged) {
@@ -62,7 +69,7 @@ export class GroupingAndColspanService {
         }
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
-        // probably some kind of timing issues and delaying it until the grid is fully ready does help
+        // probably some kind of timing issues and delaying it until the grid is fully ready fixes this problem
         setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 50);
       }
     }

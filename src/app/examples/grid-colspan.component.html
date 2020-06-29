@@ -14,11 +14,20 @@
   <hr />
 
   <h3>Grid 2 <small>(with Header Grouping &amp; Frozen/Pinned Columns)</small></h3>
+  <div class="col-sm 12">
+    <button class="btn btn-default btn-sm" (click)="setFrozenColumns2(-1)" data-test="remove-frozen-column-button">
+      <i class="fa fa-times fa-lg"></i> Remove Frozen Columns
+    </button>
+    <button class="btn btn-default btn-sm" (click)="setFrozenColumns2(2)" data-test="set-3frozen-columns">
+      <i class="fa fa-thumb-tack fa-lg"></i> Set 3 Frozen Columns
+    </button>
+  </div>
   <angular-slickgrid gridId="grid2"
                      [columnDefinitions]="columnDefinitions2"
                      [gridOptions]="gridOptions2"
                      [dataset]="dataset2"
                      gridHeight="275"
-                     gridWidth="800">
+                     gridWidth="800"
+                     (onAngularGridCreated)="angularGridReady2($event)">
   </angular-slickgrid>
 </div>

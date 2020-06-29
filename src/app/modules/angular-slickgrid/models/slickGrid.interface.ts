@@ -479,6 +479,7 @@ export interface SlickGrid {
   onViewportChanged: SlickEvent;
   onRendered: SlickEvent;
   onSelectedRowsChanged: SlickEvent;
+  onSetOptions: SlickEvent;
   onScroll: SlickEvent;
   onSort: SlickEvent;
 }

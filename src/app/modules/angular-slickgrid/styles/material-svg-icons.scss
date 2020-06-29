@@ -20,6 +20,8 @@ $icon-color-mdi-help-circle: $icon-color !default;
 $icon-color-mdi-help-circle-outline: $icon-color !default;
 $icon-color-mdi-menu: $icon-color !default;
 $icon-color-mdi-microsoft-excel: $icon-color !default;
+$icon-color-mdi-pin-off-outline: $icon-color !default;
+$icon-color-mdi-pin-outline: $icon-color !default;
 $icon-color-mdi-plus: $icon-color !default;
 $icon-color-mdi-sort-ascending: $icon-color !default;
 $icon-color-mdi-sort-descending: $icon-color !default;
@@ -48,6 +50,8 @@ $icon-width-mdi-help-circle: $icon-width !default;
 $icon-width-mdi-help-circle-outline: $icon-width !default;
 $icon-width-mdi-menu: $icon-width !default;
 $icon-width-mdi-microsoft-excel: $icon-width !default;
+$icon-width-mdi-pin-off-outline: $icon-width !default;
+$icon-width-mdi-pin-outline: $icon-width !default;
 $icon-width-mdi-plus: $icon-width !default;
 $icon-width-mdi-sort-ascending: $icon-width !default;
 $icon-width-mdi-sort-descending: $icon-width !default;
@@ -145,6 +149,14 @@ $icon-width-mdi-sync: $icon-width !default;
   &.mdi-microsoft-excel:before {
     width: $icon-width-mdi-microsoft-excel;
     content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($icon-color-mdi-microsoft-excel)}" viewBox="0 0 24 24"><path  d="M21.17 3.25Q21.5 3.25 21.76 3.5 22 3.74 22 4.08V19.92Q22 20.26 21.76 20.5 21.5 20.75 21.17 20.75H7.83Q7.5 20.75 7.24 20.5 7 20.26 7 19.92V17H2.83Q2.5 17 2.24 16.76 2 16.5 2 16.17V7.83Q2 7.5 2.24 7.24 2.5 7 2.83 7H7V4.08Q7 3.74 7.24 3.5 7.5 3.25 7.83 3.25M7 13.06L8.18 15.28H9.97L8 12.06L9.93 8.89H8.22L7.13 10.9L7.09 10.96L7.06 11.03Q6.8 10.5 6.5 9.96 6.25 9.43 5.97 8.89H4.16L6.05 12.08L4 15.28H5.78M13.88 19.5V17H8.25V19.5M13.88 15.75V12.63H12V15.75M13.88 11.38V8.25H12V11.38M13.88 7V4.5H8.25V7M20.75 19.5V17H15.13V19.5M20.75 15.75V12.63H15.13V15.75M20.75 11.38V8.25H15.13V11.38M20.75 7V4.5H15.13V7Z"></path></svg>');
+  }
+  &.mdi-pin-off-outline:before {
+    width: $icon-width-mdi-pin-off-outline;
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($icon-color-mdi-pin-off-outline)}" viewBox="0 0 24 24"><path d="M8,6.2V4H7V2H17V4H16V12L18,14V16H17.8L14,12.2V4H10V8.2L8,6.2M20,20.7L18.7,22L12.8,16.1V22H11.2V16H6V14L8,12V11.3L2,5.3L3.3,4L20,20.7M8.8,14H10.6L9.7,13.1L8.8,14Z"></path></svg>');
+  }
+  &.mdi-pin-outline:before {
+    width: $icon-width-mdi-pin-outline;
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($icon-color-mdi-pin-outline)}" viewBox="0 0 24 24"><path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12M8.8,14L10,12.8V4H14V12.8L15.2,14H8.8Z"></path></svg>');
   }
   &.mdi-plus:before {
     width: $icon-width-mdi-plus;
