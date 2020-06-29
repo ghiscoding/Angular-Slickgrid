@@ -104,13 +104,13 @@ export class TextEditor implements Editor {
     }
   }
 
-  isValueChanged() {
+  isValueChanged(): boolean {
     const elmValue = this._$input.val();
-    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+    const lastKeyEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastKeyEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(elmValue === '' && this.originalValue === null)) && (elmValue !== this.originalValue);
+    return (!(elmValue === '' && (this.originalValue === null || this.originalValue === undefined))) && (elmValue !== this.originalValue);
   }
 
   loadValue(item: any) {

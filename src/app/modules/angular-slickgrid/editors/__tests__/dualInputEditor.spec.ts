@@ -224,6 +224,7 @@ describe('DualInputEditor', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_0, bubbles: true, cancelable: true });
 
         editor = new DualInputEditor(editorArguments);
+        editor.setValues(['9', '9']);
         const editorElm = divContainer.querySelector<HTMLInputElement>('input.editor-range');
 
         editor.focus();

@@ -157,11 +157,12 @@ export class AutoCompleteEditor implements Editor {
   }
 
   isValueChanged(): boolean {
-    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+    const elmValue = this._$editorElm.val();
+    const lastKeyEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastKeyEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(this._$editorElm.val() === '' && this._defaultTextValue === null)) && (this._$editorElm.val() !== this._defaultTextValue);
+    return (!(elmValue === '' && (this._defaultTextValue === null || this._defaultTextValue === undefined))) && (elmValue !== this._defaultTextValue);
   }
 
   loadValue(item: any) {

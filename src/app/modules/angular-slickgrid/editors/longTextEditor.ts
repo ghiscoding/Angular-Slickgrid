@@ -159,8 +159,9 @@ export class LongTextEditor implements Editor {
     }
   }
 
-  isValueChanged() {
-    return (!(this._$textarea.val() === '' && this.defaultValue === null)) && (this._$textarea.val() !== this.defaultValue);
+  isValueChanged(): boolean {
+    const elmValue = this._$textarea.val();
+    return (!(elmValue === '' && (this.defaultValue === null || this.defaultValue === undefined))) && (elmValue !== this.defaultValue);
   }
 
   loadValue(item: any) {

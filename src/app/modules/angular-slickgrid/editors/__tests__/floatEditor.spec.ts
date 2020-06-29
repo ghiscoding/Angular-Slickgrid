@@ -178,6 +178,7 @@ describe('FloatEditor', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_0, bubbles: true, cancelable: true });
 
         editor = new FloatEditor(editorArguments);
+        editor.setValue(9);
         const editorElm = divContainer.querySelector<HTMLInputElement>('input.editor-price');
 
         editor.focus();
