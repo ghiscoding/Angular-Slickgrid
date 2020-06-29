@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.19.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.7...v2.19.0) (2020-06-29)
+
+
+### Features
+
+* **editor:** use better error message for inclusive values ([#499](https://github.com/ghiscoding/angular-slickgrid/issues/499)) ([6f7b569](https://github.com/ghiscoding/angular-slickgrid/commit/6f7b56923f18c82c237cd4b0c926946eb6634d07))
+* **pinning:** add "Frozen Columns" to header menu ([#494](https://github.com/ghiscoding/angular-slickgrid/issues/494)) ([7782ad3](https://github.com/ghiscoding/angular-slickgrid/commit/7782ad313997615db781b1e88d9989b4a05860c7))
+* **sorting:** header menu clear sort, reset sorting when nothing left ([#509](https://github.com/ghiscoding/angular-slickgrid/issues/509)) ([5898c18](https://github.com/ghiscoding/angular-slickgrid/commit/5898c18678e52e3e608bc76a82fe1a8bd1b24907))
+* **typing:** add SlickGrid and DataView interfaces ([#483](https://github.com/ghiscoding/angular-slickgrid/issues/483)) ([2cee037](https://github.com/ghiscoding/angular-slickgrid/commit/2cee0378b005d9f58b2738b632626947c5a22975))
+* **typings:** add more TS Generic Types ([#489](https://github.com/ghiscoding/angular-slickgrid/issues/489)) ([a379837](https://github.com/ghiscoding/angular-slickgrid/commit/a3798374bbcf49ea8cf920472ba3be78d4cdd69a))
+
+
+### Bug Fixes
+
+* **core:** add missing use of custom datasetIdPropertyName ([#476](https://github.com/ghiscoding/angular-slickgrid/issues/476)) ([9be8fbf](https://github.com/ghiscoding/angular-slickgrid/commit/9be8fbfb9eb10b5ac28b959487e832f6f64e202d))
+* **editor:** float validator should accept decimal even without 0 suffix ([#510](https://github.com/ghiscoding/angular-slickgrid/issues/510)) ([04b4465](https://github.com/ghiscoding/angular-slickgrid/commit/04b446515f4197e11baa23b2feee08fd6377a4d1))
+* **editor:** shouldn't call cell changed when cell value is undefined ([211a2b9](https://github.com/ghiscoding/angular-slickgrid/commit/211a2b9615959f7231cd77233f6804f61ab56fbf))
+* **editor:** shouldn't call cell changed when cell value is undefined ([#516](https://github.com/ghiscoding/angular-slickgrid/issues/516)) ([0aaeb02](https://github.com/ghiscoding/angular-slickgrid/commit/0aaeb02416389e236b86b6c47e3de858798bed40))
+* **example:** use highest id as new id in addItem example, fixes [#495](https://github.com/ghiscoding/angular-slickgrid/issues/495) ([#497](https://github.com/ghiscoding/angular-slickgrid/issues/497)) ([1550d9d](https://github.com/ghiscoding/angular-slickgrid/commit/1550d9de85ff7455cf7bfb096b1ae6eed4c7e097))
+* **excel:** Excel Export add mime type to work in Firefox, fixes [#500](https://github.com/ghiscoding/angular-slickgrid/issues/500) ([#501](https://github.com/ghiscoding/angular-slickgrid/issues/501)) ([56c8e17](https://github.com/ghiscoding/angular-slickgrid/commit/56c8e17f8f6ffedecfbc3f70b9e38362366f5a6e))
+* **extension:** registerPlugin not implemented correctly ([#482](https://github.com/ghiscoding/angular-slickgrid/issues/482)) ([92ffa3d](https://github.com/ghiscoding/angular-slickgrid/commit/92ffa3d8299ddaae622216d2dc02f1d9eed014b5))
+* **filter:** recreate filter when toggling header row, fixes [#493](https://github.com/ghiscoding/angular-slickgrid/issues/493) ([#496](https://github.com/ghiscoding/angular-slickgrid/issues/496)) ([56d74ae](https://github.com/ghiscoding/angular-slickgrid/commit/56d74ae7590b4557af59c6dcfd605dd60da21a9f))
+* **filter:** Select Filter should use default locale without translation ([#503](https://github.com/ghiscoding/angular-slickgrid/issues/503)) ([5284ada](https://github.com/ghiscoding/angular-slickgrid/commit/5284ada21e97ac28aec7d8f01eb845b89b3abbd3))
+* **formatter:** add possibility to parse a date formatter as a UTC date ([#511](https://github.com/ghiscoding/angular-slickgrid/issues/511)) ([53cc371](https://github.com/ghiscoding/angular-slickgrid/commit/53cc3713513895daa0016f6c488574663d3f087b))
+* **header:** re-create header grouping title after changing picker cols ([#502](https://github.com/ghiscoding/angular-slickgrid/issues/502)) ([f03c6f9](https://github.com/ghiscoding/angular-slickgrid/commit/f03c6f91dd6e898484342d4afec2c41d4d8d0014))
+* **lint:** adhere to strict triple equality check ([#477](https://github.com/ghiscoding/angular-slickgrid/issues/477)) ([c49f950](https://github.com/ghiscoding/angular-slickgrid/commit/c49f9506677ce3389bcf5b83e4f807aeb2a8ca91))
+* **pagination:** disabled page buttons should not be clickable ([#506](https://github.com/ghiscoding/angular-slickgrid/issues/506)) ([fbe0d5f](https://github.com/ghiscoding/angular-slickgrid/commit/fbe0d5fdab6b6680814c858b9aad442042e2a01e))
+* **picker:** add missing pre-header title grouping extractor ([#498](https://github.com/ghiscoding/angular-slickgrid/issues/498)) ([ffcbf55](https://github.com/ghiscoding/angular-slickgrid/commit/ffcbf5594115c135b4953c168d664c3fe93a0c2e))
+* **presets:** compound filters operator not working correctly w/presets ([#507](https://github.com/ghiscoding/angular-slickgrid/issues/507)) ([f7b5270](https://github.com/ghiscoding/angular-slickgrid/commit/f7b5270aec48f5ac72dafe8cfe25c26fbf56924d))
+* **styling:** cell/context menus get re-position below the grid ([#479](https://github.com/ghiscoding/angular-slickgrid/issues/479)) ([eba2d0f](https://github.com/ghiscoding/angular-slickgrid/commit/eba2d0f431f66ecec4d24115a2d76dc0681255ba))
+* **treeData:** should support use of custom datasetIdPropertyName ([#475](https://github.com/ghiscoding/angular-slickgrid/issues/475)) ([7aa4f97](https://github.com/ghiscoding/angular-slickgrid/commit/7aa4f97fcaa1d12d4968d086f7b4f137211f8ac9))
+* **types:** add missing option flags in grouping interface ([#481](https://github.com/ghiscoding/angular-slickgrid/issues/481)) ([a1fe38e](https://github.com/ghiscoding/angular-slickgrid/commit/a1fe38e982ae64f223a2c69e943e9708480d2349))
+
 ### [2.18.7](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.6...v2.18.7) (2020-05-26)
 
 
