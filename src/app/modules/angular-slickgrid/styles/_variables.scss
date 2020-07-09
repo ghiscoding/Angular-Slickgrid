@@ -617,6 +617,7 @@ $viewport-border-left:                          0 none !default;
 
 /* Custom Footer */
 $footer-bg-color:                               transparent !default;
+$footer-font-size:                              $font-size-base !default;
 $footer-font-style:                             italic !default;
 $footer-font-weight:                            normal !default;
 $footer-height:                                 30px !default; // if you modify this height, you also have to modify the footerHeight in the customFooterOptions
