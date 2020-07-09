@@ -1320,7 +1320,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions).toEqual(mockColDefs);
           expect(component.showCustomFooter).toBeTrue();
           expect(component.customFooterOptions).toEqual({
-            dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
+            dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
             footerHeight: 20,
@@ -1358,7 +1358,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions).toEqual(mockColDefs);
           expect(component.showCustomFooter).toBeTrue();
           expect(component.customFooterOptions).toEqual({
-            dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
+            dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
             footerHeight: 20,
