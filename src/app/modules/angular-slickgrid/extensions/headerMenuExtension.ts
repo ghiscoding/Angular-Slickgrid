@@ -363,7 +363,7 @@ export class HeaderMenuExtension implements Extension {
         this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
         emitterType = EmitterType.remote;
       } else if (this.sharedService.dataView) {
-        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent);
+        this.sortService.onLocalSortChanged(this.sharedService.grid, sortedColsWithoutCurrent);
         emitterType = EmitterType.local;
       } else {
         // when using customDataView, we will simply send it as a onSort event with notify

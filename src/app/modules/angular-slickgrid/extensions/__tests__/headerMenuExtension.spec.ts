@@ -517,7 +517,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: mockSortedCols[1].sortCol, grid: gridStub, command: 'sort-desc' }, new Slick.EventData(), gridStub);
 
         expect(previousSortSpy).toHaveBeenCalled();
-        expect(localSortSpy).toHaveBeenCalledWith(gridStub, dataViewStub, mockSortedOuput);
+        expect(localSortSpy).toHaveBeenCalledWith(gridStub, mockSortedOuput);
         expect(onCommandSpy).toHaveBeenCalled();
         expect(setSortSpy).toHaveBeenCalled();
       });

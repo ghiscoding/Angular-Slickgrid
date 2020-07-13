@@ -213,6 +213,7 @@ const mockGrid = {
   invalidate: jest.fn(),
   getActiveCellNode: jest.fn(),
   getColumns: jest.fn(),
+  getData: () => mockDataView,
   getSelectionModel: jest.fn(),
   getEditorLock: () => mockGetEditorLock,
   getOptions: jest.fn(),
@@ -598,7 +599,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions = { enableFiltering: true } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid);
       });
 
       it('should bind local sort when "enableSorting" is set', () => {
@@ -607,7 +608,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions = { enableSorting: true } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid);
       });
     });
 
@@ -1024,7 +1025,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid);
         expect(initSpy).toHaveBeenCalledWith(mockGraphqlOptions, mockPagination, mockGrid);
       });
 
@@ -1041,7 +1042,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid);
       });
 
       it('should call bind local sorting when "enableSorting" is set and "useLocalSorting" is set as well', () => {
@@ -1058,7 +1059,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid);
       });
 
       it('should call bind backend filtering when "enableFiltering" is set', () => {
@@ -1070,7 +1071,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(initSpy).toHaveBeenCalledWith(mockGrid);
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid);
         expect(populateSpy).not.toHaveBeenCalled();
       });
 
@@ -1088,7 +1089,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid);
       });
 
       it('should reflect column filters when "enableFiltering" is set', () => {
@@ -1107,7 +1108,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(initSpy).toHaveBeenCalledWith(mockGrid);
-        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+        expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid);
         expect(populateSpy).not.toHaveBeenCalled();
       });
 
