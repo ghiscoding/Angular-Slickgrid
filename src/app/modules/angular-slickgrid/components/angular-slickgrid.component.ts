@@ -489,31 +489,32 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     if (!this.customDataView) {
+      // bind external sorting (backend) when available or default onSort (dataView)
+      if (gridOptions.enableSorting) {
+        // bind external sorting (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+          this.sortService.bindBackendOnSort(grid);
+        } else {
+          this.sortService.bindLocalOnSort(grid);
+        }
+      }
+
+      // bind external filter (backend) when available or default onFilter (dataView)
+      if (gridOptions.enableFiltering) {
+        this.filterService.init(grid);
+
+        // bind external filter (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+          this.filterService.bindBackendOnFilter(grid);
+        } else {
+          this.filterService.bindLocalOnFilter(grid);
+        }
+      }
+
+      // load any presets if any (after dataset is initialized)
       this.loadPresetsWhenDatasetInitialized();
     }
 
-    // bind external sorting (backend) when available or default onSort (dataView)
-    if (gridOptions.enableSorting && !this.customDataView) {
-      // bind external sorting (backend) unless specified to use the local one
-      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
-        this.sortService.bindBackendOnSort(grid);
-      } else {
-        this.sortService.bindLocalOnSort(grid);
-      }
-    }
-
-    // bind external filter (backend) when available or default onFilter (dataView)
-    if (gridOptions.enableFiltering && !this.customDataView) {
-      this.filterService.init(grid);
-      this.loadPresetsWhenDatasetInitialized();
-
-      // bind external filter (backend) unless specified to use the local one
-      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-        this.filterService.bindBackendOnFilter(grid);
-      } else {
-        this.filterService.bindLocalOnFilter(grid);
-      }
-    }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
     if (gridOptions.backendServiceApi) {
