@@ -367,6 +367,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (!this._isDatasetInitialized && this.gridOptions.enableCheckboxSelector) {
           this.loadRowSelectionPresetWhenExists();
         }
+        this.loadPresetsWhenDatasetInitialized();
         this._isDatasetInitialized = true;
 
         // also update the hierarchical dataset
@@ -487,48 +488,33 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       );
     }
 
-    // if user entered some Columns "presets", we need to reflect them all in the grid
-    if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
-      const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
-      if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
-        // make sure that the checkbox selector is also visible if it is enabled
-        if (gridOptions.enableCheckboxSelector) {
-          const checkboxColumn = (Array.isArray(this._columnDefinitions) && this._columnDefinitions.length > 0) ? this._columnDefinitions[0] : null;
-          if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
-            gridColumns.unshift(checkboxColumn);
-          }
+    if (!this.customDataView) {
+      // bind external sorting (backend) when available or default onSort (dataView)
+      if (gridOptions.enableSorting) {
+        // bind external sorting (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+          this.sortService.bindBackendOnSort(grid);
+        } else {
+          this.sortService.bindLocalOnSort(grid);
         }
-
-        // finally set the new presets columns (including checkbox selector if need be)
-        grid.setColumns(gridColumns);
       }
+
+      // bind external filter (backend) when available or default onFilter (dataView)
+      if (gridOptions.enableFiltering) {
+        this.filterService.init(grid);
+
+        // bind external filter (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+          this.filterService.bindBackendOnFilter(grid);
+        } else {
+          this.filterService.bindLocalOnFilter(grid);
+        }
+      }
+
+      // load any presets if any (after dataset is initialized)
+      this.loadPresetsWhenDatasetInitialized();
     }
 
-    // bind external sorting (backend) when available or default onSort (dataView)
-    if (gridOptions.enableSorting && !this.customDataView) {
-      // bind external sorting (backend) unless specified to use the local one
-      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
-        this.sortService.bindBackendOnSort(grid, dataView);
-      } else {
-        this.sortService.bindLocalOnSort(grid, dataView);
-      }
-    }
-
-    // bind external filter (backend) when available or default onFilter (dataView)
-    if (gridOptions.enableFiltering && !this.customDataView) {
-      this.filterService.init(grid);
-
-      // if user entered some Filter "presets", we need to reflect them all in the DOM
-      if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
-        this.filterService.populateColumnFilterSearchTermPresets(gridOptions.presets.filters);
-      }
-      // bind external filter (backend) unless specified to use the local one
-      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-        this.filterService.bindBackendOnFilter(grid, dataView);
-      } else {
-        this.filterService.bindLocalOnFilter(grid, dataView);
-      }
-    }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
     if (gridOptions.backendServiceApi) {
@@ -812,6 +798,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
           this.loadRowSelectionPresetWhenExists();
         }
+        this.loadPresetsWhenDatasetInitialized();
         this._isDatasetInitialized = true;
       }
     }
@@ -917,6 +904,32 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  private loadPresetsWhenDatasetInitialized() {
+    if (this.gridOptions && !this.customDataView) {
+      // if user entered some Filter "presets", we need to reflect them all in the DOM
+      if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.filters) && this.gridOptions.presets.filters.length > 0) {
+        this.filterService.populateColumnFilterSearchTermPresets(this.gridOptions.presets.filters);
+      }
+
+      // if user entered some Columns "presets", we need to reflect them all in the grid
+      if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.columns) && this.gridOptions.presets.columns.length > 0) {
+        const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(this.grid, this.gridOptions.presets.columns);
+        if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
+          // make sure that the checkbox selector is also visible if it is enabled
+          if (this.gridOptions.enableCheckboxSelector) {
+            const checkboxColumn = (Array.isArray(this._columnDefinitions) && this._columnDefinitions.length > 0) ? this._columnDefinitions[0] : null;
+            if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
+              gridColumns.unshift(checkboxColumn);
+            }
+          }
+
+          // finally set the new presets columns (including checkbox selector if need be)
+          this.grid.setColumns(gridColumns);
+        }
+      }
+    }
+  }
+
   /**
    * local grid, check if we need to show the Pagination
    * if so then also check if there's any presets and finally initialize the PaginationService
@@ -1016,7 +1029,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       // we will display the custom footer only when there's no Pagination
-      if (!this.gridOptions.enablePagination) {
+      if (!this.gridOptions.enablePagination && !this._isPaginationInitialized) {
         this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false;
         this.customFooterOptions = this.gridOptions.customFooterOptions || {};
       }

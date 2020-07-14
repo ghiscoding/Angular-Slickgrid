@@ -60,7 +60,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       { id: 'duration', name: 'Duration', field: 'duration', minWidth: 90, filterable: true },
       {
         id: 'percentComplete', name: '% Complete', field: 'percentComplete', minWidth: 120, maxWidth: 200,
-        sortable: true, filterable: true, filter: { model: Filters.slider, operator: '>=' },
+        sortable: true, filterable: true, filter: { model: Filters.compoundSlider, operator: '>=' },
         formatter: Formatters.percentCompleteBar, type: FieldType.number,
       },
       {
@@ -104,6 +104,9 @@ export class GridTreeDataParentChildComponent implements OnInit {
       // change header/cell row height for material design theme
       headerRowHeight: 45,
       rowHeight: 40,
+      presets: {
+        filters: [{ columnId: 'percentComplete', searchTerms: [25], operator: '>=' }]
+      },
 
       // use Material Design SVG icons
       contextMenu: {
@@ -175,7 +178,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
     // force a resort because of the tree data structure
     setTimeout(() => {
       const titleColumn = this.columnDefinitions.find(col => col.id === 'title');
-      this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataViewObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
+      this.angularGrid.sortService.onLocalSortChanged(this.gridObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
 
       // scroll into the position, after insertion cycle, where the item was added
       const rowIndex = this.dataViewObj.getRowById(newItem.id);

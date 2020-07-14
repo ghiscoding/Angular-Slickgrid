@@ -26,7 +26,6 @@ declare const Slick: any;
 export class SortService {
   private _currentLocalSorters: CurrentSorter[] = [];
   private _eventHandler: SlickEventHandler;
-  private _dataView: any;
   private _grid: any;
   private _isBackendGrid = false;
   private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
@@ -52,15 +51,19 @@ export class SortService {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
+  /** Getter of SlickGrid DataView object */
+  private get _dataView(): any {
+    return (this._grid && this._grid.getData) ? this._grid.getData() : {};
+  }
+
   /**
    * Bind a backend sort (single/multi) hook to the grid
    * @param grid SlickGrid Grid object
    * @param dataView SlickGrid DataView object
    */
-  bindBackendOnSort(grid: any, dataView: any) {
+  bindBackendOnSort(grid: any) {
     this._isBackendGrid = true;
     this._grid = grid;
-    this._dataView = dataView;
 
     // subscribe to the SlickGrid event and call the backend execution
     this._eventHandler.subscribe(grid.onSort, this.onBackendSortChanged.bind(this));
@@ -72,10 +75,9 @@ export class SortService {
    * @param gridOptions Grid Options object
    * @param dataView
    */
-  bindLocalOnSort(grid: any, dataView: any) {
+  bindLocalOnSort(grid: any) {
     this._isBackendGrid = false;
     this._grid = grid;
-    this._dataView = dataView;
 
     this.processTreeDataInitialSort();
 
@@ -98,7 +100,7 @@ export class SortService {
           });
         }
 
-        this.onLocalSortChanged(grid, dataView, sortColumns);
+        this.onLocalSortChanged(grid, sortColumns);
         this.emitSortChanged(EmitterType.local);
       }
     });
@@ -113,7 +115,7 @@ export class SortService {
       if (this._gridOptions.backendServiceApi) {
         this.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this._grid });
       } else if (this._dataView) {
-        this.onLocalSortChanged(this._grid, this._dataView, sortedColsWithoutCurrent, true, true);
+        this.onLocalSortChanged(this._grid, sortedColsWithoutCurrent, true, true);
       } else {
         // when using customDataView, we will simply send it as a onSort event with notify
         const isMultiSort = this._gridOptions && this._gridOptions.multiColumnSort || false;
@@ -260,7 +262,7 @@ export class SortService {
     }
 
     if (sortCols.length > 0) {
-      this.onLocalSortChanged(this._grid, this._dataView, sortCols);
+      this.onLocalSortChanged(this._grid, sortCols);
       this._grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
     }
 
@@ -319,8 +321,9 @@ export class SortService {
   }
 
   /** When a Sort Changes on a Local grid (JSON dataset) */
-  onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false, emitSortChanged = false) {
+  onLocalSortChanged(grid: any, sortColumns: ColumnSort[], forceReSort = false, emitSortChanged = false) {
     const isTreeDataEnabled = this._gridOptions && this._gridOptions.enableTreeData || false;
+    const dataView = grid && grid.getData && grid.getData();
 
     if (grid && dataView) {
       if (forceReSort && !isTreeDataEnabled) {
@@ -357,7 +360,7 @@ export class SortService {
   sortLocalGridByDefaultSortFieldId() {
     const sortColFieldId = this._gridOptions && this._gridOptions.defaultColumnSortFieldId || this._gridOptions.datasetIdPropertyName || 'id';
     const sortCol = { id: sortColFieldId, field: sortColFieldId } as Column;
-    this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol, clearSortTriggered: true }));
+    this.onLocalSortChanged(this._grid, new Array({ sortAsc: true, sortCol, clearSortTriggered: true }));
   }
 
   sortComparers(sortColumns: ColumnSort[], dataRow1: any, dataRow2: any): number {
