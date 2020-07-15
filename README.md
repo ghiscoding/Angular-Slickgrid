@@ -39,10 +39,12 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
 ### Fully Tested with [Jest](https://jestjs.io/)
-Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~10,000 lines of code (~2,600 unit tests) that are now fully tested with [Jest](https://jestjs.io/).
+Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~10,000 lines of code (+2,600 unit tests) that are now fully tested with [Jest](https://jestjs.io/).
 
 ## Installation
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
+
+**NOTE:** if you have any question, please consider asking installation and/or general questions on [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=slickgrid)
 
 ### Demo page
 `Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can see a demo of each one below.
