@@ -65,7 +65,7 @@ const taskFormatter = (row, cell, value, columnDef, dataContext) => {
 })
 @Injectable()
 export class GridEditorComponent implements OnInit {
-  title = 'Example 3: Editors';
+  title = 'Example 3: Editors / Delete';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
   <ul>
