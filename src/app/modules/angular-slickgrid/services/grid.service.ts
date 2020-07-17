@@ -362,7 +362,9 @@ export class GridService {
     if (!Array.isArray(items)) {
       return [this.addItem<T>(items, options)];
     } else {
+      this._dataView.beginUpdate();
       items.forEach((item: T) => this.addItem<T>(item, { ...options, highlightRow: false, resortGrid: false, triggerEvent: false, selectRow: false }));
+      this._dataView.endUpdate();
     }
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
@@ -450,6 +452,8 @@ export class GridService {
       this.deleteItem<T>(items, options);
       return [items[idPropName]];
     }
+
+    this._dataView.beginUpdate();
     const itemIds = [];
     items.forEach((item: T) => {
       if (item && item[idPropName] !== undefined) {
@@ -457,6 +461,7 @@ export class GridService {
       }
       this.deleteItem<T>(item, { ...options, triggerEvent: false });
     });
+    this._dataView.endUpdate();
 
     // do we want to trigger an event after deleting the item
     if (options.triggerEvent) {
@@ -504,11 +509,13 @@ export class GridService {
 
     // when it's not an array, we can call directly the single item delete
     if (Array.isArray(itemIds)) {
+      this._dataView.beginUpdate();
       for (let i = 0; i < itemIds.length; i++) {
         if (itemIds[i] !== null) {
           this.deleteItemById(itemIds[i], { triggerEvent: false });
         }
       }
+      this._dataView.endUpdate();
 
       // do we want to trigger an event after deleting the item
       if (options.triggerEvent) {
@@ -569,10 +576,13 @@ export class GridService {
       return [this.updateItem<T>(items, options)];
     }
 
+
+    this._dataView.beginUpdate();
     const gridRowNumbers: number[] = [];
     items.forEach((item: any) => {
       gridRowNumbers.push(this.updateItem<T>(item, { ...options, highlightRow: false, selectRow: false, triggerEvent: false }));
     });
+    this._dataView.endUpdate();
 
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
@@ -668,10 +678,14 @@ export class GridService {
     if (!Array.isArray(items)) {
       return [this.upsertItem<T>(items, options)];
     }
+
+    this._dataView.beginUpdate();
     const upsertedRows: { added: number, updated: number }[] = [];
     items.forEach((item: T) => {
       upsertedRows.push(this.upsertItem<T>(item, { ...options, highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     });
+    this._dataView.endUpdate();
+
     const rowNumbers = upsertedRows.map((upsertRow) => upsertRow.added !== undefined ? upsertRow.added : upsertRow.updated);
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
