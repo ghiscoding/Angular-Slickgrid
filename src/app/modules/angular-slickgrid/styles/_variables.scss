@@ -65,8 +65,8 @@ $preheader-border-left:                         none !default;
 $preheader-border-left-first-element:           none !default;
 $preheader-border-right:                        none !default;
 $preheader-border-right-last-element:           none !default;
-$preheader-border-bottom:                       none !default;
-$preheader-border-top:                          none !default;
+$preheader-border-bottom:                       0 !default;
+$preheader-border-top:                          0 !default;
 $preheader-font-size:                           $font-size-base + 3px !default;
 $preheader-height:                              25px !default; /* full height is calculated with cell padding + borders (25px + 5px + 0px + 0px) = 30px must be set as preHeaderPanelHeight */
 $preheader-grouped-title-display:               inline-grid !default;
@@ -87,7 +87,7 @@ $header-input-padding:                          0 6px !default;                 
 $header-row-background-color:                   #ffffff !default;
 $header-row-count:                              2 !default;                           // how many rows to display on the header
 $header-row-filter-padding:                     4px !default;
-$header-column-height:                          calc(17px * $header-row-count) !default;  // header is calculated by rows to show
+$header-column-height:                          calc(17px * #{$header-row-count}) !default;  // header is calculated by rows to show
 $header-border-top:                             0 none !default;                      // header, column titles, that is without the Filters
 $header-border-right:                           0 none !default;
 $header-border-bottom:                          0 none !default;
@@ -126,7 +126,7 @@ $icon-font-size:                                14px !default;
 $icon-group-color:                              $primary-color !default;
 $icon-group-expanded:                           "\f107" !default;
 $icon-group-collapsed:                          "\f105" !default;
-$icon-group-font-size:                          calc($icon-font-size + 4px) !default;
+$icon-group-font-size:                          calc(#{$icon-font-size} + 4px) !default;
 $icon-group-font-weight:                        bold !default;
 $icon-group-margin-right:                       2px !default;
 $icon-group-height:                             20px !default;
@@ -159,12 +159,12 @@ $icon-sort-color:                               $primary-color !default;
 $icon-sort-font-size:                           $icon-font-size !default;
 $icon-sort-width:                               $icon-font-size !default;
 $icon-sort-position-right:                      10px !default;
-$icon-sort-position-top:                        calc((15px * $header-row-count) - 15px) !default;
+$icon-sort-position-top:                        calc((15px * #{$header-row-count}) - 15px) !default;
 $sort-indicator-number-font-size:               10px !default;
 $sort-indicator-number-width:                   8px !default;
 $sort-indicator-number-left:                    auto !default;
 $sort-indicator-number-right:                   0px !default;
-$sort-indicator-number-top:                     calc(13px * $header-row-count) !default;
+$sort-indicator-number-top:                     calc(13px * #{$header-row-count}) !default;
 $sort-indicator-hint-opacity:                   0.5 !default;
 
 /* Grouping Totals Formatter */
@@ -206,7 +206,7 @@ $column-picker-label-margin:                    4px !default;
 $column-picker-label-font-weight:               normal !default;
 $column-picker-link-background-color:           #ffffff !default;
 $column-picker-title-border-bottom:             1px solid #d6d6d6 !default;
-$column-picker-title-font-size:                 calc($column-picker-item-font-size + 2px) !default;
+$column-picker-title-font-size:                 calc(#{$column-picker-item-font-size} + 2px) !default;
 $column-picker-title-font-weight:               normal !default;
 $column-picker-title-margin-bottom:             10px !default;
 $column-picker-title-width:                     calc(100% - #{$column-picker-close-btn-width} - 10px) !default;
@@ -216,7 +216,7 @@ $detail-view-icon-collapse:                     "\f056" !default;
 $detail-view-icon-collapse-color:               $primary-color !default;
 $detail-view-icon-expand:                       "\f055" !default;
 $detail-view-icon-expand-color:                 lighten($primary-color, 25%) !default;
-$detail-view-icon-size:                         calc($icon-font-size + 2px) !default;
+$detail-view-icon-size:                         calc(#{$icon-font-size} + 2px) !default;
 $detail-view-container-bgcolor:                 #f7f7f7 !default;
 $detail-view-container-border:                  1px solid #c0c0c0 !default;
 $detail-view-container-padding:                 10px !default;
@@ -273,7 +273,7 @@ $grid-menu-divider-margin:                      8px 5px !default;
 $grid-menu-divider-color:                       #e7e7e7 !default;
 $grid-menu-divider-width:                       calc(100% - 40px) !default;
 $grid-menu-title-border-bottom:                 solid 1px #d6d6d6 !default;
-$grid-menu-title-font-size:                     calc($grid-menu-item-font-size + 2px) !default;
+$grid-menu-title-font-size:                     calc(#{$grid-menu-item-font-size} + 2px) !default;
 $grid-menu-title-font-weight:                   normal !default;
 $grid-menu-title-margin-bottom:                 10px !default;
 $grid-menu-title-width:                         calc(100% - #{$grid-menu-close-btn-width} - 10px) !default;
@@ -312,7 +312,7 @@ $cell-menu-divider-color:                       #e7e7e7 !default;
 $cell-menu-divider-width:                       calc(100% - 40px) !default;
 $cell-menu-option-list-margin-bottom:           10px !default;
 $cell-menu-title-border-bottom:                 1px solid #d6d6d6 !default;
-$cell-menu-title-font-size:                     calc($cell-menu-item-font-size + 2px) !default;
+$cell-menu-title-font-size:                     calc(#{$cell-menu-item-font-size} + 2px) !default;
 $cell-menu-title-font-weight:                   normal !default;
 $cell-menu-title-margin-bottom:                 10px !default;
 $cell-menu-title-width:                         calc(100% - #{$cell-menu-close-btn-width} - 10px) !default;
@@ -350,7 +350,7 @@ $context-menu-divider-color:                    #e7e7e7 !default;
 $context-menu-divider-width:                    calc(100% - 40px) !default;
 $context-menu-option-list-margin-bottom:        10px !default;
 $context-menu-title-border-bottom:              1px solid #d6d6d6 !default;
-$context-menu-title-font-size:                  calc($context-menu-item-font-size + 2px) !default;
+$context-menu-title-font-size:                  calc(#{$context-menu-item-font-size} + 2px) !default;
 $context-menu-title-font-weight:                normal !default;
 $context-menu-title-margin-bottom:              10px !default;
 $context-menu-title-width:                      calc(100% - #{$context-menu-close-btn-width} - 10px) !default;
@@ -396,7 +396,7 @@ $header-menu-display:                           none !default; /* can be none or
 $checkbox-selector-color:                       $primary-color !default;
 $checkbox-selector-checked-color:               $checkbox-selector-color !default;
 $checkbox-selector-unchecked-color:             $checkbox-selector-color !default;
-$checkbox-selector-size:                        calc($icon-font-size - 1px) !default;
+$checkbox-selector-size:                        calc(#{$icon-font-size} - 1px) !default;
 $checkbox-selector-icon:                        "\f00c" !default;
 $checkbox-selector-icon-bg-color:               inherit !default;
 $checkbox-selector-icon-font-weight:            bold !default;
@@ -501,7 +501,7 @@ $slider-filter-thumb-color:                     rgb(201, 219, 203) !default;
 $slider-filter-thumb-size:                      14px !default;
 $slider-filter-thumb-border:                    1px solid darken($slider-filter-thumb-color, 15%) !default;
 $slider-filter-number-padding:                  4px 8px !default;
-$slider-filter-number-font-size:                calc($font-size-base-value - 1px) !default;
+$slider-filter-number-font-size:                calc(#{$font-size-base-value} - 1px) !default;
 
 /* Input Range Slider Filter (with jQuery UI) */
 $slider-range-filter-height:                    $slider-filter-height !default;
@@ -572,6 +572,8 @@ $multiselect-ok-button-text-align:              center !default;
 
 /* pagination variables */
 $pagination-button-hover-color:                 #E6E6E6 !default;
+$pagination-button-border-radius:               4px !default;
+$pagination-button-padding:                     6px 12px !default;
 $pagination-border-color:                       #ddd !default;
 $pagination-count-margin-left:                  2px !default;
 $pagination-icon-color:                         $primary-color !default;
@@ -589,6 +591,7 @@ $pagination-border-top:                         0 none !default;
 $pagination-border-right:                       0 none !default;
 $pagination-border-bottom:                      0 none !default;
 $pagination-border-left:                        0 none !default;
+$pagination-page-input-border-radius:           4px !default;
 $pagination-page-input-bgcolor:                 #fafbed !default;
 $pagination-page-input-height:                  26px !default;
 $pagination-page-input-width:                   50px !default;
@@ -597,7 +600,7 @@ $pagination-page-select-border-radius:          3px !default;
 $pagination-page-select-padding:                0 0 2px 2px !default;
 $pagination-page-select-height:                 32px !default;
 $pagination-page-select-width:                  60px !default;
-$pagination-page-select-font-size:              calc($font-size-base - 2px) !default;
+$pagination-page-select-font-size:              calc(#{$font-size-base} - 2px) !default;
 $pagination-text-color:                         #808080 !default;
 
 /* Row Move Manager Plugin */

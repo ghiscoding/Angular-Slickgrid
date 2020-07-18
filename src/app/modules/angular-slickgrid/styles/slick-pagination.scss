@@ -46,6 +46,7 @@
         height: $pagination-page-input-height;
         width: $pagination-page-input-width;
         padding: $pagination-page-input-padding;
+        border-radius: $pagination-page-input-border-radius;
         display: inline-block;
       }
     }
@@ -68,9 +69,23 @@
             text-decoration: none;
             font-family: $icon-font-family;
             -webkit-text-stroke: $pagination-icon-seek-text-stroke;
+            padding: $pagination-button-padding;
         }
         a[class*="icon-seek-"]:hover {
           background-color: $pagination-button-hover-color;
+        }
+
+        &:first-child {
+          a, span {
+            border-top-left-radius: $pagination-button-border-radius;
+            border-bottom-left-radius: $pagination-button-border-radius;
+          }
+        }
+        &:last-child {
+          a, span {
+            border-top-right-radius: $pagination-button-border-radius;
+            border-bottom-right-radius: $pagination-button-border-radius;
+          }
         }
 
         .icon-seek-first {
