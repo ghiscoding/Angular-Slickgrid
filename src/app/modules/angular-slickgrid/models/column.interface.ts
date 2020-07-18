@@ -169,8 +169,17 @@ export interface Column<T = any> {
   /** an event that can be used for triggering an action after a cell click */
   onCellClick?: (e: KeyboardEvent | MouseEvent, args: OnEventArgs) => void;
 
-  /** column output type */
+  /**
+   * Column output type(e.g.Date Picker, the output format that we will see in the picker)
+   * NOTE: this is only currently used by the Editors / Filters with a Date Picker
+   */
   outputType?: FieldType;
+
+  /**
+   * Column Editor save format type (e.g. which date format to use when saving after choosing a date from the Date Editor picker)
+   * NOTE: this is only currently used by the Date Editor (date picker)
+   */
+  saveOutputType?: FieldType;
 
   /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
   params?: any | any[];

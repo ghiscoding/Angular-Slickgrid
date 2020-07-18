@@ -96,6 +96,7 @@ export class DateEditor implements Editor {
       const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
       const title = this.columnEditor && this.columnEditor.title || '';
       this.defaultDate = (this.args.item) ? this.args.item[this.columnDef.field] : null;
+      const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateUtc);
       const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
       let currentLocale = this._translate && this._translate.currentLang || this.gridOptions.locale || 'en';
       if (currentLocale && currentLocale.length > 2) {
@@ -106,12 +107,10 @@ export class DateEditor implements Editor {
         defaultDate: this.defaultDate as string,
         altInput: true,
         altFormat: outputFormat,
-        dateFormat: outputFormat,
+        dateFormat: inputFormat,
         closeOnSelect: false,
         locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-        onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
-          this.save();
-        },
+        onChange: () => this.save(),
         errorHandler: () => {
           // do nothing, Flatpickr is a little too sensitive and will throw an error when provided date is lower than minDate so just disregard the error completely
         }
@@ -174,26 +173,33 @@ export class DateEditor implements Editor {
 
   applyValue(item: any, state: any) {
     const fieldName = this.columnDef && this.columnDef.field;
-    const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
-    const isComplexObject = fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+    if (fieldName !== undefined) {
+      const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
+      const saveTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.saveOutputType || this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
+      const isComplexObject = fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
 
-    // validate the value before applying it (if not valid we'll set an empty string)
-    const validation = this.validate(state);
-    const newValue = (validation && validation.valid) ? moment(state, outputTypeFormat).toDate() : '';
+      // validate the value before applying it (if not valid we'll set an empty string)
+      const validation = this.validate(state);
+      const newValue = (validation && validation.valid) ? moment(state, outputTypeFormat).format(saveTypeFormat) : '';
 
-    // set the new value to the item datacontext
-    if (isComplexObject) {
-      setDeepValue(item, fieldName, newValue);
-    } else {
-      item[fieldName] = newValue;
+      // set the new value to the item datacontext
+      if (isComplexObject) {
+        setDeepValue(item, fieldName, newValue);
+      } else {
+        item[fieldName] = newValue;
+      }
     }
   }
 
   isValueChanged() {
     const elmValue = this._$input.val();
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnDef && this.columnDef.type || FieldType.dateIso);
     const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
-    const elmDateStr = elmValue ? moment(elmValue, outputTypeFormat, false).format(outputTypeFormat) : '';
-    const orgDateStr = this.originalDate ? moment(this.originalDate, outputTypeFormat, false).format(outputTypeFormat) : '';
+    const elmDateStr = elmValue ? moment(elmValue, inputFormat, false).format(outputTypeFormat) : '';
+    const orgDateStr = this.originalDate ? moment(this.originalDate, inputFormat, false).format(outputTypeFormat) : '';
+    if (elmDateStr === 'Invalid date' || orgDateStr === 'Invalid date') {
+      return false;
+    }
 
     return (!(elmDateStr === '' && orgDateStr === '')) && (elmDateStr !== orgDateStr);
   }
@@ -232,8 +238,9 @@ export class DateEditor implements Editor {
       return '';
     }
 
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnDef && this.columnDef.type || FieldType.dateIso);
     const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateIso);
-    const value = moment(domValue, outputTypeFormat, false).format(outputTypeFormat);
+    const value = moment(domValue, inputFormat, false).format(outputTypeFormat);
 
     return value;
   }

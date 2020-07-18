@@ -272,7 +272,9 @@ export class GridEditorComponent implements OnInit {
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
         exportWithFormatter: true,
-        type: FieldType.date,
+        type: FieldType.date,              // dataset cell input format
+        // outputType: FieldType.dateUs,   // date picker format
+        saveOutputType: FieldType.dateUtc, // save output date formattype: FieldType.date,
         editor: {
           model: Editors.date,
           // override any of the Flatpickr options through "editorOptions"
