@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.19.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.19.0...v2.19.1) (2020-07-20)
+
+
+### Features
+
+* **badge:** add Cypress badge ([7c6c8e1](https://github.com/ghiscoding/angular-slickgrid/commit/7c6c8e1f2619a3b440b09ffaa6cd7e41869b21b7))
+* **core:** use DataView transactions with multiple item changes ([#527](https://github.com/ghiscoding/angular-slickgrid/issues/527)) ([154bfb1](https://github.com/ghiscoding/angular-slickgrid/commit/154bfb1cc1697717deb107fb87773980a58ef6d1))
+* **styling:** add custom footer font-size SASS variable ([#519](https://github.com/ghiscoding/angular-slickgrid/issues/519)) ([bc56030](https://github.com/ghiscoding/angular-slickgrid/commit/bc560306ec2e7ef77df65e816265ed3e3c1ad052))
+* **tests:** add more Cypress E2E tests for grid with Editors ([#532](https://github.com/ghiscoding/angular-slickgrid/issues/532)) ([701b624](https://github.com/ghiscoding/angular-slickgrid/commit/701b62451019f45c1e04bd332ba7b8cdad3904db))
+* **tests:** add more Cypress E2E tests for Tree Data ([#525](https://github.com/ghiscoding/angular-slickgrid/issues/525)) ([36f958d](https://github.com/ghiscoding/angular-slickgrid/commit/36f958d22859ccf8b166ce17d18a604236abe050))
+
+
+### Bug Fixes
+
+* **editors:** add saveOutputType to finally have proper save format ([#535](https://github.com/ghiscoding/angular-slickgrid/issues/535)) ([cc8c31d](https://github.com/ghiscoding/angular-slickgrid/commit/cc8c31dce9118e8f1a2367f568be6052652bdf3a))
+* **filter:** Grid Preset Filters should work with Tree Data View ([#522](https://github.com/ghiscoding/angular-slickgrid/issues/522)) ([f574fe4](https://github.com/ghiscoding/angular-slickgrid/commit/f574fe4ef6d63b21dadd407b9a2efdceeb58522b))
+* **footer:** tweak date format in custom footer for redability ([#518](https://github.com/ghiscoding/angular-slickgrid/issues/518)) ([b2a0823](https://github.com/ghiscoding/angular-slickgrid/commit/b2a0823304747d3ec1ce7757786685adbe4bd478))
+* **menu:** context menu to copy cell with queryFieldNameGetterFn ([#537](https://github.com/ghiscoding/angular-slickgrid/issues/537)) ([7e0640e](https://github.com/ghiscoding/angular-slickgrid/commit/7e0640ef62e04043e98e90b5fde491046d610057))
+* **security:** update standard-version npm pack to fix security warning ([9d2a9f5](https://github.com/ghiscoding/angular-slickgrid/commit/9d2a9f5faca1c632f3c62b3af06ca7d625635c36))
+* **styling:** sass variable should be interpolate before using calc ([#536](https://github.com/ghiscoding/angular-slickgrid/issues/536)) ([14f2fa0](https://github.com/ghiscoding/angular-slickgrid/commit/14f2fa00b352997c6d0ddb1c3b965d217c82984f))
+
 ## [2.19.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.18.7...v2.19.0) (2020-06-29)
 
 
