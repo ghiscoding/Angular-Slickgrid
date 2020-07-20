@@ -659,6 +659,54 @@ describe('contextMenuExtension', () => {
         expect(execSpy).toHaveBeenCalledWith('copy', false, 'JOHN');
       });
 
+      it('should call "copyToClipboard" and get the value even when there is a "queryFieldNameGetterFn" callback defined with dot notation the command triggered is "copy"', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName', queryFieldNameGetterFn: () => 'lastName' } as Column;
+        const dataContextMock = { id: 123, firstName: 'John', lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const execSpy = jest.spyOn(window.document, 'execCommand');
+        extension.register();
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), {
+          command: 'copy',
+          cell: 2,
+          row: 5,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+          item: menuItemCommand,
+          value: 'John'
+        });
+
+        expect(execSpy).toHaveBeenCalledWith('copy', false, 'Doe');
+      });
+
+      it('should call "copyToClipboard" and get the value even when there is a "queryFieldNameGetterFn" callback defined with dot notation the command triggered is "copy"', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName', queryFieldNameGetterFn: () => 'user.lastName' } as Column;
+        const dataContextMock = { id: 123, user: { firstName: 'John', lastName: 'Doe', age: 50 } };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const execSpy = jest.spyOn(window.document, 'execCommand');
+        extension.register();
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), {
+          command: 'copy',
+          cell: 2,
+          row: 5,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+          item: menuItemCommand,
+          value: 'John'
+        });
+
+        expect(execSpy).toHaveBeenCalledWith('copy', false, 'Doe');
+      });
+
       it('should expect "itemUsabilityOverride" callback from the "copy" command to return True when a value to copy is found in the dataContext object', () => {
         const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
         const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
@@ -733,6 +781,44 @@ describe('contextMenuExtension', () => {
         });
 
         expect(isCommandUsable).toBe(false);
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return True when there is a "queryFieldNameGetterFn" which itself returns a value', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName', queryFieldNameGetterFn: () => 'lastName' } as Column;
+        const dataContextMock = { id: 123, firstName: null, lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(true);
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return True when there is a "queryFieldNameGetterFn" and a dot notation field which does return a value', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'user.firstName', queryFieldNameGetterFn: () => 'user.lastName' } as Column;
+        const dataContextMock = { id: 123, user: { firstName: null, lastName: 'Doe', age: 50 } };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(true);
       });
 
       it('should call "exportToExcel" when the command triggered is "export-excel"', () => {
