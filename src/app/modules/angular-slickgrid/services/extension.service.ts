@@ -290,7 +290,7 @@ export class ExtensionService {
       }
     }
     if (options.enableDraggableGrouping) {
-      if (!this.getCreatedExtensionByName(ExtensionName.rowDetailView)) {
+      if (!this.getCreatedExtensionByName(ExtensionName.draggableGrouping)) {
         const draggableInstance = this.draggableGroupingExtension.create(options);
         options.enableColumnReorder = draggableInstance.getSetupColumnReorder;
         this._extensionCreatedList.push({ name: ExtensionName.draggableGrouping, instance: draggableInstance });
