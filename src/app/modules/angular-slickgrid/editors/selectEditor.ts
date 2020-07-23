@@ -206,7 +206,7 @@ export class SelectEditor implements Editor {
         const fieldName = this.columnDef && this.columnDef.field;
 
         // is the field a complex object, "address.streetNumber"
-        const isComplexObject = fieldName.indexOf('.') > 0;
+        const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
         if (isComplexObject && typeof c === 'object') {
           return c;
         }
@@ -241,7 +241,7 @@ export class SelectEditor implements Editor {
 
     // is the field a complex object, "address.streetNumber"
     const fieldName = this.columnDef && this.columnDef.field;
-    const isComplexObject = fieldName.indexOf('.') > 0;
+    const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
 
     if (isComplexObject && typeof itemFound === 'object') {
       return itemFound;
@@ -338,7 +338,7 @@ export class SelectEditor implements Editor {
     }
 
     // is the field a complex object, "user.address.streetNumber"
-    const isComplexObject = fieldName.indexOf('.') > 0;
+    const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
 
     // validate the value before applying it (if not valid we'll set an empty string)
     const validation = this.validate(newValue);
@@ -371,10 +371,10 @@ export class SelectEditor implements Editor {
   loadValue(item: any): void {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    // is the field a complex object, "address.streetNumber"
-    const isComplexObject = fieldName.indexOf('.') > 0;
+    if (item && fieldName !== undefined) {
+      // is the field a complex object, "address.streetNumber"
+      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
       // when it's a complex object, user could override the object path (where the editable object is located)
       // else we use the path provided in the Field Column Definition
       const objectPath = this.columnEditor && this.columnEditor.complexObjectPath || fieldName;
