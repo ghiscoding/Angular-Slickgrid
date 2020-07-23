@@ -167,11 +167,11 @@ export class LongTextEditor implements Editor {
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    // is the field a complex object, "address.streetNumber"
-    const isComplexObject = fieldName.indexOf('.') > 0;
-
     if (item && fieldName !== undefined) {
+      // is the field a complex object, "address.streetNumber"
+      const isComplexObject = fieldName.indexOf('.') > 0;
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+
       this.defaultValue = value;
       this._$textarea.val(this.defaultValue);
       this._$textarea[0].defaultValue = this.defaultValue;

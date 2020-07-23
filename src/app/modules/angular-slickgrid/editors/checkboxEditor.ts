@@ -102,11 +102,11 @@ export class CheckboxEditor implements Editor {
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    // is the field a complex object, "address.streetNumber"
-    const isComplexObject = fieldName.indexOf('.') > 0;
-
     if (item && fieldName !== undefined) {
+      // is the field a complex object, "address.streetNumber"
+      const isComplexObject = fieldName.indexOf('.') > 0;
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+
       this.originalValue = value;
       if (this.originalValue) {
         this._$input.prop('checked', true);
