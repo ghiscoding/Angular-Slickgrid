@@ -171,7 +171,7 @@ export class AutoCompleteEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+    if (item && fieldName !== undefined) {
       const data = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
       this._currentValue = data;
       this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];

@@ -374,7 +374,7 @@ export class SelectEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+    if (item && fieldName !== undefined) {
       // when it's a complex object, user could override the object path (where the editable object is located)
       // else we use the path provided in the Field Column Definition
       const objectPath = this.columnEditor && this.columnEditor.complexObjectPath || fieldName;

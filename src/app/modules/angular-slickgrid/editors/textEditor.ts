@@ -119,7 +119,7 @@ export class TextEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+    if (item && fieldName !== undefined) {
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
       this.originalValue = value;
       this._$input.val(this.originalValue);

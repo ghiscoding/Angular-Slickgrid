@@ -140,7 +140,7 @@ export class SliderEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+    if (item && fieldName !== undefined) {
       let value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
       if (value === '' || value === null || value === undefined) {
         value = this.defaultValue; // load default value when item doesn't have any value
