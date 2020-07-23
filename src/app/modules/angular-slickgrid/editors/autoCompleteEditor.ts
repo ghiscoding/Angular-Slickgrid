@@ -142,7 +142,7 @@ export class AutoCompleteEditor implements Editor {
     }
 
     // is the field a complex object, "address.streetNumber"
-    const isComplexObject = fieldName.indexOf('.') > 0;
+    const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
 
     // validate the value before applying it (if not valid we'll set an empty string)
     const validation = this.validate(newValue);
@@ -170,7 +170,7 @@ export class AutoCompleteEditor implements Editor {
 
     if (item && fieldName !== undefined) {
       // is the field a complex object, "address.streetNumber"
-      const isComplexObject = fieldName.indexOf('.') > 0;
+      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
       const data = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
 
       this._currentValue = data;

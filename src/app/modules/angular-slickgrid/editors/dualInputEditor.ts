@@ -255,7 +255,7 @@ export class DualInputEditor implements Editor {
     const inputVarPosition = (position === 'leftInput') ? '_leftInput' : '_rightInput';
 
     if (item && fieldName !== undefined) {
-      const isComplexObject = fieldName.indexOf('.') > 0;
+      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
       const itemValue = (isComplexObject) ? getDescendantProperty(item, fieldName) : (item.hasOwnProperty(fieldName) ? item[fieldName] : '');
       this[originalValuePosition] = itemValue;
       if (this.editorParams[position].type === 'float') {
