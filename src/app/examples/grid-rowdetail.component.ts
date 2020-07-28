@@ -42,7 +42,13 @@ export class GridRowDetailComponent implements OnInit {
   }
 
   get rowDetailInstance(): any {
-    return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowDetailView) || {};
+    // you can get the SlickGrid RowDetail plugin (addon) instance via 2 ways
+
+    // option 1
+    return this.angularGrid.extensions.rowDetailView.instance || {};
+
+    // OR options 2
+    // return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowDetailView) || {};
   }
 
   ngOnInit(): void {

@@ -22,6 +22,7 @@ import {
   Column,
   ColumnEditor,
   CustomFooterOption,
+  ExtensionList,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -122,6 +123,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _dataset: any[];
   private _columnDefinitions: Column[];
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
+  private _angularGridInstances: AngularGridInstance | undefined;
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
@@ -862,10 +864,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.loadLocalGridPagination();
     }
 
-    this.onAngularGridCreated.emit({
+    this._angularGridInstances = {
       // Slick Grid & DataView objects
       dataView: this.dataView,
       slickGrid: this.grid,
+      extensions: this.extensionService && this.extensionService.extensionList,
 
       // public methods
       destroy: this.destroy.bind(this),
@@ -887,7 +890,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       /** @deprecated please use "extensionService" instead */
       pluginService: this.extensionService,
-    });
+    }
+
+    // all instances (SlickGrid, DataView & all Services)
+    this.onAngularGridCreated.emit(this._angularGridInstances);
 
     // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
     this.optionallyShowCustomFooterWithMetrics();

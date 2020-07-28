@@ -13,6 +13,7 @@ import {
   SortService,
   TreeDataService,
 } from '../services';
+import { ExtensionList } from './extensionList.type';
 
 export interface AngularGridInstance {
   /** Slick DataView object */
@@ -20,6 +21,9 @@ export interface AngularGridInstance {
 
   /** Slick Grid object */
   slickGrid: any;
+
+  /** SlickGrid extensions (external controls/plugins) */
+  extensions: ExtensionList;
 
   // --
   // Methods
