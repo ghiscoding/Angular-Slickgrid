@@ -117,7 +117,7 @@
         transition: $copied-cell-transition;
       }
       &.odd {
-        background: $cell-odd-background-color;
+        background-color: $cell-odd-background-color;
         &:hover {
           background-color: $row-mouse-hover-color;
         }
@@ -159,7 +159,7 @@
     }
 
     .even {
-      background: $cell-even-background-color;
+      background-color: $cell-even-background-color;
     }
 
 

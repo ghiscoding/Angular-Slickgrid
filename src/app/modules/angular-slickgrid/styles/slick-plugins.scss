@@ -42,12 +42,15 @@
     }
   }
 
-  .title {
-    font-size: $cell-menu-title-font-size;
-    font-weight: $cell-menu-title-font-weight;
-    width: $cell-menu-title-width;
-    border-bottom: $cell-menu-title-border-bottom;
-    margin-bottom: $cell-menu-title-margin-bottom;
+  .slick-cell-menu-option-list,
+  .slick-cell-menu-command-list {
+    .title {
+      font-size: $cell-menu-title-font-size;
+      font-weight: $cell-menu-title-font-weight;
+      width: $cell-menu-title-width;
+      border-bottom: $cell-menu-title-border-bottom;
+      margin-bottom: $cell-menu-title-margin-bottom;
+    }
   }
 
   .slick-cell-menu-item {

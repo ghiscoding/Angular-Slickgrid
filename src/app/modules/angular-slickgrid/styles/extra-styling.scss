@@ -6,9 +6,21 @@
   text-align: center;
 }
 
-.editable-field {
-  background-color: #e3f0fb !important;
+.grid-canvas {
+  .slick-row, .slick-row.odd {
+    .slick-cell.editable-field, .slick-cell.selected.editable-field {
+      background-color: #e3f0fb;
+    }
+  }
 }
+
+.editable-field {
+  background-color: #e3f0fb;
+}
+.unsaved-editable-field {
+  background-color: #f0fbe3 !important;
+}
+
 .fake-hyperlink {
   cursor: pointer;
   color: $link-color;
