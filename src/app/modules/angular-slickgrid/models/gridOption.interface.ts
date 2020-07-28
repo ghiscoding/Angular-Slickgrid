@@ -6,6 +6,7 @@ import {
   CheckboxSelector,
   Column,
   ColumnPicker,
+  ColumnReorderFunction,
   ContextMenu,
   DraggableGrouping,
   EditCommand,
@@ -195,7 +196,7 @@ export interface GridOption {
   enableColumnPicker?: boolean;
 
   /** Defaults to true, which permits the user to move an entire column from a position to another. */
-  enableColumnReorder?: boolean;
+  enableColumnReorder?: boolean | ColumnReorderFunction;
 
   /** Do we want to enable Context Menu? (mouse right+click) */
   enableContextMenu?: boolean;
