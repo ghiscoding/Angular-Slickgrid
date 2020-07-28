@@ -63,7 +63,7 @@ export interface ColumnEditor {
 
   /**
    * Defaults to false, when set it will render any HTML code instead of removing it (sanitized)
-   * Only used so far in the MultipleSelect & SingleSelect Filters will support it
+    * Only used so far in the MultipleSelect & SingleSelect Editors will support it
    */
   enableRenderHtml?: boolean;
 
@@ -73,10 +73,16 @@ export interface ColumnEditor {
   /** Error message to display when validation fails */
   errorMessage?: string;
 
-  /** Maximum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+  /** Maximum length of the text value, works only with Editors supporting it (autoComplete, text, longText) */
+  maxLength?: number;
+
+  /** Maximum value of the editor, works only with Editors supporting it (number, float, slider) */
   maxValue?: number | string;
 
-  /** Minimum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+  /** Minimum length of the text value, works only with Editors supporting it (autoComplete, text, longText) */
+  minLength?: number;
+
+  /** Minimum value of the editor, works only with Editors supporting it (number, float, slider) */
   minValue?: number | string;
 
   /** Any inline editor function that implements Editor for the cell */
@@ -109,7 +115,7 @@ export interface ColumnEditor {
   /** Editor Validator */
   validator?: EditorValidator;
 
-  /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
+  /** Step value of the editor, works only with Filters supporting it (input text, number, float, range, slider) */
   valueStep?: number | string;
 
   /**
