@@ -216,7 +216,6 @@ export class GridDraggableGroupingComponent implements OnInit {
       preHeaderPanelHeight: 40,
       enableFiltering: true,
       enableSorting: true,
-      enableColumnReorder: true,
       exportOptions: {
         sanitizeDataExport: true
       },

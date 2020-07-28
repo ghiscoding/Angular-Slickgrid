@@ -1,4 +1,5 @@
 import { Grouping } from './grouping.interface';
+import { ColumnReorderFunction } from './columnReorderFunction.type';
 
 export interface DraggableGrouping {
   /** an extra CSS class to add to the delete button (default undefined), if deleteIconCssClass && deleteIconImage undefined then slick-groupby-remove-image class will be added */
@@ -35,5 +36,5 @@ export interface DraggableGrouping {
   clearDroppedGroups?: () => void;
 
   /** its function to setup draggable feature agains Header Column, should be passed on grid option. Also possible to pass custom function */
-  getSetupColumnReorder?: () => void;
+  getSetupColumnReorder?: ColumnReorderFunction;
 }

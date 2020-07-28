@@ -21,6 +21,7 @@ export * from './columnEditorDualInput.interface';
 export * from './columnFilter.interface';
 export * from './columnFilters.interface';
 export * from './columnPicker.interface';
+export * from './columnReorderFunction.type';
 export * from './columnSort.interface';
 export * from './contextMenu.interface';
 export * from './currentColumn.interface';
