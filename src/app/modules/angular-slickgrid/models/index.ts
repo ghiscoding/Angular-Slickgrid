@@ -50,6 +50,7 @@ export * from './excelWorkbook.interface';
 export * from './excelWorksheet.interface';
 export * from './exportOption.interface';
 export * from './extension.interface';
+export * from './extensionList.type';
 export * from './extensionModel.interface';
 export * from './extensionName.enum';
 export * from './fieldType.enum';

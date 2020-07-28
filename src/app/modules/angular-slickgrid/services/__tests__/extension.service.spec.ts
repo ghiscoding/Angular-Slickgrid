@@ -135,10 +135,8 @@ describe('ExtensionService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should return empty array when "getAllExtensions" method is called', () => {
-      const spy = jest.spyOn(service, 'getAllExtensions');
-      service.getAllExtensions();
-      expect(spy).toHaveReturnedWith([]);
+    it('should return empty object when "extensionlList" GETTER is called', () => {
+      expect(service.extensionList).toEqual({});
     });
 
     describe('getSlickgridAddonInstance method', () => {

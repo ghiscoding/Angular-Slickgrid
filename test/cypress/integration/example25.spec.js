@@ -68,8 +68,8 @@ describe('Example 25 - Range Filters', () => {
           .each(($cell) => {
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value)) {
-              expect(value > presetMinDuration).to.eq(true);
-              expect(value < presetMaxDuration).to.eq(true);
+              expect(value >= presetMinDuration).to.eq(true);
+              expect(value <= presetMaxDuration).to.eq(true);
             }
           });
       });
@@ -126,8 +126,8 @@ describe('Example 25 - Range Filters', () => {
           .each(($cell) => {
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value)) {
-              expect(value > newMin).to.eq(true);
-              expect(value < newMax).to.eq(true);
+              expect(value >= newMin).to.eq(true);
+              expect(value <= newMax).to.eq(true);
             }
           });
       });
@@ -186,8 +186,8 @@ describe('Example 25 - Range Filters', () => {
             .each(($cell) => {
               const value = parseInt($cell.text().trim(), 10);
               if (!isNaN(value)) {
-                expect(value > dynamicMinComplete).to.eq(true);
-                expect(value < dynamicMaxComplete).to.eq(true);
+                expect(value >= dynamicMinComplete).to.eq(true);
+                expect(value <= dynamicMaxComplete).to.eq(true);
               }
             });
         });
