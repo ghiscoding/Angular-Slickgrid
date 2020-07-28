@@ -180,7 +180,7 @@ export class DateEditor implements Editor {
 
       // validate the value before applying it (if not valid we'll set an empty string)
       const validation = this.validate(state);
-      const newValue = (validation && validation.valid) ? moment(state, outputTypeFormat).format(saveTypeFormat) : '';
+      const newValue = (state && validation && validation.valid) ? moment(state, outputTypeFormat).format(saveTypeFormat) : '';
 
       // set the new value to the item datacontext
       if (isComplexObject) {
