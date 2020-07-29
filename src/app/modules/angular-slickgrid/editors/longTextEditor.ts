@@ -17,6 +17,7 @@ import { textValidator } from '../editorValidators/textValidator';
 
 // using external non-typed js libraries
 declare const $: any;
+const DEFAULT_MAX_LENGTH = 500;
 
 /*
  * An example of a 'detached' editor.
@@ -26,6 +27,7 @@ declare const $: any;
 export class LongTextEditor implements Editor {
   private _locales: Locale;
   private _$textarea: any;
+  private _$currentLengthElm: any;
   private _$wrapper: any;
   defaultValue: any;
 
@@ -94,26 +96,40 @@ export class LongTextEditor implements Editor {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
+    const maxLength = this.columnEditor && this.columnEditor.maxLength || DEFAULT_MAX_LENGTH;
+    const textAreaRows = this.columnEditor && this.columnEditor.params && this.columnEditor.params.textAreaRows || 6;
+
     const $container = $('body');
-
     this._$wrapper = $(`<div class="slick-large-editor-text editor-${columnId}" />`).appendTo($container);
-    this._$textarea = $(`<textarea hidefocus rows="5" placeholder="${placeholder}" title="${title}">`).appendTo(this._$wrapper);
+    this._$textarea = $(`<textarea hidefocus rows="${textAreaRows}" placeholder="${placeholder}" title="${title}">`).appendTo(this._$wrapper);
 
-    $(`<div class="editor-footer">
-          <button class="btn btn-save btn-primary btn-xs">${saveText}</button>
-          <button class="btn btn-cancel btn-default btn-xs">${cancelText}</button>
-      </div>`).appendTo(this._$wrapper);
+    const editorFooterElm = $(`<div class="editor-footer"/>`);
+    const countContainerElm = $(`<span class="counter"/>`);
+    this._$currentLengthElm = $(`<span class="text-length">0</span>`);
+    const textMaxLengthElm = $(`<span>/</span><span class="max-length">${maxLength}</span>`);
+    this._$currentLengthElm.appendTo(countContainerElm);
+    textMaxLengthElm.appendTo(countContainerElm);
+
+    const cancelBtnElm = $(`<button class="btn btn-cancel btn-default btn-xs">${cancelText}</button>`);
+    const saveBtnElm = $(`<button class="btn btn-save btn-primary btn-xs">${saveText}</button>`);
+    countContainerElm.appendTo(editorFooterElm);
+    cancelBtnElm.appendTo(editorFooterElm);
+    saveBtnElm.appendTo(editorFooterElm);
+    editorFooterElm.appendTo(this._$wrapper);
 
     this._$wrapper.find('.btn-save').on('click', () => this.save());
     this._$wrapper.find('.btn-cancel').on('click', () => this.cancel());
     this._$textarea.on('keydown', this.handleKeyDown.bind(this));
+    this._$textarea.on('keyup', this.handleKeyUp.bind(this));
 
     this.position(this.args && this.args.position);
     this._$textarea.focus().select();
   }
 
   cancel() {
-    this._$textarea.val(this.defaultValue);
+    const value = this.defaultValue || '';
+    this._$textarea.val(value);
+    this._$currentLengthElm.text(value.length);
     if (this.args && this.args.cancelChanges) {
       this.args.cancelChanges();
     }
@@ -141,6 +157,7 @@ export class LongTextEditor implements Editor {
 
   setValue(val: string) {
     this._$textarea.val(val);
+    this._$currentLengthElm.text(val.length);
   }
 
   applyValue(item: any, state: any) {
@@ -172,8 +189,9 @@ export class LongTextEditor implements Editor {
       const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
 
-      this.defaultValue = value;
+      this.defaultValue = value || '';
       this._$textarea.val(this.defaultValue);
+      this._$currentLengthElm.text(this.defaultValue.length);
       this._$textarea[0].defaultValue = this.defaultValue;
       this._$textarea.select();
     }
@@ -207,6 +225,9 @@ export class LongTextEditor implements Editor {
     return textValidator(elmValue, {
       editorArgs: this.args,
       errorMessage: this.columnEditor.errorMessage,
+      minLength: this.columnEditor.minLength,
+      maxLength: this.columnEditor.maxLength,
+      operatorConditionalType: this.columnEditor.operatorConditionalType,
       required: this.columnEditor.required,
       validator: this.validator,
     });
@@ -234,5 +255,11 @@ export class LongTextEditor implements Editor {
         this.grid.navigateNext();
       }
     }
+  }
+
+  /** On every keyup event, we'll update the current text length counter */
+  private handleKeyUp(event: KeyboardEvent & { target: HTMLTextAreaElement }) {
+    const textLength = event.target.value.length;
+    this._$currentLengthElm.text(textLength);
   }
 }

@@ -109,11 +109,17 @@ describe('LongTextEditor', () => {
       gridOptionMock.i18n = translate;
       editor = new LongTextEditor(editorArguments);
       const editorCount = document.body.querySelectorAll('.slick-large-editor-text.editor-title textarea').length;
+      const editorTextCounter = document.body.querySelectorAll<HTMLDivElement>('.slick-large-editor-text.editor-title .editor-footer .counter');
+      const currentTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .text-length');
+      const maxTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .max-length');
       const editorFooterElm = document.body.querySelector<HTMLDivElement>('.slick-large-editor-text.editor-title .editor-footer');
       const buttonCancelElm = editorFooterElm.querySelector<HTMLButtonElement>('.btn-default');
       const buttonSaveElm = editorFooterElm.querySelector<HTMLButtonElement>('.btn-primary');
 
       expect(editorCount).toBe(1);
+      expect(editorTextCounter.length).toBe(1);
+      expect(currentTextLengthElm.textContent).toBe('0');
+      expect(maxTextLengthElm.textContent).toBe('500');
       expect(buttonCancelElm.textContent).toBe('Annuler');
       expect(buttonSaveElm.textContent).toBe('Sauvegarder');
     });
@@ -181,7 +187,11 @@ describe('LongTextEditor', () => {
       editor = new LongTextEditor(editorArguments);
       editor.loadValue(mockItemData);
       const editorElm = editor.editorDomElement;
+      const currentTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .text-length');
+      const maxTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .max-length');
 
+      expect(currentTextLengthElm.textContent).toBe('6');
+      expect(maxTextLengthElm.textContent).toBe('500');
       expect(editor.getValue()).toBe('task 1');
       expect(editorElm[0].defaultValue).toBe('task 1');
     });
@@ -208,16 +218,22 @@ describe('LongTextEditor', () => {
     });
 
     describe('isValueChanged method', () => {
-      it('should return True when previously dispatched keyboard event is a new char "a"', () => {
-        const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+      it('should return True when previously dispatched keyboard event is a new char "a" and it should also update the text counter accordingly', () => {
+        const eventKeyDown = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+        const eventKeyUp = new (window.window as any).KeyboardEvent('keyup', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+        mockColumn.internalColumnEditor.maxLength = 255;
 
         editor = new LongTextEditor(editorArguments);
         editor.setValue('z');
         const editorElm = document.body.querySelector<HTMLTextAreaElement>('.editor-title textarea');
-
+        const currentTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .text-length');
+        const maxTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .max-length');
         editor.focus();
-        editorElm.dispatchEvent(event);
+        editorElm.dispatchEvent(eventKeyDown);
+        editorElm.dispatchEvent(eventKeyUp);
 
+        expect(currentTextLengthElm.textContent).toBe('1');
+        expect(maxTextLengthElm.textContent).toBe('255');
         expect(editor.isValueChanged()).toBe(true);
       });
 
@@ -510,7 +526,123 @@ describe('LongTextEditor', () => {
         editor = new LongTextEditor(editorArguments);
         const validation = editor.validate('text');
 
-        expect(validation).toEqual({ valid: true, msg: null });
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is lower than a minLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 5;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is at least 5 character(s)' });
+      });
+
+      it('should return False when field is lower than a minLength defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.minLength = 5;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is more than 5 character(s)' });
+      });
+
+      it('should return True when field is equal to the minLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is greater than a maxLength defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
+      });
+
+      it('should return False when field is greater than a maxLength defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 10 characters' });
+      });
+
+      it('should return True when field is equal to the maxLength defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return True when field is equal to the maxLength defined and "operatorType" is set to "inclusive"', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'inclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is equal to the maxLength defined but "operatorType" is set to "exclusive"', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 16 characters' });
+      });
+
+      it('should return False when field is not between minLength & maxLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 0;
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text length is between 0 and 10 characters' });
+      });
+
+      it('should return True when field is is equal to maxLength defined when both min/max values are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 0;
+        mockColumn.internalColumnEditor.maxLength = 16;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return True when field is is equal to minLength defined when "operatorType" is set to "inclusive" and both min/max values are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        mockColumn.internalColumnEditor.maxLength = 15;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'inclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is equal to maxLength but "operatorType" is set to "exclusive" when both min/max lengths are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new LongTextEditor(editorArguments);
+        const validation1 = editor.validate('text is 16 chars');
+        const validation2 = editor.validate('text');
+
+        expect(validation1).toEqual({ valid: false, msg: 'Please make sure your text length is between 4 and 16 characters' });
+        expect(validation2).toEqual({ valid: false, msg: 'Please make sure your text length is between 4 and 16 characters' });
+      });
+
+      it('should return False when field is greater than a maxValue defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new LongTextEditor(editorArguments);
+        const validation = editor.validate('Task is longer than 10 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
       });
     });
   });

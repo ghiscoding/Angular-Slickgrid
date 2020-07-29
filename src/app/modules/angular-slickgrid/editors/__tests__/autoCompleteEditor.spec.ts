@@ -382,7 +382,7 @@ describe('AutoCompleteEditor', () => {
     });
 
     describe('validate method', () => {
-      it('should validate and return False when field is required and field is an empty string', () => {
+      it('should return False when field is required and field is empty', () => {
         mockColumn.internalColumnEditor.required = true;
         editor = new AutoCompleteEditor(editorArguments);
         const validation = editor.validate('');
@@ -390,12 +390,128 @@ describe('AutoCompleteEditor', () => {
         expect(validation).toEqual({ valid: false, msg: 'Field is required' });
       });
 
-      it('should validate and return True when field is required and field is a valid input value', () => {
+      it('should return True when field is required and input is a valid input value', () => {
         mockColumn.internalColumnEditor.required = true;
         editor = new AutoCompleteEditor(editorArguments);
-        const validation = editor.validate('gender');
+        const validation = editor.validate('text');
 
-        expect(validation).toEqual({ valid: true, msg: null });
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is lower than a minLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 5;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is at least 5 character(s)' });
+      });
+
+      it('should return False when field is lower than a minLength defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.minLength = 5;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is more than 5 character(s)' });
+      });
+
+      it('should return True when field is equal to the minLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is greater than a maxLength defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
+      });
+
+      it('should return False when field is greater than a maxLength defined using exclusive operator', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 10 characters' });
+      });
+
+      it('should return True when field is equal to the maxLength defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return True when field is equal to the maxLength defined and "operatorType" is set to "inclusive"', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'inclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is equal to the maxLength defined but "operatorType" is set to "exclusive"', () => {
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 16 characters' });
+      });
+
+      it('should return False when field is not between minLength & maxLength defined', () => {
+        mockColumn.internalColumnEditor.minLength = 0;
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text length is between 0 and 10 characters' });
+      });
+
+      it('should return True when field is is equal to maxLength defined when both min/max values are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 0;
+        mockColumn.internalColumnEditor.maxLength = 16;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text is 16 chars');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return True when field is is equal to minLength defined when "operatorType" is set to "inclusive" and both min/max values are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        mockColumn.internalColumnEditor.maxLength = 15;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'inclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('text');
+
+        expect(validation).toEqual({ valid: true, msg: '' });
+      });
+
+      it('should return False when field is equal to maxLength but "operatorType" is set to "exclusive" when both min/max lengths are defined', () => {
+        mockColumn.internalColumnEditor.minLength = 4;
+        mockColumn.internalColumnEditor.maxLength = 16;
+        mockColumn.internalColumnEditor.operatorConditionalType = 'exclusive';
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation1 = editor.validate('text is 16 chars');
+        const validation2 = editor.validate('text');
+
+        expect(validation1).toEqual({ valid: false, msg: 'Please make sure your text length is between 4 and 16 characters' });
+        expect(validation2).toEqual({ valid: false, msg: 'Please make sure your text length is between 4 and 16 characters' });
+      });
+
+      it('should return False when field is greater than a maxValue defined', () => {
+        mockColumn.internalColumnEditor.maxLength = 10;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('Task is longer than 10 chars');
+
+        expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
       });
     });
 

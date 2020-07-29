@@ -92,7 +92,9 @@ export class GridAngularComponent implements OnInit {
         sortable: true,
         type: FieldType.string,
         editor: {
-          model: Editors.longText
+          model: Editors.longText,
+          minLength: 5,
+          maxLength: 255,
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
           console.log(args);

@@ -217,6 +217,9 @@ export class AutoCompleteEditor implements Editor {
     return textValidator(val, {
       editorArgs: this.args,
       errorMessage: this.columnEditor.errorMessage,
+      minLength: this.columnEditor.minLength,
+      maxLength: this.columnEditor.maxLength,
+      operatorConditionalType: this.columnEditor.operatorConditionalType,
       required: this.columnEditor.required,
       validator: this.validator,
     });
