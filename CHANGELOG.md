@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.20.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.19.1...v2.20.0) (2020-07-30)
+
+
+### Features
+
+* **core:** expose all addon instances ([#545](https://github.com/ghiscoding/angular-slickgrid/issues/545)) ([3578d9e](https://github.com/ghiscoding/angular-slickgrid/commit/3578d9eea2d12999bc10010416ccb24188637dd6))
+* **editors:** add min/max length options to text editors ([#542](https://github.com/ghiscoding/angular-slickgrid/issues/542)) ([cc17d36](https://github.com/ghiscoding/angular-slickgrid/commit/cc17d369c6eec67be4fe25b834979fe50040297c))
+
+
+### Bug Fixes
+
+* **editors:** Editors should work with undefined item properties ([#540](https://github.com/ghiscoding/angular-slickgrid/issues/540)) ([5c33a48](https://github.com/ghiscoding/angular-slickgrid/commit/5c33a48b745b3344661bdf6ceca89e1c32428861))
+* **footer:** remove unnecessary row class to avoid negative margins ([#541](https://github.com/ghiscoding/angular-slickgrid/issues/541)) ([34ed648](https://github.com/ghiscoding/angular-slickgrid/commit/34ed6483dfb3178222a15a178512a7c098e2913f))
+* **interfaces:** grid option enableColumnReorder can also be a function ([#543](https://github.com/ghiscoding/angular-slickgrid/issues/543)) ([82b064d](https://github.com/ghiscoding/angular-slickgrid/commit/82b064daa26e5dc15814613d528592df92a7c0d1))
+* **styling:** tweak styling so that we won't need to use css !important ([#544](https://github.com/ghiscoding/angular-slickgrid/issues/544)) ([13abe5b](https://github.com/ghiscoding/angular-slickgrid/commit/13abe5b395647666902af20be10d85d46035d956))
+
 ### [2.19.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.19.0...v2.19.1) (2020-07-20)
 
 
