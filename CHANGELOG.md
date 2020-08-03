@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.20.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.20.1...v2.20.2) (2020-08-03)
+
+
+### Features
+
+* **examples:** add fetch to autoComplete sample ([#549](https://github.com/ghiscoding/angular-slickgrid/issues/549)) ([3941ba7](https://github.com/ghiscoding/angular-slickgrid/commit/3941ba797448b0b457fef9121cd18ad5f511dd8a))
+
+
+### Bug Fixes
+
+* **core:** add missing `inlineFilters` DataView optional flag ([#551](https://github.com/ghiscoding/angular-slickgrid/issues/551)) ([a5ae4da](https://github.com/ghiscoding/angular-slickgrid/commit/a5ae4da368aad5720c7e1e51363abad7d90de9bf))
+* **extension:** Row Detail gets blanked out for no reason, fixes [#546](https://github.com/ghiscoding/angular-slickgrid/issues/546) ([#552](https://github.com/ghiscoding/angular-slickgrid/issues/552)) ([0087dd2](https://github.com/ghiscoding/angular-slickgrid/commit/0087dd2709d5be6adceca5983d4818bfdb229725))
+* **extensions:** adding Context Menu custom commands was not working ([#548](https://github.com/ghiscoding/angular-slickgrid/issues/548)) ([45bf561](https://github.com/ghiscoding/angular-slickgrid/commit/45bf5611e0be4d167fd4b1ff84fcf5b074f360ed))
+* **extensions:** Row Detail not always refreshing w/customId, fixes [#546](https://github.com/ghiscoding/angular-slickgrid/issues/546) ([#550](https://github.com/ghiscoding/angular-slickgrid/issues/550)) ([324f490](https://github.com/ghiscoding/angular-slickgrid/commit/324f490aeab9c6be370a90479234097ea1d96aa4))
+
 ### [2.20.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.20.0...v2.20.1) (2020-07-30)
 
 ## [2.20.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.19.1...v2.20.0) (2020-07-30)
