@@ -243,7 +243,7 @@ export class RowDetailViewExtension implements Extension {
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
-    if (containerElements && containerElements.length) {
+    if (containerElements && containerElements.length >= 0) {
       this.renderViewModel(createdView.dataContext);
     }
   }
@@ -251,16 +251,16 @@ export class RowDetailViewExtension implements Extension {
   /** Render (or rerender) the View Component (Row Detail) */
   renderPreloadView() {
     const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
-    if (containerElements && containerElements.length) {
-      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[0], true);
+    if (containerElements && containerElements.length >= 0) {
+      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1], true);
     }
   }
 
-  /** Render (or rerender) the View Component (Row Detail) */
+  /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | null {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
-    if (containerElements && containerElements.length) {
-      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
+    if (containerElements && containerElements.length > 0) {
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
         // pass a few properties to the Row Detail template component
         Object.assign(componentOutput.componentRef.instance, {
