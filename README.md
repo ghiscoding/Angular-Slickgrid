@@ -32,16 +32,16 @@ I certainly drank many coffees to build and keep adding features for this great 
 ### Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
-### Angular Compatibility
+## Angular Compatibility
 - version `1.x.x` for Angular 4 to 6 
    - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` package. 
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
-#### Build Warnings (Angular 8+)
+### Build Warnings (Angular 8+)
 Since Angular 8+, a few warnings starting to appear in the while doing a Prod build and this was asked a few separate issues. These warnings are **fine**, the reason is because I dynamically load all the SlickGrid extensions [here](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/extensions/extensionUtility.ts#L29) and depending on which flags you use in the grid options, with `require('slickgrid/plugins/slick....');` and Angular is complaining about the use of `require`.
 
-The warnings are **normal** so the best way to fix this, is to simply remove the warnings, all you have to do is to add a file named `ngcc.config.js` in your project source root with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos):
+The warnings are **normal** so the best way to fix this, is to simply remove the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos):
 ```js
 module.exports = {
   packages: {
