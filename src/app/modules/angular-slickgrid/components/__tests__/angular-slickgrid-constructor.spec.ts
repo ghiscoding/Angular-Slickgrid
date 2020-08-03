@@ -459,7 +459,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
-        expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything() });
+        expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything(), inlineFilters: false });
         expect(groupMetaSpy).toHaveBeenCalledWith();
         expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
 
@@ -476,7 +476,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
-        expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything() });
+        expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything(), inlineFilters: false });
         expect(groupMetaSpy).toHaveBeenCalledWith();
         expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
 
