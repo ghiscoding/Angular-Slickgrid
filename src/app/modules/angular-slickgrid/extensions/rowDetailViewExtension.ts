@@ -248,7 +248,7 @@ export class RowDetailViewExtension implements Extension {
     }
   }
 
-  /** Render (or rerender) the View Component (Row Detail) */
+  /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
     const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
     if (containerElements && containerElements.length >= 0) {
