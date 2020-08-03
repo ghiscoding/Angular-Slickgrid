@@ -296,6 +296,10 @@ export class GridEditorComponent implements OnInit {
             forceUserInput: true,
             minLength: 3,
             source: (request, response) => {
+              /** with Angular Http, note this demo won't work because of CORS */
+              // this.http.get(`http://gd.geobytes.com/AutoCompleteCity?q=${request.term}`).subscribe(data => response(data));
+
+              /** with jQuery AJAX will work locally but not on the GitHub demo because of CORS */
               $.ajax({
                 url: 'http://gd.geobytes.com/AutoCompleteCity',
                 dataType: 'jsonp',
