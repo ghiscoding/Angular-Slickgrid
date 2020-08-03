@@ -242,7 +242,7 @@ export class RowDetailViewExtension implements Extension {
 
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView[this.datasetIdPropName]}`);
+    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
     if (containerElements && containerElements.length) {
       this.renderViewModel(createdView.dataContext);
     }
@@ -271,7 +271,7 @@ export class RowDetailViewExtension implements Extension {
           parent: this.rowDetailViewOptions && this.rowDetailViewOptions.parent,
         });
 
-        const viewObj = this._views.find((obj) => obj[this.datasetIdPropName] === item[this.datasetIdPropName]);
+        const viewObj = this._views.find(obj => obj.id === item[this.datasetIdPropName]);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;
         }
@@ -352,7 +352,7 @@ export class RowDetailViewExtension implements Extension {
       addToArrayWhenNotExists(this._views, viewInfo, idPropName);
     } else {
       // collapsing, so dispose of the View/Component
-      const foundViewIndex = this._views.findIndex((view: CreatedView) => view[this.datasetIdPropName] === args.item[this.datasetIdPropName]);
+      const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item[this.datasetIdPropName]);
       if (foundViewIndex >= 0 && this._views.hasOwnProperty(foundViewIndex)) {
         const compRef = this._views[foundViewIndex].componentRef;
         this.appRef.detachView(compRef.hostView);
@@ -366,7 +366,7 @@ export class RowDetailViewExtension implements Extension {
   private onRowBackToViewportRange(e: Event, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
     if (args && args.item) {
       this._views.forEach((view) => {
-        if (view[this.datasetIdPropName] === args.item[this.datasetIdPropName]) {
+        if (view.id === args.item[this.datasetIdPropName]) {
           this.redrawViewComponent(view);
         }
       });
