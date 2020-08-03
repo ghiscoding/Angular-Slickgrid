@@ -536,6 +536,7 @@ describe('contextMenuExtension', () => {
     describe('adding Context Menu Command Items', () => {
       const commandItemsMock = [{
         iconCssClass: 'fa fa-question-circle',
+        title: 'Help',
         titleKey: 'HELP',
         disabled: false,
         command: 'help',
@@ -560,7 +561,6 @@ describe('contextMenuExtension', () => {
 
         jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
-        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
         jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(columnsMock);
         jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsMock);
@@ -571,7 +571,30 @@ describe('contextMenuExtension', () => {
         extension.dispose();
       });
 
-      it('should have user Context Menu Command items', () => {
+      it('should have user Context Menu Command items when "enableTranslate" is disabled', () => {
+        const copyGridOptionsMock = {
+          ...gridOptionsMock, enableTranslate: false, enableExport: true,
+          contextMenu: {
+            commandItems: commandItemsMock,
+            hideCopyCellValueCommand: true,
+            hideExportCsvCommand: false,
+            hideExportExcelCommand: true,
+            hideExportTextDelimitedCommand: true,
+            hideClearAllGrouping: true,
+            hideCollapseAllGroups: true,
+            hideExpandAllGroups: true,
+          }
+        } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+        expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
+          { action: expect.anything(), command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 51, title: 'Export in CSV format' },
+          // { action: expect.anything(), command: 'export-excel', disabled: false, iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 54, title: 'Exporter vers Excel' },
+          { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Help', titleKey: 'HELP' },
+        ]);
+      });
+
+      it('should have user Context Menu Command items when "enableTranslate" is active', () => {
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
           { action: expect.anything(), command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 51, title: 'Exporter en format CSV' },
