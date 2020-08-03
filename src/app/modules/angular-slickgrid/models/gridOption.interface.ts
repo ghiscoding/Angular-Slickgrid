@@ -8,6 +8,7 @@ import {
   ColumnPicker,
   ColumnReorderFunction,
   ContextMenu,
+  DataViewOption,
   DraggableGrouping,
   EditCommand,
   ExcelCopyBufferOption,
@@ -117,7 +118,7 @@ export interface GridOption {
   datasetIdPropertyName?: string;
 
   /** Some of the SlickGrid DataView options */
-  dataView?: {
+  dataView?: DataViewOption & {
     /**
      * Defaults to true, when using row selection,
      * if you don't want the items that are not visible (due to being filtered out or being on a different page) to stay selected,

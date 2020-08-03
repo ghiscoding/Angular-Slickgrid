@@ -22,7 +22,7 @@ import {
   Column,
   ColumnEditor,
   CustomFooterOption,
-  ExtensionList,
+  DataViewOption,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -729,14 +729,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._isLocalGrid = !this.backendServiceApi; // considered a local grid if it doesn't have a backend service set
 
     if (!this.customDataView) {
+      const dataviewInlineFilters = this.gridOptions.dataView && this.gridOptions.dataView.inlineFilters || false;
+      let dataViewOptions: DataViewOption = { inlineFilters: dataviewInlineFilters };
+
       if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
         this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
         this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-        this.dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
-      } else {
-        this.dataView = new Slick.Data.DataView();
+        dataViewOptions = { ...dataViewOptions, groupItemMetadataProvider: this.groupItemMetadataProvider };
       }
+      this.dataView = new Slick.Data.DataView(dataViewOptions);
     }
 
     // for convenience to the user, we provide the property "editor" as an Angular-Slickgrid editor complex object
