@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
-  ExtensionName,
   FieldType,
   Filters,
   Formatters,
