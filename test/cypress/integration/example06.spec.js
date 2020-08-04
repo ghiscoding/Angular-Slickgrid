@@ -22,6 +22,14 @@ describe('Example 6 - GraphQL Grid', () => {
       .should('have.css', 'height', '200px');
   });
 
+  it('should have English Text inside some of the Filters', () => {
+    cy.get('.search-filter.filter-gender .ms-choice > span')
+      .contains('Male');
+
+    cy.get('.flatpickr-input')
+      .should('contain.value', 'to'); // date range will contains (y to z) or in French (y au z)
+  });
+
   it('should have GraphQL query with defined Grid Presets', () => {
     cy.get('.search-filter.filter-name select')
       .should('not.have.value')
@@ -415,6 +423,34 @@ describe('Example 6 - GraphQL Grid', () => {
         .find('.slick-preheader-panel .slick-header-columns')
         .children()
         .each(($child, index) => expect($child.text()).to.eq(expectedGroupTitles[index]));
+    });
+
+    it('should have French Text inside some of the Filters', () => {
+      cy.get('.search-filter.filter-gender .ms-choice > span')
+        .contains('Masculin');
+
+      cy.get('.flatpickr-input')
+        .should('contain.value', 'au'); // date range will contains (y to z) or in French (y au z)
+    });
+
+    it('should display Pagination in French', () => {
+      cy.get('.slick-pagination-settings > span')
+        .contains('éléments par page');
+
+      cy.get('.page-info-from-to')
+        .contains('de');
+
+      cy.get('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('[data-test=item-to]')
+        .contains('30');
+
+      cy.get('[data-test=total-items]')
+        .contains('100');
+
+      cy.get('.page-info-total-items')
+        .contains('éléments');
     });
   });
 });
