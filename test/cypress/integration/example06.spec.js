@@ -400,6 +400,69 @@ describe('Example 6 - GraphQL Grid', () => {
         .each(($child, index) => expect($child.text()).to.eq(expectedGroupTitles[index]));
     });
 
+    it('should hover over the "Title" column header menu and expect all commands be displayed in English', () => {
+      cy.get('#grid6')
+        .find('.slick-header-columns.slick-header-columns-left .slick-header-column')
+        .first()
+        .trigger('mouseover')
+        .children('.slick-header-menubutton')
+        .invoke('show')
+        .click();
+
+      cy.get('.slick-header-menu')
+        .should('be.visible')
+        .children('.slick-header-menuitem:nth-child(1)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Sort Ascending');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Sort Descending');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(4)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Remove Filter');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(5)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Remove Sort');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(6)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Hide Column');
+    });
+
+    it('should open the Grid Menu and expect all commands be displayed in English', () => {
+      cy.get('#grid6')
+        .find('button.slick-gridmenu-button')
+        .trigger('click');
+
+      cy.get('.slick-gridmenu .title:nth(0)')
+        .contains('Commands');
+
+      cy.get('.slick-gridmenu-item:nth(0) > span')
+        .contains('Clear all Filters');
+
+      cy.get('.slick-gridmenu-item:nth(1) > span')
+        .contains('Clear all Sorting');
+
+      cy.get('.slick-gridmenu .title:nth(1)')
+        .contains('Columns');
+
+      cy.get('.slick-gridmenu-list li:nth(0)')
+        .contains('Customer Information - Name');
+
+      cy.get('.slick-gridmenu-list li:nth(1)')
+        .contains('Customer Information - Gender');
+
+      cy.get('.slick-gridmenu [data-dismiss=slick-gridmenu] > span.close')
+        .click({ force: true });
+    });
+
     it('should switch locale to French', () => {
       cy.get('[data-test=language-button]')
         .click();
@@ -451,6 +514,69 @@ describe('Example 6 - GraphQL Grid', () => {
 
       cy.get('.page-info-total-items')
         .contains('éléments');
+    });
+
+    it('should hover over the "Title" column header menu and expect all commands be displayed in French', () => {
+      cy.get('#grid6')
+        .find('.slick-header-columns.slick-header-columns-left .slick-header-column')
+        .first()
+        .trigger('mouseover')
+        .children('.slick-header-menubutton')
+        .invoke('show')
+        .click();
+
+      cy.get('.slick-header-menu')
+        .should('be.visible')
+        .children('.slick-header-menuitem:nth-child(1)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Trier par ordre croissant');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Trier par ordre décroissant');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(4)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Supprimer le filtre');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(5)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Supprimer le tri');
+
+      cy.get('.slick-header-menu')
+        .children('.slick-header-menuitem:nth-child(6)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Cacher la colonne');
+    });
+
+    it('should open the Grid Menu and expect all commands be displayed in French', () => {
+      cy.get('#grid6')
+        .find('button.slick-gridmenu-button')
+        .trigger('click');
+
+      cy.get('.slick-gridmenu .title:nth(0)')
+        .contains('Commandes');
+
+      cy.get('.slick-gridmenu-item:nth(0) > span')
+        .contains('Supprimer tous les filtres');
+
+      cy.get('.slick-gridmenu-item:nth(1) > span')
+        .contains('Supprimer tous les tris');
+
+      cy.get('.slick-gridmenu .title:nth(1)')
+        .contains('Colonnes');
+
+      cy.get('.slick-gridmenu-list li:nth(0)')
+        .contains('Information Client - Nom');
+
+      cy.get('.slick-gridmenu-list li:nth(1)')
+        .contains('Information Client - Sexe');
+
+      cy.get('.slick-gridmenu [data-dismiss=slick-gridmenu] > span.close')
+        .click({ force: true });
     });
   });
 });
