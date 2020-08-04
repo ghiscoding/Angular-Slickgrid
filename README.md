@@ -29,7 +29,7 @@ If you like my work, you can also support me with caffeine :coffee:
 
 I certainly drank many coffees to build and keep adding features for this great library.
 
-### Latest News & Releases
+## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Angular Compatibility
