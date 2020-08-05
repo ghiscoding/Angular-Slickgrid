@@ -4,6 +4,9 @@
 // jQuery UI AutoComplete for Bootstrap
 // ---------------------------------------------------------
 
+.autocomplete-container {
+  display: flex;
+}
 .ui-autocomplete {
   position: absolute;
   z-index: $autocomplete-z-index;
@@ -30,6 +33,25 @@
       line-height: 1.42857143;
       white-space: nowrap;
     }
+  }
+}
+
+/* jquery ui loading spinner */
+@keyframes md-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.ui-autocomplete-loading {
+  & + span:after {
+    animation: md-spin 2s infinite linear;
+    display: inline-block;
+    font-family: $icon-font-family;
+    color: $autocomplete-loading-icon-color;
+    content: $autocomplete-loading-icon !important; /* important is required to override default jquery-ui styling */
+    width: $autocomplete-loading-icon-width;
+    margin-left: $autocomplete-loading-icon-margin-left;
+    line-height: $autocomplete-loading-icon-line-height;
+    vertical-align: $autocomplete-loading-icon-vertical-align;
   }
 }
 

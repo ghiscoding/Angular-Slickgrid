@@ -265,6 +265,9 @@ export class AutoCompleteEditor implements Editor {
         }
       });
 
+    // add a <span> in order to add spinner styling
+    $(`<span></span>`).appendTo(this.args.container);
+
     // user might pass his own autocomplete options
     const autoCompleteOptions: AutocompleteOption = this.columnEditor.editorOptions;
 
