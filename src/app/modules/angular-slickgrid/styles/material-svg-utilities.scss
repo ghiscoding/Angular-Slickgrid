@@ -1,0 +1,36 @@
+@-webkit-keyframes md-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes md-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@mixin md-icon-rotate($degrees, $rotation) {
+  transform: rotate($degrees);
+}
+
+.mdi {
+  &.mdi-flip-h {
+    transform: scaleX(-1);
+  }
+  &.mdi-flip-v {
+    transform: scaleY(-1);
+  }
+  &.mdi-pulse {
+    animation: md-spin 1s infinite steps(8);
+  }
+  &.mdi-spin {
+    animation: md-spin 2s infinite linear;
+  }
+  &.mdi-rotate-45  { @include md-icon-rotate(45deg, 1);  }
+  &.mdi-rotate-90  { @include md-icon-rotate(90deg, 1);  }
+  &.mdi-rotate-135 { @include md-icon-rotate(135deg, 2); }
+  &.mdi-rotate-180 { @include md-icon-rotate(180deg, 2); }
+  &.mdi-rotate-220 { @include md-icon-rotate(220deg, 3); }
+  &.mdi-rotate-270 { @include md-icon-rotate(270deg, 3); }
+  &.mdi-rotate-315 { @include md-icon-rotate(315deg, 3); }
+  &.mdi-rotate-45, .mdi-rotate-90, .mdi-rotate-135, .mdi-rotate-180, .mdi-rotate-220 .mdi-rotate-270, .mdi-rotate-315 {
+    filter: none;
+  }
+}

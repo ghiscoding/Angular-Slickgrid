@@ -368,7 +368,12 @@ export class AutoCompleteFilter implements Filter {
 
     // append the new DOM element to the header row
     if ($filterElm && typeof $filterElm.appendTo === 'function') {
-      $filterElm.appendTo($headerElm);
+      const $container = $(`<div class="autocomplete-container"></div>`);
+      $container.appendTo($headerElm);
+      $filterElm.appendTo($container);
+
+      // add a <span> in order to add spinner styling
+      $(`<span></span>`).appendTo($container);
     }
 
     return $filterElm;
