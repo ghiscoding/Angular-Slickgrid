@@ -174,7 +174,7 @@ export class AutoCompleteEditor implements Editor {
       const data = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
 
       this._currentValue = data;
-      this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];
+      this._defaultTextValue = typeof data === 'string' ? data : (data && data.hasOwnProperty(this.labelName) && data[this.labelName] || '');
       this._$editorElm.val(this._defaultTextValue);
       this._$editorElm.select();
     }
