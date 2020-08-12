@@ -94,7 +94,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "dompurify": "^2.0.10",
     "excel-builder-webpacker": "^1.0.5",
-    "flatpickr": ">=4.5.0",
+    "flatpickr": "4.6.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.4.1",
     "jquery-ui-dist": "^1.12.1",
