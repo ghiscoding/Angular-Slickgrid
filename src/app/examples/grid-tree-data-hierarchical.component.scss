@@ -4,7 +4,7 @@ $icon-width-mdi-arrow-collapse: 14px;
 $icon-width-mdi-arrow-expand: 14px;
 $icon-width-mdi-close-thick: 12px;
 
-/* You can change the SASS color via the associated variable, BUT it's better to use the filtercolor @mixing shown down below */
+/* You can change the SASS color via the associated variable, BUT it's better to use the recolor @mixing shown down below */
 // $icon-color-mdi-file-pdf-outline: #f14668;
 // $icon-color-mdi-file-music-outline: #3298dc;
 // $icon-color-mdi-file-excel-outline: #1E9F75;
@@ -28,18 +28,18 @@ $icon-width-mdi-close-thick: 12px;
   // filter: invert(62%) sepia(93%) saturate(5654%) hue-rotate(325deg) brightness(100%) contrast(90%);
 
   /** 2. or use the SASS @mixin that will produce the `filter` color */
-  @include filtercolor(#f14668, 0.9);
+  @include recolor(#f14668, 0.9);
 }
 
 .icon.mdi-folder, .icon.mdi-folder-open {
-  @include filtercolor(#ffa500, 0.9);
+  @include recolor(#ffa500, 0.9);
 }
 .icon.mdi-file-music-outline {
-  @include filtercolor(#3298dc, 0.9);
+  @include recolor(#3298dc, 0.9);
 }
 .icon.mdi-file-excel-outline {
-  @include filtercolor(#1E9F75, 0.9);
+  @include recolor(#1E9F75, 0.9);
 }
 .icon.mdi-file-document-outline {
-  @include filtercolor(#686868, 0.9);
+  @include recolor(#686868, 0.9);
 }

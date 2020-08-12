@@ -7,7 +7,7 @@
 	@return $string;
 }
 
-@mixin filtercolor($color: #000, $opacity: 1) {
+@mixin recolor($color: #000, $opacity: 1) {
   $r: red($color) / 255;
   $g: green($color) / 255;
   $b: blue($color) / 255;
@@ -18,7 +18,7 @@
   filter: saturate(0%) brightness(0%) invert($lightness) opacity($opacity);
 
   // color filter
-  $svg-filter-id: "filtercolor";
+  $svg-filter-id: "recolor";
   filter: url('data:image/svg+xml;utf8,\
     <svg xmlns="http://www.w3.org/2000/svg">\
       <filter id="#{$svg-filter-id}" color-interpolation-filters="sRGB">\
