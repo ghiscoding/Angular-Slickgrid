@@ -3,11 +3,13 @@ $icon-width-mdi-plus: 14px;
 $icon-width-mdi-arrow-collapse: 14px;
 $icon-width-mdi-arrow-expand: 14px;
 $icon-width-mdi-close-thick: 12px;
-$icon-color-mdi-file-pdf-outline: #f14668;
-$icon-color-mdi-file-music-outline: #3298dc;
-$icon-color-mdi-file-excel-outline: #1E9F75;
-$icon-color-mdi-folder: orange;
-$icon-color-mdi-folder-open: orange;
+
+/* You can change the SASS color via the associated variable, BUT it's better to use the recolor @mixing shown down below */
+// $icon-color-mdi-file-pdf-outline: #f14668;
+// $icon-color-mdi-file-music-outline: #3298dc;
+// $icon-color-mdi-file-excel-outline: #1E9F75;
+// $icon-color-mdi-folder: orange;
+// $icon-color-mdi-folder-open: #ffa500;
 
 /* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
 @import '../modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss';
@@ -19,4 +21,25 @@ $icon-color-mdi-folder-open: orange;
     justify-content: center;
     height: 1.5rem;
     width: 1.5rem;
+}
+
+.icon.mdi-file-pdf-outline {
+  /** 1. use `filter` color */
+  // filter: invert(62%) sepia(93%) saturate(5654%) hue-rotate(325deg) brightness(100%) contrast(90%);
+
+  /** 2. or use the SASS @mixin (from Angular-Slickgrid "sass-utilities.scss") that will produce the `filter` color */
+  @include recolor(#f14668, 0.9);
+}
+
+.icon.mdi-folder, .icon.mdi-folder-open {
+  @include recolor(#ffa500, 0.9);
+}
+.icon.mdi-file-music-outline {
+  @include recolor(#3298dc, 0.9);
+}
+.icon.mdi-file-excel-outline {
+  @include recolor(#1E9F75, 0.9);
+}
+.icon.mdi-file-document-outline {
+  @include recolor(#686868, 0.9);
 }
