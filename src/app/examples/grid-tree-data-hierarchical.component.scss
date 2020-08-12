@@ -27,7 +27,7 @@ $icon-width-mdi-close-thick: 12px;
   /** 1. use `filter` color */
   // filter: invert(62%) sepia(93%) saturate(5654%) hue-rotate(325deg) brightness(100%) contrast(90%);
 
-  /** 2. or use the SASS @mixin that will produce the `filter` color */
+  /** 2. or use the SASS @mixin (from Angular-Slickgrid "sass-utilities.scss") that will produce the `filter` color */
   @include filtercolor(#f14668, 0.9);
 }
 
