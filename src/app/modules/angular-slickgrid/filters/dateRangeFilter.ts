@@ -167,8 +167,8 @@ export class DateRangeFilter implements Filter {
   // ------------------
   private buildDatePickerInput(searchTerms?: SearchTerm | SearchTerm[]) {
     const columnId = this.columnDef && this.columnDef.id;
-    const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
-    const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
+    const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
+    const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnFilter.type || this.columnDef.type || FieldType.dateUtc);
     const userFilterOptions = (this.columnFilter && this.columnFilter.filterOptions || {}) as FlatpickrOption;
 
     // get current locale, if user defined a custom locale just use or get it the Translate Service if it exist else just use English
@@ -189,7 +189,7 @@ export class DateRangeFilter implements Filter {
     // if we are preloading searchTerms, we'll keep them for reference
     if (pickerValues) {
       this._currentDates = pickerValues;
-      const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+      const outFormat = mapMomentDateFormatWithFieldType(this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
       this._currentDateStrings = pickerValues.map(date => moment(date).format(outFormat));
     }
 
@@ -205,7 +205,7 @@ export class DateRangeFilter implements Filter {
       onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         if (Array.isArray(selectedDates)) {
           this._currentDates = selectedDates;
-          const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateIso);
+          const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.outputType || this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
           this._currentDateStrings = selectedDates.map(date => moment(date).format(outFormat));
           this._currentValue = this._currentDateStrings.join('..');
         }

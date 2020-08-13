@@ -381,7 +381,7 @@ export class GraphqlService implements BackendService {
           throw new Error('[GraphQL Service]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        const fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
+        const fieldName = (columnDef.filter && columnDef.filter.queryField) || columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
         let searchTerms = columnFilter && columnFilter.searchTerms || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
@@ -389,7 +389,7 @@ export class GraphqlService implements BackendService {
         }
 
         if (!fieldName) {
-          throw new Error(`GraphQL filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield" or "queryFieldFilter").`);
+          throw new Error(`GraphQL filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield").`);
         }
 
         fieldSearchValue = '' + fieldSearchValue; // make sure it's a string

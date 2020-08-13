@@ -5,8 +5,8 @@ export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirecti
     throw new Error('Sorting a "FieldType.object" requires you to provide the "dataKey" (object property name) of the object so that we can use it to sort correctly');
   }
 
-  const stringValue1 = value1.hasOwnProperty(sortColumn.dataKey) ? value1[sortColumn.dataKey] : value1;
-  const stringValue2 = value2.hasOwnProperty(sortColumn.dataKey) ? value2[sortColumn.dataKey] : value2;
+  const stringValue1 = (value1 && value1.hasOwnProperty(sortColumn.dataKey)) ? value1[sortColumn.dataKey] : value1;
+  const stringValue2 = (value2 && value2.hasOwnProperty(sortColumn.dataKey)) ? value2[sortColumn.dataKey] : value2;
   if (sortDirection === undefined || sortDirection === null) {
     sortDirection = SortDirectionNumber.neutral;
   }

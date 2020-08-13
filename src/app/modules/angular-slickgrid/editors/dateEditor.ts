@@ -73,7 +73,7 @@ export class DateEditor implements Editor {
   }
 
   /** Get Flatpickr options passed to the editor by the user */
-  get editorOptions(): any {
+  get editorOptions(): FlatpickrOption {
     return this.columnEditor.editorOptions || {};
   }
 
@@ -96,8 +96,8 @@ export class DateEditor implements Editor {
       const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
       const title = this.columnEditor && this.columnEditor.title || '';
       this.defaultDate = (this.args.item) ? this.args.item[this.columnDef.field] : null;
-      const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateUtc);
-      const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
+      const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnEditor.type || this.columnDef.type || FieldType.dateUtc);
+      const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnEditor.type || this.columnDef.type || FieldType.dateUtc);
       let currentLocale = this._translate && this._translate.currentLang || this.gridOptions.locale || 'en';
       if (currentLocale && currentLocale.length > 2) {
         currentLocale = currentLocale.substring(0, 2);
@@ -174,8 +174,8 @@ export class DateEditor implements Editor {
   applyValue(item: any, state: any) {
     const fieldName = this.columnDef && this.columnDef.field;
     if (fieldName !== undefined) {
-      const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
-      const saveTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.saveOutputType || this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
+      const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
+      const saveTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.saveOutputType || this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
       const isComplexObject = fieldName && fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
 
       // validate the value before applying it (if not valid we'll set an empty string)
@@ -193,8 +193,8 @@ export class DateEditor implements Editor {
 
   isValueChanged() {
     const elmValue = this._$input.val();
-    const inputFormat = mapMomentDateFormatWithFieldType(this.columnDef && this.columnDef.type || FieldType.dateIso);
-    const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateUtc);
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || (this.columnDef && this.columnDef.type) || FieldType.dateIso);
+    const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
     const elmDateStr = elmValue ? moment(elmValue, inputFormat, false).format(outputTypeFormat) : '';
     const orgDateStr = this.originalDate ? moment(this.originalDate, inputFormat, false).format(outputTypeFormat) : '';
     if (elmDateStr === 'Invalid date' || orgDateStr === 'Invalid date') {
@@ -238,8 +238,8 @@ export class DateEditor implements Editor {
       return '';
     }
 
-    const inputFormat = mapMomentDateFormatWithFieldType(this.columnDef && this.columnDef.type || FieldType.dateIso);
-    const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnDef.type)) || FieldType.dateIso);
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || (this.columnDef && this.columnDef.type) || FieldType.dateIso);
+    const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateIso);
     const value = moment(domValue, inputFormat, false).format(outputTypeFormat);
 
     return value;

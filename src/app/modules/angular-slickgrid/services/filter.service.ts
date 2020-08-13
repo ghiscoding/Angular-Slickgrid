@@ -355,11 +355,11 @@ export class FilterService {
     }
 
     const dataKey = columnDef.dataKey;
-    let queryFieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || '';
+    let queryFieldName = (columnDef.filter && columnDef.filter.queryField) || columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || '';
     if (typeof columnDef.queryFieldNameGetterFn === 'function') {
       queryFieldName = columnDef.queryFieldNameGetterFn(item);
     }
-    const fieldType = columnDef.type || FieldType.string;
+    const fieldType = (columnDef.filter && columnDef.filter.type) || columnDef.type || FieldType.string;
     const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
     let cellValue = item[queryFieldName];
 

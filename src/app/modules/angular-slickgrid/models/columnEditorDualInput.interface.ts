@@ -1,11 +1,12 @@
 import { ColumnEditor } from './columnEditor.interface';
+import { FieldType } from './fieldType.enum';
 
 interface EditorDualInput extends Partial<ColumnEditor> {
   /** Associated Item Field */
   field: string;
 
   /** Editor Type */
-  type: 'integer' | 'float' | 'number' | 'password' | 'text' | 'readonly';
+  type: FieldType;
 }
 
 export interface ColumnEditorDualInput {

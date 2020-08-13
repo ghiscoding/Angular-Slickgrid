@@ -257,7 +257,7 @@ export class GridOdataService implements BackendService {
           throw new Error('[GridOData Service]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        let fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
+        let fieldName = (columnDef.filter && columnDef.filter.queryField) || columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || FieldType.string;
         let searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
@@ -266,7 +266,7 @@ export class GridOdataService implements BackendService {
         }
 
         if (!fieldName) {
-          throw new Error(`GridOData filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield" or "queryFieldFilter").`);
+          throw new Error(`GridOData filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield").`);
         }
 
         fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
@@ -327,7 +327,7 @@ export class GridOdataService implements BackendService {
             if (operator === 'IN') {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                if (fieldType === FieldType.string) {
+                if (fieldType === FieldType.string || fieldType === FieldType.text || fieldType === FieldType.readonly) {
                   const searchVal = encodeURIComponent(searchTerms[j].replace(`'`, `''`));
                   tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
                 } else {
@@ -353,7 +353,7 @@ export class GridOdataService implements BackendService {
           } else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*' || operator === OperatorType.startsWith || operator === OperatorType.endsWith) {
             // first/last character is a '*' will be a startsWith or endsWith
             searchBy = (operator === '*' || operator === '*z' || operator === OperatorType.endsWith) ? `endswith(${fieldName}, '${searchValue}')` : `startswith(${fieldName}, '${searchValue}')`;
-          } else if (fieldType === FieldType.string) {
+          } else if (fieldType === FieldType.string || fieldType === FieldType.text || fieldType === FieldType.readonly) {
             // string field needs to be in single quotes
             if (operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) {
               searchBy = this.odataQueryVersionWrapper('substring', odataVersion, fieldName, searchValue);

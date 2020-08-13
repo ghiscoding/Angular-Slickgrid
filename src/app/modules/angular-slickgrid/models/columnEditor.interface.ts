@@ -4,9 +4,9 @@ import {
   CollectionOption,
   CollectionSortBy,
   EditorValidator,
+  FieldType,
   MultipleSelectOption,
-} from './../models/index';
-import { Observable } from 'rxjs';
+} from './index';
 
 export interface ColumnEditor {
   /**
@@ -15,8 +15,14 @@ export interface ColumnEditor {
    */
   alwaysSaveOnEnterKey?: boolean;
 
-  /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
-  collectionAsync?: Promise<any> | Observable<any>;
+  /**
+   * Some Editor could support callbacks from their jQuery instance (for now only AutoComplete supports this), for example:
+   * editor: { model:{ Editors.autoComplete }, callbacks: { _renderItem: (ul, item) => { ... } }}
+   *
+   * will be interpreted as $(#element).autocomplete("instance")._renderItem = (ul, item) => { ... }
+   * from jQuery UI doc: https://jqueryui.com/autocomplete/#custom-data
+   */
+  callbacks?: any;
 
   /**
    * A collection of items/options (commonly used with a Select/Multi-Select Editor)
@@ -24,11 +30,14 @@ export interface ColumnEditor {
    */
   collection?: any[];
 
-  /** We could filter some 1 or more items from the collection */
-  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
+  /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
+  collectionAsync?: Promise<any>;
 
   /** Options to change the behavior of the "collection" */
   collectionOptions?: CollectionOption;
+
+  /** We could filter 1 or more items from the collection */
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
   /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
   collectionSortBy?: CollectionSortBy | CollectionSortBy[];
@@ -54,7 +63,6 @@ export interface ColumnEditor {
    */
   editorOptions?: MultipleSelectOption | any;
 
-
   /**
    * @deprecated please use "editorOptions" property instead.
    * DOM element extra options.
@@ -63,7 +71,7 @@ export interface ColumnEditor {
 
   /**
    * Defaults to false, when set it will render any HTML code instead of removing it (sanitized)
-    * Only used so far in the MultipleSelect & SingleSelect Editors will support it
+   * Currently only supported by the following Editors: AutoComplete, MultipleSelect & SingleSelect
    */
   enableRenderHtml?: boolean;
 
@@ -98,13 +106,10 @@ export interface ColumnEditor {
   operatorConditionalType?: 'inclusive' | 'exclusive';
 
   /**
-   * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).
-   *
-   * To use this as a Tooltip, Angular-Slickgrid doesn't (and will never) use any Angular 3rd party lib to display a real Tooltip,
-   * for that you can use any jQuery 3rd party lib like tipsy for example (we use it in our own project and it works)
-   * https://www.npmjs.com/package/jquery.tipsy
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query when Filtering/Sorting.
+   * Please note that it has higher precendence over the "field" property.
    */
-  title?: string;
+  queryField?: string;
 
   /**
    * Defaults to false, is the field required to be valid?
@@ -112,16 +117,28 @@ export interface ColumnEditor {
    */
   required?: boolean;
 
+  /**
+   * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).
+   *
+   * To use this as a Tooltip, Aurelia-Slickgrid doesn't (and will never) use any Aurelia 3rd party lib to display a real Tooltip,
+   * for that you can use any jQuery 3rd party lib like tipsy for example (we use it in our own project and it works)
+   * https://www.npmjs.com/package/jquery.tipsy
+   */
+  title?: string;
+
+  /** What is the Field Type that can be used by the Editor (as precedence over the "type" set the column definition) */
+  type?: FieldType;
+
   /** Editor Validator */
   validator?: EditorValidator;
 
-  /** Step value of the editor, works only with Filters supporting it (input text, number, float, range, slider) */
+  /** Step value of the editor, works only with Editors supporting it (input text, number, float, range, slider) */
   valueStep?: number | string;
 
   /**
    * Use "params" to pass any type of arguments to your Custom Editor
    * or regular Editor like the Editors.float
-   * for example, to pass the option collection to a select Filter we can type this:
+   * for example, to pass the option collection to a select Editor we can type this:
    * params: { decimalPlaces: 2 }
    */
   params?: any;

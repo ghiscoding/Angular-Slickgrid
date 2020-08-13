@@ -13,8 +13,21 @@ $icon-width-mdi-close-thick: 12px;
 
 /* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
 @import '../modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss';
-@import url(//db.onlinewebfonts.com/c/0fadaa21fcac88ceee0bb8da992c221b?family=SalesforceSans-Regular);
 
+/*
+  www.OnlineWebFonts.Com
+  You must credit the author Copy this link on your web
+  <div>Font made from <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>is licensed by CC BY 3.0</div>
+*/
+@font-face {
+  font-family: "SalesforceSans-Regular";
+  src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot"); /* IE9*/
+  src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff2") format("woff2"), /* chrome firefox */
+  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff") format("woff"), /* chrome firefox */
+  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.ttf") format("truetype"), /* chrome firefox opera Safari, Android, iOS 4.2+*/
+  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.svg#SalesforceSans-Regular") format("svg"); /* iOS 4.1- */
+}
 .icon {
     align-items: center;
     display: inline-flex;

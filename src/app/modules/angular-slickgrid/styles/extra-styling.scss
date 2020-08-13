@@ -1,3 +1,5 @@
+$editable-field-bg-color: #e3f0fb !default;
+
 .pointer {
   cursor: pointer;
 }
@@ -9,16 +11,16 @@
 .grid-canvas {
   .slick-row, .slick-row.odd {
     .slick-cell.editable-field, .slick-cell.selected.editable-field {
-      background-color: #e3f0fb;
+      background-color: $editable-field-bg-color
     }
   }
 }
 
 .editable-field {
-  background-color: #e3f0fb;
+  background-color: $editable-field-bg-color
 }
 .unsaved-editable-field {
-  background-color: #f0fbe3 !important;
+  background-color: #fbfdd1 !important;
 }
 
 .fake-hyperlink {
