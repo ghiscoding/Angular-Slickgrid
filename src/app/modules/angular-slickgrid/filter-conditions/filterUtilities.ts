@@ -11,7 +11,7 @@ import { OperatorString } from '../models/index';
  */
 export function compareObjects(o1: any, o2: any, compareKey?: string): boolean {
   // if user provided an object compare key then compare directly both objects by that key
-  if (compareKey && (o1.hasOwnProperty(compareKey) || o2.hasOwnProperty(compareKey))) {
+  if (compareKey && ((o1 && o1.hasOwnProperty(compareKey)) || (o2 && o2.hasOwnProperty(compareKey)))) {
     return o1[compareKey] === o2 || o1 === o2[compareKey] || o1[compareKey] === o2[compareKey];
   }
 

@@ -11,7 +11,8 @@ $cell-border-top:                           none !default;
 $cell-border-bottom:                        none !default;
 $cell-box-shadow:                           0px 1px 0px #dddbda, 0px -1px 0px #dddbda !default;
 $cell-font-weight:                          400 !default;
-$cell-odd-background-color:                 #f3f2f2 !default;
+// $cell-odd-background-color:                 #f3f2f2 !default;
+$cell-odd-background-color:                 #ffffff !default;
 $cell-text-color:                           #080707 !default;
 $font-size-base-value:                      13 !default;
 $icon-font-size:                            18px !default;
@@ -63,13 +64,14 @@ $checkbox-selector-opacity-hover:           0.9 !default;
 $cell-menu-icon-margin-right:               6px !default;
 $cell-menu-close-btn-height:                14px !default;
 $cell-menu-close-btn-margin:                -8px 1px 1px 1px !default;
+$cell-menu-title-font-size:                 18px !default;
 $column-picker-checkbox-color:              $primary-color !default;
 $column-picker-checkbox-size:               $icon-width !default;
 $column-picker-checkbox-font-weight:        normal !default;
 $column-picker-checkbox-icon-checked:       url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($column-picker-checkbox-color)}" viewBox="0 0 24 24"><path d="M8.8 19.6L1.2 12c-.3-.3-.3-.8 0-1.1l1-1c.3-.3.8-.3 1 0L9 15.7c.1.2.5.2.6 0L20.9 4.4c.2-.3.7-.3 1 0l1 1c.3.3.3.7 0 1L9.8 19.6c-.2.3-.7.3-1 0z"></path></svg>') !default;
 $column-picker-checkbox-icon-unchecked:     $column-picker-checkbox-icon-checked !default;
 $column-picker-checkbox-width:              13px !default;
-$column-picker-title-font-size:             16px !default;
+$column-picker-title-font-size:             18px !default;
 $context-menu-item-font-size:               16px !default;
 $context-menu-icon-font-size:               $icon-width !default;
 $icon-group-color:                          $primary-color !default;
@@ -135,8 +137,8 @@ $editor-focus-box-shadow:                   0 0 3px $primary-color !default;
 $slider-editor-height:                      24px !default;
 $slider-filter-thumb-color:                 #3C97DD !default;
 $slider-filter-runnable-track-bgcolor:      #ECEBEA !default;
-$row-selected-color:                        darken($cell-odd-background-color, 2%) !default;
-$row-mouse-hover-color:                     $cell-odd-background-color !default;
+$row-selected-color:                        darken(#f3f2f2, 2%) !default;
+$row-mouse-hover-color:                     #f3f2f2 !default;
 $row-mouse-hover-box-shadow:                0 0 0 2px #dddbda !default;
 $detail-view-icon-collapse-color:           $primary-color !default;
 $detail-view-icon-expand-color:             $primary-color !default;
@@ -169,10 +171,7 @@ $pagination-page-input-border-radius:       3px !default;
 @import './material-svg-icons';
 @import './material-svg-utilities';
 
-$link-color: $primary-color !default;
-@import './extra-styling';
-
-$editable-field-bg-color: #e3f0fb !default;
+$editable-field-bg-color: rgba(227, 240, 251, 0.569) !default;
 $editable-field-hover-icon-color: #b0adab !default;
 $editable-field-hover-icon: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($editable-field-hover-icon-color)}" viewBox="0 0 52 52"><path d="M9.5 33.4l8.9 8.9c.4.4 1 .4 1.4 0L42 20c.4-.4.4-1 0-1.4l-8.8-8.8c-.4-.4-1-.4-1.4 0L9.5 32.1c-.4.4-.4 1 0 1.3zM36.1 5.7c-.4.4-.4 1 0 1.4l8.8 8.8c.4.4 1 .4 1.4 0l2.5-2.5c1.6-1.5 1.6-3.9 0-5.5l-4.7-4.7c-1.6-1.6-4.1-1.6-5.7 0l-2.3 2.5zM2.1 48.2c-.2 1 .7 1.9 1.7 1.7l10.9-2.6c.4-.1.7-.3.9-.5l.2-.2c.2-.2.3-.9-.1-1.3l-9-9c-.4-.4-1.1-.3-1.3-.1l-.2.2c-.3.3-.4.6-.5.9L2.1 48.2z"></path></svg>')  !default;
 $editable-field-hover-icon-margin-right: 2px !default;
@@ -196,3 +195,6 @@ $editable-field-hover-icon-width: 14px !default;
     }
   }
 }
+
+$link-color: $primary-color !default;
+@import './extra-styling';

@@ -154,9 +154,62 @@ $autocomplete-loading-icon-vertical-align:      inherit !default;
 $autocomplete-max-height:	                      25vh !default;
 $autocomplete-min-height:	                      75px !default;
 $autocomplete-min-width:	                      50px !default;
+$autocomplete-overflow-x:	                      hidden !default;
+$autocomplete-overflow-y:	                      auto !default;
 $autocomplete-text-color:	                      #333333 !default;
+$autocomplete-text-overflow:	                  ellipsis !default;
 $autocomplete-text-padding:	                    3px 15px !default;
-$autocomplete-z-index:	                        1000 !default;
+$autocomplete-z-index:	                        9999 !default;
+
+/** AutoComplte with Custom Styling (2 rows) */
+$autocomplete-tpl2-font-size:                   12px !default;
+$autocomplete-tpl2-width:                       285px !default;
+$autocomplete-tpl2-container-list-width:        #{$autocomplete-tpl2-width - 15px} !default;
+$autocomplete-tpl2-container-list-padding-lr:   10px !default; /* left/right */
+$autocomplete-tpl2-container-list-padding-tb:   3px !default; /* top/bottom */
+$autocomplete-tpl2-container-list-padding:      $autocomplete-tpl2-container-list-padding-tb $autocomplete-tpl2-container-list-padding-lr !default;
+$autocomplete-tpl2-icon-left-height:            32px !default;
+$autocomplete-tpl2-icon-left-width:             32px !default;
+$autocomplete-tpl2-bottom-left-text-color:      #686868 !default;
+$autocomplete-tpl2-bottom-left-font-size:       #{$autocomplete-tpl2-font-size - 1px} !default;
+$autocomplete-tpl2-bottom-left-font-style:      italic !default;
+$autocomplete-tpl2-bottom-left-font-weight:     normal !default;
+$autocomplete-tpl2-bottom-left-max-width:       calc(#{$autocomplete-tpl2-container-list-width} - #{$autocomplete-tpl2-icon-left-width} - (#{$autocomplete-tpl2-container-list-padding-lr} * 2)) !default;
+$autocomplete-tpl2-top-left-text-color:         #313131 !default;
+$autocomplete-tpl2-top-left-font-size:          $autocomplete-tpl2-font-size !default;
+$autocomplete-tpl2-top-left-font-style:         normal !default;
+$autocomplete-tpl2-top-left-font-weight:        bold !default;
+$autocomplete-tpl2-top-left-max-width:          $autocomplete-tpl2-bottom-left-max-width !default;
+
+/** AutoComplte with Custom Styling (4 corners) */
+$autocomplete-tpl4-font-size:                   12px !default;
+$autocomplete-tpl4-width:                       385px !default;
+$autocomplete-tpl4-container-list-width:        #{$autocomplete-tpl4-width - 15px} !default;
+$autocomplete-tpl4-container-list-padding-lr:   10px !default; /* left/right */
+$autocomplete-tpl4-container-list-padding-tb:   3px !default; /* top/bottom */
+$autocomplete-tpl4-container-list-padding:      $autocomplete-tpl4-container-list-padding-tb $autocomplete-tpl4-container-list-padding-lr !default;
+$autocomplete-tpl4-icon-left-height:            32px !default;
+$autocomplete-tpl4-icon-left-width:             32px !default;
+$autocomplete-tpl4-bottom-left-text-color:      #686868 !default;
+$autocomplete-tpl4-bottom-left-font-size:       #{$autocomplete-tpl4-font-size - 1px} !default;
+$autocomplete-tpl4-bottom-left-font-style:      italic !default;
+$autocomplete-tpl4-bottom-left-font-weight:     normal !default;
+$autocomplete-tpl4-bottom-left-max-width:       calc(#{$autocomplete-tpl4-container-list-width} - #{$autocomplete-tpl4-icon-left-width} - (#{$autocomplete-tpl4-container-list-padding-lr} * 2)) !default;
+$autocomplete-tpl4-bottom-right-font-size:      #{$autocomplete-tpl4-font-size - 1px} !default;
+$autocomplete-tpl4-bottom-right-font-style:     italic !default;
+$autocomplete-tpl4-bottom-right-font-weight:    normal !default;
+$autocomplete-tpl4-bottom-right-text-color:     #686868 !default;
+$autocomplete-tpl4-bottom-right-max-width:      250px !default;
+$autocomplete-tpl4-top-left-text-color:         #313131 !default;
+$autocomplete-tpl4-top-left-font-size:          $autocomplete-tpl4-font-size !default;
+$autocomplete-tpl4-top-left-font-style:         normal !default;
+$autocomplete-tpl4-top-left-font-weight:        bold !default;
+$autocomplete-tpl4-top-left-max-width:          $autocomplete-tpl4-bottom-left-max-width !default;
+$autocomplete-tpl4-top-right-text-color:        lighten($primary-color, 7%) !default;
+$autocomplete-tpl4-top-right-font-size:         #{$autocomplete-tpl4-font-size - 1px} !default;
+$autocomplete-tpl4-top-right-font-style:        normal !default;
+$autocomplete-tpl4-top-right-font-weight:       bold !default;
+$autocomplete-tpl4-top-right-max-width:         100px !default;
 
 /* Sorting */
 $icon-sort-asc:                                 "\f0d8" !default;
@@ -632,7 +685,7 @@ $footer-font-size:                              $font-size-base !default;
 $footer-font-style:                             italic !default;
 $footer-font-weight:                            normal !default;
 $footer-height:                                 30px !default; // if you modify this height, you also have to modify the footerHeight in the customFooterOptions
-$footer-padding:                                5px !default;
+$footer-padding:                                5px 0 !default;
 $footer-text-color:                             #808080 !default;
 $footer-left-float:                             left !default;
 $footer-left-font-style:                        italic !default;

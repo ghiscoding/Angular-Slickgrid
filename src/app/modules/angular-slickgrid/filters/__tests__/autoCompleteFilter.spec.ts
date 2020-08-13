@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Filters } from '..';
 import { AutoCompleteFilter } from '../autoCompleteFilter';
-import { AutocompleteOption, Column, FieldType, FilterArguments, GridOption, OperatorType } from '../../models';
+import { AutocompleteOption, Column, FieldType, FilterArguments, GridOption, KeyCode, OperatorType } from '../../models';
 import { CollectionService } from './../../services/collection.service';
 import { of, Subject } from 'rxjs';
 
@@ -124,6 +124,7 @@ describe('AutoCompleteFilter', () => {
     const filterCount = divContainer.querySelectorAll('input.search-filter.filter-gender').length;
     const autocompleteUlElms = document.body.querySelectorAll<HTMLUListElement>('ul.ui-autocomplete');
 
+    expect(filter.instance).toBeTruthy();
     expect(autocompleteUlElms.length).toBe(1);
     expect(spyGetHeaderRow).toHaveBeenCalled();
     expect(filterCount).toBe(1);
@@ -407,6 +408,25 @@ describe('AutoCompleteFilter', () => {
     expect(filterCollection[2]).toEqual({ value: 'female', description: 'female' });
   });
 
+  it('should create the filter with a value/label pair collection that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', () => {
+    mockColumn.filter = {
+      // @ts-ignore
+      collection: { deep: { myCollection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }] } },
+      collectionOptions: { collectionInsideObjectProperty: 'deep.myCollection' },
+    };
+    mockColumn.type = FieldType.object;
+    mockColumn.dataKey = 'value';
+    mockColumn.labelKey = 'description';
+
+    filter.init(filterArguments);
+    const filterCollection = filter.collection;
+
+    expect(filterCollection.length).toBe(3);
+    expect(filterCollection[0]).toEqual({ value: 'other', description: 'other' });
+    expect(filterCollection[1]).toEqual({ value: 'male', description: 'male' });
+    expect(filterCollection[2]).toEqual({ value: 'female', description: 'female' });
+  });
+
   it('should create the filter with a value/label pair collectionAsync that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', (done) => {
     mockColumn.filter = {
       collectionAsync: of({ deep: { myCollection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }] } }),
@@ -477,6 +497,7 @@ describe('AutoCompleteFilter', () => {
     it('should expect "setValue" and "autoCommitEdit" to have been called with a string when item provided is a string', () => {
       const spyCallback = jest.spyOn(filterArguments, 'callback');
       mockColumn.filter.collection = ['male', 'female'];
+      mockColumn.filter.filterOptions = { source: [] } as AutocompleteOption;
 
       filter.init(filterArguments);
       const spySetValue = jest.spyOn(filter, 'setValues');
@@ -500,6 +521,17 @@ describe('AutoCompleteFilter', () => {
       expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, operator: 'EQ', searchTerms: ['f'], shouldTriggerQuery: true });
     });
 
+    it('should expect the "onSelect" method to be called when the callback method is triggered when user provide his own filterOptions', () => {
+      const spy = jest.spyOn(filter, 'onSelect');
+      const event = new CustomEvent('change');
+
+      mockColumn.filter.filterOptions = { source: [], minLength: 3 } as AutocompleteOption;
+      filter.init(filterArguments);
+      filter.autoCompleteOptions.select(event, { item: 'fem' });
+
+      expect(spy).toHaveBeenCalledWith(event, { item: 'fem' });
+    });
+
     it('should expect the "onSelect" method to be called when the callback method is triggered', () => {
       const spy = jest.spyOn(filter, 'onSelect');
       const event = new CustomEvent('change');
@@ -521,6 +553,95 @@ describe('AutoCompleteFilter', () => {
       filter.autoCompleteOptions.select(event, { item: 'fem' });
 
       expect(spy).toHaveBeenCalledWith(event, { item: 'fem' });
+    });
+  });
+
+  describe('openSearchListOnFocus flag', () => {
+    it('should open the search list by calling the AutoComplete "search" event with an empty string when there are no search term provided', () => {
+      mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      mockColumn.filter.filterOptions = { openSearchListOnFocus: true } as AutocompleteOption;
+
+      const event = new (window.window as any).KeyboardEvent('click', { keyCode: KeyCode.LEFT, bubbles: true, cancelable: true });
+
+      filter.init(filterArguments);
+      const autoCompleteSpy = jest.spyOn(filter.filterDomElement, 'autocomplete');
+      const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
+      filterElm.focus();
+      filterElm.dispatchEvent(event);
+
+      expect(filter.filterDomElement).toBeTruthy();
+      expect(autoCompleteSpy).toHaveBeenCalledWith('search', '');
+    });
+
+    it('should open the search list by calling the AutoComplete "search" event with the same search term string that was provided', () => {
+      mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      mockColumn.filter.filterOptions = { openSearchListOnFocus: true } as AutocompleteOption;
+
+      const event = new (window.window as any).KeyboardEvent('click', { keyCode: KeyCode.LEFT, bubbles: true, cancelable: true });
+
+      filter.init(filterArguments);
+      filter.setValues('female');
+      const autoCompleteSpy = jest.spyOn(filter.filterDomElement, 'autocomplete');
+      const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
+      filterElm.focus();
+      filterElm.dispatchEvent(event);
+
+      expect(filter.filterDomElement).toBeTruthy();
+      expect(autoCompleteSpy).toHaveBeenCalledWith('search', 'female');
+    });
+  });
+
+  describe('renderItem callback method', () => {
+    it('should be able to override any jQuery UI callback method', () => {
+      const mockCallback = (ul: HTMLElement, item: any) => {
+        return $('<li></li>')
+          .data('item.autocomplete', item)
+          .append(`<div>Hello World`)
+          .appendTo(ul);
+      };
+      mockColumn.filter.filterOptions = {
+        source: [],
+        classes: { 'ui-autocomplete': 'autocomplete-custom-four-corners' },
+      } as AutocompleteOption;
+      mockColumn.filter.callbacks = { _renderItem: mockCallback };
+
+      filter.init(filterArguments);
+      const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
+      filterElm.focus();
+
+      expect(filter.filterDomElement).toBeTruthy();
+      expect(filter.instance).toBeTruthy();
+      expect(filter.instance._renderItem).toEqual(mockCallback);
+    });
+
+    it('should provide "renderItem" in the "filterOptions" and expect the jQueryUI "_renderItem" to be overriden', () => {
+      const mockTemplateString = `<div>Hello World</div>`;
+      const mockTemplateCallback = (item) => mockTemplateString;
+      mockColumn.filter.filterOptions = {
+        source: [],
+        renderItem: {
+          layout: 'fourCorners',
+          templateCallback: mockTemplateCallback
+        },
+      } as AutocompleteOption;
+
+      filter.init(filterArguments);
+      const autoCompleteSpy = jest.spyOn(filter.filterDomElement, 'autocomplete');
+      const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
+      filterElm.focus();
+      filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 109, bubbles: true, cancelable: true }));
+
+      expect(filter.filterDomElement).toBeTruthy();
+      expect(filter.instance).toBeTruthy();
+      expect(filter.autoCompleteOptions).toEqual(expect.objectContaining({ classes: { 'ui-autocomplete': 'autocomplete-custom-four-corners' } }));
+      expect(autoCompleteSpy).toHaveBeenCalledWith('instance');
+      expect(filter.instance._renderItem).toEqual(expect.any(Function));
+
+      const ulElm = document.createElement('ul');
+      filter.instance._renderItem(ulElm, { name: 'John' });
+
+      const liElm = ulElm.querySelector<HTMLLIElement>('li');
+      expect(liElm.innerHTML).toBe(mockTemplateString);
     });
   });
 });

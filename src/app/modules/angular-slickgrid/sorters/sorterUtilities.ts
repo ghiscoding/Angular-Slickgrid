@@ -42,6 +42,10 @@ export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, 
     case FieldType.object:
       sortResult = Sorters.objectString(value1, value2, sortDirection, sortColumn);
       break;
+    case FieldType.string:
+    case FieldType.text:
+    case FieldType.password:
+    case FieldType.readonly:
     default:
       sortResult = Sorters.string(value1, value2, sortDirection, sortColumn);
       break;

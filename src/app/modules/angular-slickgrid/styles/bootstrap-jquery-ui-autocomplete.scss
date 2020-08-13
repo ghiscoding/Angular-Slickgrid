@@ -21,11 +21,12 @@
   max-height: $autocomplete-max-height;
   min-height: $autocomplete-min-height;
   min-width: $autocomplete-min-width;
-  overflow-y: auto;
+  overflow-y: $autocomplete-overflow-y;
+  overflow-x: $autocomplete-overflow-x;
+  text-overflow: $autocomplete-text-overflow;
 
   li {
     div {
-      clear: both;
       display: block;
       color: $autocomplete-text-color;
       padding: $autocomplete-text-padding;
@@ -73,4 +74,142 @@
   position: absolute;
   padding: 0;
   width: 1px;
+}
+
+// ---
+// AutoComplete Custom Template Styling with 4 corners
+// ---------------------------------------------------
+
+/* autocomplete custom styling */
+.ui-autocomplete.autocomplete-custom-four-corners {
+  width: $autocomplete-tpl4-width;
+}
+.ui-autocomplete.autocomplete-custom-four-corners li div.autocomplete-container-list {
+  width: $autocomplete-tpl4-container-list-width;
+  padding: $autocomplete-tpl4-container-list-padding;
+
+  div {
+    margin: 0;
+    padding: 0;
+    line-height: 16px;
+  }
+
+  .autocomplete-left {
+    float: left;
+    height: 32px;
+    width: 32px;
+    padding-right: 3px;
+  }
+
+  .autocomplete-left > img {
+    height: $autocomplete-tpl4-icon-left-height;
+    width: $autocomplete-tpl4-icon-left-width;
+    margin-top: 0px;
+    background-color: #ffffff;
+    background-clip: content-box;
+  }
+
+  .autocomplete-bottom-left {
+    color: $autocomplete-tpl4-bottom-left-text-color;
+    font-size: $autocomplete-tpl4-bottom-left-font-size;
+    font-style: $autocomplete-tpl4-bottom-left-font-style;
+    font-weight: $autocomplete-tpl4-bottom-left-font-weight;
+    max-width: $autocomplete-tpl4-bottom-left-max-width;
+    display: inline-block;
+    /*margin-left: 30px;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .autocomplete-bottom-right {
+    // margin-right: 12px;
+    float: right;
+    color: $autocomplete-tpl4-bottom-right-text-color;
+    font-size: $autocomplete-tpl4-bottom-right-font-size;
+    font-style: $autocomplete-tpl4-bottom-right-font-style;
+    font-weight: $autocomplete-tpl4-bottom-right-font-weight;
+    /*margin-left: 30px;*/
+    text-overflow: ellipsis;
+    max-width: $autocomplete-tpl4-bottom-right-max-width;
+  }
+
+  .autocomplete-top-left {
+    color: $autocomplete-tpl4-top-left-text-color;
+    font-style: $autocomplete-tpl4-top-left-font-style;
+    font-size: $autocomplete-tpl4-top-left-font-size;
+    font-weight: $autocomplete-tpl4-top-left-font-weight;
+    max-width: $autocomplete-tpl4-top-left-max-width;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 1px;
+  }
+
+  .autocomplete-top-right {
+    // margin-right: 12px;
+    float: right;
+    color: $autocomplete-tpl4-top-right-text-color;
+    font-style: $autocomplete-tpl4-top-right-font-style;
+    font-size: $autocomplete-tpl4-top-right-font-size;
+    font-weight: $autocomplete-tpl4-top-right-font-weight;
+    max-width: $autocomplete-tpl4-top-right-max-width;
+  }
+}
+
+// ---
+// AutoComplete Custom Template Styling with 2 rows
+// (similar to 4 corners except that it's 2 rows only)
+// ---------------------------------------------------
+
+/* autocomplete custom styling */
+.ui-autocomplete.autocomplete-custom-two-rows {
+  width: $autocomplete-tpl2-width;
+}
+.ui-autocomplete.autocomplete-custom-two-rows li div.autocomplete-container-list {
+  width: $autocomplete-tpl2-container-list-width;
+  padding: $autocomplete-tpl2-container-list-padding;
+
+  div {
+    margin: 0;
+    padding: 0;
+    line-height: 16px;
+  }
+
+  .autocomplete-left {
+    float: left;
+    height: $autocomplete-tpl2-icon-left-height;
+    width: $autocomplete-tpl2-icon-left-width;
+    padding-right: 3px;
+  }
+
+  .autocomplete-left > img {
+    height: 32px;
+    margin-top: 0px;
+    background-color: #ffffff;
+    background-clip: content-box;
+  }
+
+  .autocomplete-bottom-left {
+    color: $autocomplete-tpl2-bottom-left-text-color;
+    font-size: $autocomplete-tpl2-bottom-left-font-size;
+    font-style: $autocomplete-tpl2-bottom-left-font-style;
+    font-weight: $autocomplete-tpl2-bottom-left-font-weight;
+    max-width: $autocomplete-tpl2-bottom-left-max-width;
+    /*margin-left: 30px;*/
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .autocomplete-top-left {
+    color: $autocomplete-tpl2-top-left-text-color;
+    font-style: $autocomplete-tpl2-top-left-font-style;
+    font-size: $autocomplete-tpl2-top-left-font-size;
+    font-weight: $autocomplete-tpl2-top-left-font-weight;
+    max-width: $autocomplete-tpl2-top-left-max-width;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 1px;
+  }
 }

@@ -63,7 +63,7 @@
       }
     }
   }
-  .title {
+  div.title {
     font-size: $column-picker-title-font-size;
     font-weight: $column-picker-title-font-weight;
     width: $column-picker-title-width;
@@ -171,13 +171,14 @@
     }
   }
 
-  .title {
+  div.title {
     font-size: $grid-menu-title-font-size;
     font-weight: $grid-menu-title-font-weight;
     width: $grid-menu-title-width;
     border-bottom: $grid-menu-title-border-bottom;
     margin-bottom: $grid-menu-title-margin-bottom;
   }
+
   li {
     list-style: none;
     margin: 0;

@@ -24,7 +24,7 @@ export function textValidator(inputValue: any, options: TextValidatorOptions): E
   };
   let isValid = true;
   let outputMsg = '';
-  const inputValueLength = inputValue.length;
+  const inputValueLength = inputValue && inputValue.length || 0;
 
   if (options.validator) {
     return options.validator(inputValue, options.editorArgs);
