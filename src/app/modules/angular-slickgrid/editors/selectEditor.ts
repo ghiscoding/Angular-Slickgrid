@@ -412,8 +412,7 @@ export class SelectEditor implements Editor {
     // make sure the prop exists first
     this.$editorElm.find('option').each((i: number, $e: any) => {
       // check equality after converting originalValue to string since the DOM value will always be of type string
-      const strValue = currentValue && currentValue.toString && currentValue.toString();
-      $e.selected = (strValue === $e.value);
+      $e.selected = (`${currentValue}` === $e.value);
     });
   }
 
