@@ -104,6 +104,9 @@ export interface MultipleSelectOption {
   /** Defines the position of select dropdown, can only be bottom or top.By default this option is set to bottom. */
   position?: string;
 
+  /** Will open the select list after creating the multiple-select element. By default this option is set to false. */
+  openAfterCreate?: boolean;
+
   /** Whether or not Multiple Select show select all checkbox. */
   selectAll?: boolean;
 
@@ -171,6 +174,9 @@ export interface MultipleSelectOption {
   // --
   // Events
   // ------------
+
+  /** Fires after the multiple-select element is created. */
+  onAfterCreate?: () => void;
 
   /** Fires when the dropdown list is open. */
   onOpen?: () => void;

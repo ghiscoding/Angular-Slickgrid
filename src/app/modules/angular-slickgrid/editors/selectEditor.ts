@@ -110,6 +110,7 @@ export class SelectEditor implements Editor {
       filter: false,
       maxHeight: 275,
       name: this.elementName,
+      openAfterCreate: true,
       single: true,
       textTemplate: ($elm) => {
         // render HTML code or not, by default it is sanitized and won't be rendered
@@ -618,7 +619,6 @@ export class SelectEditor implements Editor {
       const editorOptions = (this.columnDef && this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.editorOptions : {};
       this.editorElmOptions = { ...this.defaultOptions, ...elementOptions, ...editorOptions };
       this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
-      setTimeout(() => this.show());
     }
   }
 

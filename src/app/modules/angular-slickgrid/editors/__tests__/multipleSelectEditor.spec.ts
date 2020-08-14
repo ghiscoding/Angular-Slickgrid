@@ -102,10 +102,8 @@ describe('SelectEditor', () => {
       gridOptionMock.i18n = translate;
       editor = new MultipleSelectEditor(editorArguments);
       const editorCount = document.body.querySelectorAll('select.ms-filter.editor-gender').length;
-      const spy = jest.spyOn(editor, 'show');
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
         expect(editorCount).toBe(1);
         done();
       });

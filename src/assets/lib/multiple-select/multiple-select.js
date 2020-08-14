@@ -25,6 +25,7 @@
  * - "domElmSelectAllHeight" defaults to 39 (as per CSS), that is the DOM element of the "Select All" text area
  * - "useSelectOptionLabel" (defaults to False), when set to True it will use the <option label=""> that can be used to display selected options
  * - "useSelectOptionLabelToHtml" (defaults to False), same as "useSelectOptionLabel" but will also render html
+ * - "openAfterCreate" (defaults to False), Will open the select list after creating the multiple-select element. By default this option is set to false.
  */
 
 (function ($) {
@@ -210,6 +211,11 @@
 
     if (!this.options.keepOpen) {
       $('body').click(function (e) {
+        if (that.options.openAfterCreate) {
+          that.open();
+          that.options.openAfterCreate = false; // reset flag so it does this only once after element creation
+          return;
+        }
         if ($(e.target)[0] === that.$choice[0] ||
           $(e.target).parents('.ms-choice')[0] === that.$choice[0]) {
           return;
@@ -1051,6 +1057,7 @@
     filterAcceptOnEnter: false,
     hideOptgroupCheckboxes: false,
     openOnHover: false,
+    openAfterCreate: false,
     okButton: false,
     okButtonText: 'OK',
     selectAllText: 'Select all',
