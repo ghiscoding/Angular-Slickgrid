@@ -1,12 +1,9 @@
 $editable-field-bg-color: #e3f0fb !default;
+$unsaved-editable-field-color: #fbfdd1 !default;
+$font-size-count: 50;
 
-.pointer {
-  cursor: pointer;
-}
-
-.cell-effort-driven {
-  text-align: center;
-}
+.pointer { cursor: pointer; }
+.bold { font-weight: bold; }
 
 .grid-canvas {
   .slick-row, .slick-row.odd {
@@ -20,7 +17,7 @@ $editable-field-bg-color: #e3f0fb !default;
   background-color: $editable-field-bg-color
 }
 .unsaved-editable-field {
-  background-color: #fbfdd1 !important;
+  background-color: $unsaved-editable-field-color !important;
 }
 
 .fake-hyperlink {
@@ -43,45 +40,27 @@ $editable-field-bg-color: #e3f0fb !default;
   }
 }
 
-.font-10px {
-  font-size: 10px;
+// font-5px equals a font-size of 5px, from 5px to 50px
+@for $i from 5 through $font-size-count {
+  .font-#{$i}px { font-size: #{$i}px; }
 }
-.font-12px {
-  font-size: 12px;
+
+/* Text and Alignment Utilities */
+.text-center { text-align: center; }
+.text-left   { text-align: left;   }
+.text-right  { text-align: right;  }
+.text-uppercase { text-transform: uppercase;  }
+.text-underline { text-decoration: underline; }
+
+.vertical-align-bottom {
+  display: inline-block;
+  vertical-align: bottom;
 }
-.font-14px {
-  font-size: 14px;
+.vertical-align-middle {
+  display: inline-block;
+  vertical-align: middle;
 }
-.font-16px {
-  font-size: 16px;
-}
-.font-18px {
-  font-size: 18px;
-}
-.font-20px {
-  font-size: 20px;
-}
-.font-22px {
-  font-size: 22px;
-}
-.font-24px {
-  font-size: 24px;
-}
-.font-26px {
-  font-size: 26px;
-}
-.font-28px {
-  font-size: 28px;
-}
-.font-30px {
-  font-size: 30px;
-}
-.font-32px {
-  font-size: 32px;
-}
-.font-34px {
-  font-size: 34px;
-}
-.font-36px {
-  font-size: 36px;
+.vertical-align-top {
+  display: inline-block;
+  vertical-align: top;
 }

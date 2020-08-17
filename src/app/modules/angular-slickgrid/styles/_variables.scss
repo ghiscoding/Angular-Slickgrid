@@ -255,6 +255,8 @@ $column-picker-close-btn-padding:               0px !default;
 $column-picker-close-btn-opacity:               0.9 !default;
 $column-picker-close-btn-position-right:        5px !default;
 $column-picker-close-btn-position-top:          0px !default;
+$column-picker-padding-right-patch:             24px !default; /* trick to cheat the width to include extra scrollbar width in addition to auto width */
+$column-picker-divider-width:                   calc(100% + #{$column-picker-padding-right-patch} - 10px) !default;
 $column-picker-item-border:                     1px solid transparent !default;
 $column-picker-item-border-radius:              0px !default;
 $column-picker-item-font-size:                  $icon-font-size !default;
@@ -330,7 +332,7 @@ $grid-menu-min-width:                           200px !default;
 $grid-menu-divider-height:                      1px !default;
 $grid-menu-divider-margin:                      8px 5px !default;
 $grid-menu-divider-color:                       #e7e7e7 !default;
-$grid-menu-divider-width:                       calc(100% - 40px) !default;
+$grid-menu-divider-width:                       calc(100% - 10px) !default;
 $grid-menu-title-border-bottom:                 solid 1px #d6d6d6 !default;
 $grid-menu-title-font-size:                     calc(#{$grid-menu-item-font-size} + 2px) !default;
 $grid-menu-title-font-weight:                   normal !default;
@@ -368,7 +370,7 @@ $cell-menu-icon-width:                          16px !default;
 $cell-menu-divider-height:                      1px !default;
 $cell-menu-divider-margin:                      8px 5px !default;
 $cell-menu-divider-color:                       #e7e7e7 !default;
-$cell-menu-divider-width:                       calc(100% - 40px) !default;
+$cell-menu-divider-width:                       calc(100% - 10px) !default;
 $cell-menu-option-list-margin-bottom:           10px !default;
 $cell-menu-title-border-bottom:                 1px solid #d6d6d6 !default;
 $cell-menu-title-font-size:                     calc(#{$cell-menu-item-font-size} + 2px) !default;
@@ -406,7 +408,7 @@ $context-menu-icon-width:                       16px !default;
 $context-menu-divider-height:                   1px !default;
 $context-menu-divider-margin:                   8px 5px !default;
 $context-menu-divider-color:                    #e7e7e7 !default;
-$context-menu-divider-width:                    calc(100% - 40px) !default;
+$context-menu-divider-width:                    calc(100% - 10px) !default;
 $context-menu-option-list-margin-bottom:        10px !default;
 $context-menu-title-border-bottom:              1px solid #d6d6d6 !default;
 $context-menu-title-font-size:                  calc(#{$context-menu-item-font-size} + 2px) !default;
@@ -448,7 +450,7 @@ $header-menu-icon-width:                        16px !default;
 $header-menu-divider-height:                    1px !default;
 $header-menu-divider-margin:                    8px 3px !default;
 $header-menu-divider-color:                     #e7e7e7 !default;
-$header-menu-divider-width:                     95% !default;
+$header-menu-divider-width:                     calc(100% - 10px) !default;
 $header-menu-display:                           none !default; /* can be none or inline-block */
 
 /* Checkbox Selector / Row Selection */

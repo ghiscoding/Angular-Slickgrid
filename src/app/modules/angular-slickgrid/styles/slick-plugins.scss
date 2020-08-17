@@ -78,6 +78,9 @@
       margin: $cell-menu-divider-margin;
       background-color: $cell-menu-divider-color;
       width: $cell-menu-divider-width;
+      margin-left: auto;
+      margin-right: auto;
+
       &:hover {
         border: none;
         background-color: $cell-menu-divider-color;
@@ -193,6 +196,9 @@
       margin: $context-menu-divider-margin;
       background-color: $context-menu-divider-color;
       width: $context-menu-divider-width;
+      margin-left: auto;
+      margin-right: auto;
+
       &:hover {
         border: none;
         background-color: $context-menu-divider-color;
@@ -382,6 +388,9 @@
     margin: $header-menu-divider-margin;
     background-color: $header-menu-divider-color;
     width: $header-menu-divider-width;
+    margin-left: auto;
+    margin-right: auto;
+
     &:hover {
       border: none;
       background-color: $header-menu-item-disabled-color;
