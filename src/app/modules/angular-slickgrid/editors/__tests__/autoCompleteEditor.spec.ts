@@ -623,7 +623,7 @@ describe('AutoCompleteEditor', () => {
 
         expect(output).toBe(false);
         expect(spyCommitEdit).toHaveBeenCalled();
-        expect(spySetValue).toHaveBeenCalledWith('f');
+        expect(spySetValue).toHaveBeenCalledWith('Female');
       });
 
       it('should expect the "onSelect" method to be called when the callback method is triggered when user provide his own filterOptions', () => {

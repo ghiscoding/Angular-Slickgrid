@@ -79,7 +79,7 @@ export interface SlickGrid {
    * 	  cell: activeCell
    * 	}
    */
-  getActiveCell(): number;
+  getActiveCell(): { row: number; cell: number; };
 
   /** Returns the DOM element containing the currently active cell. If no cell is active, null is returned. */
   getActiveCellNode(): HTMLElement;
@@ -219,10 +219,10 @@ export interface SlickGrid {
   /** Returns an array of row indices corresponding to the currently selected rows. */
   getSelectedRows(): number[];
 
-  /** Returns the current SelectionModel. See here for more information about SelectionModels.*/
+  /** Returns the current SelectionModel. See here for more information about SelectionModels. */
   getSelectionModel(): any;
 
-  /** Get sorted columns **/
+  /** Get sorted columns */
   getSortColumns(): ColumnSort[];
 
   /** Get Top Panel DOM element */

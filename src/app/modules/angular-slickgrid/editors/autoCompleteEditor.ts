@@ -272,16 +272,9 @@ export class AutoCompleteEditor implements Editor {
       // otherwise we know that jQueryUI always require a label/value pair, we can pull them directly
       const hasCustomRenderItemCallback = this.columnEditor && this.columnEditor.callbacks && this.columnEditor.callbacks.hasOwnProperty('_renderItem') || (this.columnEditor && this.columnEditor.editorOptions && this.columnEditor.editorOptions.renderItem) || false;
 
-      const itemValue = typeof item === 'string' ? item : (hasCustomRenderItemCallback ? item[this.valueName] : item.value);
-      this.setValue(itemValue);
-
-      if (this.hasAutoCommitEdit) {
-        // do not use args.commitChanges() as this sets the focus to the next row.
-        const validation = this.validate();
-        if (validation && validation.valid) {
-          this.grid.getEditorLock().commitCurrentEdit();
-        }
-      }
+      const itemLabel = typeof item === 'string' ? item : (hasCustomRenderItemCallback ? item[this.labelName] : item.label);
+      this.setValue(itemLabel);
+      this.save();
     }
     return false;
   }
@@ -410,6 +403,7 @@ export class AutoCompleteEditor implements Editor {
       }
     }
 
+    this._$editorElm.on('focus', () => this._$editorElm.select());
     setTimeout(() => this.focus(), 50);
   }
 }

@@ -172,6 +172,9 @@ export interface MultipleSelectOption {
   // Events
   // ------------
 
+  /** Fires after the multiple-select DOM element is created. */
+  onAfterCreate?: () => void;
+
   /** Fires when the dropdown list is open. */
   onOpen?: () => void;
 

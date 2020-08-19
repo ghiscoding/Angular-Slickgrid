@@ -412,10 +412,10 @@ describe('SelectEditor', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should not call anything when "hasAutoCommitEdit" is disabled', () => {
+      it('should not call "commitCurrentEdit" when "hasAutoCommitEdit" is disabled', () => {
         mockItemData = { id: 1, gender: 'male', isActive: true };
         gridOptionMock.autoCommitEdit = false;
-        const spy = jest.spyOn(editorArguments, 'commitChanges');
+        const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
         editor = new SelectEditor(editorArguments, true);
         editor.loadValue(mockItemData);
@@ -428,13 +428,15 @@ describe('SelectEditor', () => {
         mockItemData = { id: 1, gender: '', isActive: true };
         mockColumn.internalColumnEditor.required = true;
         gridOptionMock.autoCommitEdit = true;
-        const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
+        const commitEditSpy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
+        const commitChangeSpy = jest.spyOn(editorArguments, 'commitChanges');
 
         editor = new SelectEditor(editorArguments, true);
         editor.loadValue(mockItemData);
         editor.save();
 
-        expect(spy).not.toHaveBeenCalled();
+        expect(commitEditSpy).not.toHaveBeenCalled();
+        expect(commitChangeSpy).not.toHaveBeenCalled();
       });
     });
 
