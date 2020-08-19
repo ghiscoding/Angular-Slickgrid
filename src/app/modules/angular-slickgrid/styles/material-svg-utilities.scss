@@ -1,3 +1,5 @@
+$icon-width-size-count: 50;
+
 @-webkit-keyframes md-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -33,25 +35,8 @@
   &.mdi-rotate-45, .mdi-rotate-90, .mdi-rotate-135, .mdi-rotate-180, .mdi-rotate-220 .mdi-rotate-270, .mdi-rotate-315 {
     filter: none;
   }
-  &.mdi-10px:before { width: 10px; }
-  &.mdi-12px:before { width: 12px; }
-  &.mdi-14px:before { width: 14px; }
-  &.mdi-16px:before { width: 16px; }
-  &.mdi-18px:before { width: 18px; }
-  &.mdi-20px:before { width: 20px; }
-  &.mdi-22px:before { width: 22px; }
-  &.mdi-24px:before { width: 24px; }
-  &.mdi-26px:before { width: 26px; }
-  &.mdi-28px:before { width: 28px; }
-  &.mdi-30px:before { width: 30px; }
-  &.mdi-32px:before { width: 32px; }
-  &.mdi-34px:before { width: 34px; }
-  &.mdi-36px:before { width: 36px; }
-  &.mdi-38px:before { width: 38px; }
-  &.mdi-40px:before { width: 40px; }
-  &.mdi-42px:before { width: 42px; }
-  &.mdi-44px:before { width: 44px; }
-  &.mdi-46px:before { width: 46px; }
-  &.mdi-48px:before { width: 48px; }
-  &.mdi-50px:before { width: 50px; }
+
+  @for $i from 5 through $icon-width-size-count {
+    &.mdi-#{$i}px:before { width: #{$i}px; }
+  }
 }

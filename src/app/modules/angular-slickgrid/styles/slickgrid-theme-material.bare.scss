@@ -1,5 +1,11 @@
 @import './sass-utilities';
 
+/**
+ * This is a bare version of "slickgrid-theme-material.scss",
+ * Few files were removed and aren't included in this styling theme (while they are in original theme)
+ * - (colors, extra-styling, material-svg-icons, material-svg-utilities, slick-without-bootstrap-min-styling)
+ */
+
 $primary-color:                             #009530 !default;
 $font-family:                               Roboto, "Helvetica Neue", sans-serif !default;
 $font-size-base-value:                      14 !default;
@@ -129,9 +135,7 @@ $pagination-button-padding:                 6px 9px !default;
 $pagination-button-border-radius:           2px !default;
 $pagination-page-input-border-radius:       3px !default;
 
-@import './roboto-font';
 @import './slick-default-theme';
-@import './slick-without-bootstrap-min-styling';
 @import './slick-grid';
 @import './slick-controls';
 @import './slick-editors';
@@ -141,9 +145,3 @@ $pagination-page-input-border-radius:       3px !default;
 @import './slickgrid-examples';
 @import './slick-bootstrap';
 @import './ui-autocomplete';
-@import './material-svg-icons';
-@import './material-svg-utilities';
-
-$link-color: $primary-color !default;
-@import './colors.scss';
-@import './extra-styling.scss';

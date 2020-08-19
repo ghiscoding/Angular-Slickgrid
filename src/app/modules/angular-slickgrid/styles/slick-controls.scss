@@ -21,7 +21,7 @@
 	overflow: auto;
   resize: both;
   width: auto;
-  padding-right: 24px; /* trick to cheat the width to include extra scrollbar width in addition to auto width */
+  padding-right: $column-picker-padding-right-patch; /* trick to cheat the width to include extra scrollbar width in addition to auto width */
 
   > .close {
     float: right;
@@ -100,6 +100,9 @@
     margin: 6px 0;
     border: 0;
     border-top: 1px solid #d5d5d5;
+    width: $column-picker-divider-width;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* replace checkboxes by Font-Awesome icons */
@@ -242,6 +245,9 @@
     margin: $grid-menu-divider-margin;
     background-color: $grid-menu-divider-color;
     width: $grid-menu-divider-width;
+    margin-left: auto;
+    margin-right: auto;
+
     &:hover {
       border: none;
       background-color: $grid-menu-item-disabled-color;
@@ -306,6 +312,9 @@
     margin: 6px 0;
     border: 0;
     border-top: 1px solid #dddddd;
+    width: $grid-menu-divider-width;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* replace checkboxes by Font-Awesome icons */
