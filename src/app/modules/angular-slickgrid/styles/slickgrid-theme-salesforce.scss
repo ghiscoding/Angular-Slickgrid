@@ -133,6 +133,7 @@ $row-move-plugin-cursor:                    grab !default;
 $row-move-plugin-icon-width:                18px !default;
 $row-move-plugin-icon:                      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($row-move-plugin-icon-color)}" viewBox="0 0 24 24"><path d="M10,13H22V11H10M10,19H22V17H10M10,7H22V5H10M6,7H8.5L5,3.5L1.5,7H4V17H1.5L5,20.5L8.5,17H6V7Z"></path></svg>') !default;
 $large-editor-border-radius:                2px !default;
+$large-editor-button-border-radius:         2px !default;
 $editor-focus-box-shadow:                   0 0 3px $primary-color !default;
 $slider-editor-height:                      24px !default;
 $slider-filter-thumb-color:                 #3C97DD !default;
