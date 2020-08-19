@@ -1,6 +1,12 @@
 /** Salesforce Theme (includes all external lib styling) */
 @import './sass-utilities';
 
+/**
+ * This is a bare version of "slickgrid-theme-salesforce.scss",
+ * Few files were removed and aren't included in this styling theme (while they are in original theme)
+ * - (colors, extra-styling, material-svg-icons, material-svg-utilities, slick-without-bootstrap-min-styling)
+ */
+
 $primary-color:                             #006DCC !default;
 $highlight-color:                           #0070D2 !default;
 $bare-color:                                #b5b5b5 !default;
@@ -157,7 +163,6 @@ $pagination-button-padding:                 6px 9px !default;
 $pagination-button-border-radius:           2px !default;
 $pagination-page-input-border-radius:       3px !default;
 
-@import './slick-without-bootstrap-min-styling';
 @import './slick-default-theme';
 @import './slick-grid';
 @import './slick-controls';
@@ -168,34 +173,3 @@ $pagination-page-input-border-radius:       3px !default;
 @import './slickgrid-examples';
 @import './slick-bootstrap';
 @import './ui-autocomplete';
-@import './material-svg-icons';
-@import './material-svg-utilities';
-
-$editable-field-bg-color: rgba(227, 240, 251, 0.569) !default;
-$editable-field-hover-icon-color: #b0adab !default;
-$editable-field-hover-icon: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{encodecolor($editable-field-hover-icon-color)}" viewBox="0 0 52 52"><path d="M9.5 33.4l8.9 8.9c.4.4 1 .4 1.4 0L42 20c.4-.4.4-1 0-1.4l-8.8-8.8c-.4-.4-1-.4-1.4 0L9.5 32.1c-.4.4-.4 1 0 1.3zM36.1 5.7c-.4.4-.4 1 0 1.4l8.8 8.8c.4.4 1 .4 1.4 0l2.5-2.5c1.6-1.5 1.6-3.9 0-5.5l-4.7-4.7c-1.6-1.6-4.1-1.6-5.7 0l-2.3 2.5zM2.1 48.2c-.2 1 .7 1.9 1.7 1.7l10.9-2.6c.4-.1.7-.3.9-.5l.2-.2c.2-.2.3-.9-.1-1.3l-9-9c-.4-.4-1.1-.3-1.3-.1l-.2.2c-.3.3-.4.6-.5.9L2.1 48.2z"></path></svg>')  !default;
-$editable-field-hover-icon-margin-right: 2px !default;
-$editable-field-hover-icon-margin-top: 8px !default;
-$editable-field-hover-icon-width: 14px !default;
-
-.grid-canvas {
-  .slick-row, .slick-row.odd {
-    .slick-cell.editable-field, .slick-cell.selected.editable-field {
-      background-color: $editable-field-bg-color;
-      &:hover:after {
-        content: $editable-field-hover-icon;
-        position: absolute;
-        top: $editable-field-hover-icon-margin-top;
-        right: $editable-field-hover-icon-margin-right;
-        width: $editable-field-hover-icon-width;
-      }
-      &.active:hover:after {
-        content: none;
-      }
-    }
-  }
-}
-
-$link-color: $primary-color !default;
-@import './colors.scss';
-@import './extra-styling';
