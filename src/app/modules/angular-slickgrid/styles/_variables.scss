@@ -477,11 +477,12 @@ $editor-focus-box-shadow:                       inset 0 1px 1px rgba(0,0,0,.075)
 $date-editor-focus-border-color:                $editor-focus-border-color !default;
 $date-editor-focus-box-shadow:                  $editor-focus-box-shadow !default;
 $large-editor-background-color:                 #ffffff !default;
-$large-editor-border:                           2px solid #a0a0a0 !default;
+$large-editor-border:                           2px solid #b1b1b1 !default;
 $large-editor-text-padding:                     5px !default;
-$large-editor-border-radius:                    8px !default;
+$large-editor-border-radius:                    6px !default;
 $large-editor-textarea-height:                  80px !default;
 $large-editor-textarea-width:                   250px !default;
+$large-editor-button-border-radius:             3px !default;
 $large-editor-button-text-align:                right !default;
 $large-editor-footer-spacing:                   2px !default;
 $large-editor-count-font-size:                  11px !default;

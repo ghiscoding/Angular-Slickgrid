@@ -107,7 +107,7 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  init(args: FilterArguments, isFilterFirstRender: boolean): Promise<boolean> {
+  init(args: FilterArguments): Promise<boolean> {
     if (!args) {
       throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
