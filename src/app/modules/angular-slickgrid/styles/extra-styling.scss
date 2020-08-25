@@ -1,21 +1,10 @@
-$editable-field-bg-color: #e3f0fb !default;
 $unsaved-editable-field-color: #fbfdd1 !default;
 $font-size-count: 50;
+$padding-max-count: 30;
 
 .pointer { cursor: pointer; }
 .bold { font-weight: bold; }
 
-.grid-canvas {
-  .slick-row, .slick-row.odd {
-    .slick-cell.editable-field, .slick-cell.selected.editable-field {
-      background-color: $editable-field-bg-color
-    }
-  }
-}
-
-.editable-field {
-  background-color: $editable-field-bg-color
-}
 .unsaved-editable-field {
   background-color: $unsaved-editable-field-color !important;
 }
@@ -25,6 +14,18 @@ $font-size-count: 50;
   color: $link-color;
   &:hover {
       text-decoration: underline;
+  }
+}
+
+.button-style {
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 2px;
+  justify-content: center;
+  text-align: center;
+  &:hover {
+    border-color: #b5b5b5;
   }
 }
 
@@ -40,9 +41,18 @@ $font-size-count: 50;
   }
 }
 
-// font-5px equals a font-size of 5px, from 5px to 50px
+// padding-0px up to padding-30px
+@for $i from 0 through $padding-max-count {
+  .padding-#{$i}px { padding: #{$i}px; }
+}
+
+// font-5px up to font-50px
 @for $i from 5 through $font-size-count {
   .font-#{$i}px { font-size: #{$i}px; }
+}
+
+.margin-auto {
+  margin: auto;
 }
 
 /* Text and Alignment Utilities */

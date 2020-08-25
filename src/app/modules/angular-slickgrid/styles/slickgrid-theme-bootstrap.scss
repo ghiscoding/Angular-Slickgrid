@@ -1,10 +1,17 @@
-@import './slick-default-theme';
-@import './slick-grid';
-@import './slick-controls';
-@import './slick-editors';
-@import './slick-plugins';
-@import './slick-pagination';
-@import './slick-footer';
-@import './slickgrid-examples';
-@import './slick-bootstrap';
-@import './ui-autocomplete';
+/*!
+ * SlickGrid custom styling for Bootstrap (https://github.com/ghiscoding/angular-slickgrid)
+ * Licensed under MIT (https://github.com/ghiscoding/angular-slickgrid/blob/master/LICENSE)
+ * @author: Ghislain B. (ghiscoding)
+ *//*!
+
+ /** SlickGrid Bootstrap Theme */
+ @import './slick-default-theme';
+ @import './slick-grid';
+ @import './slick-controls';
+ @import './slick-editors';
+ @import './slick-plugins';
+ @import './slick-pagination';
+ @import './slick-footer';
+ @import './slickgrid-examples';
+ @import './slick-bootstrap';
+ @import './ui-autocomplete';

@@ -120,7 +120,7 @@ export interface ColumnEditor {
   /**
    * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).
    *
-   * To use this as a Tooltip, Aurelia-Slickgrid doesn't (and will never) use any Aurelia 3rd party lib to display a real Tooltip,
+   * To use this as a Tooltip, Angular-Slickgrid doesn't (and will never) use any Angular 3rd party lib to display a real Tooltip,
    * for that you can use any jQuery 3rd party lib like tipsy for example (we use it in our own project and it works)
    * https://www.npmjs.com/package/jquery.tipsy
    */
