@@ -94,8 +94,6 @@
     }
   },
   "dependencies": {
-    "@ngx-translate/core": ">=11.0.1",
-    "@ngx-translate/http-loader": ">=4.0.0",
     "dompurify": "^2.0.12",
     "excel-builder-webpacker": "^1.0.6",
     "flatpickr": "4.6.3",
@@ -107,6 +105,10 @@
     "rxjs": "^6.3.3",
     "slickgrid": "^2.4.27",
     "text-encoding-utf-8": "^1.0.2"
+  },
+  "peerDependencies": {
+    "@ngx-translate/core": ">=11.0.1",
+    "@ngx-translate/http-loader": ">=4.0.0"
   },
   "devDependencies": {
     "@angular-builders/jest": "^7.4.2",
@@ -124,6 +126,8 @@
     "@angular/platform-browser-dynamic": "^7.2.15",
     "@angular/router": "^7.2.15",
     "@ng-select/ng-select": "^2.15.3",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
     "@types/dompurify": "^2.0.1",
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^24.0.25",
