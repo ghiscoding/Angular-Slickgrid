@@ -29,14 +29,19 @@
   > .close {
     float: right;
     cursor: pointer;
+    color: $cell-menu-close-btn-color;
     background-color: $cell-menu-close-btn-bg-color;
     width: $cell-menu-close-btn-width;
     height: $cell-menu-close-btn-height;
     margin: $cell-menu-close-btn-margin;
     padding: $cell-menu-close-btn-padding;
     border: $cell-menu-close-btn-border;
+    font-family: $cell-menu-close-btn-font-family;
     font-size: $cell-menu-close-btn-font-size;
 
+    &:hover {
+      color: $cell-menu-close-btn-color-hover;
+    }
     > span {
       opacity: $cell-menu-close-btn-opacity;
     }
@@ -63,6 +68,7 @@
     margin: 0;
     width: $cell-menu-item-width;
     height: $cell-menu-item-height;
+    vertical-align: middle;
 
     &:hover {
       border: $cell-menu-item-hover-border;
@@ -152,13 +158,19 @@
 
   > .close {
     float: right;
+    color: $context-menu-close-btn-color;
     background-color: $context-menu-close-btn-bg-color;
     width: $context-menu-close-btn-width;
     height: $context-menu-close-btn-height;
     margin: $context-menu-close-btn-margin;
     padding: $context-menu-close-btn-padding;
     border: $context-menu-close-btn-border;
+    font-family: $context-menu-close-btn-font-family;
+    font-size: $context-menu-close-btn-font-size;
 
+    &:hover {
+      color: $context-menu-close-btn-color-hover;
+    }
     > span {
       opacity: $context-menu-close-btn-opacity;
     }
@@ -783,9 +795,10 @@ input.flatpickr.form-control {
       cursor: pointer;
       display: inline-flex;
       color: $draggable-group-delete-color;
+      font-size: $draggable-group-delete-font-size;
       padding-left: $draggable-group-delete-padding-left;
       padding-right: $draggable-group-delete-padding-right;
-      font-size: $draggable-group-delete-font-size;
+      vertical-align: $draggable-group-delete-vertical-align;
       &:hover {
         color: $draggable-group-delete-hover-color;
       }

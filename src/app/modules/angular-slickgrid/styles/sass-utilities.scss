@@ -32,3 +32,16 @@
     </svg>\
     ##{$svg-filter-id}');
 }
+
+@mixin loadsvg($icon-class, $path-drawing, $fill, $height: 18px, $width: 18px, $display: inline-block) {
+  #{$icon-class}:before {
+    height: $height;
+    width: $width;
+    display: $display;
+    vertical-align: bottom;
+    margin-top: -1px; // small patch to remove padding all around the SVG
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{$fill}" viewBox="0 0 24 24">\
+        <path d="#{$path-drawing}"></path>\
+      </svg>');
+  }
+}

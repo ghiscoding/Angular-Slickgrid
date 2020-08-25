@@ -37,6 +37,11 @@ $icon-width-size-count: 50;
   }
 
   @for $i from 5 through $icon-width-size-count {
-    &.mdi-#{$i}px:before { width: #{$i}px; }
+    &.mdi-#{$i}px {
+      &:before {
+        height: #{$i}px;
+        width: #{$i}px;
+      }
+    }
   }
 }

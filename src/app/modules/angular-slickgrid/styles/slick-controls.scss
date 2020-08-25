@@ -26,17 +26,22 @@
   > .close {
     float: right;
     position: absolute;
+    color: $column-picker-close-btn-color;
     cursor: $column-picker-close-btn-cursor;
     width: $column-picker-close-btn-width;
     height: $column-picker-close-btn-height;
     margin: $column-picker-close-btn-margin;
     padding: $column-picker-close-btn-padding;
+    font-family: $column-picker-close-btn-font-family;
     font-size: $column-picker-close-btn-font-size;
     background-color: $column-picker-close-btn-bg-color;
     border: $column-picker-close-btn-border;
     right: $column-picker-close-btn-position-right;
     top: $column-picker-close-btn-position-top;
 
+    &:hover {
+      color: $column-picker-close-btn-color-hover;
+    }
     > span {
       opacity: $column-picker-close-btn-opacity;
     }
@@ -158,17 +163,22 @@
   > .close {
     float: right;
     position: absolute;
+    color: $grid-menu-close-btn-color;
     cursor: $grid-menu-close-btn-cursor;
     width: $grid-menu-close-btn-width;
     height: $grid-menu-close-btn-height;
     margin: $grid-menu-close-btn-margin;
     padding: $grid-menu-close-btn-padding;
+    font-family: $grid-menu-close-btn-font-family;
     font-size: $grid-menu-close-btn-font-size;
     background-color: $grid-menu-close-btn-bg-color;
     border: $grid-menu-close-btn-border;
     right: $grid-menu-close-btn-position-right;
     top: $grid-menu-close-btn-position-top;
 
+    &:hover {
+      color: $grid-menu-close-btn-color-hover;
+    }
     > span {
       opacity: $grid-menu-close-btn-opacity;
     }
