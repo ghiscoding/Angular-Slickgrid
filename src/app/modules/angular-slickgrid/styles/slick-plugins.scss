@@ -472,6 +472,15 @@
 .slick-headerrow-column,
 .slick-column-name,
 .slick-cell-checkboxsel {
+  text-align: center;
+
+  #filter-checkbox-selectall-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
   input[type=checkbox],
   #filter-checkbox-selectall-container > input[type=checkbox] {
     display:none;  /* to hide the checkbox itself */
@@ -479,8 +488,7 @@
 
   input[type=checkbox],
   #filter-checkbox-selectall-container > input[type=checkbox] + label {
-    margin-left: 4px;
-    margin-top: 3px;
+    margin: 0;
   }
 
   input[type=checkbox] + label:before,
