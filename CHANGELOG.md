@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.21.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.20.2...v2.21.0) (2020-09-02)
+
+
+### Features
+
+* **autocomplete:** add much more functionalities to the AutoComplete ([#559](https://github.com/ghiscoding/angular-slickgrid/issues/559)) ([326ec5f](https://github.com/ghiscoding/angular-slickgrid/commit/326ec5f0e49a18d45e0947989f1333173012c961))
+* **core:** add loading spinner to AutoComplete Editor/Filter ([#556](https://github.com/ghiscoding/angular-slickgrid/issues/556)) ([9a44225](https://github.com/ghiscoding/angular-slickgrid/commit/9a44225bec239f6c52060e99e498144dd67bea1d))
+* **core:** update npm packages & move ngx-translate to peer dependencies ([#567](https://github.com/ghiscoding/angular-slickgrid/issues/567)) ([023a7e0](https://github.com/ghiscoding/angular-slickgrid/commit/023a7e0588481cdf59af8f92f92a6dd375a3ddc6))
+* **styling:** add extra SASS utilities and icon colors ([#562](https://github.com/ghiscoding/angular-slickgrid/issues/562)) ([529a15c](https://github.com/ghiscoding/angular-slickgrid/commit/529a15c2818761c32d71ae7be137fd896b076567))
+* **styling:** find way to add colors to SVGs used by the lib ([#557](https://github.com/ghiscoding/angular-slickgrid/issues/557)) ([b551caa](https://github.com/ghiscoding/angular-slickgrid/commit/b551caaf055965eb756500d1e75b578e40b3f94f))
+* **tests:** add more Cypress E2E tests for Language change ([082ed22](https://github.com/ghiscoding/angular-slickgrid/commit/082ed227ca7f453a45be809e6dd3c4ea1935bf50))
+* **tests:** add more Cypress E2E tests for Pagination Lang change ([dc1a96c](https://github.com/ghiscoding/angular-slickgrid/commit/dc1a96c42b34fc996a8e05b019c03be94b2e0a97))
+
+
+### Bug Fixes
+
+* **core:** latest Flatpickr breaks Date Filters/Editors ([#558](https://github.com/ghiscoding/angular-slickgrid/issues/558)) ([d6e0bef](https://github.com/ghiscoding/angular-slickgrid/commit/d6e0befa28a95df44c87148411d4822f5f42dab7))
+* **editor:** SingleSelect Editor should show pick false value ([#560](https://github.com/ghiscoding/angular-slickgrid/issues/560)) ([0222d09](https://github.com/ghiscoding/angular-slickgrid/commit/0222d09b9f50843da9cf28a24cff06c76e019890))
+* **editors:** AutoComplete Editor might have undefined object label ([#555](https://github.com/ghiscoding/angular-slickgrid/issues/555)) ([a8b9248](https://github.com/ghiscoding/angular-slickgrid/commit/a8b9248493347eea89ec530bde54d6575d310904))
+* **editors:** fix couple of small editor bugs found ([#563](https://github.com/ghiscoding/angular-slickgrid/issues/563)) ([0894f16](https://github.com/ghiscoding/angular-slickgrid/commit/0894f16333f0cb588d57ca7df0de8d68dc9a5360))
+* **styling:** remove unwanted source map from css output files ([#564](https://github.com/ghiscoding/angular-slickgrid/issues/564)) ([e9fd212](https://github.com/ghiscoding/angular-slickgrid/commit/e9fd2124ca7ed2b5985af95f7f36b1a70115c267))
+
 ### [2.20.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.20.1...v2.20.2) (2020-08-03)
 
 
