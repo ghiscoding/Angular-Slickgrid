@@ -1,45 +1,52 @@
 @import './variables';
 
 /** Bootstrap buttons styling copied and changed slightly for Material Design */
-.btn {
-  cursor: pointer;
-  font-family:  $font-family;
-  display: inline-block;
-  margin-bottom: 0;
-  font-weight: 500;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  border: 1px solid transparent;
-  border-radius: 4px;
+.slick-editor-modal, .slick-large-editor-text {
+  .btn {
+    cursor: pointer;
+    font-family:  $font-family;
+    display: inline-block;
+    margin-bottom: 0;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+  .btn-default {
+    color: $button-primary-color;
+    background-color: #fff;
+    border-color: #ccc;
+  }
+
+  .btn-primary {
+    color: #fff;
+    background-color: $button-primary-bg-color;
+  }
+
+  .btn-xs,
+  .btn-group-xs>.btn {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+  }
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+  }
 }
 
-.btn-default {
-  color: #333;
-  background-color: #fff;
-  border-color: #ccc;
-}
-
-.btn-primary {
-  color: #fff;
-  background-color: $primary-color;
-}
-
-.btn-xs,
-.btn-group-xs>.btn {
-  padding: 1px 5px;
-  font-size: 12px;
-  line-height: 1.5;
-  border-radius: 3px;
-}
-
-.slick-pane {
+.gridPane, .grid-pane, .slick-editor-modal {
   font-family:  $font-family;
 
   .form-control {
     display: block;
     width: 100%;
-    font-size: 14px;
+    font-size: $font-size-base;
     line-height: 1.42857143;
     color: #555;
     background-color: #fff;
@@ -125,5 +132,25 @@
     outline: 0;
     border-color: lighten($primary-color, 10%);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px rgba(lighten($primary-color, 3%), .3);
+  }
+
+  .slick-pagination {
+    .slick-pagination-nav {
+      .pagination > li {
+        a, span {
+          position: relative;
+          float: left;
+          margin-left: -1px;
+        }
+      }
+      .pagination > .disabled > a,
+      .pagination > .disabled > a:focus,
+      .pagination > .disabled > a:hover,
+      .pagination > .disabled > span,
+      .pagination > .disabled > span:focus,
+      .pagination > .disabled > span:hover {
+        cursor: not-allowed;
+      }
+    }
   }
 }

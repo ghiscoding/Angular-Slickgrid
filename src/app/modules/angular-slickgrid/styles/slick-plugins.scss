@@ -946,8 +946,12 @@ input.slider-filter-input[type=range] {
   }
 }
 .search-filter {
+  height: $header-input-height;
+
   .slider-value {
     padding: 0;
+    height: 100%;
+
     .input-group-text {
       padding: $slider-filter-number-padding;
       font-size: $slider-filter-number-font-size;
