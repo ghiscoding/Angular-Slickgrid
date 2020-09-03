@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.21.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.0...v2.21.1) (2020-09-03)
+
+
+### Bug Fixes
+
+* **styling:** extra styling shouldn't override default bootstrap style ([#570](https://github.com/ghiscoding/angular-slickgrid/issues/570)) ([5cdc4d9](https://github.com/ghiscoding/angular-slickgrid/commit/5cdc4d9e2072e16b0d948e4f05cb0c4cbb75c0a0))
+
 ## [2.21.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.20.2...v2.21.0) (2020-09-02)
 
 
