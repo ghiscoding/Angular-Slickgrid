@@ -244,6 +244,12 @@ export class GridEditorComponent implements OnInit {
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
+        },
+        validator: (value, args) => {
+          if (value < 50) {
+            return { valid: false, msg: 'Please use at least 50%' };
+          }
+          return { valid: true, msg: '' };
         }
       }, {
         id: 'start',
@@ -582,7 +588,9 @@ export class GridEditorComponent implements OnInit {
   }
 
   onValidationError(e, args) {
-    alert(args.validationResults.msg);
+    if (args.validationResults) {
+      alert(args.validationResults.msg);
+    }
   }
 
   changeAutoCommit() {
