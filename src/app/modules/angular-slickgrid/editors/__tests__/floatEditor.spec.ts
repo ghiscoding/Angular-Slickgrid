@@ -405,7 +405,7 @@ describe('FloatEditor', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should not call anything when the input value is not a valid float number', () => {
+      it('should call "commitCurrentEdit" even when the input value is not a valid float number', () => {
         mockItemData = { id: 1, price: null, isActive: true };
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
@@ -415,7 +415,7 @@ describe('FloatEditor', () => {
         editor.setValue('-.');
         editor.save();
 
-        expect(spy).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should call "getEditorLock" and "save" methods when "hasAutoCommitEdit" is enabled and the event "focusout" is triggered', (done) => {

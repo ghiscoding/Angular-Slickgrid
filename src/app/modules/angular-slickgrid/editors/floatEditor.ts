@@ -160,12 +160,14 @@ export class FloatEditor implements Editor {
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid && this.isValueChanged()) {
-      if (this.hasAutoCommitEdit) {
-        this.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    const isValid = (validation && validation.valid) || false;
+
+    if (this.hasAutoCommitEdit && isValid) {
+      // do not use args.commitChanges() as this sets the focus to the next row.
+      // also the select list will stay shown when clicking off the grid
+      this.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 

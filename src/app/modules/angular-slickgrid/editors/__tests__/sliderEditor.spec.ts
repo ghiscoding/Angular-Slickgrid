@@ -389,7 +389,7 @@ describe('SliderEditor', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should not call anything when the input value is the same as the default value', () => {
+      it('should call "commitCurrentEdit" even when the input value is the same as the default value', () => {
         mockItemData = { id: 1, price: 0, isActive: true };
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
@@ -398,7 +398,7 @@ describe('SliderEditor', () => {
         editor.loadValue(mockItemData);
         editor.save();
 
-        expect(spy).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should call "getEditorLock" and "save" methods when "hasAutoCommitEdit" is enabled and the event "focusout" is triggered', (done) => {

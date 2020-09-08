@@ -245,12 +245,12 @@ export class GridEditorComponent implements OnInit {
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
         },
-        validator: (value, args) => {
-          if (value < 50) {
-            return { valid: false, msg: 'Please use at least 50%' };
-          }
-          return { valid: true, msg: '' };
-        }
+        // validator: (value, args) => {
+        //   if (value < 50) {
+        //     return { valid: false, msg: 'Please use at least 50%' };
+        //   }
+        //   return { valid: true, msg: '' };
+        // }
       }, {
         id: 'start',
         name: 'Start',
@@ -266,7 +266,7 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         type: FieldType.date,
         editor: {
-          model: Editors.date
+          model: Editors.date,
         },
       }, {
         id: 'finish',
