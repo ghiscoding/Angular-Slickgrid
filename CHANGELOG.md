@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.21.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.1...v2.21.2) (2020-09-08)
+
+
+### Bug Fixes
+
+* **editors:** all Editors should call commitChanges even when invalid, fixes [#571](https://github.com/ghiscoding/angular-slickgrid/issues/571) ([#574](https://github.com/ghiscoding/angular-slickgrid/issues/574)) ([fd052d1](https://github.com/ghiscoding/angular-slickgrid/commit/fd052d156999b9113e33ac5102b877fadfe610b6))
+* **styling:** refactor Material/Salesforce styling theme ([#573](https://github.com/ghiscoding/angular-slickgrid/issues/573)) ([e2b138d](https://github.com/ghiscoding/angular-slickgrid/commit/e2b138d314238008d5033a0774e1c036f5e89bfc))
+
 ### [2.21.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.0...v2.21.1) (2020-09-03)
 
 
