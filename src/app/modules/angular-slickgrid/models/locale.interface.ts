@@ -92,7 +92,7 @@ export interface Locale {
   /** Text "Remove Sort" shown in Header Menu */
   TEXT_REMOVE_SORT: string;
 
-  /** Text "Cancel" shown in the Long Text Editor dialog */
+  /** Text "Save" shown in the Long Text Editor dialog */
   TEXT_SAVE: string;
 
   /** Text "Select All" displayed in the Multiple Select Editor/Filter */
