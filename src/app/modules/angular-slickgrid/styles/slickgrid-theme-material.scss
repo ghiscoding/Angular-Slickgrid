@@ -8,8 +8,22 @@
  * SlickGrid Material Theme
  * (sames as `slickgrid-theme-material.lite.scss` but includes all external 3rd party lib styling that is Flatpickr & Multiple-Select)
  */
+@import './roboto-font';
+@import './variables-theme-material';
+@import './slick-default-theme';
+@import './slick-without-bootstrap-min-styling';
+@import './slick-grid';
+@import './slick-controls';
+@import './slick-editors';
+@import './slick-plugins';
+@import './slick-pagination';
+@import './slick-footer';
+@import './slickgrid-examples';
+@import './slick-bootstrap';
+@import './ui-autocomplete';
+@import './material-svg-icons';
+@import './material-svg-utilities';
 
- @import './flatpickr.min';
- @import './multiple-select';
- @import './slick-without-bootstrap-min-styling';
- @import './slickgrid-theme-material.lite';
+$link-color: $primary-color !default;
+@import './colors.scss';
+@import './extra-styling.scss';

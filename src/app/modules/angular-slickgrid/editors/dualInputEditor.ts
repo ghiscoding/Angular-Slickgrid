@@ -148,7 +148,7 @@ export class DualInputEditor implements Editor {
     const idPropName = this.gridOptions.datasetIdPropertyName || 'id';
     const itemId = this.args && this.args.item && this.args.item[idPropName] || 0;
 
-    let fieldType = editorSideParams.type || 'text';
+    let fieldType: string = editorSideParams.type || 'text';
     if (fieldType === 'float' || fieldType === 'integer') {
       fieldType = 'number';
     }
