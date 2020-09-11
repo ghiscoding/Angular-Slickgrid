@@ -40,7 +40,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 
 ### ngx-translate Compatibility
 
-Make sure to have @ngx-translate/core as DEV dependency in your Angular project by following version compatibility in case you are facing any issue with ngx-translate library while building Angular Project
+Make sure to have @ngx-translate/core as `devDependencies` in your Angular project by following version compatibility in case you are facing any issue with ngx-translate library while building Angular Project
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
