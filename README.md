@@ -38,6 +38,17 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
+### ngx-translate Compatibility
+
+Make sure to have @ngx-translate/core as `devDependencies` in your Angular project by following version compatibility in case you are facing any issue with ngx-translate library while building Angular Project
+
+| Angular Version | @ngx-translate/core |
+|-----------------|---------------------|
+|        10       |        13.x+        |
+|        9        |        12.x+        |
+|        8        |        12.x+        |
+|        7        |        11.x+        |
+
 ### Build Warnings (Angular 8+)
 Since Angular 8+, a few warnings starting to appear in the while doing a Prod build and this was asked a few separate issues. These warnings are **fine**, the reason is because I dynamically load all the SlickGrid extensions [here](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/extensions/extensionUtility.ts#L29) and depending on which flags you use in the grid options, with `require('slickgrid/plugins/slick....');` and Angular is complaining about the use of `require`.
 
