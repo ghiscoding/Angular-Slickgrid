@@ -473,12 +473,12 @@
 .slick-column-name,
 .slick-cell-checkboxsel {
   text-align: center;
-
   #filter-checkbox-selectall-container {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
+    // line-height: 0;
   }
 
   input[type=checkbox],
@@ -537,6 +537,7 @@
 .ms-choice {
   border: $multiselect-input-filter-border;
   background-color: transparent;
+  font-size: $header-font-size;
 
   div {
     &:before {
@@ -727,20 +728,24 @@ input.search-filter {
 // ----------------------------------------------
 
 .search-filter .flatpickr {
+  input.form-control {
+    cursor: pointer;
+  }
+
   .flatpickr {
     flex: 1;
     cursor: pointer;
 
     input.flatpickr.form-control,
     .flatpickr-input.form-control {
+      background-color: $flatpickr-bgcolor;
+      font-family: $filter-placeholder-font-family;
+      font-size: $font-size-base;
+      border-radius: $compound-filter-border-radius;
+      width: 100%;
+      &[readonly] {
         background-color: $flatpickr-bgcolor;
-        font-family: $filter-placeholder-font-family;
-        font-size: $font-size-base;
-        border-radius: $compound-filter-border-radius;
-        width: 100%;
-        &[readonly] {
-          background-color: $flatpickr-bgcolor;
-        }
+      }
     }
     .flatpickr.form-control[readonly] {
       background-color: $flatpickr-bgcolor;

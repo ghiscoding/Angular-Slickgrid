@@ -102,7 +102,7 @@
   "dependencies": {
     "dompurify": "^2.0.12",
     "excel-builder-webpacker": "^1.0.6",
-    "flatpickr": "4.6.3",
+    "flatpickr": "^4.6.6",
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "jquery-ui-dist": "^1.12.1",

@@ -130,6 +130,11 @@ export class DateEditor implements Editor {
       // when we're using an alternate input to display data, we'll consider this input as the one to do the focus later on
       // else just use the top one
       this._$inputWithData = (this._pickerMergedOptions && this._pickerMergedOptions.altInput) ? $(`${inputCssClasses}.flatpickr-alt-input`) : this._$input;
+
+      setTimeout(() => {
+        this.show();
+        this.focus();
+      }, 50);
     }
   }
 
@@ -158,7 +163,7 @@ export class DateEditor implements Editor {
   }
 
   show() {
-    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+    if (this.flatInstance && typeof this.flatInstance.open === 'function' && this.flatInstance._input) {
       this.flatInstance.open();
     }
   }
