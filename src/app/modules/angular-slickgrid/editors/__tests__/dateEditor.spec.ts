@@ -113,6 +113,20 @@ describe('DateEditor', () => {
       expect(editorCount).toBe(1);
     });
 
+    it('should initialize the editor and focus on the element after a small delay', (done) => {
+      const focusSpy = jest.spyOn(editor, 'focus');
+      const showSpy = jest.spyOn(editor, 'focus');
+      editor = new DateEditor(editorArguments);
+      const editorCount = divContainer.querySelectorAll('input.editor-text.editor-startDate').length;
+
+      setTimeout(() => {
+        expect(editorCount).toBe(1);
+        expect(focusSpy).toHaveBeenCalled();
+        expect(showSpy).toHaveBeenCalled();
+        done();
+      }, 51);
+    });
+
     it('should have a placeholder when defined in its column definition', () => {
       const testValue = 'test placeholder';
       mockColumn.internalColumnEditor.placeholder = testValue;
