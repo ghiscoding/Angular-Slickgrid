@@ -205,7 +205,7 @@ describe('DateEditor', () => {
         editor = new DateEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.focus();
-        const editorInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr');
+        const editorInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr input');
         editorInputElm.value = '2024-04-02T16:02:02.239Z';
         editorInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
 
@@ -396,7 +396,7 @@ describe('DateEditor', () => {
         editor = new DateEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.flatInstance.toggle();
-        const editorInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr');
+        const editorInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr input');
 
         expect(editor.pickerOptions).toBeTruthy();
         expect(editorInputElm.value).toBe('');

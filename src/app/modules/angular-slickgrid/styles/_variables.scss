@@ -485,10 +485,20 @@
  $checkbox-selector-opacity-hover:               0.35 !default;
 
  /* Editors */
+ $editor-input-height:                           24px !default;
  $editor-focus-border-color:                     lighten($primary-color, 10%) !default;
  $editor-focus-box-shadow:                       inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px rgba(lighten($primary-color, 3%), .3) !default;
+ $date-editor-input-padding:                     6px 2px !default;
  $date-editor-focus-border-color:                $editor-focus-border-color !default;
  $date-editor-focus-box-shadow:                  $editor-focus-box-shadow !default;
+ $date-editor-height:                            $editor-input-height !default;
+ $date-editor-clear-button-icon:                 "\f00d" !default;
+ $date-editor-clear-button-icon-margin-top:      -14px !default;
+ $date-editor-clear-button-icon-height:          initial !default;
+ $date-editor-clear-button-icon-padding:         6px !default;
+ $date-editor-clear-button-icon-size:            inherit !default;
+ $date-editor-clear-button-icon-width:           initial !default;
+ $date-editor-clear-button-icon-vertical-align:  middle !default;
  $large-editor-background-color:                 #ffffff !default;
  $large-editor-border:                           2px solid #a0a0a0 !default;
  $large-editor-text-padding:                     5px !default;
@@ -516,7 +526,7 @@
  $text-editor-focus-border-color:                $editor-focus-border-color !default;
  $text-editor-focus-box-shadow:                  $editor-focus-box-shadow !default;
  $text-editor-readonly-color:                    #f0f0f0 !default;
- $slider-editor-height:                          24px !default;
+ $slider-editor-height:                          $editor-input-height !default;
  $slider-editor-runnable-track-padding:          0 6px !default;
  $slider-editor-number-padding:                  4px 6px !default;
  $slider-editor-focus-border-color:              $editor-focus-border-color !default;

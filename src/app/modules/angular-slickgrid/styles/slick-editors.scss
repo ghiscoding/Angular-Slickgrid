@@ -42,14 +42,46 @@
     }
   }
 
-  .flatpickr-alt-input.editor-text {
+  .flatpickr.input-group {
+    .input-group-btn {
+      .btn {
+        border-left: 0 !important;
+        background-color: #eeeeee;
+        border: 1px solid #cccccc;
+        padding: $date-editor-clear-button-icon-padding;
+        border-top-right-radius: $text-editor-border-radius;
+        border-bottom-right-radius: $text-editor-border-radius;
+        cursor: pointer;
+        height: $date-editor-height;
+        &.icon-close:before {
+          font-family: $icon-font-family;
+          font-size: $date-editor-clear-button-icon-size;
+          content: $date-editor-clear-button-icon;
+          vertical-align: $date-editor-clear-button-icon-vertical-align;
+          display: inline-block;
+          height: $date-editor-clear-button-icon-height;
+          width: $date-editor-clear-button-icon-width;
+          margin-top: $date-editor-clear-button-icon-margin-top;
+        }
+      }
+    }
+  }
+  .flatpickr-alt-input {
     cursor: pointer;
-    background-color: $flatpickr-bgcolor;
+    height: $date-editor-height;
+    border-top-left-radius: $text-editor-border-radius !important;
+    border-bottom-left-radius: $text-editor-border-radius !important;
+    padding: $date-editor-input-padding;
 
-    &:focus {
-      outline: 0;
-      border-color: $date-editor-focus-border-color;
-      box-shadow: $date-editor-focus-box-shadow;
+    &.editor-text {
+      cursor: pointer;
+      background-color: $flatpickr-bgcolor;
+
+      &:focus {
+        outline: 0;
+        border-color: $date-editor-focus-border-color;
+        box-shadow: $date-editor-focus-box-shadow;
+      }
     }
   }
 }
