@@ -525,6 +525,11 @@
     border-radius: $checkbox-selector-icon-border-radius;
   }
 }
+.slick-group {
+  .slick-cell-checkboxsel {
+    text-align: left;
+  }
+}
 
 // ----------------------------------------------
 // Multi-Select Filter
