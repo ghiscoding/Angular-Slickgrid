@@ -20,7 +20,7 @@ import {
   templateUrl: './grid-grouping.component.html'
 })
 export class GridGroupingComponent implements OnInit {
-  title = 'Example 14: Grouping';
+  title = 'Example 14: Grouping & Aggregators';
   subTitle = `
   (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a>)
   <ul>
