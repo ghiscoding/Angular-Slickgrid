@@ -40,7 +40,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 
 ### ngx-translate Compatibility
 
-In case you are facing any issue with the `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, even if you just use 1 Locale, because it is a `peerDependency` of Angular-Slickgrid (we use `@Optional TranslateService` in the lib and for that to work we still need it to be installed in your `node_modules` folder, it should however be removed from your Prod build after the tree shaking process). See their version compatibility table below
+If you are facing any issue with `ngx-translate` library while building your Angular Project. You need to make sure `@ngx-translate/core` is part of your dependencies, even if you just use 1 Locale, because it is a `peerDependency` of Angular-Slickgrid (we use `@Optional() TranslateService` in the lib and for that to work we still need it to be installed in your `node_modules` folder, however it should be removed from your Prod build after the tree shaking process if you aren't using it). See their version compatibility table below
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
