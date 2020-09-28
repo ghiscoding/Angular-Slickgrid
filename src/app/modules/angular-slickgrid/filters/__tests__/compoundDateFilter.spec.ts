@@ -10,6 +10,10 @@ const containerId = 'demo-container';
 // define a <div> container to simulate the grid container
 const template = `<div id="${containerId}"></div>`;
 
+function removeExtraSpaces(textS: string) {
+  return `${textS}`.replace(/\s+/g, ' ');
+}
+
 const gridOptionMock = {
   enableFiltering: true,
   enableFilterTrimWhiteSpace: true,
@@ -54,12 +58,24 @@ describe('CompoundDateFilter', () => {
       EQUALS: 'Equals',
       ENDS_WITH: 'Ends With',
       STARTS_WITH: 'Starts With',
+      EQUAL_TO: 'Equal to',
+      LESS_THAN: 'Less than',
+      LESS_THAN_OR_EQUAL_TO: 'Less than or equal to',
+      GREATER_THAN: 'Greater than',
+      GREATER_THAN_OR_EQUAL_TO: 'Greater than or equal to',
+      NOT_EQUAL_TO: 'Not equal to',
     });
     translate.setTranslation('fr', {
       CONTAINS: 'Contient',
       EQUALS: 'Égale',
       ENDS_WITH: 'Se termine par',
       STARTS_WITH: 'Commence par',
+      EQUAL_TO: 'Égal à',
+      LESS_THAN: 'Plus petit que',
+      LESS_THAN_OR_EQUAL_TO: 'Plus petit ou égal à',
+      GREATER_THAN: 'Plus grand que',
+      GREATER_THAN_OR_EQUAL_TO: 'Plus grand ou égal à',
+      NOT_EQUAL_TO: 'Non égal à',
     });
     translate.setDefaultLang('en');
     translate.use('en');
@@ -333,5 +349,44 @@ describe('CompoundDateFilter', () => {
     expect(filter.currentDate).toBe('2000-01-01T05:00:00.000Z');
     expect(filterInputElm.value).toBe('2000-01-01T05:00:00.000Z');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['2000-01-01T05:00:00.000Z'], shouldTriggerQuery: true });
+  });
+
+  it('should have default English text with operator dropdown options related to dates', () => {
+    mockColumn.outputType = null;
+    filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
+
+    filter.init(filterArguments);
+    const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.input-group-prepend.operator select');
+
+    expect(filterOperatorElm[0][0].title).toBe('');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Less than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Greater than');
+    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Greater than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Not equal to');
+  });
+
+  describe('with French I18N translations', () => {
+    beforeEach(() => {
+      gridOptionMock.enableTranslate = true;
+      translate.use('fr');
+    });
+
+    it('should have French text translated with operator dropdown options related to dates', () => {
+      mockColumn.outputType = null;
+      filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
+
+      filter.init(filterArguments);
+      const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.input-group-prepend.operator select');
+
+      expect(filterOperatorElm[0][0].title).toBe('');
+      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Plus petit que');
+      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Plus petit ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Plus grand que');
+      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Plus grand ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Non égal à');
+    });
   });
 });

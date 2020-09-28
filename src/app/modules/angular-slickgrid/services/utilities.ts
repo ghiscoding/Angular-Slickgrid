@@ -348,6 +348,23 @@ export function findOrDefault<T = any>(array: any[], logic: (item: any) => boole
 }
 
 /**
+ * Encode string to html special char and add html space padding defined
+ * @param {string} inputStr - input string
+ * @param {number} paddingLength - padding to add
+ */
+export function htmlEncodedStringWithPadding(inputStr: string, paddingLength: number): string {
+  const inputStrLn = inputStr.length;
+  let outputStr = htmlEncode(inputStr);
+
+  if (inputStrLn < paddingLength) {
+    for (let i = inputStrLn; i < paddingLength; i++) {
+      outputStr += `&nbsp;`;
+    }
+  }
+  return outputStr;
+}
+
+/**
   * Take a number (or a string) and display it as a formatted decimal string with defined minimum and maximum decimals
   * @param input
   * @param minDecimal

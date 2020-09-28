@@ -533,7 +533,10 @@
  $slider-editor-focus-box-shadow:                $editor-focus-box-shadow !default;
 
  /* Compound Filters */
- $compound-filter-bgcolor:                       #e4eacf !default;
+ $compound-filter-operator-select-font-family:   Consolas, "Lucida Console" !default; // use a monospace font so the operator descriptions are all aligned
+ $compound-filter-operator-select-font-size:     14px !important !default;
+ $compound-filter-operator-select-border:        1px solid #{lighten($primary-color, 15%)} !default;
+ $compound-filter-bgcolor:                       #ffffff !default;
  $compound-filter-operator-border-radius:        4px 0 0 4px !default;
  $compound-filter-border-radius:                 0 4px 4px 0 !default;
  $compound-filter-text-weight:                   bold !default;

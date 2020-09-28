@@ -700,28 +700,32 @@
   min-width: 25px;
   border: none;
 
-  select.form-control {
-    cursor: pointer;
-    -moz-appearance: none;
-    -webkit-appearance:none;
-  }
-  select.form-control::-ms-expand {
-    display: none;
-  }
-  select.form-control {
-    .empty {
-      color: #c0c0c0;
-    }
-  }
-
   .form-control {
     border-radius: $compound-filter-operator-border-radius;
-    border-right: none;
+    // border-right: none;
     padding: $compound-filter-text-padding !important;
     font-size: $compound-filter-text-font-size;
     color: $compound-filter-text-color;
     font-weight: $compound-filter-text-weight;
     background-color: $compound-filter-bgcolor;
+  }
+
+  select {
+    font-family: $compound-filter-operator-select-font-family;
+    font-size: $compound-filter-operator-select-font-size;
+    border: $compound-filter-operator-select-border;
+
+    &.form-control {
+      cursor: pointer;
+      -moz-appearance: none;
+      -webkit-appearance:none;
+      &:-ms-expand {
+        display: none;
+      }
+      .empty {
+        color: #c0c0c0;
+      }
+    }
   }
 }
 .search-filter .operator-char3.input-group-addon {
@@ -769,6 +773,7 @@ input.search-filter {
         background-color: $flatpickr-bgcolor;
       }
     }
+    .form-control[readonly],
     .flatpickr.form-control[readonly] {
       background-color: $flatpickr-bgcolor;
     }
