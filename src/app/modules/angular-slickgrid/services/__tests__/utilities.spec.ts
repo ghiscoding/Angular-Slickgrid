@@ -4,6 +4,7 @@ import { FieldType, GridOption, OperatorType } from '../../models';
 import {
   addToArrayWhenNotExists,
   addWhiteSpaces,
+  arrayRemoveItemByIndex,
   castToPromise,
   charArraysEqual,
   convertHierarchicalViewToParentChildArray,
@@ -98,6 +99,16 @@ describe('Service/Utilies', () => {
       DOMParser = undefined;
       const result = htmlDecode(`&lt;div class=&#39;color: blue&#39;&gt;Something&lt;/div&gt;`);
       expect(result).toBe(`<div class='color: blue'>Something</div>`);
+    });
+  });
+
+  describe('arrayRemoveItemByIndex method', () => {
+    it('should remove an item from the array', () => {
+      const input = [{ field: 'field1', name: 'Field 1' }, { field: 'field2', name: 'Field 2' }, { field: 'field3', name: 'Field 3' }];
+      const expected = [{ field: 'field1', name: 'Field 1' }, { field: 'field3', name: 'Field 3' }];
+
+      const output = arrayRemoveItemByIndex(input, 1);
+      expect(output).toEqual(expected);
     });
   });
 

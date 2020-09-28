@@ -42,6 +42,15 @@ export function addWhiteSpaces(nbSpaces: number): string {
 }
 
 /**
+ * Remove a column from the grid by it's index in the grid
+ * @param array input
+ * @param index
+ */
+export function arrayRemoveItemByIndex<T>(array: T[], index: number): T[] {
+  return array.filter((_el: T, i: number) => index !== i);
+}
+
+/**
  * Convert a flat array (with "parentId" references) into a hierarchical dataset structure (where children are array(s) inside their parent objects)
  * @param flatArray input array (flat dataset)
  * @param options you can provide the following options:: "parentPropName" (defaults to "parent"), "childrenPropName" (defaults to "children") and "identifierPropName" (defaults to "id")
@@ -252,7 +261,7 @@ export function htmlEncode(inputValue: string): string {
  * @param string text: output text
  */
 export function htmlEntityDecode(input: string): string {
-  return input.replace(/&#(\d+);/g, function (match, dec) {
+  return input.replace(/&#(\d+);/g, function (_match, dec) {
     return String.fromCharCode(dec);
   });
 }

@@ -80,30 +80,31 @@ export class SortService {
     this._grid = grid;
 
     this.processTreeDataInitialSort();
+    this._eventHandler.subscribe(grid.onSort, this.handleLocalOnSort.bind(this));
+  }
 
-    this._eventHandler.subscribe(grid.onSort, (e: any, args: any) => {
-      if (args && (args.sortCols || args.sortCol)) {
-        // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
-        // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
-        const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
+  handleLocalOnSort(_e: any, args: any) {
+    if (args && (args.sortCols || args.sortCol)) {
+      // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
+      // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
+      const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
 
-        // keep current sorters
-        this._currentLocalSorters = []; // reset current local sorters
-        if (Array.isArray(sortColumns)) {
-          sortColumns.forEach((sortColumn: { sortCol: Column; sortAsc: boolean; }) => {
-            if (sortColumn.sortCol) {
-              this._currentLocalSorters.push({
-                columnId: sortColumn.sortCol.id,
-                direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
-              });
-            }
-          });
-        }
-
-        this.onLocalSortChanged(grid, sortColumns);
-        this.emitSortChanged(EmitterType.local);
+      // keep current sorters
+      this._currentLocalSorters = []; // reset current local sorters
+      if (Array.isArray(sortColumns)) {
+        sortColumns.forEach((sortColumn: { sortCol: Column; sortAsc: boolean; }) => {
+          if (sortColumn.sortCol) {
+            this._currentLocalSorters.push({
+              columnId: sortColumn.sortCol.id,
+              direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
+          }
+        });
       }
-    });
+
+      this.onLocalSortChanged(this._grid, sortColumns);
+      this.emitSortChanged(EmitterType.local);
+    }
   }
 
   clearSortByColumnId(event: Event | undefined, columnId: string | number) {
@@ -187,6 +188,44 @@ export class SortService {
     if (isObservable(this.httpCancelRequests$)) {
       this.httpCancelRequests$.next(); // this cancels any pending http requests
     }
+  }
+
+  /**
+   * Toggle the Sorting Functionality
+   * @param {boolean} isSortingDisabled - optionally force a disable/enable of the Sort Functionality? Defaults to True
+   * @param {boolean} clearSortingWhenDisabled - when disabling the sorting, do we also want to clear the sorting as well? Defaults to True
+   */
+  disableSortFunctionality(isSortingDisabled = true, clearSortingWhenDisabled = true) {
+    const prevSorting = this._gridOptions.enableSorting;
+    const newSorting = !prevSorting;
+
+    this._gridOptions.enableSorting = newSorting;
+    let updatedColumnDefinitions;
+    if (isSortingDisabled) {
+      if (clearSortingWhenDisabled) {
+        this.clearSorting();
+      }
+      this._eventHandler.unsubscribeAll();
+      updatedColumnDefinitions = this.disableSortingOnAllColumns(true);
+    } else {
+      updatedColumnDefinitions = this.disableSortingOnAllColumns(false);
+      const onSortHandler = this._grid.onSort;
+      this._eventHandler.subscribe(onSortHandler, (e: Event, args: any) => this.handleLocalOnSort(e, args));
+    }
+    this._grid.setOptions({ enableSorting: this._gridOptions.enableSorting }, false, true);
+
+    // reset columns so that it recreate the column headers and remove/add the sort icon hints
+    // basically without this, the sort icon hints were still showing up even after disabling the Sorting
+    this._grid.setColumns(updatedColumnDefinitions);
+  }
+
+  /**
+   * Toggle the Sorting functionality
+   * @param {boolean} clearSortingWhenDisabled - when disabling the sorting, do we also want to clear the sorting as well? Defaults to True
+   */
+  toggleSortFunctionality(clearSortingOnDisable = true) {
+    const previousSorting = this._gridOptions.enableSorting;
+    this.disableSortFunctionality(previousSorting, clearSortingOnDisable);
   }
 
   /**
@@ -479,5 +518,39 @@ export class SortService {
         this.emitSortChanged(emitterType);
       }
     }
+  }
+
+  // --
+  // private functions
+  // -------------------
+
+  /**
+   * Loop through all column definitions and do the following 2 things
+   * 1. disable/enable the "sortable" property of each column
+   * 2. loop through each Header Menu commands and change the command "hidden" property to enable/disable
+   * Also note that we aren't deleting any properties, we just toggle their flags so that we can reloop through at later point in time.
+   * (if we previously deleted these properties we wouldn't be able to change them back since these properties wouldn't exist anymore, hence why we just hide the commands)
+   * @param {boolean} isDisabling - are we disabling the sort functionality? Defaults to true
+   */
+  private disableSortingOnAllColumns(isDisabling = true): Column[] {
+    const columnDefinitions = this._grid.getColumns();
+
+    columnDefinitions.forEach((col) => {
+      if (typeof col.sortable !== undefined) {
+        col.sortable = !isDisabling;
+      }
+      if (col && col.header && col.header.menu) {
+        col.header.menu.items.forEach(menuItem => {
+          if (menuItem && typeof menuItem !== 'string') {
+            const menuCommand = menuItem.command;
+            if (menuCommand === 'sort-asc' || menuCommand === 'sort-desc' || menuCommand === 'clear-sort') {
+              menuItem.hidden = isDisabling;
+            }
+          }
+        });
+      }
+    });
+
+    return columnDefinitions;
   }
 }

@@ -15,6 +15,7 @@ import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
 import { SharedService } from './shared.service';
 import { SortService } from './sort.service';
+import { arrayRemoveItemByIndex } from './utilities';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -31,6 +32,7 @@ export class GridService {
   onItemDeleted = new Subject<any | any[]>();
   onItemUpdated = new Subject<any | any[]>();
   onItemUpserted = new Subject<any | any[]>();
+  onColumnsChanged = new Subject<Column[]>();
 
   constructor(
     private extensionService: ExtensionService,
@@ -129,6 +131,36 @@ export class GridService {
 
       return meta;
     };
+  }
+
+  /**
+   * Hide a Column from the Grid (the column will just become hidden and will still show up in columnPicker/gridMenu)
+   * @param column
+   */
+  hideColumn(column: Column) {
+    if (this._grid && this._grid.getColumns && this._grid.setColumns && this._grid.getColumnIndex) {
+      const columnIndex = this._grid.getColumnIndex(column.id);
+      if (columnIndex >= 0) {
+        this.hideColumnByIndex(columnIndex);
+      }
+    }
+  }
+
+  /**
+   * Hide a Column from the Grid by its column definition index (the column will just become hidden and will still show up in columnPicker/gridMenu)
+   * @param columnIndex - column definition index
+   * @param triggerEvent - do we want to trigger an event (onHeaderMenuColumnsChanged) when column becomes hidden? Defaults to true.
+   */
+  hideColumnByIndex(columnIndex: number, triggerEvent = true) {
+    if (this._grid && this._grid.getColumns && this._grid.setColumns) {
+      const currentColumns = this._grid.getColumns();
+      const visibleColumns = arrayRemoveItemByIndex<Column>(currentColumns, columnIndex);
+      this.sharedService.visibleColumns = visibleColumns;
+      this._grid.setColumns(visibleColumns);
+      if (triggerEvent) {
+        this.onColumnsChanged.next(visibleColumns);
+      }
+    }
   }
 
   /**

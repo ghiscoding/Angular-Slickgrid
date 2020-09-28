@@ -13,15 +13,6 @@ export class ExtensionUtility {
   constructor(private sharedService: SharedService, @Optional() private translate: TranslateService) { }
 
   /**
-   * Remove a column from the grid by it's index in the grid
-   * @param array input
-   * @param index
-   */
-  arrayRemoveItemByIndex<T>(array: T[], index: number): T[] {
-    return array.filter((el: T, i: number) => index !== i);
-  }
-
-  /**
    * Load SlickGrid Extension (Control/Plugin) dynamically (on demand)
    * This will basically only load the extension when user enables the feature
    * @param extensionName

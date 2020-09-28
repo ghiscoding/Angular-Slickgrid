@@ -153,7 +153,7 @@ export class FilterService {
     this._filtersMetadata = [];
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (_e: KeyboardEvent, args: any) => {
       // firstColumnIdRendered is null at first, so if it changes to being filled and equal, then we would know that it was already rendered
       // this is to avoid rendering the filter twice (only the Select Filter for now), rendering it again also clears the filter which has unwanted side effect
       if (args.column.id === this._firstColumnIdRendered) {
@@ -180,7 +180,7 @@ export class FilterService {
     this._dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid, dataView: this._dataView });
     this._dataView.setFilter(this.customLocalFilter.bind(this));
 
-    this._eventHandler.subscribe(this._onSearchChange, (e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(this._onSearchChange, (_e: KeyboardEvent, args: any) => {
       const isGridWithTreeData = this._gridOptions && this._gridOptions.enableTreeData || false;
 
       // When using Tree Data, we need to do it in 2 steps
@@ -201,7 +201,7 @@ export class FilterService {
     });
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (_e: KeyboardEvent, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
   }
@@ -635,6 +635,50 @@ export class FilterService {
     if (this._dataView && this._dataView.getItems && this._gridOptions && this._gridOptions.enableTreeData) {
       this._tmpPreFilteredData = this.preFilterTreeData(this._dataView.getItems(), this._columnFilters);
       this._dataView.refresh(); // and finally this refresh() is what triggers a DataView filtering check
+    }
+  }
+
+  /**
+   * Toggle the Filter Functionality
+   * @param {boolean} isFilterDisabled - optionally force a disable/enable of the Sort Functionality? Defaults to True
+   * @param {boolean} clearFiltersWhenDisabled - when disabling the Filter, do we also want to clear all the filters as well? Defaults to True
+   */
+  disableFilterFunctionality(isFilterDisabled = true, clearFiltersWhenDisabled = true) {
+    const prevShowFilterFlag = this._gridOptions.enableFiltering;
+    const newShowFilterFlag = !prevShowFilterFlag;
+
+    if (newShowFilterFlag !== isFilterDisabled) {
+      if (clearFiltersWhenDisabled && isFilterDisabled) {
+        this.clearFilters();
+      }
+      this._grid.setOptions({ enableFiltering: newShowFilterFlag }, false, true);
+      this._grid.setHeaderRowVisibility(newShowFilterFlag);
+
+      // when displaying header row, we'll call "setColumns" which in terms will recreate the header row filters
+      this._grid.setColumns(this.sharedService.columnDefinitions);
+    }
+  }
+
+  /**
+   * Toggle the Filter Functionality (show/hide the header row filter bar as well)
+   * @param {boolean} clearFiltersWhenDisabled - when disabling the filters, do we want to clear the filters before hiding the filters? Defaults to True
+   */
+  toggleFilterFunctionality(clearFiltersWhenDisabled = true) {
+    const prevShowFilterFlag = this._gridOptions.enableFiltering;
+    this.disableFilterFunctionality(prevShowFilterFlag, clearFiltersWhenDisabled);
+  }
+
+  /**
+   * Toggle the Header Row filter bar (this does not disable the Filtering itself, you can use "toggleFilterFunctionality()" instead, however this will reset any column positions)
+   */
+  toggleHeaderFilterRow() {
+    let showHeaderRow = this._gridOptions && this._gridOptions.showHeaderRow || false;
+    showHeaderRow = !showHeaderRow; // inverse show header flag
+    this._grid.setHeaderRowVisibility(showHeaderRow);
+
+    // when displaying header row, we'll call "setColumns" which in terms will recreate the header row filters
+    if (showHeaderRow === true) {
+      this._grid.setColumns(this.sharedService.columnDefinitions);
     }
   }
 

@@ -17,9 +17,6 @@ export interface HeaderMenu {
   /** A command identifier to be passed to the onCommand event handlers. */
   command?: string;
 
-  /** Whether the item is disabled. */
-  disabled?: boolean;
-
   /** Defaults to false, which will hide the "Remove Filter" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
   hideClearFilterCommand?: boolean;
 
