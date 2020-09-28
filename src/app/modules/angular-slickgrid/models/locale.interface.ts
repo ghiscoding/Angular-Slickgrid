@@ -38,6 +38,9 @@ export interface Locale {
   /** Text "Equals" shown in Compound Editors/Filters as an Operator */
   TEXT_EQUALS: string;
 
+  /** Text "Equal to" shown in Compound Editors/Filters as an Operator */
+  TEXT_EQUAL_TO: string;
+
   /** Text "Expand all Grouping" displayed in the Context Menu when Grouping is enabled */
   TEXT_EXPAND_ALL_GROUPS: string;
 
@@ -59,6 +62,12 @@ export interface Locale {
   /** Text "Freeze Columns" shown in Header Menu (when enabled) */
   TEXT_FREEZE_COLUMNS?: string;
 
+  /** Text "Greater than" shown in Compound Editors/Filters as an Operator */
+  TEXT_GREATER_THAN: string;
+
+  /** Text "Greater than or equal to" shown in Compound Editors/Filters as an Operator */
+  TEXT_GREATER_THAN_OR_EQUAL_TO: string;
+
   /** Text "Group by" shown in Export when using Grouping (when enabled) */
   TEXT_GROUP_BY: string;
 
@@ -73,6 +82,15 @@ export interface Locale {
 
   /** Text "Last Update" displayed in the Footer (when enabled) */
   TEXT_LAST_UPDATE?: string;
+
+  /** Text "Less than" shown in Compound Editors/Filters as an Operator */
+  TEXT_LESS_THAN: string;
+
+  /** Text "Less than or equal to" shown in Compound Editors/Filters as an Operator */
+  TEXT_LESS_THAN_OR_EQUAL_TO: string;
+
+  /** Text "Not equal to" shown in Compound Editors/Filters as an Operator */
+  TEXT_NOT_EQUAL_TO: string;
 
   /** Text "of" displayed in the Pagination (when enabled) */
   TEXT_OF?: string;

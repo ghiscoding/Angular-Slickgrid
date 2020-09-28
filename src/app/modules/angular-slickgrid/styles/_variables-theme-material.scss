@@ -104,6 +104,7 @@ $autocomplete-loading-icon-width:               22px !default;
 $autocomplete-loading-icon-margin-left:         -26px !default;
 $autocomplete-loading-icon-line-height:         0px !default;
 $autocomplete-loading-icon-vertical-align:      sub !default;
+$compound-filter-operator-select-border:        1px solid #{lighten($primary-color, 10%)} !default;
 $multiselect-icon-arrow-font-size:              16px !default;
 $multiselect-icon-color:                        $primary-color !default;
 $multiselect-icon-height:                       16px !default;

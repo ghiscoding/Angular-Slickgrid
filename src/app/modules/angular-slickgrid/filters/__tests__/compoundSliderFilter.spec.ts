@@ -1,4 +1,7 @@
-import { GridOption, FilterArguments, Column, OperatorType } from '../../models';
+import { TestBed } from '@angular/core/testing';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { Column, FieldType, FilterArguments, GridOption, OperatorType } from '../../models';
 import { Filters } from '..';
 import { CompoundSliderFilter } from '../compoundSliderFilter';
 
@@ -6,6 +9,10 @@ const containerId = 'demo-container';
 
 // define a <div> container to simulate the grid container
 const template = `<div id="${containerId}"></div>`;
+
+function removeExtraSpaces(textS: string) {
+  return `${textS}`.replace(/\s+/g, ' ');
+}
 
 const gridOptionMock = {
   enableFiltering: true,
@@ -25,6 +32,7 @@ describe('CompoundSliderFilter', () => {
   let filterArguments: FilterArguments;
   let spyGetHeaderRow;
   let mockColumn: Column;
+  let translate: TranslateService;
 
   beforeEach(() => {
     divContainer = document.createElement('div');
@@ -39,7 +47,40 @@ describe('CompoundSliderFilter', () => {
       callback: jest.fn()
     };
 
-    filter = new CompoundSliderFilter();
+    TestBed.configureTestingModule({
+      providers: [],
+      imports: [TranslateModule.forRoot()]
+    });
+    translate = TestBed.get(TranslateService);
+
+    translate.setTranslation('en', {
+      CONTAINS: 'Contains',
+      EQUALS: 'Equals',
+      ENDS_WITH: 'Ends With',
+      STARTS_WITH: 'Starts With',
+      EQUAL_TO: 'Equal to',
+      LESS_THAN: 'Less than',
+      LESS_THAN_OR_EQUAL_TO: 'Less than or equal to',
+      GREATER_THAN: 'Greater than',
+      GREATER_THAN_OR_EQUAL_TO: 'Greater than or equal to',
+      NOT_EQUAL_TO: 'Not equal to',
+    });
+    translate.setTranslation('fr', {
+      CONTAINS: 'Contient',
+      EQUALS: 'Égale',
+      ENDS_WITH: 'Se termine par',
+      STARTS_WITH: 'Commence par',
+      EQUAL_TO: 'Égal à',
+      LESS_THAN: 'Plus petit que',
+      LESS_THAN_OR_EQUAL_TO: 'Plus petit ou égal à',
+      GREATER_THAN: 'Plus grand que',
+      GREATER_THAN_OR_EQUAL_TO: 'Plus grand ou égal à',
+      NOT_EQUAL_TO: 'Non égal à',
+    });
+    translate.setDefaultLang('en');
+    translate.use('en');
+
+    filter = new CompoundSliderFilter(translate);
   });
 
   afterEach(() => {
@@ -89,10 +130,10 @@ describe('CompoundSliderFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(9);
-    const filterSelectElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
+    const filterOperatorElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
 
-    filterSelectElm.value = '<=';
-    filterSelectElm.dispatchEvent(new Event('change'));
+    filterOperatorElm.value = '<=';
+    filterOperatorElm.dispatchEvent(new Event('change'));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['9'], shouldTriggerQuery: true });
   });
@@ -103,8 +144,8 @@ describe('CompoundSliderFilter', () => {
     filter.init(filterArguments);
     filter.setValues(['9'], OperatorType.greaterThanOrEqual);
 
-    const filterSelectElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
-    filterSelectElm.dispatchEvent(new Event('change'));
+    const filterOperatorElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
+    filterOperatorElm.dispatchEvent(new Event('change'));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '>=', searchTerms: ['9'], shouldTriggerQuery: true });
   });
@@ -220,15 +261,38 @@ describe('CompoundSliderFilter', () => {
 
     filter.init(filterArguments);
     const filterInputElm = divContainer.querySelector<HTMLInputElement>('.input-group.search-filter.filter-duration input');
-    const filterSelectElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
+    const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
 
     expect(filterInputElm.value).toBe('9');
-    expect(filterSelectElm[0][1].title).toBe('=');
-    expect(filterSelectElm[0][1].textContent).toBe('=');
-    expect(filterSelectElm[0][2].textContent).toBe('<');
-    expect(filterSelectElm[0][3].textContent).toBe('<=');
-    expect(filterSelectElm[0][4].textContent).toBe('>');
-    expect(filterSelectElm[0][5].textContent).toBe('>=');
-    expect(filterSelectElm[0][6].textContent).toBe('<>');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Less than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Greater than');
+    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Greater than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Not equal to');
+  });
+
+  describe('with French I18N translations', () => {
+    beforeEach(() => {
+      gridOptionMock.enableTranslate = true;
+      translate.use('fr');
+    });
+
+    it('should have French text translated with operator dropdown options related to numbers when column definition type is FieldType.number', () => {
+      mockColumn.type = FieldType.number;
+      filterArguments.searchTerms = [9];
+
+      filter.init(filterArguments);
+      const filterInputElm = divContainer.querySelector<HTMLInputElement>('.input-group.search-filter.filter-duration input');
+      const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
+
+      expect(filterInputElm.value).toBe('9');
+      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Plus petit que');
+      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Plus petit ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Plus grand que');
+      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Plus grand ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Non égal à');
+    });
   });
 });

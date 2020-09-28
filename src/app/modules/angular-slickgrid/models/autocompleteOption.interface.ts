@@ -35,7 +35,10 @@ export interface AutocompleteOption {
   /** defaults to false, force the user to start typing a value in the search input */
   forceUserInput?: boolean;
 
-  /** defaults to false, will open the search list (should really only be used with a defined collection list) */
+  /**
+   * Defaults to false, will open the search list (should really only be used with a defined collection list).
+   * Also note that if you wish to display even when the autoComplete is an empty string, you will need to adjust the "minLength" to 0.
+   */
   openSearchListOnFocus?: boolean;
 
   /**

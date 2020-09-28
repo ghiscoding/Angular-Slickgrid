@@ -7,7 +7,24 @@
 .autocomplete-container {
   display: flex;
 }
+.ui-widget-content {
+  background: none;
+}
 .ui-autocomplete {
+  .ui-menu-item {
+    color: $autocomplete-text-color;
+    .ui-state-active {
+      color: $autocomplete-text-color;
+      &:hover {
+        margin: 0;
+        border: 0;
+        color: $autocomplete-text-color;
+      }
+    }
+  }
+}
+.ui-autocomplete {
+  background: none;
   position: absolute;
   z-index: $autocomplete-z-index;
   padding: 0;
@@ -33,6 +50,7 @@
       font-weight: normal;
       line-height: 1.42857143;
       white-space: nowrap;
+      list-style-image: none;
     }
   }
 }

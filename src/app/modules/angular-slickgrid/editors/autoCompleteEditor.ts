@@ -405,7 +405,15 @@ export class AutoCompleteEditor implements Editor {
       }
     }
 
-    this._$editorElm.on('focus', () => this._$editorElm.select());
+    this._$editorElm.on('focus', () => {
+      this._$editorElm.select();
+
+      // we could optionally trigger a search to open the AutoComplete search list
+      if (this.editorOptions.openSearchListOnFocus) {
+        this._$editorElm.autocomplete('search', this._$editorElm.val());
+      }
+    });
+
     setTimeout(() => this.focus(), 50);
   }
 }

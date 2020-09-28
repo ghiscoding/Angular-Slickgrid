@@ -563,7 +563,7 @@
   }
   .placeholder {
     font-family: $multiselect-placeholder-font-family;
-    font-size: ($multiselect-input-filter-font-size + 2px);
+    font-size: $header-font-size;
   }
 }
 .ms-filter.search-filter {
@@ -688,28 +688,32 @@
   min-width: 25px;
   border: none;
 
-  select.form-control {
-    cursor: pointer;
-    -moz-appearance: none;
-    -webkit-appearance:none;
-  }
-  select.form-control::-ms-expand {
-    display: none;
-  }
-  select.form-control {
-    .empty {
-      color: #c0c0c0;
-    }
-  }
-
   .form-control {
     border-radius: $compound-filter-operator-border-radius;
-    border-right: none;
+    // border-right: none;
     padding: $compound-filter-text-padding !important;
     font-size: $compound-filter-text-font-size;
     color: $compound-filter-text-color;
     font-weight: $compound-filter-text-weight;
     background-color: $compound-filter-bgcolor;
+  }
+
+  select {
+    font-family: $compound-filter-operator-select-font-family;
+    font-size: $compound-filter-operator-select-font-size;
+    border: $compound-filter-operator-select-border;
+
+    &.form-control {
+      cursor: pointer;
+      -moz-appearance: none;
+      -webkit-appearance:none;
+      &:-ms-expand {
+        display: none;
+      }
+      .empty {
+        color: #c0c0c0;
+      }
+    }
   }
 }
 .search-filter .operator-char3.input-group-addon {
@@ -717,15 +721,19 @@
 }
 
 input.search-filter {
-    font-family: $filter-placeholder-font-family;
+  font-family: $filter-placeholder-font-family;
 }
 .search-filter {
-    input {
-        font-family: $filter-placeholder-font-family;
-        &.compound-input {
-          border-radius: $compound-filter-border-radius !important;
-        }
+  input {
+    font-family: $filter-placeholder-font-family;
+    &.compound-input {
+      border-radius: $compound-filter-border-radius !important;
+      border-left: none;
     }
+  }
+  input.compound-slider {
+    border-left: none !important;
+  }
 }
 
 // ----------------------------------------------
@@ -735,6 +743,7 @@ input.search-filter {
 .search-filter .flatpickr {
   input.form-control {
     cursor: pointer;
+    border-left: none;
   }
 
   .flatpickr {
@@ -752,6 +761,7 @@ input.search-filter {
         background-color: $flatpickr-bgcolor;
       }
     }
+    .form-control[readonly],
     .flatpickr.form-control[readonly] {
       background-color: $flatpickr-bgcolor;
     }
@@ -846,6 +856,9 @@ input.flatpickr.form-control {
 // ----------------------------------------------
 // Input Slider Filter (with vanilla html)
 // ----------------------------------------------
+.ui-widget.ui-widget-content {
+  border: 0;
+}
 input.slider-editor-input[type=range],
 input.slider-filter-input[type=range] {
   /*removes default webkit styles*/

@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import Flatpickr from 'flatpickr';
 import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
 
+import { Constants } from '../constants';
 import {
   Column,
   ColumnFilter,
@@ -12,11 +13,13 @@ import {
   FieldType,
   FlatpickrOption,
   GridOption,
+  Locale,
   OperatorString,
   OperatorType,
   SearchTerm,
 } from './../models/index';
-import { mapFlatpickrDateFormatWithFieldType, mapOperatorToShorthandDesignation } from '../services/utilities';
+import { buildSelectOperatorHtmlString } from './filterUtilities';
+import { getTranslationPrefix, mapFlatpickrDateFormatWithFieldType, mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -66,6 +69,11 @@ export class CompoundDateFilter implements Filter {
   /** Getter for the Flatpickr Options */
   get flatpickrOptions(): FlatpickrOption {
     return this._flatpickrOptions || {};
+  }
+
+  /** Getter for the single Locale texts provided by the user in main file or else use default English locales via the Constants */
+  get locales(): Locale {
+    return this.gridOptions.locales || Constants.locales;
   }
 
   /** Getter for the Filter Operator */
@@ -188,17 +196,17 @@ export class CompoundDateFilter implements Filter {
       wrap: true,
       closeOnSelect: true,
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
+      onChange: (selectedDates: Date[] | Date, dateStr: string) => {
         this._currentValue = dateStr;
         this._currentDate = Array.isArray(selectedDates) && selectedDates[0];
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
         // since backend request are only executed after user start typing, changing the time should be treated the same way
+        let customEvent: CustomEvent | undefined;
         if (pickerOptions.enableTime) {
-          this.onTriggerEvent(new CustomEvent('keyup'));
-        } else {
-          this.onTriggerEvent(undefined);
+          customEvent = new CustomEvent('keyup');
         }
+        this.onTriggerEvent(customEvent);
       }
     };
 
@@ -219,26 +227,25 @@ export class CompoundDateFilter implements Filter {
     return $filterInputElm;
   }
 
-  private buildSelectOperatorHtmlString() {
-    const optionValues = this.getOptionValues();
-    let optionValueString = '';
-    optionValues.forEach((option) => {
-      optionValueString += `<option value="${option.operator}" title="${option.description}">${option.operator}</option>`;
-    });
-
-    return `<select class="form-control">${optionValueString}</select>`;
-  }
-
   private getOptionValues(): { operator: OperatorString, description: string }[] {
     return [
-      { operator: '' as OperatorString, description: '' },
-      { operator: '=' as OperatorString, description: '=' },
-      { operator: '<' as OperatorString, description: '<' },
-      { operator: '<=' as OperatorString, description: '<=' },
-      { operator: '>' as OperatorString, description: '>' },
-      { operator: '>=' as OperatorString, description: '>=' },
-      { operator: '<>' as OperatorString, description: '<>' }
+      { operator: '', description: '' },
+      { operator: '=', description: this.getOutputText('EQUAL_TO', 'TEXT_EQUAL_TO', 'Equal to') },
+      { operator: '<', description: this.getOutputText('LESS_THAN', 'TEXT_LESS_THAN', 'Less than') },
+      { operator: '<=', description: this.getOutputText('LESS_THAN_OR_EQUAL_TO', 'TEXT_LESS_THAN_OR_EQUAL_TO', 'Less than or equal to') },
+      { operator: '>', description: this.getOutputText('GREATER_THAN', 'TEXT_GREATER_THAN', 'Greater than') },
+      { operator: '>=', description: this.getOutputText('GREATER_THAN_OR_EQUAL_TO', 'TEXT_GREATER_THAN_OR_EQUAL_TO', 'Greater than or equal to') },
+      { operator: '<>', description: this.getOutputText('NOT_EQUAL_TO', 'TEXT_NOT_EQUAL_TO', 'Not equal to') }
     ];
+  }
+
+  /** Get Locale, Translated or a Default Text if first two aren't detected */
+  private getOutputText(translationKey: string, localeText: string, defaultText: string): string {
+    if (this.gridOptions && this.gridOptions.enableTranslate && this.translate && this.translate.instant) {
+      const translationPrefix = getTranslationPrefix(this.gridOptions);
+      return this.translate.instant(`${translationPrefix}${translationKey}`);
+    }
+    return this.locales && this.locales[localeText] || defaultText;
   }
 
   /**
@@ -250,7 +257,8 @@ export class CompoundDateFilter implements Filter {
     $($headerElm).empty();
 
     // create the DOM Select dropdown for the Operator
-    this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
+    const selectOperatorHtmlString = buildSelectOperatorHtmlString(this.getOptionValues());
+    this.$selectOperatorElm = $(selectOperatorHtmlString);
     this.$filterInputElm = this.buildDatePickerInput(searchTerm);
     const $filterContainerElm = $(`<div class="form-group search-filter filter-${fieldId}"></div>`);
     const $containerInputGroup = $(`<div class="input-group flatpickr"></div>`);
@@ -317,7 +325,7 @@ export class CompoundDateFilter implements Filter {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this.$filterElm.removeClass('filled');
     } else {
-      const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+      const selectedOperator = this.$selectOperatorElm.find('option:selected').val();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
       this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
