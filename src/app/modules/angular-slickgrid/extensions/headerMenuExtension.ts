@@ -18,7 +18,7 @@ import {
 import { FilterService } from '../services/filter.service';
 import { SortService } from '../services/sort.service';
 import { SharedService } from '../services/shared.service';
-import { getTranslationPrefix } from '../services/utilities';
+import { arrayRemoveItemByIndex, getTranslationPrefix } from '../services/utilities';
 import { ExtensionUtility } from './extensionUtility';
 
 // using external non-typed js libraries
@@ -219,7 +219,7 @@ export class HeaderMenuExtension implements Extension {
     if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns && this.sharedService.grid.getColumnIndex) {
       const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
       const currentColumns = this.sharedService.grid.getColumns() as Column[];
-      const visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(currentColumns, columnIndex);
+      const visibleColumns = arrayRemoveItemByIndex(currentColumns, columnIndex);
       this.sharedService.visibleColumns = visibleColumns;
       this.sharedService.grid.setColumns(visibleColumns);
       this.sharedService.onColumnsChanged.next(visibleColumns);

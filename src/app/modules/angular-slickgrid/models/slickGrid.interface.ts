@@ -5,6 +5,8 @@ import { Editor } from './editor.interface';
 import { ElementPosition } from './elementPosition.interface';
 import { FormatterResultObject } from './formatterResultObject.interface';
 import { PagingInfo } from './pagingInfo.interface';
+import { SlickDataView } from './slickDataView.interface';
+import { SlickEditorLock } from './slickEditorLock.interface';
 import { SlickEvent } from './slickEvent.interface';
 
 export interface SlickGrid {
@@ -53,9 +55,11 @@ export interface SlickGrid {
 
   /**
    * Attempts to switch the active cell into edit mode. Will throw an error if the cell is set to be not editable. Uses the specified editor, otherwise defaults to any default editor for that given cell.
-   * @param editor A SlickGrid editor (see examples in slick.editors.js).
+   * @param {object} editor A SlickGrid editor (see examples in slick.editors.js).
+   * @param {boolean} preClickModeOn Pre-Click Mode is Enabled?
+   * @param {object} event
    */
-  editActiveCell(editor: Editor): void;
+  editActiveCell(editor: Editor, preClickModeOn?: boolean, event?: Event): void;
 
   /**
    * Flashes the cell twice by toggling the CSS class 4 times.
@@ -141,29 +145,35 @@ export interface SlickGrid {
    */
   getColumnIndex(id: string | number): number;
 
-  /** Returns an array of column definitions, containing the option settings for each individual column.*/
+  /** Returns an array of column definitions, containing the option settings for each individual column. */
   getColumns(): Column[];
 
   /** Get Grid Canvas Node DOM Element */
   getContainerNode(): HTMLElement;
 
   /** Returns an array of every data object, unless you're using DataView in which case it returns a DataView object. */
-  getData(): any;
+  getData<T = SlickDataView>(): T;
 
   /**
    * Returns the databinding item at a given position.
-   * @param index Item index.
+   * @param index Item row index.
    */
-  getDataItem<T = any>(index: number): T;
+  getDataItem<T = any>(rowIndex: number): T;
 
   /** Returns the size of the databinding source. */
   getDataLength(): number;
 
   /** Get Editor lock */
-  getEditorLock(): any;
+  getEditorLock(): SlickEditorLock;
 
   /** Get Editor Controller */
-  getEditController(): { commitCurrentEdit(): boolean; cancelCurrentEdit(): boolean; };
+  getEditController(): {
+    /** Commit Current Editor command */
+    commitCurrentEdit(): boolean;
+
+    /** Cancel Current Editor command */
+    cancelCurrentEdit(): boolean;
+  };
 
   /** Get the Footer DOM element */
   getFooterRow(): HTMLElement;
@@ -335,10 +345,21 @@ export interface SlickGrid {
 
   /**
    * Sets an active cell.
-   * @param row A row index.
-   * @param cell A column index.
+   * @param {number} row - A row index.
+   * @param {number} cell - A column index.
+   * @param {boolean} optionEditMode Option Edit Mode is Auto-Edit?
+   * @param {boolean} preClickModeOn Pre-Click Mode is Enabled?
+   * @param {boolean} suppressActiveCellChangedEvent Are we suppressing Active Cell Changed Event (defaults to false)
    */
-  setActiveCell(row: number, cell: number): void;
+  setActiveCell(row: number, cell: number, optionEditMode?: boolean, preClickModeOn?: boolean, suppressActiveCellChangedEvent?: boolean): void;
+
+  /**
+   * Sets an active cell.
+   * @param {number} row - A row index.
+   * @param {number} cell - A column index.
+   * @param {boolean} suppressScrollIntoView - optionally suppress the ScrollIntoView that happens by default (defaults to false)
+   */
+  setActiveRow(row: number, cell?: number, suppressScrollIntoView?: boolean): void;
 
   /** Sets an active viewport node */
   setActiveViewportNode(element: HTMLElement): void;
@@ -377,9 +398,11 @@ export interface SlickGrid {
 
   /**
    * Extends grid options with a given hash. If an there is an active edit, the grid will attempt to commit the changes and only continue if the attempt succeeds.
-   * @options An object with configuration options.
+   * @params options An object with configuration options.
+   * @params do we want to supress the grid re-rendering? (defaults to false)
+   * @params do we want to supress the columns set, via "setColumns()" method? (defaults to false)
    */
-  setOptions(options: GridOption): void;
+  setOptions(options: GridOption, suppressRender?: boolean, suppressColumnSet?: boolean): void;
 
   /** Set the Pre-Header Visibility and optionally enable/disable animation (enabled by default) */
   setPreHeaderPanelVisibility(visible: boolean, animate?: boolean): void;
@@ -394,7 +417,7 @@ export interface SlickGrid {
    * Unregisters a current selection model and registers a new one. See the definition of SelectionModel for more information.
    * @selectionModel A SelectionModel.
    */
-  setSelectionModel(selectionModel: any): void;		// todo: don't know the type of the event data type
+  setSelectionModel(selectionModel: any): void;
 
   /**
    * Accepts a columnId string and an ascending boolean. Applies a sort glyph in either ascending or descending form to the header of the column. Note that this does not actually sort the column. It only adds the sort glyph to the header.

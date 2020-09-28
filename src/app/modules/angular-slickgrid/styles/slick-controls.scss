@@ -227,6 +227,7 @@
   border: 0;
   width: 22px;
   font-size: $grid-menu-icon-font-size;
+  z-index: 2;
 }
 
 .slick-gridmenu-custom {
@@ -236,6 +237,7 @@
 /* Menu items */
 .slick-gridmenu-item {
   cursor: pointer;
+  display: block;
   border: $grid-menu-item-border;
   border-radius: $grid-menu-item-border-radius;
   padding: $grid-menu-item-padding;
@@ -276,6 +278,9 @@
   .slick-gridmenu-icon, .slick-gridmenu-content {
     color: $grid-menu-item-disabled-color;
   }
+}
+.slick-gridmenu-item-hidden {
+  display: none;
 }
 
 .slick-gridmenu-icon {

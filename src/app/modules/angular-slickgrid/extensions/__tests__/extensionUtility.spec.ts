@@ -5,7 +5,7 @@ import { ExtensionUtility } from '../extensionUtility';
 import { ExtensionName, GridOption } from '../../models';
 import { SharedService } from '../../services/shared.service';
 
-declare const Slick: any;
+declare let Slick: any;
 
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),
@@ -86,16 +86,6 @@ describe('ExtensionUtility', () => {
         SORT_DESCENDING: 'Sort Descending',
       });
       translate.use('fr');
-    });
-
-    describe('arrayRemoveItemByIndex method', () => {
-      it('should remove an item from the array', () => {
-        const input = [{ field: 'field1', name: 'Field 1' }, { field: 'field2', name: 'Field 2' }, { field: 'field3', name: 'Field 3' }];
-        const expected = [{ field: 'field1', name: 'Field 1' }, { field: 'field3', name: 'Field 3' }];
-
-        const output = utility.arrayRemoveItemByIndex(input, 1);
-        expect(output).toEqual(expected);
-      });
     });
 
     describe('loadExtensionDynamically method', () => {
