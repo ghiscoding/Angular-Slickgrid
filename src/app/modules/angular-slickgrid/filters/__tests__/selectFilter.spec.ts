@@ -609,6 +609,48 @@ describe('SelectFilter', () => {
     expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['female'], shouldTriggerQuery: true });
   });
 
+  it('should create the multi-select filter with a custom entry at the beginning of the collection when "addCustomFirstEntry" is provided in the "collectionOptions" property', () => {
+    filterArguments.searchTerms = ['female'];
+    mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+    mockColumn.filter.collectionOptions = { addCustomFirstEntry: { value: null, label: '' } };
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    const filterBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.search-filter.filter-gender button.ms-choice');
+    const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=checkbox]`);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
+    const filterOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=filter-gender].ms-drop .ms-ok-button`);
+    filterBtnElm.click();
+    filterOkElm.click();
+
+    expect(filterListElm.length).toBe(3);
+    expect(filterFilledElms.length).toBe(1);
+    expect(filterListElm[0].value).toBe('');
+    expect(filterListElm[2].checked).toBe(true);
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['female'], shouldTriggerQuery: true });
+  });
+
+  it('should create the multi-select filter with a custom entry at the end of the collection when "addCustomFirstEntry" is provided in the "collectionOptions" property', () => {
+    filterArguments.searchTerms = ['female'];
+    mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+    mockColumn.filter.collectionOptions = { addCustomLastEntry: { value: null, label: '' } };
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    const filterBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.search-filter.filter-gender button.ms-choice');
+    const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=checkbox]`);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
+    const filterOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=filter-gender].ms-drop .ms-ok-button`);
+    filterBtnElm.click();
+    filterOkElm.click();
+
+    expect(filterListElm.length).toBe(3);
+    expect(filterFilledElms.length).toBe(1);
+    expect(filterListElm[2].value).toBe('');
+    expect(filterListElm[1].checked).toBe(true);
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['female'], shouldTriggerQuery: true });
+  });
+
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
     filterArguments.searchTerms = ['female'];
     mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
