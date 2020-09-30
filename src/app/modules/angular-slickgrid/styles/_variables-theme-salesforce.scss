@@ -119,7 +119,7 @@ $autocomplete-loading-icon-margin-left:         -26px !default;
 $autocomplete-loading-icon-line-height:         0px !default;
 $autocomplete-loading-icon-vertical-align:      sub !default;
 $compound-filter-operator-select-border:        1px solid #6cb6ff !default;
-$multiselect-icon-arrow-font-size:              $icon-font-size - 4px !default;
+$multiselect-icon-arrow-font-size:              calc(#{$icon-font-size} - 4px) !default;
 $multiselect-icon-checked-color:                $highlight-color !default;
 $multiselect-icon-border:                       1px solid #d6d4d4 !default;
 $multiselect-icon-height:                       15px !default;

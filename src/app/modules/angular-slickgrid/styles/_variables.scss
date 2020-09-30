@@ -6,7 +6,7 @@
 
  $border-color:                                  #dddddd !default;
  $font-size-base-value:                          14 !default;
- $font-size-base:          			                  $font-size-base-value + 0px !default;
+ $font-size-base:          			                 $font-size-base-value + 0px !default;
  $font-family:                                   -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
  $primary-color:                                 #31708F !default;
  $button-primary-bg-color:                       $primary-color !default;
@@ -67,7 +67,7 @@
  $preheader-border-right-last-element:           none !default;
  $preheader-border-bottom:                       0 !default;
  $preheader-border-top:                          0 !default;
- $preheader-font-size:                           $font-size-base + 3px !default;
+ $preheader-font-size:                           calc(#{$font-size-base} + 3px) !default;
  $preheader-height:                              25px !default; /* full height is calculated with cell padding + borders (25px + 5px + 0px + 0px) = 30px must be set as preHeaderPanelHeight */
  $preheader-grouped-title-display:               inline-grid !default;
  $preheader-grouped-title-justify:               left !default;
@@ -164,14 +164,14 @@
  /** AutoComplte with Custom Styling (2 rows) */
  $autocomplete-tpl2-font-size:                   12px !default;
  $autocomplete-tpl2-width:                       285px !default;
- $autocomplete-tpl2-container-list-width:        #{$autocomplete-tpl2-width - 15px} !default;
+ $autocomplete-tpl2-container-list-width:        calc(#{$autocomplete-tpl2-width} - 15px) !default;
  $autocomplete-tpl2-container-list-padding-lr:   10px !default; /* left/right */
  $autocomplete-tpl2-container-list-padding-tb:   3px !default; /* top/bottom */
  $autocomplete-tpl2-container-list-padding:      $autocomplete-tpl2-container-list-padding-tb $autocomplete-tpl2-container-list-padding-lr !default;
  $autocomplete-tpl2-icon-left-height:            32px !default;
  $autocomplete-tpl2-icon-left-width:             32px !default;
  $autocomplete-tpl2-bottom-left-text-color:      #686868 !default;
- $autocomplete-tpl2-bottom-left-font-size:       #{$autocomplete-tpl2-font-size - 1px} !default;
+ $autocomplete-tpl2-bottom-left-font-size:       calc(#{$autocomplete-tpl2-font-size} - 1px) !default;
  $autocomplete-tpl2-bottom-left-font-style:      italic !default;
  $autocomplete-tpl2-bottom-left-font-weight:     normal !default;
  $autocomplete-tpl2-bottom-left-max-width:       calc(#{$autocomplete-tpl2-container-list-width} - #{$autocomplete-tpl2-icon-left-width} - (#{$autocomplete-tpl2-container-list-padding-lr} * 2)) !default;
@@ -184,18 +184,18 @@
  /** AutoComplte with Custom Styling (4 corners) */
  $autocomplete-tpl4-font-size:                   12px !default;
  $autocomplete-tpl4-width:                       385px !default;
- $autocomplete-tpl4-container-list-width:        #{$autocomplete-tpl4-width - 15px} !default;
+ $autocomplete-tpl4-container-list-width:        calc(#{$autocomplete-tpl4-width} - 15px) !default;
  $autocomplete-tpl4-container-list-padding-lr:   10px !default; /* left/right */
  $autocomplete-tpl4-container-list-padding-tb:   3px !default; /* top/bottom */
  $autocomplete-tpl4-container-list-padding:      $autocomplete-tpl4-container-list-padding-tb $autocomplete-tpl4-container-list-padding-lr !default;
  $autocomplete-tpl4-icon-left-height:            32px !default;
  $autocomplete-tpl4-icon-left-width:             32px !default;
  $autocomplete-tpl4-bottom-left-text-color:      #686868 !default;
- $autocomplete-tpl4-bottom-left-font-size:       #{$autocomplete-tpl4-font-size - 1px} !default;
+ $autocomplete-tpl4-bottom-left-font-size:       calc(#{$autocomplete-tpl4-font-size} - 1px) !default;
  $autocomplete-tpl4-bottom-left-font-style:      italic !default;
  $autocomplete-tpl4-bottom-left-font-weight:     normal !default;
  $autocomplete-tpl4-bottom-left-max-width:       calc(#{$autocomplete-tpl4-container-list-width} - #{$autocomplete-tpl4-icon-left-width} - (#{$autocomplete-tpl4-container-list-padding-lr} * 2)) !default;
- $autocomplete-tpl4-bottom-right-font-size:      #{$autocomplete-tpl4-font-size - 1px} !default;
+ $autocomplete-tpl4-bottom-right-font-size:      calc(#{$autocomplete-tpl4-font-size} - 1px) !default;
  $autocomplete-tpl4-bottom-right-font-style:     italic !default;
  $autocomplete-tpl4-bottom-right-font-weight:    normal !default;
  $autocomplete-tpl4-bottom-right-text-color:     #686868 !default;
@@ -206,7 +206,7 @@
  $autocomplete-tpl4-top-left-font-weight:        bold !default;
  $autocomplete-tpl4-top-left-max-width:          $autocomplete-tpl4-bottom-left-max-width !default;
  $autocomplete-tpl4-top-right-text-color:        lighten($primary-color, 7%) !default;
- $autocomplete-tpl4-top-right-font-size:         #{$autocomplete-tpl4-font-size - 1px} !default;
+ $autocomplete-tpl4-top-right-font-size:         calc(#{$autocomplete-tpl4-font-size} - 1px) !default;
  $autocomplete-tpl4-top-right-font-style:        normal !default;
  $autocomplete-tpl4-top-right-font-weight:       bold !default;
  $autocomplete-tpl4-top-right-max-width:         100px !default;
@@ -373,6 +373,7 @@
  $cell-menu-item-padding:                        2px 4px !default;
  $cell-menu-item-width:                          100% !default;
  $cell-menu-icon-font-size:                      $icon-font-size !default;
+ $cell-menu-icon-line-height:                    calc(#{$cell-menu-icon-font-size} + 2px) !default;
  $cell-menu-item-width-when-button:              calc(100% - #{$cell-menu-close-btn-width} - 3px) !default;
  $cell-menu-icon-margin-right:                   4px !default;
  $cell-menu-icon-width:                          16px !default;
@@ -517,6 +518,7 @@
  $text-editor-background:                        #ffffff !default;
  $text-editor-margin-bottom:                     2px !default;
  $text-editor-margin-left:                       -2px !default; /* negative number to cancel inside padding */
+ $text-editor-right-input-margin-left:           calc(#{$text-editor-margin-left} + 9px) !default;
  $text-editor-margin-right:                      2px !default;
  $text-editor-margin-top:                        2px !default;
  $text-editor-padding-bottom:                    0 !default;
@@ -526,6 +528,7 @@
  $text-editor-focus-border-color:                $editor-focus-border-color !default;
  $text-editor-focus-box-shadow:                  $editor-focus-box-shadow !default;
  $text-editor-readonly-color:                    #f0f0f0 !default;
+ $text-editor-width:                             calc(100% + 2px) !default;
  $slider-editor-height:                          $editor-input-height !default;
  $slider-editor-runnable-track-padding:          0 6px !default;
  $slider-editor-number-padding:                  4px 6px !default;
@@ -540,7 +543,7 @@
  $compound-filter-operator-border-radius:        4px 0 0 4px !default;
  $compound-filter-border-radius:                 0 4px 4px 0 !default;
  $compound-filter-text-weight:                   bold !default;
- $compound-filter-text-color:                    $primary-color !default;
+ $compound-filter-text-color:                    #333333 !default;
  $compound-filter-text-font-size:                13px !default;
  $compound-filter-text-padding:                  0 0 0 2px !default;
 
@@ -592,6 +595,8 @@
  $slider-filter-thumb-cursor:                    pointer !default;
  $slider-filter-thumb-color:                     rgb(201, 219, 203) !default;
  $slider-filter-thumb-size:                      14px !default;
+ $slider-filter-thumb-height:                    calc(#{$slider-filter-thumb-size} - 2px) !default;
+ $slider-filter-thumb-width:                     $slider-filter-thumb-height !default;
  $slider-filter-thumb-border:                    1px solid darken($slider-filter-thumb-color, 15%) !default;
  $slider-filter-number-padding:                  4px 8px !default;
  $slider-filter-number-font-size:                calc(#{$font-size-base-value} - 1px) !default;
@@ -669,7 +674,9 @@
  $pagination-button-padding:                     6px 12px !default;
  $pagination-border-color:                       #ddd !default;
  $pagination-count-margin-left:                  2px !default;
+ $pagination-font-size:                          calc(#{$font-size-base} - 1px) !default;
  $pagination-icon-color:                         $primary-color !default;
+ $pagination-icon-font-size:                     calc(#{$icon-font-size} - 1px) !default;
  $pagination-icon-seek-first:                    "\f100" !default;
  $pagination-icon-seek-end:                      "\f101" !default;
  $pagination-icon-seek-next:                     "\f105" !default;
