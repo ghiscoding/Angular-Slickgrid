@@ -12,7 +12,7 @@
   padding-top: 4px;
   vertical-align: middle;
   font-family: $font-family;
-  font-size: ($font-size-base - 1px);
+  font-size: $pagination-font-size;
   font-weight: 400;
   color: $pagination-text-color;
 
@@ -55,7 +55,7 @@
       margin: 0;
 
       .page-link {
-        font-size: ($font-size-base - 1px);
+        font-size: $pagination-icon-font-size;
         border: $pagination-button-border;
         height: 32px;
       }

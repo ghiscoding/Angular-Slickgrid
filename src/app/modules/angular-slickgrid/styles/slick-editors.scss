@@ -14,7 +14,7 @@
     margin-bottom: $text-editor-margin-bottom;
     margin-right: $text-editor-margin-right;
     margin-top: $text-editor-margin-top;
-    width: calc(100% + 2px);
+    width: $text-editor-width;
     transform: translate(0, -2px);
     outline: 0;
     height: 100%;
@@ -26,7 +26,7 @@
     }
 
     &.right {
-      margin-left: calc(#{$text-editor-margin-left} + 9px);
+      margin-left: $text-editor-right-input-margin-left;
     }
 
     &[readonly] {

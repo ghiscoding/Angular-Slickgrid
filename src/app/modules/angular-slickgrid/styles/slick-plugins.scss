@@ -99,7 +99,7 @@
       background-position: center center;
       background-repeat: no-repeat;
       display: inline-block;
-      line-height: ($cell-menu-icon-font-size + 2px);
+      line-height: $cell-menu-icon-line-height;
       margin-right: $cell-menu-icon-margin-right;
       vertical-align: middle;
       width: $cell-menu-icon-width;
@@ -931,8 +931,8 @@ input.slider-filter-input[type=range] {
   &::-moz-range-thumb {
     border: none;
     cursor: $slider-filter-thumb-cursor;
-    height: $slider-filter-thumb-size - 2px;
-    width: $slider-filter-thumb-size - 2px;
+    height: $slider-filter-thumb-height;
+    width: $slider-filter-thumb-width;
     border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
@@ -969,8 +969,8 @@ input.slider-filter-input[type=range] {
   &::-ms-thumb {
     border: none;
     cursor: $slider-filter-thumb-cursor;
-    height: $slider-filter-thumb-size - 2px;
-    width: $slider-filter-thumb-size - 2px;
+    height: $slider-filter-thumb-height;
+    width: $slider-filter-thumb-width;
     border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
