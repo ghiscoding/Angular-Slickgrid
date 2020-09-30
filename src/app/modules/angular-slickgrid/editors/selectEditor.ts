@@ -519,7 +519,7 @@ export class SelectEditor implements Editor {
     }
 
     // user can optionally add a blank entry at the beginning of the collection
-    if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.labelName] !== '') {
       collection.unshift(this.createBlankEntry());
     }
 
