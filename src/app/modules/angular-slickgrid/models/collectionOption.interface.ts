@@ -3,10 +3,16 @@ import { FilterMultiplePassTypeString } from './filterMultiplePassTypeString';
 
 export interface CollectionOption {
   /**
-   * Optionally add a blank entry to the beginning of the collection.
+   * Optionally add a blank entry to the beginning of the collection (only used by the SingleSelect/MultipleSelect Editor or Filter).
    * Useful when we want to return all data by setting an empty filter that might not exist in the original collection
    */
   addBlankEntry?: boolean;
+
+  /** Optionally add a custom entry at the beginning of the collection (only used by the SingleSelect/MultipleSelect Editor or Filter). */
+  addCustomFirstEntry?: any;
+
+  /** Optionally add a custom entry at the end of the collection (only used by the SingleSelect/MultipleSelect Editor or Filter). */
+  addCustomLastEntry?: any;
 
   /** @deprecated please use "collectionInsideObjectProperty" instead */
   collectionInObjectProperty?: string;
