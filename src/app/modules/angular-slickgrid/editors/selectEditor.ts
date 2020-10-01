@@ -525,8 +525,22 @@ export class SelectEditor implements Editor {
     }
 
     // user can optionally add a blank entry at the beginning of the collection
-    if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.labelName] !== '') {
+    // make sure however that it wasn't added more than once
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.valueName] !== '') {
       collection.unshift(this.createBlankEntry());
+    }
+
+    // user can optionally add his own custom entry at the beginning of the collection
+    if (this.collectionOptions && this.collectionOptions.addCustomFirstEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.valueName] !== this.collectionOptions.addCustomFirstEntry[this.valueName]) {
+      collection.unshift(this.collectionOptions && this.collectionOptions.addCustomFirstEntry);
+    }
+
+    // user can optionally add his own custom entry at the end of the collection
+    if (this.collectionOptions && this.collectionOptions.addCustomLastEntry && Array.isArray(collection) && collection.length > 0) {
+      const lastCollectionIndex = collection.length - 1;
+      if (collection[lastCollectionIndex][this.valueName] !== this.collectionOptions.addCustomLastEntry[this.valueName]) {
+        collection.push(this.collectionOptions && this.collectionOptions.addCustomLastEntry);
+      }
     }
 
     let newCollection = collection || [];
@@ -588,7 +602,12 @@ export class SelectEditor implements Editor {
           optionText = htmlEncode(sanitizedText);
         }
 
-        options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
+        // html text of each select option
+        let optionValue = option[this.valueName];
+        if (optionValue === undefined || optionValue === null) {
+          optionValue = '';
+        }
+        options += `<option value="${optionValue}" label="${optionLabel}">${optionText}</option>`;
       });
     }
 

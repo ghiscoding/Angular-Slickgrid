@@ -32,6 +32,19 @@ describe('dateIsoFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
+  it('should return True when input value provided is equal to the searchTerms, even when passing Date+Time in cell value, and is called by "executeMappedCondition"', () => {
+    const options = { dataKey: '', operator: 'EQ', fieldType: FieldType.dateIso, cellValue: new Date('1993-12-25T14:02:02.103Z'), searchTerms: ['1993-12-25'] } as FilterConditionOption;
+    const output = executeMappedCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return True when input value provided is equal to the searchTerms, even when passing Date+Time in search value, and is called by "executeMappedCondition"', () => {
+    // @ts-ignore
+    const options = { dataKey: '', operator: 'EQ', fieldType: FieldType.dateIso, cellValue: '1993-12-25', searchTerms: [new Date('1993-12-25T14:02:02.103Z')] } as FilterConditionOption;
+    const output = executeMappedCondition(options);
+    expect(output).toBe(true);
+  });
+
   it('should return False when cell value is not the same value as the searchTerm', () => {
     const options = { dataKey: '', operator: 'EQ', fieldType: FieldType.dateIso, cellValue: '1993-12-25', searchTerms: ['2003-03-14'] } as FilterConditionOption;
     const output = executeMappedCondition(options);
