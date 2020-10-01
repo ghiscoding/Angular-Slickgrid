@@ -298,14 +298,18 @@ export class SelectFilter implements Filter {
     this.renderDomElement(collection);
   }
 
-  protected renderDomElement(collection) {
-    if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+  protected renderDomElement(inputCollection) {
+    if (!Array.isArray(inputCollection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
+      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty);
     }
-    if (!Array.isArray(collection)) {
+    if (!Array.isArray(inputCollection)) {
       throw new Error('The "collection" passed to the Select Filter is not a valid array.');
     }
+
+    // make a copy of the collection so that SelectFilter doesn't impact SelectEditor and vice versa
+    // (this could happen when calling "addBlankEntry" or "addCustomFirstEntry")
+    const collection = [...inputCollection];
 
     // make sure however that it wasn't added more than once
     if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.labelName] !== '') {
@@ -360,7 +364,9 @@ export class SelectFilter implements Filter {
           let prefixText = option[this.labelPrefixName] || '';
           let suffixText = option[this.labelSuffixName] || '';
           let optionLabel = option.hasOwnProperty(this.optionLabel) ? option[this.optionLabel] : '';
-          optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
+          if (optionLabel && optionLabel.toString) {
+            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
+          }
 
           // also translate prefix/suffix if enableTranslateLabel is true and text is a string
           prefixText = (this.enableTranslateLabel && isEnableTranslate && prefixText && typeof prefixText === 'string') ? this.translate && this.translate.currentLang && this.translate.instant(prefixText || ' ') : prefixText;
