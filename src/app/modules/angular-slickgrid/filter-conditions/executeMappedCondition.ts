@@ -85,7 +85,7 @@ function executeAssociatedDateCondition(options: FilterConditionOption): boolean
   // cell value in moment format
   const dateCell = moment(options.cellValue, FORMAT, true);
 
-  if (searchTerms.length === 2 || ((searchTerms[0] as string).indexOf('..') > 0)) {
+  if (searchTerms.length === 2 || (typeof searchTerms[0] === 'string' && (searchTerms[0] as string).indexOf('..') > 0)) {
     isRangeSearch = true;
     const searchValues = (searchTerms.length === 2) ? searchTerms : (searchTerms[0] as string).split('..');
     const searchValue1 = (Array.isArray(searchValues) && searchValues[0] || '') as Date | string;
@@ -107,12 +107,18 @@ function executeAssociatedDateCondition(options: FilterConditionOption): boolean
     dateSearch1 = moment(searchTerms[0] as Date | string, FORMAT, true);
   }
 
+  // when comparing with Dates only (without time), we need to disregard the time portion, we can do so by setting our time to start at midnight
+  // ref, see https://stackoverflow.com/a/19699447/1212166
+  const dateCellTimestamp = FORMAT.toLowerCase().includes('h') ? parseInt(dateCell.format('X'), 10) : parseInt(dateCell.clone().startOf('day').format('X'), 10);
+
   // run the filter condition with date in Unix Timestamp format
   if (isRangeSearch) {
     const isInclusive = options.operator && options.operator === OperatorType.rangeInclusive;
-    const resultCondition1 = testFilterCondition((isInclusive ? '>=' : '>'), parseInt(dateCell.format('X'), 10), parseInt(dateSearch1.format('X'), 10));
-    const resultCondition2 = testFilterCondition((isInclusive ? '<=' : '<'), parseInt(dateCell.format('X'), 10), parseInt(dateSearch2.format('X'), 10));
+    const resultCondition1 = testFilterCondition((isInclusive ? '>=' : '>'), dateCellTimestamp, parseInt(dateSearch1.format('X'), 10));
+    const resultCondition2 = testFilterCondition((isInclusive ? '<=' : '<'), dateCellTimestamp, parseInt(dateSearch2.format('X'), 10));
     return (resultCondition1 && resultCondition2);
   }
-  return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch1.format('X'), 10));
+
+  const dateSearchTimestamp1 = FORMAT.toLowerCase().includes('h') ? parseInt(dateSearch1.format('X'), 10) : parseInt(dateSearch1.clone().startOf('day').format('X'), 10);
+  return testFilterCondition(options.operator || '==', dateCellTimestamp, dateSearchTimestamp1);
 };
