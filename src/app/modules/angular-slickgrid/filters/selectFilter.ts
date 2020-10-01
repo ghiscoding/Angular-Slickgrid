@@ -298,18 +298,14 @@ export class SelectFilter implements Filter {
     this.renderDomElement(collection);
   }
 
-  protected renderDomElement(inputCollection) {
-    if (!Array.isArray(inputCollection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+  protected renderDomElement(collection: any[]) {
+    if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty);
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
-    if (!Array.isArray(inputCollection)) {
+    if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Select Filter is not a valid array.');
     }
-
-    // make a copy of the collection so that SelectFilter doesn't impact SelectEditor and vice versa
-    // (this could happen when calling "addBlankEntry" or "addCustomFirstEntry")
-    const collection = [...inputCollection];
 
     // make sure however that it wasn't added more than once
     if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.labelName] !== '') {

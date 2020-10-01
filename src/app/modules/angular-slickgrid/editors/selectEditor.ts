@@ -518,8 +518,7 @@ export class SelectEditor implements Editor {
       throw new Error('The "collection" passed to the Select Editor is not a valid array.');
     }
 
-    // make a copy of the collection so that SelectFilter doesn't impact SelectEditor and vice versa
-    // (this could happen when calling "addBlankEntry" or "addCustomFirstEntry")
+    // make a copy of the collection so that we don't impact SelectFilter, this could happen when calling "addBlankEntry" or "addCustomFirstEntry"
     const collection = [...inputCollection];
 
     // user can optionally add a blank entry at the beginning of the collection
