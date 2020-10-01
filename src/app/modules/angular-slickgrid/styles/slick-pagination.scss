@@ -57,7 +57,7 @@
       .page-link {
         font-size: $pagination-icon-font-size;
         border: $pagination-button-border;
-        height: 32px;
+        height: $pagination-button-height;
       }
 
       .page-item {
