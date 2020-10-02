@@ -714,6 +714,7 @@
     font-family: $compound-filter-operator-select-font-family;
     font-size: $compound-filter-operator-select-font-size;
     border: $compound-filter-operator-select-border;
+    width: $compound-filter-operator-select-width;
 
     &.form-control {
       cursor: pointer;
