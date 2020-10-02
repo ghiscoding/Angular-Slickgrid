@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.22.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.3...v2.22.0) (2020-10-02)
+
+
+### Features
+
+* **core:** add custom entry to Select Editor/Filter collections ([#592](https://github.com/ghiscoding/angular-slickgrid/issues/592)) ([43e483e](https://github.com/ghiscoding/angular-slickgrid/commit/43e483e5fed154fcf602e501b0344102fa75bd4d))
+* **editors:** add Clear Date button to Date Editor ([#580](https://github.com/ghiscoding/angular-slickgrid/issues/580)) ([f2059a2](https://github.com/ghiscoding/angular-slickgrid/commit/f2059a2add5502798057fa6717c5ada050a59a7e))
+* **services:** add Toggle Filtering/Sorting & Hide Column methods ([#587](https://github.com/ghiscoding/angular-slickgrid/issues/587)) ([b9cf7f9](https://github.com/ghiscoding/angular-slickgrid/commit/b9cf7f984c51e8cf4be8b4d97cc3bc49b42b99eb))
+* **styling:** add description to Compound Filter Operators ([#588](https://github.com/ghiscoding/angular-slickgrid/issues/588)) ([56588d1](https://github.com/ghiscoding/angular-slickgrid/commit/56588d1e8851623f657265883cf84f9794d247e2))
+* **styling:** add Pagination button height sass variable ([#596](https://github.com/ghiscoding/angular-slickgrid/issues/596)) ([5db78c2](https://github.com/ghiscoding/angular-slickgrid/commit/5db78c226dffaa8ce14a4c8ecd93eaecb0f88856))
+* **tests:** add more Cypress E2E tests for grouping ([#584](https://github.com/ghiscoding/angular-slickgrid/issues/584)) ([90d47e6](https://github.com/ghiscoding/angular-slickgrid/commit/90d47e6b2a0f73a6e4f375e356d36283469f3393))
+
+
+### Bug Fixes
+
+* **editors:** add blank entry on Select Editor should happen once ([#591](https://github.com/ghiscoding/angular-slickgrid/issues/591)) ([f847e43](https://github.com/ghiscoding/angular-slickgrid/commit/f847e4396e311055166eca8b1a774aa22e6b57b9))
+* **editors:** update to latest Flatpickr version ([#577](https://github.com/ghiscoding/angular-slickgrid/issues/577)) ([0675b31](https://github.com/ghiscoding/angular-slickgrid/commit/0675b319e1df55e34464a2d9f05fa0757092acce))
+* **filters:** disregard time when filtering date only format ([#593](https://github.com/ghiscoding/angular-slickgrid/issues/593)) ([9e3acdc](https://github.com/ghiscoding/angular-slickgrid/commit/9e3acdc30e4432978142912b1c2958883a255c2e))
+* **filters:** tree data presets caused regression in any grid w/presets ([#597](https://github.com/ghiscoding/angular-slickgrid/issues/597)) ([74d611d](https://github.com/ghiscoding/angular-slickgrid/commit/74d611df081d9222e2f395bf27d4884769e79cae))
+* **pinning:** put back vertical scroll on grid after removing freezing ([#581](https://github.com/ghiscoding/angular-slickgrid/issues/581)) ([f07ff75](https://github.com/ghiscoding/angular-slickgrid/commit/f07ff75cef99c1f435744741ee718b3e47377da8))
+* **select:** make a collection array copy to avoid change by ref ([#595](https://github.com/ghiscoding/angular-slickgrid/issues/595)) ([4d6a395](https://github.com/ghiscoding/angular-slickgrid/commit/4d6a395493a5a14d1289872f6e3a9a4db31a5669))
+* **styling:** grouping with checkbox should be aligned left ([#582](https://github.com/ghiscoding/angular-slickgrid/issues/582)) ([18289d3](https://github.com/ghiscoding/angular-slickgrid/commit/18289d3f647b68ebfae48b25c38aefe951148e11))
+* **styling:** support other unit of measure in SASS ([#590](https://github.com/ghiscoding/angular-slickgrid/issues/590)) ([666e6ee](https://github.com/ghiscoding/angular-slickgrid/commit/666e6ee189e73b25ddfc32e49415733fd1e1380b))
+
 ### [2.21.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.2...v2.21.3) (2020-09-08)
 
 ### [2.21.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.1...v2.21.2) (2020-09-08)
