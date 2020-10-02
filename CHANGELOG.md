@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.0...v2.22.1) (2020-10-02)
+
+
+### Bug Fixes
+
+* **styling:** Compound Filter Operator dropdown too wide in BS4 ([#598](https://github.com/ghiscoding/angular-slickgrid/issues/598)) ([cb48247](https://github.com/ghiscoding/angular-slickgrid/commit/cb482478384e5f83625082bce390f914ad015d03))
+
 ## [2.22.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.21.3...v2.22.0) (2020-10-02)
 
 
