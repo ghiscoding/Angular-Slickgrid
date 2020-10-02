@@ -366,10 +366,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       if (dataset.length > 0) {
-        if (!this._isDatasetInitialized && this.gridOptions.enableCheckboxSelector) {
-          this.loadRowSelectionPresetWhenExists();
+        if (!this._isDatasetInitialized) {
+          this.loadPresetsWhenDatasetInitialized();
+
+          if (this.gridOptions.enableCheckboxSelector) {
+            this.loadRowSelectionPresetWhenExists();
+          }
         }
-        this.loadPresetsWhenDatasetInitialized();
         this._isDatasetInitialized = true;
 
         // also update the hierarchical dataset
