@@ -200,7 +200,6 @@ export class GridFrozenComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 10
       },
-      alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
       enableExcelCopyBuffer: true,
       enableCellNavigation: true,
       editable: true,
@@ -276,7 +275,7 @@ export class GridFrozenComponent implements OnInit {
   }
 
   setFrozenColumns(frozenCols: number) {
-    this.gridObj.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
+    this.gridObj.setOptions({ frozenColumn: frozenCols });
     this.gridOptions = this.gridObj.getOptions();
   }
 

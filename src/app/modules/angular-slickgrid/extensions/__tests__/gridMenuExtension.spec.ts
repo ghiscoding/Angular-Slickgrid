@@ -607,7 +607,7 @@ describe('gridMenuExtension', () => {
 
         expect(onCommandSpy).toHaveBeenCalled();
         expect(setColumnsSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, alwaysShowVerticalScroll: true });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1 });
       });
 
       it('should call "clearFilters" and dataview refresh when the command triggered is "clear-filter"', () => {
