@@ -1,6 +1,6 @@
 /*!
- * SlickGrid custom styling for Bootstrap (https://github.com/ghiscoding/angular-slickgrid)
- * Licensed under MIT (https://github.com/ghiscoding/angular-slickgrid/blob/master/LICENSE)
+ * SlickGrid custom styling for Bootstrap (https://github.com/ghiscoding/aurelia-slickgrid)
+ * Licensed under MIT (https://github.com/ghiscoding/aurelia-slickgrid/blob/master/LICENSE)
  * @author: Ghislain B. (ghiscoding)
  *//*!
 
@@ -396,7 +396,7 @@
       border-top: $preheader-border-top;
 
       .slick-header-column {
-        height: calc(#{$preheader-height} - #{$cell-padding-top-bottom});
+        height: $preheader-height;
         border-left: $preheader-border-left;
         border-right: $preheader-border-right;
         font-size: $preheader-font-size;
@@ -415,10 +415,19 @@
   /** Frozen/Pinned styling */
 
   .slick-row .slick-cell.frozen:last-child,
-  // .slick-header-column.frozen:last-child,
-  .slick-headerrow-column.frozen:last-child,
   .slick-footerrow-column.frozen:last-child {
     border-right: $frozen-border-right;
+  }
+  .slick-header-column.frozen:last-child {
+    border-right: $frozen-header-row-border-right;
+  }
+  .slick-pane-left {
+    .slick-preheader-panel .slick-header-column.frozen:last-child {
+      border-right: $frozen-preheader-row-border-right;
+    }
+  }
+  .slick-headerrow-column.frozen:last-child {
+    border-right: $frozen-filter-row-border-right;
   }
 
   .slick-pane-bottom {

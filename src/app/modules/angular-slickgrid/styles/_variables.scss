@@ -65,8 +65,8 @@
  $preheader-border-left-first-element:           none !default;
  $preheader-border-right:                        none !default;
  $preheader-border-right-last-element:           none !default;
- $preheader-border-bottom:                       0 !default;
- $preheader-border-top:                          0 !default;
+ $preheader-border-bottom:                       none !default;
+ $preheader-border-top:                          none !default;
  $preheader-font-size:                           calc(#{$font-size-base} + 3px) !default;
  $preheader-height:                              25px !default; /* full height is calculated with cell padding + borders (25px + 5px + 0px + 0px) = 30px must be set as preHeaderPanelHeight */
  $preheader-grouped-title-display:               inline-grid !default;
@@ -117,6 +117,9 @@
  /* Frozen pinned rows/columns */
  $frozen-border-bottom:                          1px solid #a5a5a5 !default;
  $frozen-border-right:                           1px solid #a5a5a5 !default;
+ $frozen-preheader-row-border-right:             $frozen-border-right !default;
+ $frozen-header-row-border-right:                $frozen-border-right !default;
+ $frozen-filter-row-border-right:                $frozen-border-right !default;
  $frozen-overflow-right:                         scroll !default;                      // typically we would like to always have the scroll displayed when using hamburger menu (top right)
 
  /* icon font is using Font-Awesome by default but could be changed to any other icon package like Glyphicons, ... */

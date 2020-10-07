@@ -289,6 +289,9 @@ export interface GridOption {
   /** Formatter commonly used options defined for the entire grid */
   formatterOptions?: FormatterOption;
 
+  /** Optional frozen border in pixel to remove from total header width calculation (depending on your border width, it should be 0, 1 or 2 defaults is 1) */
+  frozenHeaderWidthCalcDifferential?: number;
+
   /** Defaults to false, do we want to freeze (pin) the bottom portion instead of the top */
   frozenBottom?: boolean;
 
