@@ -110,6 +110,9 @@ export class GroupingAndColspanService {
     let header;
     let lastColumnGroup = '';
     let widthTotal = 0;
+    const frozenColumn = this._gridOptions && this._gridOptions.frozenColumn || -1;
+    const frozenHeaderWidthCalcDifferential = this._gridOptions && this._gridOptions.frozenHeaderWidthCalcDifferential || 0;
+    const isFrozenGrid = frozenColumn >= 0;
 
     for (let i = start; i < end; i++) {
       colDef = this._columnDefinitions[i];
@@ -117,11 +120,11 @@ export class GroupingAndColspanService {
         if (lastColumnGroup === colDef.columnGroup && i > 0) {
           widthTotal += colDef.width || 0;
           if (header && header.width) {
-            header.width(widthTotal - headerColumnWidthDiff);
+            header.width(widthTotal - headerColumnWidthDiff - frozenHeaderWidthCalcDifferential); // remove possible frozen border
           }
         } else {
           widthTotal = colDef.width || 0;
-          header = $(`<div class="ui-state-default slick-header-column" />`)
+          header = $(`<div class="ui-state-default slick-header-column ${isFrozenGrid ? 'frozen' : ''}" />`)
             .html(`<span class="slick-column-name">${colDef.columnGroup || ''}</span>`)
             .width(widthTotal - headerColumnWidthDiff)
             .appendTo(preHeaderPanel);
@@ -130,6 +133,7 @@ export class GroupingAndColspanService {
       }
     }
   }
+
 
   /** Translate Column Group texts and re-render them afterward. */
   translateGroupingAndColSpan() {
