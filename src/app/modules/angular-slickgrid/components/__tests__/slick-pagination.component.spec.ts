@@ -12,7 +12,7 @@ const paginationServiceStub = {
   dataTo: 10,
   pageNumber: 2,
   pageCount: 1,
-  itemsPerPage: 5,
+  itemsPerPage: 10,
   pageSize: 10,
   totalItems: 100,
   availablePageSizes: [5, 10, 15, 20],
@@ -123,6 +123,17 @@ describe('App Component', () => {
       expect(pageInfoFromTo.innerHTML).toBe('<span data-test="item-from">5</span>-<span data-test="item-to">10</span> de ');
       expect(pageInfoTotalItems.innerHTML).toBe('<span data-test="total-items">100</span> éléments ');
       expect(component.totalItems).toBe(100);
+    });
+
+    it('should select the option with the current itemsPerPage in the select dropdown', () => {
+      fixture.detectChanges();
+
+      const selectElement = fixture.debugElement.query(By.css('select')).nativeElement as HTMLSelectElement;
+
+      expect(selectElement.value).toBe('10');
+      expect(selectElement.selectedIndex).toBe(1);
+      const optionElement = selectElement.selectedOptions.item(0);
+      expect(optionElement.value).toBe('10');
     });
 
     it('should create a the Slick-Pagination component in the DOM and expect different locale when changed', () => {
