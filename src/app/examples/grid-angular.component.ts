@@ -136,7 +136,7 @@ export class GridAngularComponent implements OnInit {
         id: 'assignee2',
         name: 'Assignee with Angular Component',
         field: 'assignee',
-        minWidth: 100,
+        minWidth: 125,
         filterable: true,
         sortable: true,
         filter: {

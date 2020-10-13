@@ -24,7 +24,7 @@
         <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
         <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
         <label class="checkbox-inline control-label" for="autoCommitEdit">
-          <input type="checkbox" id="autoCommitEdit" [checked]="gridOptions.autoCommitEdit"
+          <input type="checkbox" id="autoCommitEdit" data-test="auto-commit" [checked]="gridOptions.autoCommitEdit"
                  (click)="changeAutoCommit()">
           Auto Commit Edit
         </label>
@@ -43,8 +43,7 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid22"
-                       (onAngularGridCreated)="angularGridReady($event)"
+    <angular-slickgrid gridId="grid22" (onAngularGridCreated)="angularGridReady($event)"
                        (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
                        (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
                        (sgOnValidationError)="onCellValidation($event.detail.eventData, $event.detail.args)"
