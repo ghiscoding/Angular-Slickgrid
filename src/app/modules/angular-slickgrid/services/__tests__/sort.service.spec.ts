@@ -7,6 +7,7 @@ import {
   CurrentSorter,
   EmitterType,
   FieldType,
+  GridMenuItem,
   GridOption,
   MenuCommandItem,
   SlickEventHandler,
@@ -29,6 +30,16 @@ const gridOptionMock = {
     preProcess: jest.fn(),
     process: jest.fn(),
     postProcess: jest.fn(),
+  },
+  gridMenu: {
+    customItems: [{
+      command: 'clear-sorting',
+      disabled: false,
+      hidden: true,
+      iconCssClass: 'fa fa-unsorted mdi mdi-swap-vertical',
+      positionOrder: 51,
+      title: 'Clear all Sorting'
+    }]
   }
 } as GridOption;
 
@@ -563,11 +574,14 @@ describe('SortService', () => {
       expect(clearSpy).toHaveBeenCalled();
       expect(unsubscribeSpy).toHaveBeenCalled();
       mockColumns.forEach(col => {
-        expect(col.sortable).toBeFalse();
+        expect(col.sortable).toBeFalsy();
       });
       mockColumns.forEach(col => col.header.menu.items.forEach(item => {
-        expect((item as MenuCommandItem).hidden).toBeTrue();
+        expect((item as MenuCommandItem).hidden).toBeTruthy();
       }));
+      gridOptionMock.gridMenu.customItems.forEach(item => {
+        expect((item as GridMenuItem).hidden).toBeTruthy();
+      });
     });
 
     it('should disable Sort functionality when passing True as 1st argument and False as 2nd argument SHOULD NOT trigger an event', () => {
@@ -581,11 +595,14 @@ describe('SortService', () => {
       expect(clearSpy).not.toHaveBeenCalled();
       expect(unsubscribeSpy).toHaveBeenCalled();
       mockColumns.forEach(col => {
-        expect(col.sortable).toBeFalse();
+        expect(col.sortable).toBeFalsy();
       });
       mockColumns.forEach(col => col.header.menu.items.forEach(item => {
-        expect((item as MenuCommandItem).hidden).toBeTrue();
+        expect((item as MenuCommandItem).hidden).toBeTruthy();
       }));
+      gridOptionMock.gridMenu.customItems.forEach(item => {
+        expect((item as GridMenuItem).hidden).toBeTruthy();
+      });
     });
 
     it('should enable Sort functionality when passing False as 1st argument', (done) => {
@@ -597,11 +614,14 @@ describe('SortService', () => {
       gridStub.onSort.notify({ multiColumnSort: true, sortCols: [], grid: gridStub }, new Slick.EventData(), gridStub);
 
       mockColumns.forEach(col => {
-        expect(col.sortable).toBeTrue();
+        expect(col.sortable).toBeTruthy();
       });
       mockColumns.forEach(col => col.header.menu.items.forEach(item => {
-        expect((item as MenuCommandItem).hidden).toBeFalse();
+        expect((item as MenuCommandItem).hidden).toBeFalsy();
       }));
+      gridOptionMock.gridMenu.customItems.forEach(item => {
+        expect((item as GridMenuItem).hidden).toBeFalsy();
+      });
 
       setTimeout(() => {
         expect(handleSpy).toHaveBeenCalled();

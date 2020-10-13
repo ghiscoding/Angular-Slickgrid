@@ -19,7 +19,7 @@ import {
 import * as moment from 'moment-mini';
 import { Subscription } from 'rxjs';
 
-const defaultPageSize = 10;
+const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
 const LOCAL_STORAGE_KEY = 'gridStateGraphql';
 
