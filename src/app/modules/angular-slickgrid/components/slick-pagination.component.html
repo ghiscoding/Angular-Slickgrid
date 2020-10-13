@@ -38,8 +38,8 @@
     </nav>
   </div>
   <span class="slick-pagination-settings">
-    <select id="items-per-page-label" [value]="itemsPerPage" (change)="changeItemPerPage($event)">
-      <option value="{{pageSize}}" *ngFor="let pageSize of availablePageSizes">{{pageSize}}</option>
+    <select id="items-per-page-label" (change)="changeItemPerPage($event)">
+      <option value="{{pageSize}}" [selected]="pageSize === itemsPerPage" *ngFor="let pageSize of availablePageSizes">{{pageSize}}</option>
     </select>
     <span>{{textItemsPerPage}}</span>,
     <span class="slick-pagination-count">
