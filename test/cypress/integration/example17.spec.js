@@ -134,7 +134,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
     cy.get('#grid17')
       .find('button.slick-gridmenu-button')
       .trigger('click')
-      .click();
+      .click({ force: true });
 
     cy.get('.slick-gridmenu-custom')
       .find('.slick-gridmenu-item')
