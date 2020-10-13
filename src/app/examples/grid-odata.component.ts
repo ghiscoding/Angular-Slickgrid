@@ -106,7 +106,7 @@ export class GridOdataComponent implements OnInit {
           // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
           { columnId: 'name', direction: 'asc' }
         ],
-        pagination: { pageNumber: 2, pageSize: 20 }
+        pagination: { pageNumber: 2, pageSize: defaultPageSize }
       },
       backendServiceApi: {
         service: new GridOdataService(),
