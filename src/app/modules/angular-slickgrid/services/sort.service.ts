@@ -206,13 +206,14 @@ export class SortService {
         this.clearSorting();
       }
       this._eventHandler.unsubscribeAll();
-      updatedColumnDefinitions = this.disableSortingOnAllColumns(true);
+      updatedColumnDefinitions = this.disableAllSortingCommands(true);
     } else {
-      updatedColumnDefinitions = this.disableSortingOnAllColumns(false);
+      updatedColumnDefinitions = this.disableAllSortingCommands(false);
       const onSortHandler = this._grid.onSort;
       this._eventHandler.subscribe(onSortHandler, (e: Event, args: any) => this.handleLocalOnSort(e, args));
     }
     this._grid.setOptions({ enableSorting: this._gridOptions.enableSorting }, false, true);
+    this.sharedService.gridOptions = this._gridOptions;
 
     // reset columns so that it recreate the column headers and remove/add the sort icon hints
     // basically without this, the sort icon hints were still showing up even after disabling the Sorting
@@ -527,14 +528,15 @@ export class SortService {
   /**
    * Loop through all column definitions and do the following 2 things
    * 1. disable/enable the "sortable" property of each column
-   * 2. loop through each Header Menu commands and change the command "hidden" property to enable/disable
+   * 2. loop through each Header Menu commands and change the "hidden" commands to show/hide depending if it's enabled/disabled
    * Also note that we aren't deleting any properties, we just toggle their flags so that we can reloop through at later point in time.
    * (if we previously deleted these properties we wouldn't be able to change them back since these properties wouldn't exist anymore, hence why we just hide the commands)
    * @param {boolean} isDisabling - are we disabling the sort functionality? Defaults to true
    */
-  private disableSortingOnAllColumns(isDisabling = true): Column[] {
+  private disableAllSortingCommands(isDisabling = true): Column[] {
     const columnDefinitions = this._grid.getColumns();
 
+    // loop through column definition to hide/show header menu commands
     columnDefinitions.forEach((col) => {
       if (typeof col.sortable !== undefined) {
         col.sortable = !isDisabling;
@@ -550,6 +552,18 @@ export class SortService {
         });
       }
     });
+
+    // loop through column definition to hide/show grid menu commands
+    if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems) {
+      this._gridOptions.gridMenu.customItems.forEach((menuItem) => {
+        if (menuItem && typeof menuItem !== 'string') {
+          const menuCommand = menuItem.command;
+          if (menuCommand === 'clear-sorting') {
+            menuItem.hidden = isDisabling;
+          }
+        }
+      });
+    }
 
     return columnDefinitions;
   }

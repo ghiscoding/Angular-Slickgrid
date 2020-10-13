@@ -9,8 +9,10 @@ import {
   BackendService,
   Column,
   CurrentFilter,
+  GridMenuItem,
   GridOption,
   FieldType,
+  MenuCommandItem,
   SlickEventHandler,
 } from '../../models';
 import { Filters } from '../../filters';
@@ -35,6 +37,22 @@ const gridOptionMock = {
     preProcess: jest.fn(),
     process: jest.fn(),
     postProcess: jest.fn(),
+  },
+  gridMenu: {
+    customItems: [{
+      command: 'clear-filter',
+      disabled: false,
+      iconCssClass: 'fa fa-filter mdi mdi-filter-remove-outline',
+      positionOrder: 50,
+      title: 'Clear all Filters'
+    }, {
+      command: 'toggle-filter',
+      disabled: false,
+      hidden: true,
+      iconCssClass: 'fa fa-random mdi mdi-flip-vertical',
+      positionOrder: 52,
+      title: 'Toggle Filter Row'
+    }]
   }
 } as GridOption;
 
@@ -1125,15 +1143,25 @@ describe('FilterService', () => {
     });
 
     it('should disable the Filter Functionality from the Grid Options & toggle the Header Filter row', () => {
-      const mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      const mockColumns = [
+        { id: 'field1', field: 'field1', width: 100, header: { menu: { items: [{ command: 'clear-filter' }] } } },
+        { id: 'field2', field: 'field2', width: 100, header: { menu: { items: [{ command: 'clear-filter' }] } } }
+      ];
       const setOptionSpy = jest.spyOn(gridStub, 'setOptions');
       const setHeaderSpy = jest.spyOn(gridStub, 'setHeaderRowVisibility');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
       jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(mockColumns)
 
       service.init(gridStub);
       service.disableFilterFunctionality();
 
+      mockColumns.forEach(col => col.header.menu.items.forEach(item => {
+        expect((item as MenuCommandItem).hidden).toBeTruthy();
+      }));
+      gridOptionMock.gridMenu.customItems.forEach(item => {
+        expect((item as GridMenuItem).hidden).toBeTruthy();
+      });
       expect(setOptionSpy).toHaveBeenCalledWith({ enableFiltering: false }, false, true);
       expect(setHeaderSpy).toHaveBeenCalledWith(false);
       expect(setColsSpy).toHaveBeenCalledWith(mockColumns);
@@ -1143,15 +1171,25 @@ describe('FilterService', () => {
       gridOptionMock.enableFiltering = false;
       gridOptionMock.showHeaderRow = false;
 
-      const mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      const mockColumns = [
+        { id: 'field1', field: 'field1', width: 100, header: { menu: { items: [{ command: 'clear-filter' }] } } },
+        { id: 'field2', field: 'field2', width: 100, header: { menu: { items: [{ command: 'clear-filter' }] } } }
+      ];
       const setOptionSpy = jest.spyOn(gridStub, 'setOptions');
       const setHeaderSpy = jest.spyOn(gridStub, 'setHeaderRowVisibility');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
       jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(mockColumns)
 
       service.init(gridStub);
       service.disableFilterFunctionality(false);
 
+      mockColumns.forEach(col => col.header.menu.items.forEach(item => {
+        expect((item as MenuCommandItem).hidden).toBeFalsy();
+      }));
+      gridOptionMock.gridMenu.customItems.forEach(item => {
+        expect((item as GridMenuItem).hidden).toBeFalsy();
+      });
       expect(setOptionSpy).toHaveBeenCalledWith({ enableFiltering: true }, false, true);
       expect(setHeaderSpy).toHaveBeenCalledWith(true);
       expect(setColsSpy).toHaveBeenCalledWith(mockColumns);

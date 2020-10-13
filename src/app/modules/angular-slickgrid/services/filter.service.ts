@@ -651,8 +651,11 @@ export class FilterService {
       if (clearFiltersWhenDisabled && isFilterDisabled) {
         this.clearFilters();
       }
+      this.disableAllFilteringCommands(isFilterDisabled);
       this._grid.setOptions({ enableFiltering: newShowFilterFlag }, false, true);
       this._grid.setHeaderRowVisibility(newShowFilterFlag);
+      this._gridOptions.enableFiltering = !isFilterDisabled;
+      this.sharedService.gridOptions = this._gridOptions;
 
       // when displaying header row, we'll call "setColumns" which in terms will recreate the header row filters
       this._grid.setColumns(this.sharedService.columnDefinitions);
@@ -857,6 +860,45 @@ export class FilterService {
         }, eventData);
       }
     }
+  }
+
+  /**
+   * Loop through all column definitions and do the following thing
+   * 1. loop through each Header Menu commands and change the "hidden" commands to show/hide depending if it's enabled/disabled
+   * Also note that we aren't deleting any properties, we just toggle their flags so that we can reloop through at later point in time.
+   * (if we previously deleted these properties we wouldn't be able to change them back since these properties wouldn't exist anymore, hence why we just hide the commands)
+   * @param {boolean} isDisabling - are we disabling the filter functionality? Defaults to true
+   */
+  private disableAllFilteringCommands(isDisabling = true): Column[] {
+    const columnDefinitions = this._grid.getColumns();
+
+    // loop through column definition to hide/show header menu commands
+    columnDefinitions.forEach((col) => {
+      if (col && col.header && col.header.menu) {
+        col.header.menu.items.forEach(menuItem => {
+          if (menuItem && typeof menuItem !== 'string') {
+            const menuCommand = menuItem.command;
+            if (menuCommand === 'clear-filter') {
+              menuItem.hidden = isDisabling;
+            }
+          }
+        });
+      }
+    });
+
+    // loop through column definition to hide/show grid menu commands
+    if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems) {
+      this._gridOptions.gridMenu.customItems.forEach((menuItem) => {
+        if (menuItem && typeof menuItem !== 'string') {
+          const menuCommand = menuItem.command;
+          if (menuCommand === 'clear-filter' || menuCommand === 'toggle-filter') {
+            menuItem.hidden = isDisabling;
+          }
+        }
+      });
+    }
+
+    return columnDefinitions;
   }
 
   private updateColumnFilters(searchTerms: SearchTerm[] | undefined, columnDef: any, operator?: OperatorType | OperatorString) {
