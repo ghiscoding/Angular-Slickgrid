@@ -179,7 +179,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           { columnId: 'name', direction: 'asc' },
           { columnId: 'company', direction: SortDirection.DESC }
         ],
-        pagination: { pageNumber: 2, pageSize: 20 }
+        pagination: { pageNumber: 2, pageSize: defaultPageSize }
       },
       backendServiceApi: {
         service: new GraphqlService(),
