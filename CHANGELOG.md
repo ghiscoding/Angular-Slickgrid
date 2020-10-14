@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.2...v2.22.3) (2020-10-14)
+
+### [2.22.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.1...v2.22.2) (2020-10-14)
+
+
+### Features
+
+* **styling:** add frozen on all possible elements with SASS variables ([#599](https://github.com/ghiscoding/angular-slickgrid/issues/599)) ([a6f292c](https://github.com/ghiscoding/angular-slickgrid/commit/a6f292c8c4ef90cd6bca606b0609efdf4ceab1e1))
+
+
+### Bug Fixes
+
+* **core:** don't override alwaysShowVerticalScroll flag ([#600](https://github.com/ghiscoding/angular-slickgrid/issues/600)) ([4eb9237](https://github.com/ghiscoding/angular-slickgrid/commit/4eb923772f80c224c9b93fe051c39e4578c0645f)), closes [#537](https://github.com/ghiscoding/angular-slickgrid/issues/537) [6pac/SlickGrid#537](https://github.com/6pac/SlickGrid/issues/537) [#537](https://github.com/ghiscoding/angular-slickgrid/issues/537) [6pac/SlickGrid#537](https://github.com/6pac/SlickGrid/issues/537)
+* **core:** hide Grid Menu Filter/Sort cmd when disabling functionality ([#607](https://github.com/ghiscoding/angular-slickgrid/issues/607)) ([6a68e23](https://github.com/ghiscoding/angular-slickgrid/commit/6a68e239dc832c293282454e2a6cbf7470f83eae))
+
 ### [2.22.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.0...v2.22.1) (2020-10-02)
 
 
