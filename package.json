@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.22.1",
+  "version": "2.22.2",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -14,7 +14,7 @@
     "ng": "ng",
     "ng:build": "ng build",
     "start": "ng serve --port 4300 --open",
-    "prebuild": "npm-run-all delete:dist test:coverage",
+    "prebuild": "npm-run-all delete:dist",
     "build": "npm run packagr",
     "postbuild": "npm-run-all sass:build sass:copy copy:i18n copy:lib",
     "build:with-e2e": "npm-run-all build cypress:ci:mochawesome",
