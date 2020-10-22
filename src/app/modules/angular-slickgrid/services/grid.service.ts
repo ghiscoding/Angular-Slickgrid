@@ -42,6 +42,14 @@ export class GridService {
     private sortService: SortService
   ) { }
 
+  dispose() {
+    this.onItemAdded.complete();
+    this.onItemDeleted.complete();
+    this.onItemUpdated.complete();
+    this.onItemUpserted.complete();
+    this.onColumnsChanged.complete();
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};

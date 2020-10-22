@@ -127,6 +127,9 @@ export class PaginationService {
 
     // also unsubscribe all Angular Subscriptions
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
+
+    this.onPaginationChanged.complete();
+    this.onPaginationVisibilityChanged.complete();
   }
 
   getCurrentPageNumber(): number {
