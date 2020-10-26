@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
   Column,
@@ -10,6 +11,7 @@ import {
   Formatter,
   Formatters,
   GridOption,
+  unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
 const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
@@ -58,7 +60,7 @@ const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any
   styleUrls: ['./grid-contextmenu.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class GridContextMenuComponent implements OnInit {
+export class GridContextMenuComponent implements OnInit, OnDestroy {
   title = 'Example 26: Cell Menu & Context Menu Plugins';
   subTitle = `Add Cell Menu and Context Menu
     <ul>
@@ -86,6 +88,7 @@ export class GridContextMenuComponent implements OnInit {
       </ol>
     </ul>`;
 
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -114,6 +117,11 @@ export class GridContextMenuComponent implements OnInit {
   ngOnInit() {
     this.prepareGrid();
     this.dataset = this.getData(1000);
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   prepareGrid() {
@@ -453,8 +461,11 @@ export class GridContextMenuComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 }

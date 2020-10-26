@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
   Column,
@@ -9,7 +10,8 @@ import {
   GridOption,
   GridState,
   GridStateChange,
-  MultipleSelectOption
+  MultipleSelectOption,
+  unsubscribeAllObservables
 } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
@@ -22,7 +24,7 @@ const NB_ITEMS = 500;
 @Component({
   templateUrl: './grid-state.component.html'
 })
-export class GridStateComponent implements OnInit {
+export class GridStateComponent implements OnInit, OnDestroy {
   title = 'Example 16: Grid State & Presets using Local Storage';
   subTitle = `
     Grid State & Preset (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
@@ -35,7 +37,7 @@ export class GridStateComponent implements OnInit {
       <li>Local Storage is just one option, you can use whichever is more convenient for you (Local Storage, Session Storage, DB, ...)</li>
     </ul>
   `;
-
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -48,6 +50,11 @@ export class GridStateComponent implements OnInit {
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {
@@ -213,9 +220,11 @@ export class GridStateComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 
   useDefaultPresets() {
