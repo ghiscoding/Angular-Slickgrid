@@ -90,7 +90,6 @@ export class GridStateService {
 
     this._currentColumns = [];
     this._columns = [];
-    this.onGridStateChanged.complete();
   }
 
   /**

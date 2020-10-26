@@ -54,11 +54,6 @@ export class ExcelExportService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  dispose() {
-    this.onGridAfterExportToExcel.complete();
-    this.onGridBeforeExportToExcel.complete();
-  }
-
   /**
    * Initialize the Export Service
    * @param grid

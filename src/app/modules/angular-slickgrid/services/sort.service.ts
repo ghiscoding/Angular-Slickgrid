@@ -188,8 +188,6 @@ export class SortService {
     if (isObservable(this.httpCancelRequests$)) {
       this.httpCancelRequests$.next(); // this cancels any pending http requests
     }
-    this.onSortChanged.complete();
-    this.onSortCleared.complete();
   }
 
   /**

@@ -45,11 +45,6 @@ export class ExportService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  dispose() {
-    this.onGridBeforeExportToFile.complete();
-    this.onGridAfterExportToFile.complete();
-  }
-
   /**
    * Initialize the Export Service
    * @param grid

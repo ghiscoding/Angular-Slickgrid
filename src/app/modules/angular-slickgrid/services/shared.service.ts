@@ -16,9 +16,6 @@ export class SharedService {
 
   // --
   // public
-  dispose() {
-    this.onColumnsChanged.complete();
-  }
 
   /** Getter for All Columns  in the grid (hidden/visible) */
   get allColumns(): Column[] {

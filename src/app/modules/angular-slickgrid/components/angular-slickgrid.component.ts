@@ -272,16 +272,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.dataView = undefined;
     this.gridOptions = {};
     this.extensionService.dispose();
-    this.exportService.dispose();
-    this.excelExportService.dispose();
     this.filterService.dispose();
     this.gridEventService.dispose();
-    this.gridService.dispose();
     this.gridStateService.dispose();
     this.groupingAndColspanService.dispose();
-    // this.paginationService.dispose();
+    this.paginationService.dispose();
     this.resizer.dispose();
-    this.sharedService.dispose();
     this.sortService.dispose();
     this.treeDataService.dispose();
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {

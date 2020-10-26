@@ -155,8 +155,6 @@ export class ResizerService {
    */
   dispose() {
     $(window).off(`resize.grid.${this._gridUid}`);
-    this.onGridAfterResize.complete();
-    this.onGridBeforeResize.complete();
   }
 
   /**
