@@ -317,9 +317,7 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
     }
-    if (this._totalItems > 0 && this._pageNumber === 0) {
-      this._pageNumber = 1;
-    }
+    this._pageNumber = (this._totalItems > 0 && this._pageNumber === 0) ? 1 : this._pageNumber;
 
     // do a final check on the From/To and make sure they are not over or below min/max acceptable values
     if (this._dataTo > this._totalItems) {
