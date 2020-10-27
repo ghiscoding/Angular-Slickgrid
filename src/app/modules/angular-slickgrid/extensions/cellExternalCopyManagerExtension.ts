@@ -51,6 +51,7 @@ export class CellExternalCopyManagerExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    document.removeEventListener('keydown', this.hookUndoShortcutKey.bind(this));
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
