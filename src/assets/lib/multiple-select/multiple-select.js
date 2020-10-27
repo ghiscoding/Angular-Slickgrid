@@ -209,21 +209,22 @@
     this.selectItemName = 'data-name="selectItem' + name + '"';
 
     if (!this.options.keepOpen) {
-      $('body').click(function (e) {
-        if ($(e.target)[0] === that.$choice[0] ||
-          $(e.target).parents('.ms-choice')[0] === that.$choice[0]) {
-          return;
-        }
-        if (($(e.target)[0] === that.$drop[0] ||
-          $(e.target).parents('.ms-drop')[0] !== that.$drop[0] && e.target !== $el[0]) &&
-          that.options.isOpen
-        ) {
-          that.close();
-        }
-      });
+      $('body').on('click', handleBodyOnClick.bind(that, $el));
     }
-
     this.options.onAfterCreate();
+  }
+
+  function handleBodyOnClick($el, e) {
+    if ($(e.target)[0] === this.$choice[0] ||
+      $(e.target).parents('.ms-choice')[0] === this.$choice[0]) {
+      return;
+    }
+    if (($(e.target)[0] === this.$drop[0] ||
+      $(e.target).parents('.ms-drop')[0] !== this.$drop[0] && e.target !== $el[0]) &&
+      this.options.isOpen
+    ) {
+      this.close();
+    }
   }
 
   MultipleSelect.prototype = {
@@ -899,6 +900,7 @@
     destroy: function () {
       this.$el.before(this.$parent).show();
       this.$parent.remove();
+      $('body').off('click', handleBodyOnClick.bind(this, this.$el));
     },
 
     checkAll: function () {
