@@ -898,9 +898,9 @@
     },
 
     destroy: function () {
+      $('body').off('click', handleBodyOnClick.bind(this, this.$el));
       this.$el.before(this.$parent).show();
       this.$parent.remove();
-      $('body').off('click', handleBodyOnClick.bind(this, this.$el));
     },
 
     checkAll: function () {
