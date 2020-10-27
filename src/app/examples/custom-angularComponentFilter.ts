@@ -11,6 +11,7 @@ import {
   OperatorType,
   OperatorString,
   SearchTerm,
+  unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
@@ -18,7 +19,7 @@ declare const $: any;
 
 export class CustomAngularComponentFilter implements Filter {
   private _shouldTriggerQuery = true;
-  changeSubscriber: Subscription;
+  private _subscriptions: Subscription[] = [];
 
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
@@ -84,11 +85,13 @@ export class CustomAngularComponentFilter implements Filter {
         // but technically you can pass any values you wish to your Component
         Object.assign(componentOuput.componentRef.instance, { collection: this.collection });
 
-        this.changeSubscriber = componentOuput.componentRef.instance.onItemChanged.subscribe((item) => {
-          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
-          // reset flag for next use
-          this._shouldTriggerQuery = true;
-        });
+        this._subscriptions.push(
+          componentOuput.componentRef.instance.onItemChanged.subscribe((item) => {
+            this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
+            // reset flag for next use
+            this._shouldTriggerQuery = true;
+          })
+        );
       });
     }
   }
@@ -107,8 +110,10 @@ export class CustomAngularComponentFilter implements Filter {
   destroy() {
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
-      this.changeSubscriber.unsubscribe();
     }
+
+    // also unsubscribe all Angular Subscriptions
+    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
   }
 
   /** Set value(s) on the DOM element */

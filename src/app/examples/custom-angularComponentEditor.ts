@@ -8,6 +8,7 @@ import {
   EditorValidator,
   EditorValidatorOutput,
   GridOption,
+  unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
 /*
@@ -15,7 +16,7 @@ import {
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomAngularComponentEditor implements Editor {
-  changeSubscriber: Subscription;
+  private _subscriptions: Subscription[] = [];
 
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
@@ -88,9 +89,9 @@ export class CustomAngularComponentEditor implements Editor {
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
       // when our model (item object) changes, we'll call a save of the slickgrid editor
-      this.changeSubscriber = this.componentRef.instance.onItemChanged.subscribe((item) => {
-        this.save();
-      });
+      this._subscriptions.push(
+        this.componentRef.instance.onItemChanged.subscribe((item: any) => this.save())
+      );
     }
   }
 
@@ -131,8 +132,10 @@ export class CustomAngularComponentEditor implements Editor {
   destroy() {
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
-      this.changeSubscriber.unsubscribe();
     }
+
+    // also unsubscribe all Angular Subscriptions
+    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
   }
 
   /** optional, implement a focus method on your Angular Component */
