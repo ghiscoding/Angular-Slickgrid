@@ -156,7 +156,7 @@ export class ResizerService {
    * Dispose function when element is destroyed
    */
   dispose() {
-    $(window).off(`resize.grid.${this._gridUid}`, this.handleResizeGrid);
+    $(window).off(`resize.grid.${this._gridUid}`);
   }
 
   /**
