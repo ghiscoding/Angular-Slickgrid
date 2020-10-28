@@ -34,13 +34,13 @@
     {
       "label": "Cypress Open Tool",
       "type": "shell",
-      "command": "yarn run cypress:open",
+      "command": "yarn run cypress",
       "problemMatcher": []
     },
     {
       "label": "Cypress CI (mochawesome)",
       "type": "shell",
-      "command": "yarn run cypress:ci:mochawesome",
+      "command": "yarn run cypress:ci",
       "problemMatcher": []
     },
     {
