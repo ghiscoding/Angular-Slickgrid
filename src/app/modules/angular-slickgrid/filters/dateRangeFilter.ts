@@ -166,7 +166,7 @@ export class DateRangeFilter implements Filter {
   // private functions
   // ------------------
   private buildDatePickerInput(searchTerms?: SearchTerm | SearchTerm[]) {
-    const columnId = this.columnDef && this.columnDef.id;
+    const columnId = this.columnDef && this.columnDef.id || '';
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnFilter.type || this.columnDef.type || FieldType.dateUtc);
     const userFilterOptions = (this.columnFilter && this.columnFilter.filterOptions || {}) as FlatpickrOption;
