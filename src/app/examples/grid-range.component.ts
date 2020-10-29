@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
@@ -14,8 +14,10 @@ import {
   Metrics,
   MultipleSelectOption,
   OperatorType,
+  unsubscribeAllObservables,
 } from '../modules/angular-slickgrid';
 import * as moment from 'moment-mini';
+import { Subscription } from 'rxjs';
 
 const NB_ITEMS = 1500;
 
@@ -34,7 +36,7 @@ const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any
 @Component({
   templateUrl: './grid-range.component.html'
 })
-export class GridRangeComponent implements OnInit {
+export class GridRangeComponent implements OnInit, OnDestroy {
   title = 'Example 25: Filtering from Range of Search Values';
   subTitle = `
   This demo shows how to use Filters with Range of Search Values (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Range-Filters" target="_blank">Wiki docs</a>)
@@ -54,7 +56,7 @@ export class GridRangeComponent implements OnInit {
       <li>Date Range with Flatpickr Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
     </ul>
   `;
-
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -73,6 +75,11 @@ export class GridRangeComponent implements OnInit {
     const defaultLang = 'en';
     this.translate.use(defaultLang);
     this.selectedLanguage = defaultLang;
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {
@@ -275,8 +282,10 @@ export class GridRangeComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 }

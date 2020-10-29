@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
@@ -6,7 +6,7 @@ import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType,
   styleUrls: ['./grid-frozen.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GridFrozenComponent implements OnInit {
+export class GridFrozenComponent implements OnInit, OnDestroy {
   title = 'Example 20: Pinned (frozen) Columns/Rows';
   subTitle = `
   This example demonstrates the use of Pinned (aka frozen) Columns and/or Rows (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Pinned-(aka-Frozen)-Columns-Rows" target="_blank">Wiki docs</a>)
@@ -29,6 +29,12 @@ export class GridFrozenComponent implements OnInit {
 
   ngOnInit(): void {
     this.prepareDataGrid();
+  }
+
+  ngOnDestroy() {
+    // unsubscribe every SlickGrid subscribed event (or use the Slick.EventHandler)
+    this.gridObj.onMouseEnter.unsubscribe();
+    this.gridObj.onMouseLeave.unsubscribe();
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {

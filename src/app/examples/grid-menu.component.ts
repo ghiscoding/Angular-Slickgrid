@@ -1,6 +1,7 @@
-import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, ExtensionName, FieldType, Filters, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Component, Injectable, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { AngularGridInstance, Column, ExtensionName, FieldType, Filters, Formatters, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './grid-menu.component.html',
@@ -8,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
   encapsulation: ViewEncapsulation.None,
 })
 @Injectable()
-export class GridMenuComponent implements OnInit {
+export class GridMenuComponent implements OnInit, OnDestroy {
   title = 'Example 9: Grid Menu Control';
   subTitle = `
     This example demonstrates using the <b>Slick.Controls.GridMenu</b> plugin to easily add a Grid Menu (aka hamburger menu) on the top right corner of the grid.
@@ -24,6 +25,7 @@ export class GridMenuComponent implements OnInit {
     </ul>
   `;
 
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -35,6 +37,11 @@ export class GridMenuComponent implements OnInit {
     const defaultLang = 'en';
     this.translate.use(defaultLang);
     this.selectedLanguage = defaultLang;
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {
@@ -202,9 +209,11 @@ export class GridMenuComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 
   toggleGridMenu(e) {

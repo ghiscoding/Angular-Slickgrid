@@ -20,7 +20,7 @@ import {
   SearchTerm,
 } from './../models/index';
 import { CollectionService } from '../services/collection.service';
-import { castToPromise, getDescendantProperty, toKebabCase } from '../services/utilities';
+import { castToPromise, getDescendantProperty, toKebabCase, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -194,6 +194,8 @@ export class AutoCompleteFilter implements Filter {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
     }
+    // also unsubscribe all RxJS subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   /** Set value(s) on the DOM element */

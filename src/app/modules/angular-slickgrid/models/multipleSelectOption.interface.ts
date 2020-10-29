@@ -153,6 +153,12 @@ export interface MultipleSelectOption {
   /** Reloads the Multiple Select. If you’re dynamically adding/removing option tags on the original select via AJAX or DOM manipulation methods, call refresh to reflect the changes. */
   refresh?: () => void;
 
+  /** Gets the current Multiple-Select options */
+  getOptions?: () => MultipleSelectOption;
+
+  /** Set new multiple-select option(s) and refresh the element */
+  refreshOptions?: (newOptions: MultipleSelectOption) => void;
+
   /** Gets the selected values. */
   getSelects?: () => string | string[];
 

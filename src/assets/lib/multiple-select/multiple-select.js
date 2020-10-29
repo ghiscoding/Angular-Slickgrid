@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * @version 1.2.2
+ * @version 1.3.7
  *
  * http://wenzhixin.net.cn/p/multiple-select/
  *
@@ -25,6 +25,9 @@
  * - "domElmSelectAllHeight" defaults to 39 (as per CSS), that is the DOM element of the "Select All" text area
  * - "useSelectOptionLabel" (defaults to False), when set to True it will use the <option label=""> that can be used to display selected options
  * - "useSelectOptionLabelToHtml" (defaults to False), same as "useSelectOptionLabel" but will also render html
+ * Add new methods:
+ * - getOptions: returns multiple-select current options (copied from latest version of the original multiple-select.js lib)
+ * - refreshOptions: set new multiple-select options and refresh the element (copied from latest version of the original multiple-select.js lib)
  */
 
 (function ($) {
@@ -47,6 +50,24 @@
       return arg;
     });
     return flag ? str : '';
+  };
+
+  var compareObjects = function (objectA, objectB, compareLength) {
+    var aKeys = Object.keys(objectA);
+    var bKeys = Object.keys(objectB);
+
+    if (compareLength && aKeys.length !== bKeys.length) {
+      return false;
+    }
+
+    for (var i = 0; i < aKeys.length; i++) {
+      var key = aKeys[i];
+      if (bKeys.indexOf(key) >= 0 && objectA[key] !== objectB[key]) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   var removeDiacritics = function (str) {
@@ -209,21 +230,22 @@
     this.selectItemName = 'data-name="selectItem' + name + '"';
 
     if (!this.options.keepOpen) {
-      $('body').click(function (e) {
-        if ($(e.target)[0] === that.$choice[0] ||
-          $(e.target).parents('.ms-choice')[0] === that.$choice[0]) {
-          return;
-        }
-        if (($(e.target)[0] === that.$drop[0] ||
-          $(e.target).parents('.ms-drop')[0] !== that.$drop[0] && e.target !== $el[0]) &&
-          that.options.isOpen
-        ) {
-          that.close();
-        }
-      });
+      $('body').on('click', handleBodyOnClick.bind(that, $el));
     }
-
     this.options.onAfterCreate();
+  }
+
+  function handleBodyOnClick($el, e) {
+    if ($(e.target)[0] === this.$choice[0] ||
+      $(e.target).parents('.ms-choice')[0] === this.$choice[0]) {
+      return;
+    }
+    if (($(e.target)[0] === this.$drop[0] ||
+      $(e.target).parents('.ms-drop')[0] !== this.$drop[0] && e.target !== $el[0]) &&
+      this.options.isOpen
+    ) {
+      this.close();
+    }
   }
 
   MultipleSelect.prototype = {
@@ -486,8 +508,12 @@
 
       // Fix #77: 'All selected' when no options
       if (!this.$el.children().length) {
-        this.$selectAll.parent().hide();
-        this.$noResults.show();
+        if (this.$selectAll) {
+          this.$selectAll.parent().hide();
+        }
+        if (this.$noResults) {
+          this.$noResults.show();
+        }
       }
 
       if (this.options.offsetLeft) {
@@ -768,6 +794,22 @@
       });
     },
 
+    getOptions: function () {
+      // deep copy and remove data
+      const options = $.extend({}, this.options);
+      delete options.data;
+      return $.extend(true, {}, options);
+    },
+
+    refreshOptions: function (options) {
+      // If the objects are equivalent then avoid the call of destroy / init methods
+      if (compareObjects(this.options, options, true)) {
+        return;
+      }
+      this.options = $.extend(this.options, options);
+      this.init();
+    },
+
     //value or text, default: 'value'
     getSelects: function (type) {
       var that = this,
@@ -897,6 +939,7 @@
     },
 
     destroy: function () {
+      $('body').off('click', handleBodyOnClick.bind(this, this.$el));
       this.$el.before(this.$parent).show();
       this.$parent.remove();
     },
@@ -980,6 +1023,7 @@
       value,
       allowedMethods = [
         'getSelects', 'setSelects',
+        'getOptions', 'refreshOptions',
         'enable', 'disable',
         'open', 'close',
         'checkAll', 'uncheckAll',

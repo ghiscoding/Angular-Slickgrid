@@ -661,9 +661,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
               .catch((error: any) => onBackendError(error, backendApi));
           } else if (isObservable(process)) {
-            process.subscribe(
-              (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
-              (error: any) => onBackendError(error, backendApi)
+            this.subscriptions.push(
+              process.subscribe(
+                (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
+                (error: any) => onBackendError(error, backendApi)
+              )
             );
           }
         });

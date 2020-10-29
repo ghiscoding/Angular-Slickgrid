@@ -93,7 +93,7 @@ export class PaginationService {
     }
 
     if (this._isLocalGrid && this.dataView) {
-      this.dataView.onPagingInfoChanged.subscribe((e, pagingInfo) => {
+      this._eventHandler.subscribe(this.dataView.onPagingInfoChanged, (e, pagingInfo) => {
         if (this._totalItems !== pagingInfo.totalRows) {
           this._totalItems = pagingInfo.totalRows;
           this._paginationOptions.totalItems = this._totalItems;
@@ -288,14 +288,16 @@ export class PaginationService {
               reject(process);
             });
         } else if (isObservable(process)) {
-          process.subscribe(
-            (processResult: GraphqlResult | GraphqlPaginatedResult | any) => {
-              resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
-            },
-            (error: any) => {
-              onBackendError(error, this._backendServiceApi);
-              reject(process);
-            }
+          this._subscriptions.push(
+            process.subscribe(
+              (processResult: GraphqlResult | GraphqlPaginatedResult | any) => {
+                resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
+              },
+              (error: any) => {
+                onBackendError(error, this._backendServiceApi);
+                reject(process);
+              }
+            )
           );
         }
         this.onPaginationChanged.next(this.getFullPagination());
@@ -315,9 +317,7 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
     }
-    if (this._totalItems > 0 && this._pageNumber === 0) {
-      this._pageNumber = 1;
-    }
+    this._pageNumber = (this._totalItems > 0 && this._pageNumber === 0) ? 1 : this._pageNumber;
 
     // do a final check on the From/To and make sure they are not over or below min/max acceptable values
     if (this._dataTo > this._totalItems) {
