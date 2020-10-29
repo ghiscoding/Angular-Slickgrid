@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.22.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.4...v2.22.5) (2020-10-29)
+
+
+### Features
+
+* **chore:** update Cypress reporter call with mochawesome ([#614](https://github.com/ghiscoding/angular-slickgrid/issues/614)) ([07bd99a](https://github.com/ghiscoding/angular-slickgrid/commit/07bd99a486004c290fe44bc8a57c8246ae30b1a9))
+
+
+### Bug Fixes
+
+* **core:** unsubscribe every possible events ([#611](https://github.com/ghiscoding/angular-slickgrid/issues/611)) ([2a92e78](https://github.com/ghiscoding/angular-slickgrid/commit/2a92e78cf0cabf53210bc6c4ac51132eb7f5a116)), closes [#610](https://github.com/ghiscoding/angular-slickgrid/issues/610)
+* **interfaces:** column types in GridStateChange ([#609](https://github.com/ghiscoding/angular-slickgrid/issues/609)) ([8705aac](https://github.com/ghiscoding/angular-slickgrid/commit/8705aaca18232a639e9d4cd767740f97f8b9665c))
+* **styling:** add missing pointer cursor to flatpickr inputs ([32cd122](https://github.com/ghiscoding/angular-slickgrid/commit/32cd122df3d5646be583dc8926f6ce8371593c83))
+* **styling:** flatpickr bg-color should be using SASS variable ([#616](https://github.com/ghiscoding/angular-slickgrid/issues/616)) ([8a613d4](https://github.com/ghiscoding/angular-slickgrid/commit/8a613d43899dff20fffac26f439b07e12b00fbef))
+
 ### [2.22.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.3...v2.22.4) (2020-10-14)
 
 ### [2.22.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.2...v2.22.3) (2020-10-14)
