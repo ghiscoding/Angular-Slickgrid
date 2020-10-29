@@ -776,6 +776,7 @@ input.search-filter {
   }
   .form-control[readonly],
   .flatpickr.form-control[readonly] {
+    cursor: pointer;
     background-color: $flatpickr-bgcolor;
   }
 }
