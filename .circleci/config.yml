@@ -29,9 +29,13 @@ jobs:
       - run:
           name: Website Prod Build (GitHub demo site)
           command: yarn run build:demo
+      # - run:
+      #     name: Run Web Server
+      #     command: yarn run serve:demo
+      #     background: true
       - run:
-          name: Run Web Server
-          command: yarn run serve:demo
+          name: Start Dev WebServer
+          command: yarn start
           background: true
       - restore_cache:
           name: Restoring Cache for Cypress
