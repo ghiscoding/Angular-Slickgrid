@@ -11,7 +11,7 @@ describe('Example 7 - Header Button Plugin', () => {
   });
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseUrl')}/headerbutton`);
+    cy.visit(`${Cypress.config('baseExampleUrl')}/headerbutton`);
     cy.get('h2').should('contain', 'Example 7: Header Button Plugin');
   });
 
