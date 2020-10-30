@@ -333,6 +333,16 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     expect(onAfterGridDestroyedSpy).toHaveBeenCalled();
   });
 
+  it('should load jQuery mousewheel when using a frozen grid', () => {
+    const loadSpy = jest.spyOn(component, 'loadJqueryMousewheelDynamically');
+    component.gridOptions.frozenRow = 3;
+
+    component.ngOnInit();
+    component.ngAfterViewInit();
+
+    expect(loadSpy).toHaveBeenCalled();
+  });
+
   describe('initialization method', () => {
     describe('columns definitions changed', () => {
       it('should expect "translateColumnHeaders" being called when "enableTranslate" is set', () => {

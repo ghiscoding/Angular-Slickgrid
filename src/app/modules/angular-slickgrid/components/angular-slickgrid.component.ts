@@ -255,9 +255,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngOnInit(): void {
     if (this.gridOptions && this.gridOptions.frozenRow >= 0) {
-      // load jQuery mousewheel only when using a frozen grid (this will make the mousewheel work on any side of the frozen container).
-      // DO NOT USE with Row Detail
-      require('slickgrid/lib/jquery.mousewheel');
+      this.loadJqueryMousewheelDynamically();
     }
 
     this.onBeforeGridCreate.emit(true);
@@ -335,6 +333,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         };
       }
     }
+  }
+
+  loadJqueryMousewheelDynamically() {
+    // load jQuery mousewheel only when using a frozen grid (this will make the mousewheel work on any side of the frozen container).
+    // DO NOT USE with Row Detail
+    require('slickgrid/lib/jquery.mousewheel');
   }
 
   /**
