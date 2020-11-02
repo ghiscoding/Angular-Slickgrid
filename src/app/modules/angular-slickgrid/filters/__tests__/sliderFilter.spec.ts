@@ -63,7 +63,7 @@ describe('SliderFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(['2']);
-    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration');
+    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration input');
     filterElm.dispatchEvent(new CustomEvent('change'));
 
     expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['2'], shouldTriggerQuery: true });
@@ -74,7 +74,7 @@ describe('SliderFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(3);
-    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration');
+    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration input');
     const mockEvent = new Event('change');
     Object.defineProperty(mockEvent, 'target', { writable: true, configurable: true, value: { value: '13' } });
     filterElm.dispatchEvent(mockEvent);
