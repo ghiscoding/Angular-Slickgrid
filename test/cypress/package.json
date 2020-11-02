@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cypress": "node node_modules/cypress/bin/cypress open",
-    "cypress:ci": "cypress run --config-file cypress.json --reporter mochawesome"
+    "cypress:ci": "cypress run --config-file cypress.json --reporter mochawesome --record false"
   },
   "author": "Ghislain B.",
   "license": "MIT",

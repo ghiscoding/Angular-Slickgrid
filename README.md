@@ -66,6 +66,14 @@ module.exports = {
   }
 };
 ```
+You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silent the warning.
+```json
+"options": {
+  "allowedCommonJsDependencies": [
+    "angular-slickgrid"
+  ]
+}
+```
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
 Angular-Slickgrid reached **100%** Unit Test Coverage, we are talking about +10,000 lines of code (+2,700 unit tests) that are now fully tested with [Jest](https://jestjs.io/). There are also over +350 Cypress E2E tests to cover most UI functionalities on nearly all Examples of Angular-Slickgrid.
