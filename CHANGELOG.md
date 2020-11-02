@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.23.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.5...v2.23.0) (2020-11-02)
+
+
+### Features
+
+* **core:** update project lib to Angular 8 with newer ng-packagr ([#617](https://github.com/ghiscoding/angular-slickgrid/issues/617)) ([edae737](https://github.com/ghiscoding/angular-slickgrid/commit/edae737f744f78e1857a90dc02b37d25cc5c6899))
+
+
+### Bug Fixes
+
+* **core:** revert to use WebPack to run Cypress E2E tests ([3b3c643](https://github.com/ghiscoding/angular-slickgrid/commit/3b3c64399c76186577b88e6005834e07a2b9e49b))
+* **extensions:** import jQuery mousewheel only with frozen, fixes [#618](https://github.com/ghiscoding/angular-slickgrid/issues/618) ([#619](https://github.com/ghiscoding/angular-slickgrid/issues/619)) ([c3b52db](https://github.com/ghiscoding/angular-slickgrid/commit/c3b52db384fb967a2ad0c8a33093b7dae1a09209))
+* **filters:** slider filter setValues really change input value ([#621](https://github.com/ghiscoding/angular-slickgrid/issues/621)) ([212c275](https://github.com/ghiscoding/angular-slickgrid/commit/212c275c7f3303b3462296d03e748b73760c30d6))
+
 ### [2.22.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.4...v2.22.5) (2020-10-29)
 
 
