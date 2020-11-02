@@ -2,7 +2,6 @@
 // only import the necessary core lib, each will be imported on demand when enabled (via require)
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
-import 'slickgrid/lib/jquery.mousewheel';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
@@ -77,6 +76,7 @@ import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 // using external non-typed js libraries
 declare const Slick: any;
 declare const $: any;
+declare function require(name: string);
 
 const slickgridEventPrefix = 'sg';
 
@@ -254,8 +254,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnInit(): void {
-    this.onBeforeGridCreate.emit(true);
+    if (this.gridOptions && this.gridOptions.frozenRow >= 0) {
+      this.loadJqueryMousewheelDynamically();
+    }
 
+    this.onBeforeGridCreate.emit(true);
     if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
       this.gridHeightString = `${this._fixedHeight}px`;
       this.gridWidthString = `${this._fixedWidth}px`;
@@ -330,6 +333,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         };
       }
     }
+  }
+
+  loadJqueryMousewheelDynamically() {
+    // load jQuery mousewheel only when using a frozen grid (this will make the mousewheel work on any side of the frozen container).
+    // DO NOT USE with Row Detail
+    require('slickgrid/lib/jquery.mousewheel');
   }
 
   /**
