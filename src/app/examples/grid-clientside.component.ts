@@ -299,7 +299,7 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
   showEmptyDataMessage(gridSelector: string, emptyMessage: string, isShowing = true, options?: { color: string; class: 'empty-data' }) {
     const emptyDataClassName = options && options.class || 'empty-data';
     let emptyDataElm = document.querySelector<HTMLSpanElement>(`.${emptyDataClassName}`);
-    const grid = document.querySelector<HTMLDivElement>(gridSelector);
+    const gridElm = document.querySelector<HTMLDivElement>(gridSelector);
 
     if (!emptyDataElm) {
       emptyDataElm = document.createElement('span');
@@ -308,16 +308,16 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
       document.body.appendChild(emptyDataElm);
     }
 
-    if (isShowing) {
-      const gridPosition = grid.getBoundingClientRect();
-      emptyDataElm.style.top = `${gridPosition.top + 90}px`;
-      emptyDataElm.style.left = `${gridPosition.left + 10}px`;
-      emptyDataElm.style.color = options && options.color || 'orange';
-      emptyDataElm.style.zIndex = '9999';
-      emptyDataElm.style.position = 'absolute';
-      emptyDataElm.style.display = 'inline';
-    } else {
-      emptyDataElm.style.display = 'none';
+    if (gridElm && emptyDataElm) {
+      if (isShowing) {
+        const gridPosition = gridElm.getBoundingClientRect();
+        emptyDataElm.style.top = `${gridPosition.top + 90}px`;
+        emptyDataElm.style.left = `${gridPosition.left + 10}px`;
+        emptyDataElm.style.color = options && options.color || 'orange';
+        emptyDataElm.style.zIndex = '9999';
+        emptyDataElm.style.position = 'absolute';
+      }
+      emptyDataElm.style.display = isShowing ? 'inline' : 'none';
     }
   }
 }
