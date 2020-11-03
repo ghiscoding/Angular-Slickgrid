@@ -15,7 +15,7 @@ issueConfigs:
   - "Other Information"
 - content:
 # Example 3: general
-  - "Context or Topic"
+  - "Context"
 # The bot will ignore any issues that are opened or reopened by the user names in exception
 exception:
   - "ghiscoding"
