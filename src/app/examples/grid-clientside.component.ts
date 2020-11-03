@@ -58,6 +58,10 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
 
   constructor(private http: HttpClient, private translate: TranslateService) { }
 
+  ngOnDestroy() {
+    this.angularGrid.destroy();
+  }
+
   ngOnInit(): void {
     this.columnDefinitions = [
       {
@@ -279,9 +283,41 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
         };
       });
     }
+
+    // display warning when there's no filtered data
+    this.showEmptyDataMessage('#grid4', 'No data to display', args.current === 0 /*, { color: 'red' } */);
   }
 
-  ngOnDestroy() {
-    this.angularGrid.destroy();
+  /**
+   * Display a warning of empty data when the filtered dataset is empty
+   * NOTE: to make this code reusable, you could (should) move this code into a utility service
+   * @param gridSelector - HTML Selector of the grid <div>
+   * @param emptyMessage - empty data message to display in the <span>
+   * @param isShowing - are we showing the message?
+   * @param options - any styling options you'd like to pass like the text color
+   */
+  showEmptyDataMessage(gridSelector: string, emptyMessage: string, isShowing = true, options?: { color: string; class: 'empty-data' }) {
+    const emptyDataClassName = options && options.class || 'empty-data';
+    let emptyDataElm = document.querySelector<HTMLSpanElement>(`.${emptyDataClassName}`);
+    const grid = document.querySelector<HTMLDivElement>(gridSelector);
+
+    if (!emptyDataElm) {
+      emptyDataElm = document.createElement('span');
+      emptyDataElm.className = emptyDataClassName;
+      emptyDataElm.textContent = emptyMessage;
+      document.body.appendChild(emptyDataElm);
+    }
+
+    if (isShowing) {
+      const gridPosition = grid.getBoundingClientRect();
+      emptyDataElm.style.top = `${gridPosition.top + 90}px`;
+      emptyDataElm.style.left = `${gridPosition.left + 10}px`;
+      emptyDataElm.style.color = options && options.color || 'orange';
+      emptyDataElm.style.zIndex = '9999';
+      emptyDataElm.style.position = 'absolute';
+      emptyDataElm.style.display = 'inline';
+    } else {
+      emptyDataElm.style.display = 'none';
+    }
   }
 }
