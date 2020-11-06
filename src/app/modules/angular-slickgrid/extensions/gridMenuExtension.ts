@@ -56,6 +56,7 @@ export class GridMenuExtension implements Extension {
     this._eventHandler.unsubscribeAll();
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+      this._addon = null;
     }
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && this.sharedService.gridOptions.gridMenu.customItems) {
       this.sharedService.gridOptions.gridMenu = this._userOriginalGridMenu;
@@ -132,7 +133,7 @@ export class GridMenuExtension implements Extension {
           if (this.sharedService.grid && typeof this.sharedService.grid.autosizeColumns === 'function') {
             // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
             const gridUid = this.sharedService.grid.getUID();
-            if (this._areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
+            if (this._areVisibleColumnDifferent && gridUid && document.querySelector(`.${gridUid}`) !== null) {
               if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
                 this.sharedService.grid.autosizeColumns();
               }

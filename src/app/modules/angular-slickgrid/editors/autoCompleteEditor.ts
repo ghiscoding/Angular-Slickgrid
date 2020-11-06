@@ -140,11 +140,17 @@ export class AutoCompleteEditor implements Editor {
   }
 
   destroy() {
-    this._$editorElm.off('keydown.nav').remove();
+    if (this._$editorElm) {
+      this._$editorElm.autocomplete('destroy');
+      this._$editorElm.off('keydown.nav').remove();
+      this._$editorElm = null;
+    }
   }
 
   focus() {
-    this._$editorElm.focus().select();
+    if (this._$editorElm) {
+      this._$editorElm.focus().select();
+    }
   }
 
   getValue() {

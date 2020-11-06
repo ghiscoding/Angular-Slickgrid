@@ -192,7 +192,9 @@ export class AutoCompleteFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
+      this.$filterElm.autocomplete('destroy');
       this.$filterElm.off('keyup').remove();
+      this.$filterElm = null;
     }
     // also unsubscribe all RxJS subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);

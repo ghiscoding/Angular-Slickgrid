@@ -52,6 +52,7 @@ export class ContextMenuExtension implements Extension {
 
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+      this._addon = null;
     }
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu && this.sharedService.gridOptions.contextMenu.commandItems) {
       this.sharedService.gridOptions.contextMenu = this._userOriginalContextMenu;

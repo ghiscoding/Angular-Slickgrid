@@ -272,8 +272,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroy(shouldEmptyDomElementContainer = false) {
-    this.dataView = undefined;
-    this.gridOptions = {};
     this.extensionService.dispose();
     this.filterService.dispose();
     this.gridEventService.dispose();
@@ -286,20 +284,25 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
+    if (this.dataView && this.dataView.setItems) {
+      this.dataView.setItems([]);
+      this.dataView = null;
+    }
     if (this.grid && this.grid.destroy) {
       this.grid.destroy();
+      this.grid = null;
     }
 
     // we could optionally also empty the content of the grid container DOM element
     if (shouldEmptyDomElementContainer) {
-      this.destroyGridContainerElm();
+      this.emptyGridContainerElm();
     }
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
-  destroyGridContainerElm() {
+  emptyGridContainerElm() {
     const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId || 'grid1';
     $(gridContainerId).empty();
   }

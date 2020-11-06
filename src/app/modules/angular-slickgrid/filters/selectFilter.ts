@@ -181,11 +181,12 @@ export class SelectFilter implements Filter {
    * destroy the filter
    */
   destroy() {
-    if (this.$filterElm) {
-      // remove event watcher
-      this.$filterElm.off().remove();
+    if (this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
+      this.$filterElm.multipleSelect('destroy');
+      this.$filterElm.remove();
       const elementClassName = this.elementName.toString().replace('.', '\\.'); // make sure to escape any dot "." from CSS class to avoid console error
       $(`[name=${elementClassName}].ms-drop`).remove();
+      this.$filterElm = null;
     }
 
     // also dispose of all Subscriptions

@@ -121,9 +121,11 @@ export class DateRangeFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
+      this.$filterElm = null;
     }
     if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
       this.flatInstance.destroy();
+      this.flatInstance = null;
     }
   }
 
