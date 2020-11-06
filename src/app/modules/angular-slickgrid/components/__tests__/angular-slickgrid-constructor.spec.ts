@@ -683,7 +683,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should destroy component and its DOM element when requested', () => {
-        const spy = jest.spyOn(component, 'destroyGridContainerElm');
+        const spy = jest.spyOn(component, 'emptyGridContainerElm');
 
         component.ngAfterViewInit();
         component.destroy(true);

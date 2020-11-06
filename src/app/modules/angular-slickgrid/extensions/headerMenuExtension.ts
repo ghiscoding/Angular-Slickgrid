@@ -49,6 +49,7 @@ export class HeaderMenuExtension implements Extension {
     this._eventHandler.unsubscribeAll();
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+      this._addon = null;
     }
   }
 

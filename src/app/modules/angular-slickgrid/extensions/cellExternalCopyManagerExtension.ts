@@ -50,6 +50,7 @@ export class CellExternalCopyManagerExtension implements Extension {
     this._eventHandler.unsubscribeAll();
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+      this._addon = null;
     }
     document.removeEventListener('keydown', this.hookUndoShortcutKey.bind(this));
   }

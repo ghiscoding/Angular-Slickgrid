@@ -156,6 +156,10 @@ export class CompoundSliderFilter implements Filter {
   destroy() {
     if (this.$filterInputElm) {
       this.$filterInputElm.off('input change').remove();
+      this.$selectOperatorElm.off('change').remove();
+      this.$filterInputElm = null;
+      this.$filterElm = null;
+      this.$selectOperatorElm = null;
     }
   }
 

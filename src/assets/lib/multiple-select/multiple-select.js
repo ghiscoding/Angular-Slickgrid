@@ -939,9 +939,16 @@
     },
 
     destroy: function () {
-      $('body').off('click', handleBodyOnClick.bind(this, this.$el));
+      $('body').off('click');
       this.$el.before(this.$parent).show();
       this.$parent.remove();
+      this.$choice = null;
+      this.$el = null;
+      this.$selectItems = null;
+      this.$selectGroups = null;
+      this.$noResults = null;
+      this.options = null;
+      this.$parent = null;
     },
 
     checkAll: function () {

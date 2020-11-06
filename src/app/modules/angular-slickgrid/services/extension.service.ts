@@ -72,7 +72,7 @@ export class ExtensionService {
         }
       }
     }
-    this._extensionList = {} as ExtensionList;
+    this._extensionList = null;
   }
 
   /** Get all columns (includes visible and non-visible) */

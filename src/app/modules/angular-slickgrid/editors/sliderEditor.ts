@@ -99,7 +99,10 @@ export class SliderEditor implements Editor {
   }
 
   destroy() {
-    this._$editorElm.off('input change mouseup').remove();
+    if (this._$editorElm) {
+      this._$editorElm.off('input change mouseup touchend').remove();
+      this._$editorElm = null;
+    }
   }
 
   focus() {

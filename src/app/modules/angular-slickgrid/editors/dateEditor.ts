@@ -163,12 +163,15 @@ export class DateEditor implements Editor {
     this._$input.remove();
     if (this._$editorInputElm && this._$editorInputElm.remove) {
       this._$editorInputElm.remove();
+      this._$editorInputElm = null;
     }
     if (this._$inputWithData && typeof this._$inputWithData.remove === 'function') {
       this._$inputWithData.remove();
+      this._$inputWithData = null;
     }
     if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
       this.flatInstance.destroy();
+      this.flatInstance = null;
     }
   }
 

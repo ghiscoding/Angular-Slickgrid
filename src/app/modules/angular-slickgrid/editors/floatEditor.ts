@@ -77,11 +77,14 @@ export class FloatEditor implements Editor {
   destroy() {
     if (this._$input) {
       this._$input.off('keydown.nav').remove();
+      this._$input = null;
     }
   }
 
   focus() {
-    this._$input.focus();
+    if (this._$input) {
+      this._$input.focus();
+    }
   }
 
   getDecimalPlaces(): number {

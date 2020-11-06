@@ -66,6 +66,7 @@ export class RowDetailViewExtension implements Extension {
 
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+      this._addon = null;
     }
 
     // also unsubscribe all RxJS subscriptions

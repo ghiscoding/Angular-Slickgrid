@@ -74,10 +74,13 @@ export class IntegerEditor implements Editor {
 
   destroy() {
     this._$input.off('keydown.nav focusout').remove();
+    this._$input = null;
   }
 
   focus() {
-    this._$input.focus();
+    if (this._$input) {
+      this._$input.focus();
+    }
   }
 
   getValue(): string {

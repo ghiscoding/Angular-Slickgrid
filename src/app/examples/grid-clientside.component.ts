@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { CustomInputFilter } from './custom-inputFilter';
@@ -25,7 +25,7 @@ const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 @Component({
   templateUrl: './grid-clientside.component.html'
 })
-export class GridClientSideComponent implements OnInit, OnDestroy {
+export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';
   subTitle = `
     Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting" target="_blank">Wiki docs</a>)
@@ -279,9 +279,5 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
         };
       });
     }
-  }
-
-  ngOnDestroy() {
-    this.angularGrid.destroy();
   }
 }
