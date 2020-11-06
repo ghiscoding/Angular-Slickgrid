@@ -72,7 +72,9 @@ export class ExtensionService {
         }
       }
     }
-    this._extensionList = null;
+    for (const key of Object.keys(this._extensionList)) {
+      delete this._extensionList[key];
+    }
   }
 
   /** Get all columns (includes visible and non-visible) */
