@@ -417,12 +417,14 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
  * @param obj - object containing 1 or more properties with DOM Elements
  */
 export function destroyObjectDomElementProps(obj: any) {
-  for (const key of Object.keys(obj)) {
-    if (Array.isArray(obj[key])) {
-      destroyObjectDomElementProps(obj[key]);
-    }
-    if (obj[key] instanceof HTMLElement) {
-      obj[key] = null;
+  if (obj) {
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key])) {
+        destroyObjectDomElementProps(obj[key]);
+      }
+      if (obj[key] instanceof HTMLElement) {
+        obj[key] = null;
+      }
     }
   }
 }
