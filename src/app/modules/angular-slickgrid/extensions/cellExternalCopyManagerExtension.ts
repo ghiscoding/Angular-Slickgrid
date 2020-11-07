@@ -21,6 +21,7 @@ declare const $: any;
 export class CellExternalCopyManagerExtension implements Extension {
   private _addon: any;
   private _addonOptions: ExcelCopyBufferOption;
+  private _cellSelectionModel: any;
   private _eventHandler: SlickEventHandler;
   private _commandQueue: EditCommand[];
   private _undoRedoBuffer: EditUndoRedoBuffer;
@@ -52,6 +53,9 @@ export class CellExternalCopyManagerExtension implements Extension {
       this._addon.destroy();
       this._addon = null;
     }
+    if (this._cellSelectionModel && this._cellSelectionModel.destroy) {
+      this._cellSelectionModel.destroy();
+    }
     document.removeEventListener('keydown', this.hookUndoShortcutKey.bind(this));
   }
 
@@ -68,7 +72,8 @@ export class CellExternalCopyManagerExtension implements Extension {
       this.hookUndoShortcutKey();
 
       this._addonOptions = { ...this.getDefaultOptions(), ...this.sharedService.gridOptions.excelCopyBufferOptions } as ExcelCopyBufferOption;
-      this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
+      this._cellSelectionModel = new Slick.CellSelectionModel();
+      this.sharedService.grid.setSelectionModel(this._cellSelectionModel);
       this._addon = new Slick.CellExternalCopyManager(this._addonOptions);
       this.sharedService.grid.registerPlugin(this._addon);
 
