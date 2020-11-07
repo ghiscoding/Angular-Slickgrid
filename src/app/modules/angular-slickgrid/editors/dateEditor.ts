@@ -163,7 +163,7 @@ export class DateEditor implements Editor {
     if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
       this.flatInstance.destroy();
       if (this.flatInstance.element) {
-        destroyObjectDomElementProps(this.flatInstance);
+        setTimeout(() => destroyObjectDomElementProps(this.flatInstance));
       }
       this.flatInstance = null;
     }
