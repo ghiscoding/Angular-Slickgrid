@@ -286,11 +286,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
     if (this.dataView && this.dataView.setItems) {
       this.dataView.setItems([]);
-      this.dataView = null;
     }
     if (this.grid && this.grid.destroy) {
       this.grid.destroy();
-      this.grid = null;
     }
 
     // we could optionally also empty the content of the grid container DOM element
