@@ -24,7 +24,7 @@ export class DualInputEditor implements Editor {
   private _eventHandler: SlickEventHandler;
   private _isValueSaveCalled = false;
   private _lastEventType: string | undefined;
-  private _lastInputKeyEvent: KeyboardEvent;
+  private _lastInputKeyEvent: JQuery.Event;
   private _leftInput: HTMLInputElement;
   private _rightInput: HTMLInputElement;
   private _leftFieldName: string;
@@ -124,7 +124,7 @@ export class DualInputEditor implements Editor {
     this._lastEventType = `${event && event.type}-${side}`;
   }
 
-  handleKeyDown(event: KeyboardEvent) {
+  handleKeyDown(event: JQuery.Event) {
     this._lastInputKeyEvent = event;
     if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT || event.keyCode === KeyCode.TAB) {
       event.stopImmediatePropagation();

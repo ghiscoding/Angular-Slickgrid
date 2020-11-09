@@ -32,7 +32,7 @@ export class AutoCompleteEditor implements Editor {
   private _currentValue: any;
   private _defaultTextValue: string;
   private _elementCollection: any[];
-  private _lastInputEvent: KeyboardEvent;
+  private _lastInputEvent: JQuery.Event;
 
   /** The JQuery DOM element */
   private _$editorElm: any;
@@ -328,7 +328,7 @@ export class AutoCompleteEditor implements Editor {
 
     this._$editorElm = $(`<input type="text" role="presentation" autocomplete="off" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: KeyboardEvent) => {
+      .on('keydown.nav', (event: JQuery.Event) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();
@@ -390,7 +390,7 @@ export class AutoCompleteEditor implements Editor {
     // in case the user wants to save even an empty value,
     // we need to subscribe to the onKeyDown event for that use case and clear the current value
     if (this.columnEditor.alwaysSaveOnEnterKey) {
-      this._$editorElm.keydown((event: KeyboardEvent) => {
+      this._$editorElm.keydown((event: JQuery.Event) => {
         if (event.keyCode === KeyCode.ENTER) {
           this._currentValue = null;
         }

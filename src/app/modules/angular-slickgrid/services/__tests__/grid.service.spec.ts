@@ -5,13 +5,14 @@ import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare const Slick: any;
 
-const mockSelectionModel = jest.fn().mockImplementation(() => ({
+const mockSelectionModel = {
   init: jest.fn(),
   destroy: jest.fn()
-}));
+};
+const mockSelectionModelImplementation = jest.fn().mockImplementation(() => mockSelectionModel);
 
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
-Slick.RowSelectionModel = mockSelectionModel;
+jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModelImplementation);
+Slick.RowSelectionModel = mockSelectionModelImplementation;
 
 const extensionServiceStub = {
   getAllColumns: jest.fn(),
@@ -93,6 +94,15 @@ describe('Grid Service', () => {
 
   it('should create the service', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should dispose of the service', () => {
+    const destroySpy = jest.spyOn(mockSelectionModel, 'destroy');
+
+    service.highlightRow(0, 10, 15);
+    service.dispose();
+
+    expect(destroySpy).toHaveBeenCalled();
   });
 
   describe('getAllColumnDefinitions method', () => {
