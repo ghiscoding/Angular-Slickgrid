@@ -220,7 +220,7 @@ export class ResizerService {
         this._grid.resizeCanvas();
       }
 
-      // also call the grid auto-size columns so that it takes available when going bigger
+      // also call the grid auto-size columns so that it takes available space when going bigger
       if (this._gridOptions && this._gridOptions.enableAutoSizeColumns && this._grid.autosizeColumns) {
         // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree) to avoid SlickGrid error "missing stylesheet"
         if (this._gridUid && $(`.${this._gridUid}`).length > 0) {

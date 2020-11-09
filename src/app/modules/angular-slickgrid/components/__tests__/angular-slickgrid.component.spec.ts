@@ -123,6 +123,9 @@ describe('App Component', () => {
   let translate: TranslateService;
 
   beforeEach(async(() => {
+    // @ts-ignore
+    navigator.__defineGetter__('userAgent', () => 'MSIE 8'); // just to skip resizerService calling grid.resizeCanvas()
+
     TestBed.configureTestingModule({
       declarations: [
         AngularSlickgridComponent,

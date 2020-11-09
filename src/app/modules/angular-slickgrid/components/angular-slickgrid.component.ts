@@ -276,6 +276,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.filterService.dispose();
     this.gridEventService.dispose();
     this.gridStateService.dispose();
+    this.gridService.dispose();
     this.groupingAndColspanService.dispose();
     this.paginationService.dispose();
     this.resizer.dispose();
