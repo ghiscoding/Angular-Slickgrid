@@ -123,9 +123,11 @@ export class SliderRangeFilter implements Filter {
       this.$filterElm.slider('destroy');
       this.$filterElm.off('change').remove();
       this.$filterContainerElm.remove();
-      this.$filterElm = null;
-      this.$filterContainerElm = null;
     }
+    this.$filterElm = null;
+    this.$filterContainerElm = null;
+    this.callback = null;
+    this.onValueChanged = null;
   }
 
   /**

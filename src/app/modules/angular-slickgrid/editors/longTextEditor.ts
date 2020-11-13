@@ -120,7 +120,7 @@ export class LongTextEditor implements Editor {
     this._$wrapper.find('.btn-save').on('click', () => this.save());
     this._$wrapper.find('.btn-cancel').on('click', () => this.cancel());
     this._$textarea.on('keydown', this.handleKeyDown.bind(this));
-    this._$textarea.on('keyup', this.handleKeyUp.bind(this));
+    this._$textarea.on('input', this.handleOnInputChange.bind(this));
 
     this.position(this.args && this.args.position);
     this._$textarea.focus().select();
@@ -146,7 +146,7 @@ export class LongTextEditor implements Editor {
   destroy() {
     if (this._$textarea) {
       this._$textarea.off('keydown');
-      this._$textarea.off('keyup');
+      this._$textarea.off('input');
     }
     if (this._$wrapper) {
       this._$wrapper.find('.btn-save').off('click');
@@ -268,8 +268,8 @@ export class LongTextEditor implements Editor {
     }
   }
 
-  /** On every keyup event, we'll update the current text length counter */
-  private handleKeyUp(event: KeyboardEvent & { target: HTMLTextAreaElement }) {
+  /** On every input change event, we'll update the current text length counter */
+  private handleOnInputChange(event: KeyboardEvent & { target: HTMLTextAreaElement }) {
     const textLength = event.target.value.length;
     this._$currentLengthElm.text(textLength);
   }

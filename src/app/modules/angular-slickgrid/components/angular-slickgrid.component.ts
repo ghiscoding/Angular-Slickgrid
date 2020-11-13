@@ -120,7 +120,7 @@ const slickgridEventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
-  private _dataset: any[];
+  private _dataset: any[] | null;
   private _columnDefinitions: Column[];
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
   private _angularGridInstances: AngularGridInstance | undefined;
@@ -131,8 +131,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
-  dataView: any;
-  grid: any;
+  dataView: any | null;
+  grid: any | null;
   gridHeightString: string;
   gridWidthString: string;
   groupingDefinition: any = {};
@@ -196,19 +196,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   @Input()
-  get datasetHierarchical(): any[] {
+  get datasetHierarchical(): any[] | null {
     return this.sharedService.hierarchicalDataset;
   }
-  set datasetHierarchical(newHierarchicalDataset: any[]) {
+  set datasetHierarchical(newHierarchicalDataset: any[] | null) {
     this.sharedService.hierarchicalDataset = newHierarchicalDataset;
 
-    if (this.filterService && this.filterService.clearFilters) {
+    if (newHierarchicalDataset && this.columnDefinitions && this.filterService && this.filterService.clearFilters) {
       this.filterService.clearFilters();
     }
 
     // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
     setTimeout(() => {
-      if (this.dataView && this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
+      if (newHierarchicalDataset && this.dataView && this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
         this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
         this.sortService.processTreeDataInitialSort();
       }
@@ -254,7 +254,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnInit(): void {
-    if (this.gridOptions && this.gridOptions.frozenRow >= 0) {
+    if (this.gridOptions && (this.gridOptions.frozenColumn >= 0 || this.gridOptions.frozenRow >= 0)) {
       this.loadJqueryMousewheelDynamically();
     }
 
@@ -285,11 +285,29 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
-    if (this.dataView && this.dataView.setItems) {
-      this.dataView.setItems([]);
+    if (this.dataView) {
+      if (this.dataView && this.dataView.setItems) {
+        this.dataView.setItems([]);
+      }
+      if (this.dataView.destroy) {
+        this.dataView.destroy();
+      }
     }
     if (this.grid && this.grid.destroy) {
-      this.grid.destroy();
+      this.grid.destroy(shouldEmptyDomElementContainer);
+    }
+
+    if (this.backendServiceApi) {
+      for (const prop of Object.keys(this.backendServiceApi)) {
+        this.backendServiceApi[prop] = null;
+      }
+      this.backendServiceApi = null;
+    }
+    for (const prop of Object.keys(this.columnDefinitions)) {
+      this.columnDefinitions[prop] = null;
+    }
+    for (const prop of Object.keys(this.sharedService)) {
+      this.sharedService[prop] = null;
     }
 
     // we could optionally also empty the content of the grid container DOM element
@@ -299,6 +317,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
+    this._dataset = null;
+    this.datasetHierarchical = null;
+    this._columnDefinitions = [];
+    this._angularGridInstances = null;
   }
 
   emptyGridContainerElm() {
@@ -326,11 +349,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (backendApi.service instanceof GraphqlService || typeof backendApi.service.getDatasetName === 'function') {
         backendApi.internalPostProcess = (processResult: GraphqlResult | GraphqlPaginatedResult) => {
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          this._dataset = [];
           if (processResult && processResult.data && processResult.data[datasetName]) {
-            this._dataset = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
+            const data = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
             const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as GraphqlPaginatedResult).data[datasetName].totalCount : (processResult as GraphqlResult).data[datasetName].length;
-            this.refreshGridData(this._dataset, totalCount || 0);
+            this.refreshGridData(data, totalCount || 0);
           }
         };
       }
@@ -786,7 +808,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
       this.onDataviewCreated.emit(this.dataView);
       this.dataView.beginUpdate();
-      this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems(this._dataset || [], this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
@@ -813,7 +835,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       }
 
-      if (this._dataset.length > 0) {
+      const datasetLn = this.dataView.getLength() || this._dataset && this._dataset.length || 0;
+      if (datasetLn > 0) {
         if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
           this.loadRowSelectionPresetWhenExists();
         }
@@ -1076,7 +1099,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private swapInternalEditorToSlickGridFactoryEditor(columnDefinitions: Column[]) {
     return columnDefinitions.map((column: Column | any) => {
       // on every Editor that have a "collectionAsync", resolve the data and assign it to the "collection" property
-      if (column.editor && column.editor.collectionAsync) {
+      if (column && column.editor && column.editor.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };

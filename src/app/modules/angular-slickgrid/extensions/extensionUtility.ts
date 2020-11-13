@@ -116,6 +116,20 @@ export class ExtensionUtility {
   }
 
   /**
+   * Loop through object provided and set to null any property found starting with "onX"
+   * @param {Object}: obj
+   */
+  nullifyFunctionNameStartingWithOn(obj?: any) {
+    if (obj) {
+      for (const prop of Object.keys(obj)) {
+        if (prop.startsWith('on')) {
+          obj[prop] = null;
+        }
+      }
+    }
+  }
+
+  /**
    * Sort items (by pointers) in an array by a property name
    * @params items array
    * @param property name to sort with

@@ -176,6 +176,7 @@ const mockDataView = {
   endUpdate: jest.fn(),
   getItem: jest.fn(),
   getItems: jest.fn(),
+  getLength: jest.fn(),
   getItemMetadata: jest.fn(),
   getPagingInfo: jest.fn(),
   mapIdsToRows: jest.fn(),
@@ -335,7 +336,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
   it('should load jQuery mousewheel when using a frozen grid', () => {
     const loadSpy = jest.spyOn(component, 'loadJqueryMousewheelDynamically');
-    component.gridOptions.frozenRow = 3;
+    component.gridOptions.frozenColumn = 3;
 
     component.ngOnInit();
     component.ngAfterViewInit();
@@ -688,7 +689,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
         component.destroy(true);
 
-        expect(spy).toHaveBeenCalledWith();
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should refresh a local grid and change pagination options pagination when a preset for it is defined in grid options', (done) => {

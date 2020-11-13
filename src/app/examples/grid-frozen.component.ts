@@ -33,8 +33,9 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // unsubscribe every SlickGrid subscribed event (or use the Slick.EventHandler)
-    this.gridObj.onMouseEnter.unsubscribe();
-    this.gridObj.onMouseLeave.unsubscribe();
+    this.gridObj.onMouseEnter.unsubscribe(this.highlightRow);
+    this.gridObj.onMouseLeave.unsubscribe(this.highlightRow);
+    this.highlightRow = null;
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
@@ -44,15 +45,15 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     // with frozen (pinned) grid, in order to see the entire row being highlighted when hovering
     // we need to do some extra tricks (that is because frozen grids use 2 separate div containers)
     // the trick is to use row selection to highlight when hovering current row and remove selection once we're not
-    this.gridObj.onMouseEnter.subscribe(event => {
-      const cell = this.gridObj.getCellFromEvent(event);
-      this.gridObj.setSelectedRows([cell.row]); // highlight current row
-      event.preventDefault();
-    });
-    this.gridObj.onMouseLeave.subscribe(event => {
-      this.gridObj.setSelectedRows([]); // remove highlight
-      event.preventDefault();
-    });
+    this.gridObj.onMouseEnter.subscribe(event => this.highlightRow(event, true));
+    this.gridObj.onMouseLeave.subscribe(event => this.highlightRow(event, false));
+  }
+
+  highlightRow(event: Event, isMouseEnter: boolean) {
+    const cell = this.gridObj.getCellFromEvent(event);
+    const rows = isMouseEnter ? [cell.row] : [];
+    this.gridObj.setSelectedRows(rows); // highlight current row
+    event.preventDefault();
   }
 
   prepareDataGrid() {

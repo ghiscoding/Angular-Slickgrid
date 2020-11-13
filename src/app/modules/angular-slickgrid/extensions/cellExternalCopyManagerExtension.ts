@@ -20,7 +20,7 @@ declare const $: any;
 @Injectable()
 export class CellExternalCopyManagerExtension implements Extension {
   private _addon: any;
-  private _addonOptions: ExcelCopyBufferOption;
+  private _addonOptions: ExcelCopyBufferOption | null;
   private _cellSelectionModel: any;
   private _eventHandler: SlickEventHandler;
   private _commandQueue: EditCommand[];
@@ -30,7 +30,7 @@ export class CellExternalCopyManagerExtension implements Extension {
     this._eventHandler = new Slick.EventHandler();
   }
 
-  get addonOptions(): ExcelCopyBufferOption {
+  get addonOptions(): ExcelCopyBufferOption | null {
     return this._addonOptions;
   }
 
@@ -49,10 +49,15 @@ export class CellExternalCopyManagerExtension implements Extension {
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
+
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
-      this._addon = null;
     }
+
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._addonOptions);
+    this._addon = null;
+    this._addonOptions = null;
+
     if (this._cellSelectionModel && this._cellSelectionModel.destroy) {
       this._cellSelectionModel.destroy();
     }
@@ -60,7 +65,7 @@ export class CellExternalCopyManagerExtension implements Extension {
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
-  getAddonInstance() {
+  getAddonInstance(): any {
     return this._addon;
   }
 
@@ -75,26 +80,28 @@ export class CellExternalCopyManagerExtension implements Extension {
       this._cellSelectionModel = new Slick.CellSelectionModel();
       this.sharedService.grid.setSelectionModel(this._cellSelectionModel);
       this._addon = new Slick.CellExternalCopyManager(this._addonOptions);
-      this.sharedService.grid.registerPlugin(this._addon);
+      if (this._addon) {
+        this.sharedService.grid.registerPlugin(this._addon);
+      }
 
       // hook to all possible events
-      if (this.sharedService.grid && this.sharedService.gridOptions.excelCopyBufferOptions) {
-        if (this.sharedService.gridOptions.excelCopyBufferOptions.onExtensionRegistered) {
-          this.sharedService.gridOptions.excelCopyBufferOptions.onExtensionRegistered(this._addon);
+      if (this.sharedService.grid && this._addonOptions) {
+        if (this._addonOptions.onExtensionRegistered) {
+          this._addonOptions.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onCopyCells, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCells === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCells(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onCopyCells === 'function') {
+            this._addonOptions.onCopyCells(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onCopyCancelled, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCancelled === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCancelled(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onCopyCancelled === 'function') {
+            this._addonOptions.onCopyCancelled(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onPasteCells, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onPasteCells === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onPasteCells(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onPasteCells === 'function') {
+            this._addonOptions.onPasteCells(e, args);
           }
         });
       }

@@ -28,8 +28,9 @@ declare const Slick: any;
 @Injectable()
 export class ContextMenuExtension implements Extension {
   private _addon: any;
+  private _contextMenuOptions: ContextMenu | null;
   private _eventHandler: SlickEventHandler;
-  private _userOriginalContextMenu: ContextMenu;
+  private _userOriginalContextMenu: ContextMenu | undefined;
 
   constructor(
     private excelExportService: ExcelExportService,
@@ -52,11 +53,13 @@ export class ContextMenuExtension implements Extension {
 
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
-      this._addon = null;
     }
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu && this.sharedService.gridOptions.contextMenu.commandItems) {
       this.sharedService.gridOptions.contextMenu = this._userOriginalContextMenu;
     }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._contextMenuOptions);
+    this._addon = null;
+    this._contextMenuOptions = null;
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
@@ -76,24 +79,25 @@ export class ContextMenuExtension implements Extension {
     }
 
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu) {
-      const contextMenu = this.sharedService.gridOptions.contextMenu;
+      this._contextMenuOptions = this.sharedService.gridOptions.contextMenu;
 
       // keep original user context menu, useful when switching locale to translate
-      this._userOriginalContextMenu = { ...contextMenu };
+      this._userOriginalContextMenu = { ...this._contextMenuOptions };
 
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.contextMenu);
 
       // merge the original commands with the built-in internal commands
       const originalCommandItems = this._userOriginalContextMenu && Array.isArray(this._userOriginalContextMenu.commandItems) ? this._userOriginalContextMenu.commandItems : [];
-      contextMenu.commandItems = [...originalCommandItems, ...this.addMenuCustomCommands(originalCommandItems)];
-      this.sharedService.gridOptions.contextMenu = { ...contextMenu };
+      this._contextMenuOptions.commandItems = [...originalCommandItems, ...this.addMenuCustomCommands(originalCommandItems)];
+      this._contextMenuOptions = { ...this._contextMenuOptions };
+      this.sharedService.gridOptions.contextMenu = this._contextMenuOptions;
 
       // sort all menu items by their position order when defined
-      this.extensionUtility.sortItems(contextMenu.commandItems || [], 'positionOrder');
-      this.extensionUtility.sortItems(contextMenu.optionItems || [], 'positionOrder');
+      this.extensionUtility.sortItems(this._contextMenuOptions.commandItems || [], 'positionOrder');
+      this.extensionUtility.sortItems(this._contextMenuOptions.optionItems || [], 'positionOrder');
 
-      this._addon = new Slick.Plugins.ContextMenu(contextMenu);
+      this._addon = new Slick.Plugins.ContextMenu(this._contextMenuOptions);
       this.sharedService.grid.registerPlugin(this._addon);
 
       // translate the item keys when necessary
@@ -102,33 +106,33 @@ export class ContextMenuExtension implements Extension {
       }
 
       // hook all events
-      if (this.sharedService.grid && contextMenu) {
-        if (contextMenu.onExtensionRegistered) {
-          contextMenu.onExtensionRegistered(this._addon);
+      if (this.sharedService.grid && this._contextMenuOptions) {
+        if (this._contextMenuOptions.onExtensionRegistered) {
+          this._contextMenuOptions.onExtensionRegistered(this._addon);
         }
-        if (contextMenu && typeof contextMenu.onCommand === 'function') {
+        if (this._contextMenuOptions && typeof this._contextMenuOptions.onCommand === 'function') {
           this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
-            contextMenu.onCommand(event, args);
+            this._contextMenuOptions.onCommand(event, args);
           });
         }
-        if (contextMenu && typeof contextMenu.onOptionSelected === 'function') {
+        if (this._contextMenuOptions && typeof this._contextMenuOptions.onOptionSelected === 'function') {
           this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
-            contextMenu.onOptionSelected(event, args);
+            this._contextMenuOptions.onOptionSelected(event, args);
           });
         }
-        if (contextMenu && typeof contextMenu.onBeforeMenuShow === 'function') {
+        if (this._contextMenuOptions && typeof this._contextMenuOptions.onBeforeMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            contextMenu.onBeforeMenuShow(event, args);
+            this._contextMenuOptions.onBeforeMenuShow(event, args);
           });
         }
-        if (contextMenu && typeof contextMenu.onBeforeMenuClose === 'function') {
+        if (this._contextMenuOptions && typeof this._contextMenuOptions.onBeforeMenuClose === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
-            contextMenu.onBeforeMenuClose(event, args);
+            this._contextMenuOptions.onBeforeMenuClose(event, args);
           });
         }
-        if (contextMenu && typeof contextMenu.onAfterMenuShow === 'function') {
+        if (this._contextMenuOptions && typeof this._contextMenuOptions.onAfterMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            contextMenu.onAfterMenuShow(event, args);
+            this._contextMenuOptions.onAfterMenuShow(event, args);
           });
         }
       }

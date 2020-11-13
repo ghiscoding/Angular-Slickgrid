@@ -31,7 +31,7 @@ export class AutoCompleteEditor implements Editor {
   private _autoCompleteOptions: AutocompleteOption;
   private _currentValue: any;
   private _defaultTextValue: string;
-  private _elementCollection: any[];
+  private _elementCollection: any[] | null;
   private _lastInputEvent: JQuery.Event;
 
   /** The JQuery DOM element */
@@ -73,7 +73,7 @@ export class AutoCompleteEditor implements Editor {
   }
 
   /** Get the Final Collection used in the AutoCompleted Source (this may vary from the "collection" especially when providing a customStructure) */
-  get elementCollection(): any[] {
+  get elementCollection(): any[] | null {
     return this._elementCollection;
   }
 
@@ -143,8 +143,9 @@ export class AutoCompleteEditor implements Editor {
     if (this._$editorElm) {
       this._$editorElm.autocomplete('destroy');
       this._$editorElm.off('keydown.nav').remove();
-      this._$editorElm = null;
     }
+    this._$editorElm = null;
+    this._elementCollection = null;
   }
 
   focus() {

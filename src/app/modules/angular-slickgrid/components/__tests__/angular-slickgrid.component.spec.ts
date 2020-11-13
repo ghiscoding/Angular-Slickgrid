@@ -119,8 +119,6 @@ const treeDataServiceStub = {
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
-  let graphqlService: GraphqlService;
-  let translate: TranslateService;
 
   beforeEach(async(() => {
     // @ts-ignore
@@ -180,8 +178,6 @@ describe('App Component', () => {
     // create the component
     fixture = TestBed.createComponent(AngularSlickgridComponent);
     component = fixture.debugElement.componentInstance;
-    graphqlService = TestBed.get(GraphqlService);
-    translate = TestBed.get(TranslateService);
 
     // setup bindable properties
     component.gridId = 'grid1';

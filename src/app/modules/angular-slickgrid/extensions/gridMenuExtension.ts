@@ -30,6 +30,7 @@ declare const $: any;
 @Injectable()
 export class GridMenuExtension implements Extension {
   private _addon: any;
+  private _gridMenuOptions: GridMenu | null;
   private _areVisibleColumnDifferent = false;
   private _eventHandler: SlickEventHandler;
   private _locales: Locale;
@@ -56,11 +57,13 @@ export class GridMenuExtension implements Extension {
     this._eventHandler.unsubscribeAll();
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
-      this._addon = null;
     }
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && this.sharedService.gridOptions.gridMenu.customItems) {
       this.sharedService.gridOptions.gridMenu = this._userOriginalGridMenu;
     }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._gridMenuOptions);
+    this._addon = null;
+    this._gridMenuOptions = null;
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
@@ -83,36 +86,37 @@ export class GridMenuExtension implements Extension {
 
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.gridMenu);
-      this.sharedService.gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this.sharedService.gridOptions.gridMenu };
+      this._gridMenuOptions = { ...this.getDefaultGridMenuOptions(), ...this.sharedService.gridOptions.gridMenu };
+      this.sharedService.gridOptions.gridMenu = this._gridMenuOptions;
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
       const originalCustomItems = this._userOriginalGridMenu && Array.isArray(this._userOriginalGridMenu.customItems) ? this._userOriginalGridMenu.customItems : [];
-      this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
-      this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
-      this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
+      this._gridMenuOptions.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
+      this.extensionUtility.translateItems(this._gridMenuOptions.customItems, 'titleKey', 'title');
+      this.extensionUtility.sortItems(this._gridMenuOptions.customItems, 'positionOrder');
 
       this._addon = new Slick.Controls.GridMenu(this.sharedService.allColumns, this.sharedService.grid, this.sharedService.gridOptions);
 
       // hook all events
-      if (this.sharedService.grid && this.sharedService.gridOptions.gridMenu) {
-        if (this.sharedService.gridOptions.gridMenu.onExtensionRegistered) {
-          this.sharedService.gridOptions.gridMenu.onExtensionRegistered(this._addon);
+      if (this._gridMenuOptions) {
+        if (this._gridMenuOptions.onExtensionRegistered) {
+          this._gridMenuOptions.onExtensionRegistered(this._addon);
         }
-        if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+        if (this._gridMenuOptions && typeof this._gridMenuOptions.onBeforeMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: any, args: { grid: any; menu: any; columns: Column[] }) => {
-            this.sharedService.gridOptions.gridMenu.onBeforeMenuShow(e, args);
+            this._gridMenuOptions.onBeforeMenuShow(e, args);
           });
         }
-        if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onAfterMenuShow === 'function') {
+        if (this._gridMenuOptions && typeof this._gridMenuOptions.onAfterMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onAfterMenuShow, (e: any, args: { grid: any; menu: any; columns: Column[] }) => {
-            this.sharedService.gridOptions.gridMenu.onAfterMenuShow(e, args);
+            this._gridMenuOptions.onAfterMenuShow(e, args);
           });
         }
         this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { grid: any; allColumns: Column[]; columns: Column[]; }) => {
           this._areVisibleColumnDifferent = true;
-          if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onColumnsChanged === 'function') {
-            this.sharedService.gridOptions.gridMenu.onColumnsChanged(e, args);
+          if (this._gridMenuOptions && typeof this._gridMenuOptions.onColumnsChanged === 'function') {
+            this._gridMenuOptions.onColumnsChanged(e, args);
           }
           if (args && Array.isArray(args.columns) && args.columns.length > this.sharedService.visibleColumns.length) {
             this.sharedService.visibleColumns = args.columns;
@@ -120,13 +124,13 @@ export class GridMenuExtension implements Extension {
         });
         this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: MenuCommandItemCallbackArgs) => {
           this.executeGridMenuInternalCustomCommands(e, args);
-          if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onCommand === 'function') {
-            this.sharedService.gridOptions.gridMenu.onCommand(e, args);
+          if (this._gridMenuOptions && typeof this._gridMenuOptions.onCommand === 'function') {
+            this._gridMenuOptions.onCommand(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onMenuClose, (e: any, args: { grid: any; menu: any; allColumns: Column[], visibleColumns: Column[] }) => {
-          if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onMenuClose === 'function') {
-            this.sharedService.gridOptions.gridMenu.onMenuClose(e, args);
+          if (this._gridMenuOptions && typeof this._gridMenuOptions.onMenuClose === 'function') {
+            this._gridMenuOptions.onMenuClose(e, args);
           }
 
           // we also want to resize the columns if the user decided to hide certain column(s)
@@ -203,12 +207,12 @@ export class GridMenuExtension implements Extension {
     const translationPrefix = getTranslationPrefix(gridOptions);
 
     // show grid menu: Clear Frozen Columns
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearFrozenColumnsCommand) {
+    if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideClearFrozenColumnsCommand) {
       const commandName = 'clear-frozen-columns';
       if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearFrozenColumnsCommand || 'fa fa-times',
+            iconCssClass: this._gridMenuOptions.iconClearFrozenColumnsCommand || 'fa fa-times',
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}CLEAR_FROZEN_COLUMNS`) : this._locales && this._locales.TEXT_CLEAR_FROZEN_COLUMNS,
             disabled: false,
             command: commandName,
@@ -220,12 +224,12 @@ export class GridMenuExtension implements Extension {
 
     if (this.sharedService.gridOptions && (this.sharedService.gridOptions.enableFiltering && !this.sharedService.hideHeaderRowAfterPageLoad)) {
       // show grid menu: Clear all Filters
-      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
+      if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideClearAllFiltersCommand) {
         const commandName = 'clear-filter';
         if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
-              iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+              iconCssClass: this._gridMenuOptions.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}CLEAR_ALL_FILTERS`) : this._locales && this._locales.TEXT_CLEAR_ALL_FILTERS,
               disabled: false,
               command: commandName,
@@ -236,12 +240,12 @@ export class GridMenuExtension implements Extension {
       }
 
       // show grid menu: toggle filter row
-      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideToggleFilterCommand) {
+      if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideToggleFilterCommand) {
         const commandName = 'toggle-filter';
         if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
-              iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+              iconCssClass: this._gridMenuOptions.iconToggleFilterCommand || 'fa fa-random',
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}TOGGLE_FILTER_ROW`) : this._locales && this._locales.TEXT_TOGGLE_FILTER_ROW,
               disabled: false,
               command: commandName,
@@ -252,12 +256,12 @@ export class GridMenuExtension implements Extension {
       }
 
       // show grid menu: refresh dataset
-      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+      if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideRefreshDatasetCommand && backendApi) {
         const commandName = 'refresh-dataset';
         if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
-              iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+              iconCssClass: this._gridMenuOptions.iconRefreshDatasetCommand || 'fa fa-refresh',
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}REFRESH_DATASET`) : this._locales && this._locales.TEXT_REFRESH_DATASET,
               disabled: false,
               command: commandName,
@@ -270,12 +274,12 @@ export class GridMenuExtension implements Extension {
 
     if (this.sharedService.gridOptions.showPreHeaderPanel) {
       // show grid menu: toggle pre-header row
-      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
+      if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideTogglePreHeaderCommand) {
         const commandName = 'toggle-preheader';
         if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
-              iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
+              iconCssClass: this._gridMenuOptions.iconTogglePreHeaderCommand || 'fa fa-random',
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}TOGGLE_PRE_HEADER_ROW`) : this._locales && this._locales.TEXT_TOGGLE_PRE_HEADER_ROW,
               disabled: false,
               command: commandName,
@@ -288,12 +292,12 @@ export class GridMenuExtension implements Extension {
 
     if (this.sharedService.gridOptions.enableSorting) {
       // show grid menu: Clear all Sorting
-      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
+      if (this.sharedService.gridOptions && this._gridMenuOptions && !this._gridMenuOptions.hideClearAllSortingCommand) {
         const commandName = 'clear-sorting';
         if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
-              iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+              iconCssClass: this._gridMenuOptions.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}CLEAR_ALL_SORTING`) : this._locales && this._locales.TEXT_CLEAR_ALL_SORTING,
               disabled: false,
               command: commandName,
@@ -305,12 +309,12 @@ export class GridMenuExtension implements Extension {
     }
 
     // show grid menu: Export to file
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportCsvCommand) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this._gridMenuOptions && !this._gridMenuOptions.hideExportCsvCommand) {
       const commandName = 'export-csv';
       if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+            iconCssClass: this._gridMenuOptions.iconExportCsvCommand || 'fa fa-download',
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}EXPORT_TO_CSV`) : this._locales && this._locales.TEXT_EXPORT_TO_CSV,
             disabled: false,
             command: commandName,
@@ -321,12 +325,12 @@ export class GridMenuExtension implements Extension {
     }
 
     // show grid menu: Export to Excel
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExcelExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportExcelCommand) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExcelExport && this._gridMenuOptions && !this._gridMenuOptions.hideExportExcelCommand) {
       const commandName = 'export-excel';
       if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportExcelCommand || 'fa fa-file-excel-o text-success',
+            iconCssClass: this._gridMenuOptions.iconExportExcelCommand || 'fa fa-file-excel-o text-success',
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}EXPORT_TO_EXCEL`) : this._locales && this._locales.TEXT_EXPORT_TO_EXCEL,
             disabled: false,
             command: commandName,
@@ -337,12 +341,12 @@ export class GridMenuExtension implements Extension {
     }
 
     // show grid menu: export to text file as tab delimited
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this._gridMenuOptions && !this._gridMenuOptions.hideExportTextDelimitedCommand) {
       const commandName = 'export-text-delimited';
       if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+            iconCssClass: this._gridMenuOptions.iconExportTextDelimitedCommand || 'fa fa-download',
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant(`${translationPrefix}EXPORT_TO_TAB_DELIMITED`) : this._locales && this._locales.TEXT_EXPORT_TO_TAB_DELIMITED,
             disabled: false,
             command: commandName,
@@ -353,8 +357,8 @@ export class GridMenuExtension implements Extension {
     }
 
     // add the custom "Commands" title if there are any commands
-    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && (Array.isArray(gridMenuCustomItems) && gridMenuCustomItems.length > 0 || (Array.isArray(this.sharedService.gridOptions.gridMenu.customItems) && this.sharedService.gridOptions.gridMenu.customItems.length > 0))) {
-      this.sharedService.gridOptions.gridMenu.customTitle = this.sharedService.gridOptions.gridMenu.customTitle || this.extensionUtility.getPickerTitleOutputString('customTitle', 'gridMenu');
+    if (this.sharedService && this.sharedService.gridOptions && this._gridMenuOptions && (Array.isArray(gridMenuCustomItems) && gridMenuCustomItems.length > 0 || (Array.isArray(this._gridMenuOptions.customItems) && this._gridMenuOptions.customItems.length > 0))) {
+      this._gridMenuOptions.customTitle = this._gridMenuOptions.customTitle || this.extensionUtility.getPickerTitleOutputString('customTitle', 'gridMenu');
     }
 
     return gridMenuCustomItems;
@@ -434,11 +438,11 @@ export class GridMenuExtension implements Extension {
   }
 
   private emptyGridMenuTitles() {
-    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
-      this.sharedService.gridOptions.gridMenu.customTitle = '';
-      this.sharedService.gridOptions.gridMenu.columnTitle = '';
-      this.sharedService.gridOptions.gridMenu.forceFitTitle = '';
-      this.sharedService.gridOptions.gridMenu.syncResizeTitle = '';
+    if (this.sharedService && this.sharedService.gridOptions && this._gridMenuOptions) {
+      this._gridMenuOptions.customTitle = '';
+      this._gridMenuOptions.columnTitle = '';
+      this._gridMenuOptions.forceFitTitle = '';
+      this._gridMenuOptions.syncResizeTitle = '';
     }
   }
 
