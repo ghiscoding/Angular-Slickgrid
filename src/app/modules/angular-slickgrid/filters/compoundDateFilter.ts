@@ -142,11 +142,13 @@ export class CompoundDateFilter implements Filter {
     }
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
-      this.$filterElm = null;
     }
     if (this.$selectOperatorElm) {
       this.$selectOperatorElm.off('change').remove();
     }
+    this.$filterElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   hide() {

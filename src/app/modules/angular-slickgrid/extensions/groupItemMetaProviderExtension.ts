@@ -11,8 +11,8 @@ export class GroupItemMetaProviderExtension implements Extension {
   dispose() {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
-      this._addon = null;
     }
+    this._addon = null;
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */

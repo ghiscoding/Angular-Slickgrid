@@ -105,14 +105,10 @@ export class CompoundSliderFilter implements Filter {
     // and initialize it if searchTerm is filled
     this.$filterElm = this.createDomElement(searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.change((e: any) => {
-      this.onTriggerEvent(e);
-    });
-    this.$selectOperatorElm.change((e: any) => {
-      this.onTriggerEvent(e);
-    });
+    this.$filterInputElm.on('change', this.onTriggerEvent.bind(this));
+    this.$selectOperatorElm.on('change', this.onTriggerEvent.bind(this));
 
     // if user chose to display the slider number on the right side, then update it every time it changes
     // we need to use both "input" and "change" event to be all cross-browser
@@ -157,10 +153,12 @@ export class CompoundSliderFilter implements Filter {
     if (this.$filterInputElm) {
       this.$filterInputElm.off('input change').remove();
       this.$selectOperatorElm.off('change').remove();
-      this.$filterInputElm = null;
-      this.$filterElm = null;
-      this.$selectOperatorElm = null;
     }
+    this.$filterInputElm = null;
+    this.$filterElm = null;
+    this.$selectOperatorElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   /**

@@ -11,7 +11,7 @@ export class SharedService {
   private _currentPagination: CurrentPagination;
   private _hideHeaderRowAfterPageLoad = false;
   private _visibleColumns: Column[];
-  private _hierarchicalDataset: any[];
+  private _hierarchicalDataset: any[] | null;
   onColumnsChanged = new Subject<Column[]>();
 
   // --
@@ -97,12 +97,12 @@ export class SharedService {
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  get hierarchicalDataset(): any[] {
+  get hierarchicalDataset(): any[] | null {
     return this._hierarchicalDataset;
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  set hierarchicalDataset(hierarchicalDataset: any[]) {
+  set hierarchicalDataset(hierarchicalDataset: any[] | null) {
     this._hierarchicalDataset = hierarchicalDataset;
   }
 }

@@ -124,12 +124,14 @@ export class DateRangeFilter implements Filter {
       if (this.flatInstance.element) {
         destroyObjectDomElementProps(this.flatInstance);
       }
-      this.flatInstance = null;
     }
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
-      this.$filterElm = null;
     }
+    this.flatInstance = null;
+    this.$filterElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   hide() {

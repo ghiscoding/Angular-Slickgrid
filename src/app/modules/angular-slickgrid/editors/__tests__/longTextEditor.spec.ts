@@ -220,7 +220,7 @@ describe('LongTextEditor', () => {
     describe('isValueChanged method', () => {
       it('should return True when previously dispatched keyboard event is a new char "a" and it should also update the text counter accordingly', () => {
         const eventKeyDown = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
-        const eventKeyUp = new (window.window as any).KeyboardEvent('keyup', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+        const eventInput = new (window.window as any).Event('input', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
         mockColumn.internalColumnEditor.maxLength = 255;
 
         editor = new LongTextEditor(editorArguments);
@@ -230,7 +230,7 @@ describe('LongTextEditor', () => {
         const maxTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .max-length');
         editor.focus();
         editorElm.dispatchEvent(eventKeyDown);
-        editorElm.dispatchEvent(eventKeyUp);
+        editorElm.dispatchEvent(eventInput);
 
         expect(currentTextLengthElm.textContent).toBe('1');
         expect(maxTextLengthElm.textContent).toBe('255');

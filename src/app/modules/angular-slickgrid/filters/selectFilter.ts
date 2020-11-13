@@ -181,16 +181,18 @@ export class SelectFilter implements Filter {
    * destroy the filter
    */
   destroy() {
+    // also dispose of all Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
     if (this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
       this.$filterElm.multipleSelect('destroy');
       this.$filterElm.remove();
       const elementClassName = this.elementName.toString().replace('.', '\\.'); // make sure to escape any dot "." from CSS class to avoid console error
       $(`[name=${elementClassName}].ms-drop`).remove();
-      this.$filterElm = null;
     }
-
-    // also dispose of all Subscriptions
-    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+    this.$filterElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   /**
@@ -312,6 +314,7 @@ export class SelectFilter implements Filter {
     let collection: any[] = [];
     if (inputCollection.length > 0) {
       collection = [...inputCollection];
+      inputCollection = null;
     }
 
     // user can optionally add a blank entry at the beginning of the collection

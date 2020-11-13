@@ -311,14 +311,14 @@ describe('FilterService', () => {
       mockArgs = { grid: gridStub, column: mockColumn, node: document.getElementById(DOM_ELEMENT_ID) };
     });
 
-    it('should execute the callback normally when a keyup event is triggered and searchTerms are defined', () => {
+    it('should execute the callback normally when a input change event is triggered and searchTerms are defined', () => {
       const expectationColumnFilter = { columnDef: mockColumn, columnId: 'firstName', operator: 'EQ', searchTerms: ['John'] };
       const spySearchChange = jest.spyOn(service.onSearchChange, 'notify');
 
       service.init(gridStub);
       service.bindLocalOnFilter(gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs, new Slick.EventData(), gridStub);
-      service.getFiltersMetadata()[0].callback(new Event('keyup'), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
 
       expect(service.getColumnFilters()).toContainEntry(['firstName', expectationColumnFilter]);
       expect(spySearchChange).toHaveBeenCalledWith({
@@ -333,7 +333,7 @@ describe('FilterService', () => {
       }, expect.anything());
     });
 
-    it('should execute the callback normally when a keyup event is triggered and the searchTerm comes from this event.target', () => {
+    it('should execute the callback normally when a input change event is triggered and the searchTerm comes from this event.target', () => {
       const expectationColumnFilter = { columnDef: mockColumn, columnId: 'firstName', operator: 'EQ', searchTerms: ['John'] };
       const spySearchChange = jest.spyOn(service.onSearchChange, 'notify');
 
@@ -341,7 +341,7 @@ describe('FilterService', () => {
       service.bindLocalOnFilter(gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs, new Slick.EventData(), gridStub);
 
-      const mockEvent = new Event('keyup');
+      const mockEvent = new Event('input');
       Object.defineProperty(mockEvent, 'target', { writable: true, configurable: true, value: { value: 'John' } });
       service.getFiltersMetadata()[0].callback(mockEvent, { columnDef: mockColumn, operator: 'EQ', shouldTriggerQuery: true });
 
@@ -362,7 +362,7 @@ describe('FilterService', () => {
       service.init(gridStub);
       service.bindLocalOnFilter(gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs, new Slick.EventData(), gridStub);
-      service.getFiltersMetadata()[0].callback(new Event('keyup'), { columnDef: mockColumn, operator: 'EQ', searchTerms: [''], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn, operator: 'EQ', searchTerms: [''], shouldTriggerQuery: true });
 
       expect(service.getColumnFilters()).toEqual({});
     });
@@ -418,8 +418,8 @@ describe('FilterService', () => {
       gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs3, new Slick.EventData(), gridStub);
-      service.getFiltersMetadata()[0].callback(new Event('keyup'), { columnDef: mockColumn1, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
-      service.getFiltersMetadata()[1].callback(new Event('keyup'), { columnDef: mockColumn2, operator: 'NE', searchTerms: ['Doe'], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn1, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[1].callback(new Event('input'), { columnDef: mockColumn2, operator: 'NE', searchTerms: ['Doe'], shouldTriggerQuery: true });
     });
 
     describe('clearFilterByColumnId method', () => {
@@ -556,8 +556,8 @@ describe('FilterService', () => {
       service.bindLocalOnFilter(gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
-      service.getFiltersMetadata()[0].callback(new Event('keyup'), { columnDef: mockColumn1, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
-      service.getFiltersMetadata()[1].callback(new Event('keyup'), { columnDef: mockColumn2, operator: 'NE', searchTerms: ['Doe'], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn1, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[1].callback(new Event('input'), { columnDef: mockColumn2, operator: 'NE', searchTerms: ['Doe'], shouldTriggerQuery: true });
     });
 
     describe('clearFilterByColumnId method', () => {
@@ -895,8 +895,8 @@ describe('FilterService', () => {
       const spy = jest.spyOn(gridOptionMock.backendServiceApi.service, 'processOnFilterChanged').mockReturnValue('backend query');
 
       service.init(gridStub);
-      const mockEvent = new Event('keyup');
-      Object.defineProperty(new Event('keyup'), 'target', { writable: true, configurable: true, value: { value: 'John' } });
+      const mockEvent = new Event('input');
+      Object.defineProperty(new Event('input'), 'target', { writable: true, configurable: true, value: { value: 'John' } });
 
       // @ts-ignore
       service.onBackendFilterChange(mockEvent, { grid: gridStub, shouldTriggerQuery: true });

@@ -97,14 +97,10 @@ export class CompoundInputFilter implements Filter {
     // and initialize it if searchTerms is filled
     this.$filterElm = this.createDomElement(searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.on('keyup input change', (e: any) => {
-      this.onTriggerEvent(e);
-    });
-    this.$selectOperatorElm.on('change', (e: any) => {
-      this.onTriggerEvent(e);
-    });
+    this.$filterInputElm.on('keyup input', this.onTriggerEvent.bind(this));
+    this.$selectOperatorElm.on('change', this.onTriggerEvent.bind(this));
   }
 
   /**
@@ -126,11 +122,13 @@ export class CompoundInputFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm && this.$selectOperatorElm) {
-      this.$filterElm.off('keyup input change').remove();
+      this.$filterElm.off('keyup input').remove();
       this.$selectOperatorElm.off('change');
-      this.$filterElm = null;
-      this.$selectOperatorElm = null;
     }
+    this.$filterElm = null;
+    this.$selectOperatorElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   /** Set value(s) on the DOM element */
@@ -253,7 +251,12 @@ export class CompoundInputFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private onTriggerEvent(e: Event | undefined) {
+  private onTriggerEvent(e: KeyboardEvent | undefined) {
+    // we'll use the "input" event for everything (keyup, change, mousewheel & spinner)
+    // with 1 small exception, we need to use the keyup event to handle ENTER key, everything will be processed by the "input" event
+    if (e && e.type === 'keyup' && e.key !== 'Enter') {
+      return;
+    }
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this.$filterElm.removeClass('filled');
