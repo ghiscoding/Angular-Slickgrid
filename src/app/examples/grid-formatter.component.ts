@@ -92,11 +92,11 @@ export class GridFormatterComponent implements OnInit {
 
       // when using the ExcelCopyBuffer, you can see what the selection range is
       enableExcelCopyBuffer: true,
-      excelCopyBufferOptions: {
-        onCopyCells: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCells', args.ranges),
-        onPasteCells: (e, args: { ranges: SelectedRange[] }) => console.log('onPasteCells', args.ranges),
-        onCopyCancelled: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCancelled', args.ranges),
-      }
+      // excelCopyBufferOptions: {
+      //   onCopyCells: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCells', args.ranges),
+      //   onPasteCells: (e, args: { ranges: SelectedRange[] }) => console.log('onPasteCells', args.ranges),
+      //   onCopyCancelled: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCancelled', args.ranges),
+      // }
     };
 
     // mock a dataset

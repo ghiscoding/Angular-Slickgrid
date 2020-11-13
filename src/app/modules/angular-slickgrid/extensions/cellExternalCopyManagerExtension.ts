@@ -21,10 +21,10 @@ declare const $: any;
 export class CellExternalCopyManagerExtension implements Extension {
   private _addon: any;
   private _addonOptions: ExcelCopyBufferOption | null;
+  private _cellSelectionModel: any;
   private _eventHandler: SlickEventHandler;
   private _commandQueue: EditCommand[];
   private _undoRedoBuffer: EditUndoRedoBuffer;
-  private _selectionModel: any;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
@@ -57,8 +57,10 @@ export class CellExternalCopyManagerExtension implements Extension {
     this.extensionUtility.nullifyFunctionNameStartingWithOn(this._addonOptions);
     this._addon = null;
     this._addonOptions = null;
-    this._selectionModel = null;
 
+    if (this._cellSelectionModel && this._cellSelectionModel.destroy) {
+      this._cellSelectionModel.destroy();
+    }
     document.removeEventListener('keydown', this.hookUndoShortcutKey.bind(this));
   }
 
@@ -75,8 +77,8 @@ export class CellExternalCopyManagerExtension implements Extension {
       this.hookUndoShortcutKey();
 
       this._addonOptions = { ...this.getDefaultOptions(), ...this.sharedService.gridOptions.excelCopyBufferOptions } as ExcelCopyBufferOption;
-      this._selectionModel = new Slick.CellSelectionModel();
-      this.sharedService.grid.setSelectionModel(this._selectionModel);
+      this._cellSelectionModel = new Slick.CellSelectionModel();
+      this.sharedService.grid.setSelectionModel(this._cellSelectionModel);
       this._addon = new Slick.CellExternalCopyManager(this._addonOptions);
       if (this._addon) {
         this.sharedService.grid.registerPlugin(this._addon);
