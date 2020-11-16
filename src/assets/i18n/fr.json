@@ -10,6 +10,7 @@
   "COMMANDS": "Commandes",
   "CONTAINS": "Contient",
   "COPY": "Copier",
+  "EMPTY_DATA_WARNING_MESSAGE": "Aucune donnée à afficher.",
   "ENDS_WITH": "Se termine par",
   "EQUALS": "Égale",
   "EQUAL_TO": "Égal à",
