@@ -9,6 +9,7 @@ import 'slickgrid/slick.dataview';
 // ...then everything else...
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { isObservable, Observable, Subscription } from 'rxjs';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -37,7 +38,7 @@ import {
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { isObservable, Observable, Subscription } from 'rxjs';
+import { SlickEmptyWarningComponent } from './slick-empty-warning.component';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -131,6 +132,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
+  private slickEmptyWarning: SlickEmptyWarningComponent;
   dataView: any | null;
   grid: any | null;
   gridHeightString: string;
@@ -238,7 +240,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private treeDataService: TreeDataService,
     @Optional() private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
-  ) { }
+  ) {
+    this.slickEmptyWarning = new SlickEmptyWarningComponent(this.translate);
+  }
 
   ngAfterViewInit() {
     this.initialization();
@@ -254,7 +258,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnInit(): void {
-    if (this.gridOptions && (this.gridOptions.frozenColumn >= 0 || this.gridOptions.frozenRow >= 0)) {
+    if (this.gridOptions && (this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) || (this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0)) {
       this.loadJqueryMousewheelDynamically();
     }
 
@@ -282,6 +286,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.resizer.dispose();
     this.sortService.dispose();
     this.treeDataService.dispose();
+
+    // dispose the Components
+    this.slickEmptyWarning.dispose();
+
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
@@ -392,6 +400,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
+    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(dataset)) {
+      const finalTotalCount = totalCount || dataset.length;
+      this.displayEmptyDataWarning(finalTotalCount < 1);
+    }
+
     if (Array.isArray(dataset) && this.grid && this.dataView && typeof this.dataView.setItems === 'function') {
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
@@ -494,6 +507,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   //
   // private functions
   // ------------------
+
+  private displayEmptyDataWarning(showWarning = true) {
+    this.slickEmptyWarning.grid = this.grid;
+    this.slickEmptyWarning && this.slickEmptyWarning.showEmptyDataMessage(showWarning);
+  }
 
   private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
@@ -602,6 +620,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           itemCount: args && args.current || 0,
           totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
         };
+
+        // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
+        if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
+          this.displayEmptyDataWarning(args.current === 0);
+        }
       });
 
       // when dealing with Tree Data View, make sure we have necessary tree data options

@@ -306,6 +306,9 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .find('.filter-title')
         .type('000');
 
+      cy.get('.slick-empty-data-warning:visible')
+        .contains('No data to display.');
+
       cy.get('@grid1')
         .find('[data-test=page-count]')
         .contains('0');
@@ -329,6 +332,10 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid1')
         .find('.filter-title')
         .type('{backspace}');
+
+      cy.get('.slick-empty-data-warning')
+        .contains('No data to display.')
+        .should('not.be.visible');
 
       cy.get('@grid1')
         .find('[data-test=page-count]')

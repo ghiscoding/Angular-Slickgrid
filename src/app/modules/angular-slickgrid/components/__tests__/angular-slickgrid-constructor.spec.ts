@@ -219,6 +219,7 @@ const mockGrid = {
   getEditorLock: () => mockGetEditorLock,
   getOptions: jest.fn(),
   getScrollbarDimensions: jest.fn(),
+  getUID: jest.fn(),
   render: jest.fn(),
   resizeCanvas: jest.fn(),
   setColumns: jest.fn(),
