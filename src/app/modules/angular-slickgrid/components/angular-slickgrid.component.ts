@@ -132,6 +132,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
+  private _paginationOptions: Pagination | undefined;
   private slickEmptyWarning: SlickEmptyWarningComponent;
   dataView: any | null;
   grid: any | null;
@@ -143,7 +144,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   customFooterOptions: CustomFooterOption;
   locales: Locale;
   metrics: Metrics;
-  paginationOptions: Pagination;
   showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
@@ -167,6 +167,20 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Input() customDataView: any;
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
+
+  @Input()
+  get paginationOptions(): Pagination | undefined {
+    return this._paginationOptions;
+  }
+  set paginationOptions(options: Pagination | undefined) {
+    if (options && this._paginationOptions) {
+      this._paginationOptions = { ...this._paginationOptions, ...options };
+    } else {
+      this._paginationOptions = options;
+    }
+    this.gridOptions.pagination = options;
+    this.paginationService.updateTotalItems(options && options.totalItems || 0, true);
+  }
 
   @Input()
   set gridHeight(height: number) {
@@ -435,7 +449,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.showPagination = (this.gridOptions && (this.gridOptions.enablePagination || (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined))) ? true : false;
 
       if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
-        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
+        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
         const totalRecords = totalCount !== undefined ? totalCount : (this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems);
@@ -783,7 +797,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
-    this.paginationOptions = this.gridOptions.pagination;
+    this._paginationOptions = this.gridOptions.pagination;
     this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
     this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
@@ -1007,14 +1021,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private loadLocalGridPagination() {
     if (this.gridOptions) {
       this.totalItems = Array.isArray(this.dataset) ? this.dataset.length : 0;
-      if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
+      if (this._paginationOptions && this.dataView && this.dataView.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo() || {};
-        if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== slickPagingInfo.totalRows) {
+        if (slickPagingInfo.hasOwnProperty('totalRows') && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
           this.totalItems = slickPagingInfo.totalRows;
         }
       }
-      this.paginationOptions.totalItems = this.totalItems;
-      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
+      this._paginationOptions.totalItems = this.totalItems;
+      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
       this.initializePaginationService(paginationOptions);
     }
   }

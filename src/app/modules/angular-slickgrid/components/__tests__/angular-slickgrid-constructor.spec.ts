@@ -126,6 +126,7 @@ const paginationServiceStub = {
   totalItems: 0,
   init: jest.fn(),
   dispose: jest.fn(),
+  updateTotalItems: jest.fn(),
   onPaginationVisibilityChanged: new Subject<boolean>(),
   onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
@@ -1247,6 +1248,29 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       beforeEach(() => {
         jest.clearAllMocks();
         component.destroy();
+      });
+
+      it('should merge paginationOptions when some already exist', () => {
+        const mockPagination = { pageSize: 2, pageSizes: [] };
+        const paginationSrvSpy = jest.spyOn(paginationServiceStub, 'updateTotalItems');
+
+        component.ngAfterViewInit();
+        component.paginationOptions = mockPagination;
+
+        expect(component.paginationOptions).toEqual({ ...mockPagination, totalItems: 0 });
+        expect(paginationSrvSpy).toHaveBeenCalledWith(0, true);
+      });
+
+      it('should set brand new paginationOptions when none previously exist', () => {
+        const mockPagination = { pageSize: 2, pageSizes: [], totalItems: 1 };
+        const paginationSrvSpy = jest.spyOn(paginationServiceStub, 'updateTotalItems');
+
+        component.ngAfterViewInit();
+        component.paginationOptions = undefined;
+        component.paginationOptions = mockPagination;
+
+        expect(component.paginationOptions).toEqual(mockPagination);
+        expect(paginationSrvSpy).toHaveBeenNthCalledWith(2, 1, true);
       });
 
       it('should call trigger a gridStage change event when pagination change is triggered', () => {
