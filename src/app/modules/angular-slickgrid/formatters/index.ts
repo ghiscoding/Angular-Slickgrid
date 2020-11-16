@@ -14,6 +14,7 @@ import { dollarColoredBoldFormatter } from './dollarColoredBoldFormatter';
 import { dollarColoredFormatter } from './dollarColoredFormatter';
 import { dollarFormatter } from './dollarFormatter';
 import { editIconFormatter } from './editIconFormatter';
+import { fakeHyperlinkFormatter } from './fakeHyperlinkFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { iconFormatter } from './iconFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
@@ -149,6 +150,9 @@ export const Formatters = {
 
   /** Displays a Font-Awesome edit icon (fa-pencil) */
   editIcon: editIconFormatter,
+
+  /** Takes any text value and display it as a fake a hyperlink (only styled as an hyperlink), this can be used in combo with "onCellClick" event */
+  fakeHyperlink: fakeHyperlinkFormatter,
 
   /**
    * Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https).
