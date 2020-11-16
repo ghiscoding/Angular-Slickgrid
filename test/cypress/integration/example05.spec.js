@@ -516,6 +516,9 @@ describe('Example 5 - OData Grid', () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('.slick-empty-data-warning:visible')
+        .contains('No data to display.');
     });
 
     it('should display page 0 of 0 but hide pagination from/to numbers when filtered data "xy" returns an empty dataset', () => {
@@ -553,6 +556,10 @@ describe('Example 5 - OData Grid', () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('.slick-empty-data-warning')
+        .contains('No data to display.')
+        .should('not.be.visible');
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(2);
