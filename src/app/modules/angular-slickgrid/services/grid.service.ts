@@ -8,6 +8,7 @@ import {
   GridServiceDeleteOption,
   GridServiceInsertOption,
   GridServiceUpdateOption,
+  HideColumnOption,
   OnEventArgs
 } from './../models/index';
 import { ExtensionService } from './extension.service';
@@ -20,9 +21,11 @@ import { arrayRemoveItemByIndex } from './utilities';
 // using external non-typed js libraries
 declare const Slick: any;
 let highlightTimerEnd: any;
+
 const GridServiceDeleteOptionDefaults: GridServiceDeleteOption = { triggerEvent: true };
 const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, position: 'top', resortGrid: false, selectRow: false, triggerEvent: true };
 const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow: true, selectRow: false, scrollRowIntoView: false, triggerEvent: true };
+const HideColumnOptionDefaults: HideColumnOption = { autoResizeColumns: true, triggerEvent: true, hideFromColumnPicker: false, hideFromGridMenu: false };
 
 @Injectable()
 export class GridService {
@@ -141,9 +144,10 @@ export class GridService {
   }
 
   /**
-   * Hide a Column from the Grid (the column will just become hidden and will still show up in columnPicker/gridMenu)
-   * @param column
-   */
+     * @deprecated Hide a Column from the Grid (the column will just become hidden and will still show up in columnPicker/gridMenu)
+     * @see hideColumnById
+     * @param column
+     */
   hideColumn(column: Column) {
     if (this._grid && this._grid.getColumns && this._grid.setColumns && this._grid.getColumnIndex) {
       const columnIndex = this._grid.getColumnIndex(column.id);
@@ -154,7 +158,8 @@ export class GridService {
   }
 
   /**
-   * Hide a Column from the Grid by its column definition index (the column will just become hidden and will still show up in columnPicker/gridMenu)
+   * @deprecated Hide a Column from the Grid by its column definition index (the column will just become hidden and will still show up in columnPicker/gridMenu)
+   * @see hideColumnById Please use "hideColumnById(id)" or "hideColumnByIds([ids])" instead since it has a lot more options
    * @param columnIndex - column definition index
    * @param triggerEvent - do we want to trigger an event (onHeaderMenuColumnsChanged) when column becomes hidden? Defaults to true.
    */
@@ -166,6 +171,71 @@ export class GridService {
       this._grid.setColumns(visibleColumns);
       if (triggerEvent) {
         this.onColumnsChanged.next(visibleColumns);
+      }
+    }
+  }
+
+  /**
+   * Hide a Column from the Grid by its column definition id, the column will just become hidden and will still show up in columnPicker/gridMenu
+   * @param {string | number} columnId - column definition id
+   * @param {boolean} triggerEvent - do we want to trigger an event (onHeaderMenuColumnsChanged) when column becomes hidden? Defaults to true.
+   * @return {number} columnIndex - column index position when found or -1
+   */
+  hideColumnById(columnId: string | number, options?: HideColumnOption): number {
+    options = { ...HideColumnOptionDefaults, ...options };
+    if (this._grid && this._grid.getColumns && this._grid.setColumns) {
+      const currentColumns = this._grid.getColumns();
+      const colIndexFound = currentColumns.findIndex(col => col.id === columnId);
+
+      if (colIndexFound >= 0) {
+        const visibleColumns = arrayRemoveItemByIndex<Column>(currentColumns, colIndexFound);
+        this.sharedService.visibleColumns = visibleColumns;
+        this._grid.setColumns(visibleColumns);
+
+        const columnIndexFromAllColumns = this.sharedService.allColumns.findIndex(col => col.id === columnId);
+        if (columnIndexFromAllColumns) {
+          if (options && options.hideFromColumnPicker) {
+            this.sharedService.allColumns[columnIndexFromAllColumns].excludeFromColumnPicker = true;
+          }
+          if (options && options.hideFromGridMenu) {
+            this.sharedService.allColumns[columnIndexFromAllColumns].excludeFromGridMenu = true;
+          }
+        }
+
+        // do we want to auto-resize the columns in the grid after hidding some? most often yes
+        if (options && options.autoResizeColumns) {
+          this._grid.autosizeColumns();
+        }
+
+        // do we want to trigger an event after hidding
+        if (options && options.triggerEvent) {
+          this.onColumnsChanged.next(visibleColumns);
+        }
+        return colIndexFound;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Hide a Column from the Grid by its column definition id(s), the column will just become hidden and will still show up in columnPicker/gridMenu
+   * @param {Array<string | number>} columnIds - column definition ids, can be a single string and an array of strings
+   * @param {boolean} triggerEvent - do we want to trigger an event (onHeaderMenuColumnsChanged) when column becomes hidden? Defaults to true.
+   */
+  hideColumnByIds(columnIds: Array<string | number>, options?: HideColumnOption) {
+    options = { ...HideColumnOptionDefaults, ...options };
+    if (Array.isArray(columnIds)) {
+      for (const columnId of columnIds) {
+        // hide each column by its id but wait after the for loop to auto resize columns in the grid
+        this.hideColumnById(columnId, { ...options, triggerEvent: false, autoResizeColumns: false });
+      }
+      // do we want to auto-resize the columns in the grid after hidding some? most often yes
+      if (options && options.autoResizeColumns) {
+        this._grid.autosizeColumns();
+      }
+      // do we want to trigger an event after hidding
+      if (options && options.triggerEvent) {
+        this.onColumnsChanged.next(this.sharedService.visibleColumns);
       }
     }
   }

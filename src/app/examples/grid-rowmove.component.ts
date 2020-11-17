@@ -176,10 +176,14 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
   }
 
   hideDurationColumnDynamically() {
-    const columnIndex = this.angularGrid.slickGrid.getColumns().findIndex(col => col.id === 'duration');
-    if (columnIndex >= 0) {
-      this.angularGrid.gridService.hideColumnByIndex(columnIndex);
-    }
+    // -- you can hide by one Id or multiple Ids:
+    // hideColumnById(id, options), hideColumnByIds([ids], options)
+    // you can also provide options, defaults are: { autoResizeColumns: true, triggerEvent: true, hideFromColumnPicker: false, hideFromGridMenu: false }
+
+    this.angularGrid.gridService.hideColumnById('duration');
+
+    // or with multiple Ids and extra options
+    // this.angularGrid.gridService.hideColumnByIds(['duration', 'finish'], { hideFromColumnPicker: true, hideFromGridMenu: false });
   }
 
   // Disable/Enable Filtering/Sorting functionalities
