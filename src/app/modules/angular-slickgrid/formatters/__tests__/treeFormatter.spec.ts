@@ -12,7 +12,7 @@ const gridStub = {
   getOptions: jest.fn(),
 };
 
-describe('the Uppercase Formatter', () => {
+describe('Tree Formatter', () => {
   let dataset;
   let mockGridOptions: GridOption;
 

@@ -1,7 +1,7 @@
 import { Column } from '../../models';
 import { yesNoFormatter } from '../yesNoFormatter';
 
-describe('the Uppercase Formatter', () => {
+describe('Yes/No Formatter', () => {
   it('should return a "Yes" string when value is passed', () => {
     const output = yesNoFormatter(1, 1, 'blah', {} as Column, {});
     expect(output).toBe('Yes');
