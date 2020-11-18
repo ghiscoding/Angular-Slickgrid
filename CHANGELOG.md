@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.23.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.0...v2.23.1) (2020-11-18)
+
+
+### Features
+
+* **core:** add "Empty Data" warning message when grid is empty ([#631](https://github.com/ghiscoding/angular-slickgrid/issues/631)) ([8f72e38](https://github.com/ghiscoding/angular-slickgrid/commit/8f72e387a0e16fa205160e60fb31a55e6f9fadd1))
+* **formatters:** add a fake hyperlink formatter ([#630](https://github.com/ghiscoding/angular-slickgrid/issues/630)) ([694f0ea](https://github.com/ghiscoding/angular-slickgrid/commit/694f0eaecf50db6f77f734cfd0b4ce0ddeae4e25))
+* **formatters:** add AlignRight and AlignCenter Formatters ([#634](https://github.com/ghiscoding/angular-slickgrid/issues/634)) ([3645d60](https://github.com/ghiscoding/angular-slickgrid/commit/3645d6055ed617a84ee28fccdad944fc1a538ffe))
+* **services:** add 2x new methods hideColumnById or ..byIds ([#633](https://github.com/ghiscoding/angular-slickgrid/issues/633)) ([e4455a9](https://github.com/ghiscoding/angular-slickgrid/commit/e4455a9aa052d0f01ff8715a029e8534f2b73395))
+
+
+### Bug Fixes
+
+* **backend:** OData/GraphQL pagination should display warning on empty ([#632](https://github.com/ghiscoding/angular-slickgrid/issues/632)) ([7d32bac](https://github.com/ghiscoding/angular-slickgrid/commit/7d32bac0e78afd4a48b1403a49d0fb614762ce0c))
+* **core:** clear dataset when destroying & fix few unsubscribed events ([#629](https://github.com/ghiscoding/angular-slickgrid/issues/629)) ([0ee3421](https://github.com/ghiscoding/angular-slickgrid/commit/0ee3421b86374616533e2e9ebc2945d13705782b))
+* **core:** Flatpickr is not destroyed properly & leaks detached elements ([#627](https://github.com/ghiscoding/angular-slickgrid/issues/627)) ([a9f7027](https://github.com/ghiscoding/angular-slickgrid/commit/a9f7027dbaf6d520ecb2fd868a55e96d7c1bff7b)), closes [#625](https://github.com/ghiscoding/angular-slickgrid/issues/625)
+* **core:** mem leaks w/orphan DOM elements when disposing, fixes [#625](https://github.com/ghiscoding/angular-slickgrid/issues/625) ([#626](https://github.com/ghiscoding/angular-slickgrid/issues/626)) ([d1e284f](https://github.com/ghiscoding/angular-slickgrid/commit/d1e284fcb1fffec7f15bd3056f857f394db38aa0))
+* **core:** properly dispose plugins to avoid detached DOM elements ([#628](https://github.com/ghiscoding/angular-slickgrid/issues/628)) ([3b4ccc4](https://github.com/ghiscoding/angular-slickgrid/commit/3b4ccc4891fa5bb983adff9f446adf77c9c84409))
+
 ## [2.23.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.5...v2.23.0) (2020-11-02)
 
 
