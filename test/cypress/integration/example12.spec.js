@@ -37,13 +37,14 @@ describe('Example 12: Localization (i18n)', () => {
     });
 
     it('should have some metrics shown in the grid footer', () => {
+      const now = new Date();
+      const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+
       cy.get('#slickGridContainer-grid12')
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          const now = new Date();
-          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
           expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
         });
     });
@@ -290,7 +291,7 @@ describe('Example 12: Localization (i18n)', () => {
       cy.get('@grid12')
         .find('.slick-viewport-top.slick-viewport-left')
         .scrollTo('top')
-        .wait(10);
+        .wait(25);
 
       cy.get('@grid12')
         .find('.slick-row')
