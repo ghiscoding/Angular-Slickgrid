@@ -36,19 +36,6 @@ describe('Example 12: Localization (i18n)', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
     });
 
-    it('should have some metrics shown in the grid footer', () => {
-      const now = new Date();
-      const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
-
-      cy.get('#slickGridContainer-grid12')
-        .find('.slick-custom-footer')
-        .find('.right-footer')
-        .should($span => {
-          const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
-        });
-    });
-
     it('should filter certain tasks with the word "ask 1" and expect filter to use contain/include text', () => {
       const tasks = ['Task 1', 'Task 10', 'Task 11', 'Task 12'];
 
@@ -279,6 +266,19 @@ describe('Example 12: Localization (i18n)', () => {
         .children()
         .filter('.slick-cell.selected.true:nth(1)')
         .contains('Task 4');
+    });
+
+    it('should have some metrics shown in the grid footer', () => {
+      const now = new Date();
+      const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(`Last Update ${dateFormatted} | 447 of 1500 items`);
+        });
     });
 
     it('should scroll back to the top and expect to see "Task 1497" still selected', () => {
