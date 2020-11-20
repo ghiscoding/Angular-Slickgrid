@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.23.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.1...v2.23.2) (2020-11-20)
+
+
+### Bug Fixes
+
+* nullify grid/dataView/gridOptions when destroying to avoid leak ([b995b65](https://github.com/ghiscoding/angular-slickgrid/commit/b995b65fad93b293516630e974bf5a4988b53fdc))
+* **core:** header columns grouping misbehave after hiding column ([c89a21b](https://github.com/ghiscoding/angular-slickgrid/commit/c89a21b245107d4377b1d74c2aa970f17efdb0fe))
+* **extensions:** CellExternalCopyBuffer onKeyDown event leak, fix [#635](https://github.com/ghiscoding/angular-slickgrid/issues/635) ([#636](https://github.com/ghiscoding/angular-slickgrid/issues/636)) ([9ce8326](https://github.com/ghiscoding/angular-slickgrid/commit/9ce8326d046b9097965c5658a11da43b2bf2e0f6))
+
 ### [2.23.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.0...v2.23.1) (2020-11-18)
 
 
