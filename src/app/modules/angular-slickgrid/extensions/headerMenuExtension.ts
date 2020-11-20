@@ -224,7 +224,7 @@ export class HeaderMenuExtension implements Extension {
       const visibleColumns = arrayRemoveItemByIndex(currentColumns, columnIndex);
       this.sharedService.visibleColumns = visibleColumns;
       this.sharedService.grid.setColumns(visibleColumns);
-      this.sharedService.onColumnsChanged.next(visibleColumns);
+      this.sharedService.onHeaderMenuHideColumns.next(visibleColumns);
     }
   }
 

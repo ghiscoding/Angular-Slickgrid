@@ -84,13 +84,13 @@ describe('GroupingAndColspanService', () => {
   let service: GroupingAndColspanService;
   let translate: TranslateService;
   let slickgridEventHandler: SlickEventHandler;
+  const sharedService = new SharedService();
 
   beforeEach(() => {
     const div = document.createElement('div');
     div.innerHTML = template;
     document.body.appendChild(div);
 
-    // service = new GroupingAndColspanService(resizerServiceStub);
 
     TestBed.configureTestingModule({
       providers: [
@@ -99,6 +99,7 @@ describe('GroupingAndColspanService', () => {
         { provide: ExtensionUtility, useValue: mockExtensionUtility },
         { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: ResizerService, useValue: resizerServiceStub },
+        { provide: SharedService, useValue: sharedService },
       ],
       imports: [TranslateModule.forRoot()]
     });
@@ -355,6 +356,20 @@ describe('GroupingAndColspanService', () => {
       expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 0);
       expect(divHeaderColumns.length).toBeGreaterThan(2);
       expect(divHeaderColumns[0].outerHTML).toEqual(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns">All your colums div here</div>`);
+    });
+
+    it('should  call the "renderPreHeaderRowGroupingTitles" when "onHeaderMenuHideColumns" is triggered', () => {
+      const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      const divHeaderColumns = document.getElementsByClassName('slick-header-columns');
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+
+      service.init(gridStub, dataViewStub);
+      sharedService.onHeaderMenuHideColumns.next(columnsMock);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(2); // 1x for init, 1x for event
+      expect(divHeaderColumns.length).toBeGreaterThan(2);
     });
   });
 });

@@ -12,7 +12,7 @@ export class SharedService {
   private _hideHeaderRowAfterPageLoad = false;
   private _visibleColumns: Column[];
   private _hierarchicalDataset: any[] | null;
-  onColumnsChanged = new Subject<Column[]>();
+  onHeaderMenuHideColumns = new Subject<Column[]>();
 
   // --
   // public
