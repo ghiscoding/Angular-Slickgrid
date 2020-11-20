@@ -921,7 +921,7 @@ describe('GridStateService', () => {
       const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
       const getAssocCurColSpy = jest.spyOn(service, 'getAssociatedCurrentColumns').mockReturnValue(currentColumnsMock);
 
-      sharedService.onColumnsChanged.next(columnsMock);
+      sharedService.onHeaderMenuHideColumns.next(columnsMock);
 
       expect(getCurGridStateSpy).toHaveBeenCalled();
       expect(getAssocCurColSpy).toHaveBeenCalled();

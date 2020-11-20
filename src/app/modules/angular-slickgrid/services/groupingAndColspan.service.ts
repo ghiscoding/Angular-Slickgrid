@@ -6,6 +6,7 @@ import { ExtensionUtility } from '../extensions/extensionUtility';
 import { ExtensionService } from './extension.service';
 import { ResizerService } from './resizer.service';
 import { unsubscribeAllObservables } from './utilities';
+import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
 declare let $: any;
@@ -19,7 +20,7 @@ export class GroupingAndColspanService {
   private _grid: any;
   private subscriptions: Subscription[] = [];
 
-  constructor(private extensionUtility: ExtensionUtility, private extensionService: ExtensionService, private resizerService: ResizerService) {
+  constructor(private extensionUtility: ExtensionUtility, private extensionService: ExtensionService, private resizerService: ResizerService, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -51,13 +52,14 @@ export class GroupingAndColspanService {
         this._eventHandler.subscribe(grid.onColumnsReordered, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
         this.subscriptions.push(
-          this.resizerService.onGridAfterResize.subscribe(() => this.renderPreHeaderRowGroupingTitles())
+          this.resizerService.onGridAfterResize.subscribe(() => this.renderPreHeaderRowGroupingTitles()),
+          this.sharedService.onHeaderMenuHideColumns.subscribe(() => this.delayRenderPreHeaderRowGroupingTitles(0))
         );
 
         this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
           // when user changes frozen columns dynamically (e.g. from header menu), we need to re-render the pre-header of the grouping titles
           if (args && args.optionsBefore && args.optionsAfter && args.optionsBefore.frozenColumn !== args.optionsAfter.frozenColumn) {
-            setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 0);
+            this.delayRenderPreHeaderRowGroupingTitles(0);
           }
         });
 
@@ -75,7 +77,7 @@ export class GroupingAndColspanService {
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
         // probably some kind of timing issues and delaying it until the grid is fully ready fixes this problem
-        setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 50);
+        this.delayRenderPreHeaderRowGroupingTitles(50);
       }
     }
   }
@@ -86,6 +88,11 @@ export class GroupingAndColspanService {
 
     // also unsubscribe all Angular Subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+  }
+
+  /** call "renderPreHeaderRowGroupingTitles()" with a setTimeout delay */
+  delayRenderPreHeaderRowGroupingTitles(delay = 0) {
+    setTimeout(() => this.renderPreHeaderRowGroupingTitles(), delay);
   }
 
   /** Create or Render the Pre-Header Row Grouping Titles */

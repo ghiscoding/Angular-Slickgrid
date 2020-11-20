@@ -1247,7 +1247,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     describe('pagination events', () => {
       beforeEach(() => {
         jest.clearAllMocks();
-        component.destroy();
       });
 
       it('should merge paginationOptions when some already exist', () => {
