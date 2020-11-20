@@ -1,6 +1,5 @@
-import { getDescendantProperty, setDeepValue } from '../services/utilities';
-import { floatValidator, integerValidator, textValidator } from '../editorValidators';
 import {
+  DOMEvent,
   Column,
   ColumnEditor,
   ColumnEditorDualInput,
@@ -12,6 +11,9 @@ import {
   KeyCode,
   SlickEventHandler,
 } from '../models/index';
+import { BindingEventService } from '../services/bindingEvent.service';
+import { getDescendantProperty, setDeepValue } from '../services/utilities';
+import { floatValidator, integerValidator, textValidator } from '../editorValidators';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -21,6 +23,7 @@ declare const Slick: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class DualInputEditor implements Editor {
+  private _bindEventService: BindingEventService;
   private _eventHandler: SlickEventHandler;
   private _isValueSaveCalled = false;
   private _lastEventType: string | undefined;
@@ -44,8 +47,9 @@ export class DualInputEditor implements Editor {
     }
     this.grid = args.grid;
     this.gridOptions = (this.grid.getOptions() || {}) as GridOption;
-    this.init();
     this._eventHandler = new Slick.EventHandler();
+    this._bindEventService = new BindingEventService();
+    this.init();
     this._eventHandler.subscribe(this.grid.onValidationError, () => this._isValueSaveCalled = true);
   }
 
@@ -105,14 +109,14 @@ export class DualInputEditor implements Editor {
 
     // the lib does not get the focus out event for some reason, so register it here
     if (this.hasAutoCommitEdit) {
-      this._leftInput.addEventListener('focusout', (event: any) => this.handleFocusOut(event, 'leftInput'));
-      this._rightInput.addEventListener('focusout', (event: any) => this.handleFocusOut(event, 'rightInput'));
+      this._bindEventService.bind(this._leftInput, 'focusout', (event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'leftInput'));
+      this._bindEventService.bind(this._rightInput, 'focusout', (event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'rightInput'));
     }
 
     setTimeout(() => this._leftInput.select(), 50);
   }
 
-  handleFocusOut(event: any, position: 'leftInput' | 'rightInput') {
+  handleFocusOut(event: DOMEvent<HTMLInputElement>, position: 'leftInput' | 'rightInput') {
     // when clicking outside the editable cell OR when focusing out of it
     const targetClassNames = event.relatedTarget && event.relatedTarget.className || '';
     if (targetClassNames.indexOf('dual-editor') === -1 && this._lastEventType !== 'focusout-right') {
@@ -134,12 +138,7 @@ export class DualInputEditor implements Editor {
   destroy() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
-
-    const columnId = this.columnDef && this.columnDef.id;
-    const elements = document.querySelectorAll(`.dual-editor-text.editor-${columnId}`);
-    if (elements.length > 0) {
-      elements.forEach((elm) => elm.removeEventListener('focusout', this.handleFocusOut.bind(this)));
-    }
+    this._bindEventService.unbindAll();
   }
 
   createInput(position: 'leftInput' | 'rightInput'): HTMLInputElement {

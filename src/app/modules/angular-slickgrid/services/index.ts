@@ -1,5 +1,6 @@
 export * from './angularUtil.service';
 export * from './backend-utilities';
+export * from './bindingEvent.service';
 export * from './bsDropdown.service';
 export * from './collection.service';
 export * from './excelExport.service';
