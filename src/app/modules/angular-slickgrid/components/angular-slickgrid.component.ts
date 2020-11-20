@@ -344,6 +344,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.datasetHierarchical = null;
     this._columnDefinitions = [];
     this._angularGridInstances = null;
+    this.grid = null;
+    this.gridOptions = null;
+    this.dataView = null;
   }
 
   emptyGridContainerElm() {
