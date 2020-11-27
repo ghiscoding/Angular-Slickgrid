@@ -87,8 +87,8 @@ describe('avgTotalsDollarFormatter', () => {
   it('should display an average number with at least 2 decimals but no more than 4 by default, and dollar sign when a positive number is provided', () => {
     const totals = { avg: { column1: 123.45678, column2: 345.2, column3: -2.45 } };
 
-    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1' } as Column, {});
-    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2' } as Column, {});
+    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1' } as Column, {}, {});
+    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2' } as Column, {}, {});
 
     expect(output1).toBe('$123.4568');
     expect(output2).toBe('$345.20');
@@ -97,9 +97,9 @@ describe('avgTotalsDollarFormatter', () => {
   it('should display an average number with user defined minimum & maximum decimal count', () => {
     const totals = { avg: { column1: 123.45678, column2: 345.2, column3: -2.45 } };
 
-    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2 } } as Column, {});
-    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0 } } as Column, {});
-    const output3 = avgTotalsDollarFormatter(totals, { id: 'column3', field: 'column3', params: { minDecimal: 3, displayNegativeNumberWithParentheses: true } } as Column, {});
+    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2 } } as Column, {}, {});
+    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0 } } as Column, {}, {});
+    const output3 = avgTotalsDollarFormatter(totals, { id: 'column3', field: 'column3', params: { minDecimal: 3, displayNegativeNumberWithParentheses: true } } as Column, {}, {});
 
     expect(output1).toBe('$123.46');
     expect(output2).toBe('$345.2');
@@ -122,8 +122,8 @@ describe('avgTotalsDollarFormatter', () => {
   it('should display an average number with prefix and suffix', () => {
     const totals = { avg: { column1: 123.45678, column2: 345.2, column3: -2.45 } };
 
-    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2, groupFormatterPrefix: 'Avg: ' } } as Column, {});
-    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0, groupFormatterSuffix: ' (avg)' } } as Column, {});
+    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2, groupFormatterPrefix: 'Avg: ' } } as Column, {}, {});
+    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0, groupFormatterSuffix: ' (avg)' } } as Column, {}, {});
     const output3 = avgTotalsDollarFormatter(
       totals, {
         id: 'column3', field: 'column3',
@@ -138,8 +138,8 @@ describe('avgTotalsDollarFormatter', () => {
   it('should display an average number with prefix, suffix and thousand separator', () => {
     const totals = { avg: { column1: 12345678.45678, column2: 345678.2, column3: -345678.45 } };
 
-    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2, groupFormatterPrefix: 'Avg: ', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
-    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0, groupFormatterSuffix: ' (avg)', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
+    const output1 = avgTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2, groupFormatterPrefix: 'Avg: ', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {}, {});
+    const output2 = avgTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0, groupFormatterSuffix: ' (avg)', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {}, {});
     const output3 = avgTotalsDollarFormatter(
       totals, {
         id: 'column3', field: 'column3',

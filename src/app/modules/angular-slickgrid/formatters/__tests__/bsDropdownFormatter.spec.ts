@@ -3,7 +3,7 @@ import { bsDropdownFormatter } from '../bsDropdownFormatter';
 
 describe('the Bootstrap dropdown Formatter', () => {
   it('should throw an error when omitting to pass "propertyNames" to "params"', () => {
-    expect(() => bsDropdownFormatter(0, 0, 'anything', {} as Column, {}))
+    expect(() => bsDropdownFormatter(0, 0, 'anything', {} as Column, {}, {}))
       .toThrowError('You must provide the "label" or "formatterLabel" via the generic "params"');
   });
 
@@ -12,7 +12,7 @@ describe('the Bootstrap dropdown Formatter', () => {
     const label = 'Action';
     const row = 0;
     const cell = 0;
-    const result = bsDropdownFormatter(row, cell, input, { field: 'user', params: { label } } as Column, {});
+    const result = bsDropdownFormatter(row, cell, input, { field: 'user', params: { label } } as Column, {}, {});
 
     expect(result).toBe(`<div id="myDrop-r${row}-c${cell}" class="dropdown pointer">
     <a class="dropdown-toggle">
@@ -28,7 +28,7 @@ describe('the Bootstrap dropdown Formatter', () => {
     const label = 'Action';
     const row = 0;
     const cell = 0;
-    const result = bsDropdownFormatter(row, cell, input, { field: 'user', params: { label } } as Column, {});
+    const result = bsDropdownFormatter(row, cell, input, { field: 'user', params: { label } } as Column, {}, {});
 
     expect(result).toBe(`<div id="myDrop-r${row}-c${cell}" class="dropdown pointer">
     <a class="dropdown-toggle">

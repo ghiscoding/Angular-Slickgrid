@@ -47,7 +47,7 @@ describe('the Translate Formatter', () => {
   });
 
   it('should return the translated value when value passed is a string and ngx-translate service is passed as a ColumnDef Params without any Grid object', () => {
-    const output = translateFormatter(1, 1, 'HELLO', { params: { i18n: translate } } as Column, {});
+    const output = translateFormatter(1, 1, 'HELLO', { params: { i18n: translate } } as Column, {}, {});
     expect(output).toBe('Bonjour');
   });
 

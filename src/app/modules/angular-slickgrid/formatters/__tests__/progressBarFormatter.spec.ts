@@ -3,12 +3,12 @@ import { progressBarFormatter } from '../progressBarFormatter';
 
 describe('the Progress Bar Formatter', () => {
   it('should return an empty string when no value is provided', () => {
-    const output = progressBarFormatter(1, 1, '', {} as Column, {});
+    const output = progressBarFormatter(1, 1, '', {} as Column, {}, {});
     expect(output).toBe('');
   });
 
   it('should return empty string when non-numeric value is provided', () => {
-    const output = progressBarFormatter(1, 1, 'hello', {} as Column, {});
+    const output = progressBarFormatter(1, 1, 'hello', {} as Column, {}, {});
     expect(output).toBe('');
   });
 
@@ -19,7 +19,7 @@ describe('the Progress Bar Formatter', () => {
       <div class="progress-bar progress-bar-${barType} bg-${barType}" role="progressbar" aria-valuenow="${inputValue}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${inputValue}%;">
       ${inputValue}%
       </div> </div>`;
-    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {});
+    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {}, {});
     expect(output).toBe(template.replace(/\s{2,}/g, ' ').trim());
   });
 
@@ -30,7 +30,7 @@ describe('the Progress Bar Formatter', () => {
       <div class="progress-bar progress-bar-${barType} bg-${barType}" role="progressbar" aria-valuenow="${inputValue}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${inputValue}%;">
       ${inputValue}%
       </div> </div>`;
-    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {});
+    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {}, {});
     expect(output).toBe(template.replace(/\s{2,}/g, ' ').trim());
   });
 
@@ -48,8 +48,8 @@ describe('the Progress Bar Formatter', () => {
       ${inputValue2}%
       </div> </div>`;
 
-    const output1 = progressBarFormatter(1, 1, inputValue1, {} as Column, {});
-    const output2 = progressBarFormatter(1, 1, inputValue2, {} as Column, {});
+    const output1 = progressBarFormatter(1, 1, inputValue1, {} as Column, {}, {});
+    const output2 = progressBarFormatter(1, 1, inputValue2, {} as Column, {}, {});
 
     expect(output1).toBe(template1.replace(/\s{2,}/g, ' ').trim());
     expect(output2).toBe(template2.replace(/\s{2,}/g, ' ').trim());
@@ -62,7 +62,7 @@ describe('the Progress Bar Formatter', () => {
       <div class="progress-bar progress-bar-${barType} bg-${barType}" role="progressbar" aria-valuenow="${inputValue}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${inputValue}%;">
       ${inputValue}%
       </div> </div>`;
-    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {});
+    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {}, {});
     expect(output).toBe(template.replace(/\s{2,}/g, ' ').trim());
   });
 
@@ -74,7 +74,7 @@ describe('the Progress Bar Formatter', () => {
       <div class="progress-bar progress-bar-${barType} bg-${barType}" role="progressbar" aria-valuenow="${inputMaxValue}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${inputMaxValue}%;">
       ${inputMaxValue}%
       </div> </div>`;
-    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {});
+    const output = progressBarFormatter(1, 1, inputValue, {} as Column, {}, {});
     expect(output).toBe(template.replace(/\s{2,}/g, ' ').trim());
   });
 });
