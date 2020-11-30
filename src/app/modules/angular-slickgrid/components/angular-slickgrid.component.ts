@@ -2,6 +2,7 @@
 // only import the necessary core lib, each will be imported on demand when enabled (via require)
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
+import 'slickgrid/lib/jquery.mousewheel';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
@@ -272,10 +273,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnInit(): void {
-    if (this.gridOptions && (this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) || (this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0)) {
-      this.loadJqueryMousewheelDynamically();
-    }
-
     this.onBeforeGridCreate.emit(true);
     if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
       this.gridHeightString = `${this._fixedHeight}px`;
@@ -382,12 +379,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         };
       }
     }
-  }
-
-  loadJqueryMousewheelDynamically() {
-    // load jQuery mousewheel only when using a frozen grid (this will make the mousewheel work on any side of the frozen container).
-    // DO NOT USE with Row Detail
-    require('slickgrid/lib/jquery.mousewheel');
   }
 
   /**
@@ -797,6 +788,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private initialization() {
+    // when detecting a frozen grid, we'll automatically enable the mousewheel scroll handler so that we can scroll from both left/right frozen containers
+    if (this.gridOptions && ((this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0) || this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) && this.gridOptions.enableMouseWheelScrollHandler === undefined) {
+      this.gridOptions.enableMouseWheelScrollHandler = true;
+    }
+
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
