@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.23.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.2...v2.23.3) (2020-12-02)
+
+
+### Features
+
+* **core:** add enableMouseWheelScrollHandler grid option ([3150124](https://github.com/ghiscoding/angular-slickgrid/commit/31501249701458e07fa8e914b9efee48f8c4e036))
+
+
+### Bug Fixes
+
+* **core:** showing/hiding column shouldn't affect its freezing position ([7907cb8](https://github.com/ghiscoding/angular-slickgrid/commit/7907cb8c89de067b0a0cb009f7aa110a417b14e7))
+* **formatters:** date formatters should accept ISO input & output to US ([482d0f5](https://github.com/ghiscoding/angular-slickgrid/commit/482d0f5d2c9d6ae561d36081917beaf420971726))
+
 ### [2.23.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.1...v2.23.2) (2020-11-20)
 
 
