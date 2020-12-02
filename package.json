@@ -108,7 +108,7 @@
     "lodash.isequal": "^4.5.0",
     "moment-mini": "^2.24.0",
     "rxjs": "^6.3.3",
-    "slickgrid": "^2.4.31",
+    "slickgrid": "^2.4.32",
     "text-encoding-utf-8": "^1.0.2"
   },
   "peerDependencies": {

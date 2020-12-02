@@ -12,6 +12,7 @@ export class SharedService {
   private _hideHeaderRowAfterPageLoad = false;
   private _visibleColumns: Column[];
   private _hierarchicalDataset: any[] | null;
+  private _frozenVisibleColumnId: string | number;
   onHeaderMenuHideColumns = new Subject<Column[]>();
 
   // --
@@ -48,6 +49,15 @@ export class SharedService {
   /** Setter for SlickGrid DataView object */
   set dataView(dataView: any) {
     this._dataView = dataView;
+  }
+
+  /** Setter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  get frozenVisibleColumnId(): string | number {
+    return this._frozenVisibleColumnId;
+  }
+  /** Getter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  set frozenVisibleColumnId(columnId: string | number) {
+    this._frozenVisibleColumnId = columnId;
   }
 
   /** Getter for SlickGrid Grid object */
