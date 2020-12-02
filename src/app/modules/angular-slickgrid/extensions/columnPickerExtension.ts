@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ColumnPicker, Extension, ExtensionName, SlickEventHandler } from '../models/index';
+import { Column, ColumnPicker, Extension, ExtensionName, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 
@@ -56,12 +56,19 @@ export class ColumnPickerExtension implements Extension {
         if (this._columnPicker.onExtensionRegistered) {
           this._columnPicker.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columns: any, grid: any }) => {
+        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columnId: string; showing: boolean; columns: Column[]; allColumns: Column[]; grid: any; }) => {
           if (this._columnPicker && typeof this._columnPicker.onColumnsChanged === 'function') {
             this._columnPicker.onColumnsChanged(e, args);
           }
           if (args && Array.isArray(args.columns) && args.columns.length !== this.sharedService.visibleColumns.length) {
             this.sharedService.visibleColumns = args.columns;
+          }
+          // if we're using frozen columns, we need to readjust pinning when the new hidden column becomes visible again on the left pinning container
+          // we need to readjust frozenColumn index because SlickGrid freezes by index and has no knowledge of the columns themselves
+          const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
+          if (frozenColumnIndex >= 0) {
+            const { showing: isColumnShown, columnId, allColumns, columns: visibleColumns } = args;
+            this.extensionUtility.readjustFrozenColumnIndexWhenNeeded(columnId, frozenColumnIndex, isColumnShown, allColumns, visibleColumns);
           }
         });
       }

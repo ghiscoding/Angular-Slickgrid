@@ -838,6 +838,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // emit the Grid & DataView object to make them available in parent component
     this.onGridCreated.emit(this.grid);
 
+    // when it's a frozen grid, we need to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward
+    const frozenColumnIndex = this.gridOptions.frozenColumn !== undefined ? this.gridOptions.frozenColumn : -1;
+    if (frozenColumnIndex >= 0 && frozenColumnIndex <= this._columnDefinitions.length) {
+      this.sharedService.frozenVisibleColumnId = this._columnDefinitions[frozenColumnIndex].id || '';
+    }
+
     // initialize the SlickGrid grid
     this.grid.init();
 

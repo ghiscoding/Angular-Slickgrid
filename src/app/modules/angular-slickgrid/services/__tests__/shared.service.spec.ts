@@ -197,6 +197,16 @@ describe('Shared Service', () => {
     expect(output).toEqual(mockColumns);
   });
 
+  it('should call "frozenVisibleColumnId" GETTER and expect a boolean value to be returned', () => {
+    const columnId = service.frozenVisibleColumnId;
+    expect(columnId).toEqual(undefined);
+  });
+
+  it('should call "frozenVisibleColumnId" GETTER and SETTER expect same value to be returned', () => {
+    service.frozenVisibleColumnId = 'field1';
+    expect(service.frozenVisibleColumnId).toEqual('field1');
+  });
+
   it('should call "visibleColumns" GETTER and return all columns', () => {
     const spy = jest.spyOn(service, 'visibleColumns', 'get').mockReturnValue(mockColumns);
 
