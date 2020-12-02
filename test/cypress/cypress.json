@@ -1,7 +1,6 @@
 {
   "baseUrl": "http://localhost:4300",
   "baseExampleUrl": "http://localhost:4300/#",
-  "runMode": 2,
   "video": false,
   "viewportWidth": 1200,
   "viewportHeight": 950,
@@ -11,5 +10,9 @@
   "reporter": "mochawesome",
   "screenshotsFolder": "screenshots",
   "supportFile": "support/index.js",
-  "videosFolder": "videos"
+  "videosFolder": "videos",
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  }
 }
