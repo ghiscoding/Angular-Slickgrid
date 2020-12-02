@@ -249,6 +249,14 @@ export interface GridOption {
   /** Do we want to enable a styling effect when hovering any row from the grid? */
   enableMouseHoverHighlightRow?: boolean;
 
+  /**
+   * Do we want to always enable the mousewheel scroll handler?
+   * In other words, do we want the mouse scrolling would work from anywhere.
+   * Typically we should only enable it when using a Frozen/Pinned grid and if it does detect it to be a frozen grid,
+   * then it will automatically enable the scroll handler if this flag was originally set to undefined (which it is by default unless the user specifically disabled it).
+   */
+  enableMouseWheelScrollHandler?: boolean;
+
   /** Do we want to enable pagination? Currently only works with a Backend Service API */
   enablePagination?: boolean;
 

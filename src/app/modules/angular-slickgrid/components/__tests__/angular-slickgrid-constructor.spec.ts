@@ -336,14 +336,14 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     expect(onAfterGridDestroyedSpy).toHaveBeenCalled();
   });
 
-  it('should load jQuery mousewheel when using a frozen grid', () => {
-    const loadSpy = jest.spyOn(component, 'loadJqueryMousewheelDynamically');
+  it('should load enable jquery mousewheel scrolling when using a frozen grid', () => {
+    component.gridOptions.enableMouseWheelScrollHandler = undefined;
     component.gridOptions.frozenColumn = 3;
 
     component.ngOnInit();
     component.ngAfterViewInit();
 
-    expect(loadSpy).toHaveBeenCalled();
+    expect(component.gridOptions.enableMouseWheelScrollHandler).toBeTrue();
   });
 
   describe('initialization method', () => {
