@@ -99,6 +99,7 @@
     }
   },
   "dependencies": {
+    "@types/jquery": "^3.5.1",
     "dompurify": "^2.2.2",
     "excel-builder-webpacker": "^1.0.6",
     "flatpickr": "^4.6.6",
@@ -135,7 +136,6 @@
     "@types/dompurify": "^2.0.1",
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^24.0.25",
-    "@types/jquery": "^3.5.1",
     "@types/moment": "^2.13.0",
     "@types/node": "^13.13.4",
     "@types/text-encoding-utf-8": "^1.0.1",
