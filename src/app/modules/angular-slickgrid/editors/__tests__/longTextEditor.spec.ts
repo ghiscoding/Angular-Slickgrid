@@ -2,7 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { LongTextEditor } from '../longTextEditor';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, KeyCode } from '../../models';
+import { AutocompleteOption, Column, ColumnEditor, EditorArgs, EditorArguments, GridOption, KeyCode } from '../../models';
+import * as utilities from '../../services/utilities';
+
+const mockGetHtmlElementOffset = jest.fn();
+// @ts-ignore:2540
+utilities.getHtmlElementOffset = mockGetHtmlElementOffset;
 
 const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
@@ -45,6 +50,11 @@ describe('LongTextEditor', () => {
   beforeEach(() => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
+    divContainer.style.height = '500px';
+    divContainer.style.width = '600px';
+    document.body.innerHTML = '';
+    document.body.style.height = '700px';
+    document.body.style.width = '1024px';
     document.body.appendChild(divContainer);
 
     TestBed.configureTestingModule({
@@ -76,7 +86,7 @@ describe('LongTextEditor', () => {
       container: divContainer,
       columnMetaData: null,
       dataView: dataViewStub,
-      gridPosition: { top: 0, left: 0, bottom: 10, right: 10, height: 100, width: 100, visible: true },
+      gridPosition: { top: 0, left: 0, bottom: 10, right: 10, height: 600, width: 800, visible: true },
       position: { top: 0, left: 0, bottom: 10, right: 10, height: 100, width: 100, visible: true },
     };
   });
@@ -107,6 +117,7 @@ describe('LongTextEditor', () => {
 
     it('should initialize the editor', () => {
       gridOptionMock.i18n = translate;
+      gridOptionMock.enableTranslate = true;
       editor = new LongTextEditor(editorArguments);
       const editorCount = document.body.querySelectorAll('.slick-large-editor-text.editor-title textarea').length;
       const editorTextCounter = document.body.querySelectorAll<HTMLDivElement>('.slick-large-editor-text.editor-title .editor-footer .counter');
@@ -119,7 +130,7 @@ describe('LongTextEditor', () => {
       expect(editorCount).toBe(1);
       expect(editorTextCounter.length).toBe(1);
       expect(currentTextLengthElm.textContent).toBe('0');
-      expect(maxTextLengthElm.textContent).toBe('500');
+      expect(maxTextLengthElm).toBeNull();
       expect(buttonCancelElm.textContent).toBe('Annuler');
       expect(buttonSaveElm.textContent).toBe('Sauvegarder');
     });
@@ -191,7 +202,7 @@ describe('LongTextEditor', () => {
       const maxTextLengthElm = document.body.querySelector<HTMLDivElement>('.editor-footer .max-length');
 
       expect(currentTextLengthElm.textContent).toBe('6');
-      expect(maxTextLengthElm.textContent).toBe('500');
+      expect(maxTextLengthElm).toBeNull();
       expect(editor.getValue()).toBe('task 1');
       expect(editorElm[0].defaultValue).toBe('task 1');
     });
@@ -643,6 +654,92 @@ describe('LongTextEditor', () => {
         const validation = editor.validate('Task is longer than 10 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
+      });
+    });
+
+    describe('Truncate Text when using maxLength', () => {
+      it('should truncate text to 10 chars when the provided text (with input/keydown event) is more than maxLength(10)', () => {
+        const eventInput = new (window.window as any).KeyboardEvent('input', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+        (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
+
+        editor = new LongTextEditor(editorArguments);
+
+        editor.setValue('some extra long text that is over the maxLength');
+        const editorElm = document.body.querySelector('.editor-title textarea') as HTMLTextAreaElement;
+
+        editor.focus();
+        editorElm.dispatchEvent(eventInput);
+
+        const currentTextLengthElm = document.body.querySelector('.editor-footer .text-length') as HTMLDivElement;
+        const maxTextLengthElm = document.body.querySelector('.editor-footer .max-length') as HTMLDivElement;
+
+        expect(editorElm.value).toBe('some extra');
+        expect(currentTextLengthElm.textContent).toBe('10');
+        expect(maxTextLengthElm.textContent).toBe('10');
+        expect(editor.isValueChanged()).toBe(true);
+      });
+
+      it('should truncate text to 10 chars when the provided text (with paste event) is more than maxLength(10)', () => {
+        const eventPaste = new (window.window as any).CustomEvent('paste', { bubbles: true, cancelable: true });
+        (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
+
+        editor = new LongTextEditor(editorArguments);
+
+        editor.setValue('some extra long text that is over the maxLength');
+        const editorElm = document.body.querySelector('.editor-title textarea') as HTMLTextAreaElement;
+
+        editor.focus();
+        editorElm.dispatchEvent(eventPaste);
+
+        const currentTextLengthElm = document.body.querySelector('.editor-footer .text-length') as HTMLDivElement;
+        const maxTextLengthElm = document.body.querySelector('.editor-footer .max-length') as HTMLDivElement;
+
+        expect(editorElm.value).toBe('some extra');
+        expect(currentTextLengthElm.textContent).toBe('10');
+        expect(maxTextLengthElm.textContent).toBe('10');
+        expect(editor.isValueChanged()).toBe(true);
+      });
+    });
+
+    describe('Position Editor', () => {
+      beforeEach(() => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 600 });
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
+
+        // cell height/width
+        editorArguments.position = { top: 0, left: 900, bottom: 10, right: 10, height: 100, width: 310, visible: true };
+        Object.defineProperty(editorArguments.container, 'offsetHeight', { writable: true, configurable: true, value: 33 });
+        Object.defineProperty(editorArguments.container, 'offsetWidth', { writable: true, configurable: true, value: 100 });
+      });
+
+      it('should assume editor to positioned on the right & bottom of the cell when there is enough room', () => {
+        mockGetHtmlElementOffset.mockReturnValue({ top: 100, left: 200 }); // mock cell position
+
+        editor = new LongTextEditor(editorArguments);
+        const editorElm = document.body.querySelector('.slick-large-editor-text') as HTMLDivElement;
+
+        expect(editorElm.style.top).toBe('100px');
+        expect(editorElm.style.left).toBe('200px');
+      });
+
+      it('should assume editor to positioned on the right of the cell when there is NOT enough room on the left', () => {
+        mockGetHtmlElementOffset.mockReturnValue({ top: 100, left: 900 }); // mock cell position that will be over max of 1024px
+
+        editor = new LongTextEditor(editorArguments);
+        const editorElm = document.body.querySelector('.slick-large-editor-text') as HTMLDivElement;
+
+        expect(editorElm.style.top).toBe('100px');
+        expect(editorElm.style.left).toBe('675px'); // cellLeftPos - (editorWidth - cellWidth + marginAdjust) => (900 - (310 - 100 + 15))
+      });
+
+      it('should assume editor to positioned on the top of the cell when there is NOT enough room on the bottom', () => {
+        mockGetHtmlElementOffset.mockReturnValue({ top: 550, left: 200 }); // mock cell position that will be over max of 600px
+
+        editor = new LongTextEditor(editorArguments);
+        const editorElm = document.body.querySelector('.slick-large-editor-text') as HTMLDivElement;
+
+        expect(editorElm.style.top).toBe('483px');
+        expect(editorElm.style.left).toBe('200px'); // cellTopPos - (editorHeight - cellHeight) => (550 - (100 - 33))
       });
     });
   });
