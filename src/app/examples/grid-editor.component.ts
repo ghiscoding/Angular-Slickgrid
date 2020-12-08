@@ -13,6 +13,7 @@ import {
   FlatpickrOption,
   Formatters,
   GridOption,
+  LongTextEditorOption,
   OnEventArgs,
   OperatorType,
   Sorters,
@@ -153,7 +154,22 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.longText,
           required: true,
-          validator: myCustomTitleValidator, // use a custom validator
+          maxLength: 12,
+          editorOptions: {
+            // you can change textarea cols,rows (defaults to 40,4)
+            cols: 42,
+            rows: 5,
+            buttonTexts: {
+              /* you can change button texts (defaults to "Cancel", "Save") */
+              // cancel: 'Close',
+              // save: 'Done'
+
+              /* or with translations (defaults to "CANCEL", "SAVE") */
+              // cancelKey: 'CANCEL',
+              // saveKey: 'SAVE'
+            }
+          } as LongTextEditorOption,
+          validator: myCustomTitleValidator,
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
           console.log(args);
