@@ -24,7 +24,11 @@ export const complexObjectFormatter: Formatter = (row: number, cell: number, cel
   // when complexFieldLabel includes the dot ".", we will do the split and get the value from the complex object
   // however we also need to make sure that the complex objet exist, else we'll return the cell value (original value)
   if (typeof complexFieldLabel === 'string' && complexFieldLabel.indexOf('.') > 0) {
-    return complexFieldLabel.split('.').reduce((obj, i) => (obj && obj.hasOwnProperty(i) ? obj[i] : cellValue), dataContext);
+    let outputValue = complexFieldLabel.split('.').reduce((obj, i) => (obj && obj.hasOwnProperty(i) ? obj[i] : ''), dataContext);
+    if (typeof outputValue === 'object' && Object.entries(outputValue).length === 0) {
+      outputValue = ''; // return empty string when value ends up being an empty object
+    }
+    return outputValue;
   }
   return cellValue;
 };
