@@ -207,7 +207,9 @@ export class SelectEditor implements Editor {
 
         // is the field a complex object, "address.streetNumber"
         const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
-        if (isComplexObject && typeof c === 'object') {
+        const serializeComplexValueFormat = this.columnEditor && this.columnEditor.serializeComplexValueFormat || 'object';
+
+        if (isComplexObject && typeof c === 'object' && serializeComplexValueFormat === 'object') {
           return c;
         }
 
@@ -242,8 +244,9 @@ export class SelectEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const fieldName = this.columnDef && this.columnDef.field;
     const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
+    const serializeComplexValueFormat = this.columnEditor && this.columnEditor.serializeComplexValueFormat || 'object';
 
-    if (isComplexObject && typeof itemFound === 'object') {
+    if (isComplexObject && typeof itemFound === 'object' && serializeComplexValueFormat === 'object') {
       return itemFound;
     } else if (itemFound && itemFound.hasOwnProperty(this.valueName)) {
       const labelText = itemFound[this.valueName];

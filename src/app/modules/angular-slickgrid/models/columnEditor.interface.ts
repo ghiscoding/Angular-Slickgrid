@@ -118,6 +118,15 @@ export interface ColumnEditor {
   required?: boolean;
 
   /**
+   * defaults to 'object', how do we want to serialize the editor value to the resulting dataContext object when using a complex object?
+   * Currently only applies to Single/Multiple Select Editor.
+   *
+   * For example, if keep default "object" format and the selected value is { value: 2, label: 'Two' } then the end value will remain as an object, so { value: 2, label: 'Two' }.
+   * On the other end, if we set "flat" format and the selected value is { value: 2, label: 'Two' } then the end value will be 2.
+   */
+  serializeComplexValueFormat?: 'flat' | 'object';
+
+  /**
    * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).
    *
    * To use this as a Tooltip, Angular-Slickgrid doesn't (and will never) use any Angular 3rd party lib to display a real Tooltip,
