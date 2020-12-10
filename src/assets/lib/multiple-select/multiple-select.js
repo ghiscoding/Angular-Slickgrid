@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * @version 1.3.9
+ * @version 1.3.10
  *
  * http://wenzhixin.net.cn/p/multiple-select/
  *
@@ -631,9 +631,9 @@
       var msDropHeight = this.$drop.outerHeight() || 0;
       var msDropWidth = this.$drop.outerWidth() || 0;
       var selectOffsetTop = this.$parent.offset().top;
+      var selectOffsetLeft = this.$parent.offset().left;
       var selectParentWidth = this.$parent.width();
       var spaceBottom = this.availableSpaceBottom();
-      var spaceLeft = this.availableSpaceLeft();
       var spaceTop = this.availableSpaceTop();
       var windowWidth = $(window).width();
 
@@ -662,8 +662,8 @@
       }
 
       // auto-adjust left/right position
-      if ((windowWidth - msDropWidth) < spaceLeft) {
-        var newLeftOffset = spaceLeft - (msDropWidth - selectParentWidth);
+      if ((windowWidth - msDropWidth) < selectOffsetLeft) {
+        var newLeftOffset = selectOffsetLeft - (msDropWidth - selectParentWidth);
         this.$drop.offset({ left: newLeftOffset });
       }
 
@@ -723,12 +723,6 @@
       var pageScroll = $(window).scrollTop() || 0;
       var msDropOffsetTop = this.$drop.offset().top;
       return windowHeight - (msDropOffsetTop - pageScroll);
-    },
-
-    availableSpaceLeft: function () {
-      var pageScrollLeft = $(window).scrollLeft() || 0;
-      var msDropOffsetLeft = this.$parent.offset().left;
-      return msDropOffsetLeft - pageScrollLeft;
     },
 
     availableSpaceTop: function () {
