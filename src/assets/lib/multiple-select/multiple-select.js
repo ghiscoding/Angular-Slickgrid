@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * @version 1.3.7
+ * @version 1.3.9
  *
  * http://wenzhixin.net.cn/p/multiple-select/
  *
@@ -14,7 +14,7 @@
  * - width option was not working when using "container", added some code to support it
  * - "offsetLeft" (defaults to 0) if we want the drop to be offset from the select element (by default it is aligned left to the element with 0 offset)
  * - "autoAdjustDropHeight" (defaults to False) when set will automatically adjust the drop (up or down) height
- * - "autoAdjustDropPosition" (defaults to False) when set will automatically calculate the area with the most available space and use best possible choise for the drop to show (up or down)
+ * - "autoAdjustDropPosition" (defaults to False) when set will automatically calculate the area with the most available space and use best possible choice for the drop to show (up/down and left/right)
  * - "autoDropWidth" (defaults to False) when set will automatically adjust the dropdown width with the same size as the select element width
  * - "autoAdjustDropWidthByTextSize" (defaults to false) when set will automatically adjust the drop (up or down) width by the text size (it will use largest text width)
  * - "adjustHeightPadding" (defaults to 10) when using "autoAdjustDropHeight" we might want to add a bottom (or top) padding instead of taking the entire available space
@@ -629,9 +629,13 @@
     adjustDropPosition: function (forceToggle) {
       var position = 'bottom';
       var msDropHeight = this.$drop.outerHeight() || 0;
+      var msDropWidth = this.$drop.outerWidth() || 0;
       var selectOffsetTop = this.$parent.offset().top;
+      var selectParentWidth = this.$parent.width();
       var spaceBottom = this.availableSpaceBottom();
+      var spaceLeft = this.availableSpaceLeft();
       var spaceTop = this.availableSpaceTop();
+      var windowWidth = $(window).width();
 
       // find the optimal position of the drop (always choose "bottom" as the default to use)
       if (spaceBottom > msDropHeight) {
@@ -655,6 +659,12 @@
           this.$drop.addClass(position);
         }
         this.$drop.removeClass('bottom');
+      }
+
+      // auto-adjust left/right position
+      if ((windowWidth - msDropWidth) < spaceLeft) {
+        var newLeftOffset = spaceLeft - (msDropWidth - selectParentWidth);
+        this.$drop.offset({ left: newLeftOffset });
       }
 
       return position;
@@ -713,6 +723,12 @@
       var pageScroll = $(window).scrollTop() || 0;
       var msDropOffsetTop = this.$drop.offset().top;
       return windowHeight - (msDropOffsetTop - pageScroll);
+    },
+
+    availableSpaceLeft: function () {
+      var pageScrollLeft = $(window).scrollLeft() || 0;
+      var msDropOffsetLeft = this.$parent.offset().left;
+      return msDropOffsetLeft - pageScrollLeft;
     },
 
     availableSpaceTop: function () {
