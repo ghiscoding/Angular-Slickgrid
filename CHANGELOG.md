@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.24.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.3...v2.24.0) (2020-12-10)
+
+
+### Features
+
+* **editors:** add few editor options to LongText (textarea) Editor ([38c7442](https://github.com/ghiscoding/angular-slickgrid/commit/38c7442792afd1d8512da7c5a1e5886e2d93c4a4))
+* **filters:** add auto position (left/right) to multiple-select lib ([1b23b84](https://github.com/ghiscoding/angular-slickgrid/commit/1b23b84f7d9d099301b757ec9d59bf254e13b837))
+
+
+### Bug Fixes
+
+* **core:** make @types/jquery as a dependency to avoid build error ([966ebb0](https://github.com/ghiscoding/angular-slickgrid/commit/966ebb0f68fa0a06d84e7551ad72420156e2ccf8))
+* **editors:** Select Editor option to return flat data w/complex object ([a3e6427](https://github.com/ghiscoding/angular-slickgrid/commit/a3e6427928035cb353e1586660066dd622f3e736))
+* **exports:** when cell value is empty object return empty string ([0534d13](https://github.com/ghiscoding/angular-slickgrid/commit/0534d1304680d0e87b52bad8c29b341c878bb359))
+
 ### [2.23.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.2...v2.23.3) (2020-12-02)
 
 
