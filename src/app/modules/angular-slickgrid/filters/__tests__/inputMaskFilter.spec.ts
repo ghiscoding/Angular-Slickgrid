@@ -83,12 +83,12 @@ describe('InputMaskFilter', () => {
     filter.setValues('1234567890');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
-  it('should call "setValues" an operator and with with 10 digits and expect input value to be formatted as a phone as the mask format specifies', () => {
+  it('should call "setValues" an operator and with 10 digits and expect input value to be formatted as a phone as the mask format specifies', () => {
     mockColumn.filter.params = { mask: '(000) 000-0000' };
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
@@ -96,7 +96,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('1234567890', 'EQ');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
@@ -110,7 +110,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('1234567890abc');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
@@ -124,7 +124,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('1234567890');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
@@ -138,7 +138,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('H1H1H1');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('H1H 1H1');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['H1H1H1'], shouldTriggerQuery: true });
@@ -153,7 +153,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('   1234567890  ');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
@@ -169,7 +169,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('   1234567890  ');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
@@ -183,7 +183,7 @@ describe('InputMaskFilter', () => {
     filter.setValues('abc');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('() -');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: [''], shouldTriggerQuery: true });
@@ -198,7 +198,7 @@ describe('InputMaskFilter', () => {
 
     filterElm.focus();
     filterElm.value = '1';
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1'], shouldTriggerQuery: true });
   });

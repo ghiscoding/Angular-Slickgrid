@@ -5,13 +5,14 @@ import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare const Slick: any;
 
-const mockSelectionModel = jest.fn().mockImplementation(() => ({
+const mockSelectionModel = {
   init: jest.fn(),
   destroy: jest.fn()
-}));
+};
+const mockSelectionModelImplementation = jest.fn().mockImplementation(() => mockSelectionModel);
 
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
-Slick.RowSelectionModel = mockSelectionModel;
+jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModelImplementation);
+Slick.RowSelectionModel = mockSelectionModelImplementation;
 
 const extensionServiceStub = {
   getAllColumns: jest.fn(),
@@ -93,6 +94,15 @@ describe('Grid Service', () => {
 
   it('should create the service', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should dispose of the service', () => {
+    const destroySpy = jest.spyOn(mockSelectionModel, 'destroy');
+
+    service.highlightRow(0, 10, 15);
+    service.dispose();
+
+    expect(destroySpy).toHaveBeenCalled();
   });
 
   describe('getAllColumnDefinitions method', () => {
@@ -1215,13 +1225,13 @@ describe('Grid Service', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      const getVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
       const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
 
       service.hideColumnByIndex(1);
 
-      expect(getVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(rxColChangedSpy).toHaveBeenCalledWith(mockWithoutColumns);
     });
@@ -1230,13 +1240,13 @@ describe('Grid Service', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      const getVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
       const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
 
       service.hideColumnByIndex(1, false);
 
-      expect(getVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(rxColChangedSpy).not.toHaveBeenCalled();
     });
@@ -1258,13 +1268,13 @@ describe('Grid Service', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      const getVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
       const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
 
       service.hideColumnByIndex(1);
 
-      expect(getVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(rxColChangedSpy).toHaveBeenCalledWith(mockWithoutColumns);
     });
@@ -1273,15 +1283,170 @@ describe('Grid Service', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      const getVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
       const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
 
       service.hideColumnByIndex(1, false);
 
-      expect(getVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
       expect(rxColChangedSpy).not.toHaveBeenLastCalledWith(mockWithoutColumns);
+    });
+  });
+
+  describe('hideColumnById method', () => {
+    it('should return -1 when the column id is not found in the list of loaded column definitions', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+
+      const output = service.hideColumnById('xyz');
+
+      expect(output).toBe(-1);
+    });
+
+    it('should set new columns minus the column to hide and it should keep new set as the new "visibleColumns"', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
+
+      const output = service.hideColumnById('field2');
+
+      expect(output).toBe(1);
+      expect(autoSizeSpy).toHaveBeenCalled();
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(rxColChangedSpy).toHaveBeenCalledWith(mockWithoutColumns);
+    });
+
+    it('should set new columns minus the column to hide but without triggering an event when set to False', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
+
+      service.hideColumnById('field2', { triggerEvent: false });
+
+      expect(autoSizeSpy).toHaveBeenCalled();
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(rxColChangedSpy).not.toHaveBeenCalled();
+    });
+
+    it('should set new columns minus the column to hide but without resize the columns when "autoResizeColumns" is set to False', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
+
+      service.hideColumnById('field2', { autoResizeColumns: false });
+
+      expect(autoSizeSpy).not.toHaveBeenCalled();
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(rxColChangedSpy).toHaveBeenCalled();
+    });
+
+    it('should set new columns minus the column to hide AND also hide the column from the column picker when "hideFromColumnPicker" is set to False', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+
+      service.hideColumnById('field2', { hideFromColumnPicker: true });
+
+      expect(autoSizeSpy).toHaveBeenCalled();
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(mockColumns).toEqual([{ id: 'field1', width: 100 }, { id: 'field2', width: 150, excludeFromColumnPicker: true }, { id: 'field3', field: 'field3' }]);
+      expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
+    });
+
+    it('should set new columns minus the column to hide AND also hide the column from the column picker when "hideFromColumnPicker" is set to False', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockWithoutColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const setVisibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+
+      service.hideColumnById('field2', { autoResizeColumns: false, hideFromGridMenu: true });
+
+      expect(autoSizeSpy).not.toHaveBeenCalled();
+      expect(setVisibleSpy).toHaveBeenCalledWith(mockWithoutColumns);
+      expect(mockColumns).toEqual([{ id: 'field1', width: 100 }, { id: 'field2', width: 150, excludeFromGridMenu: true }, { id: 'field3', field: 'field3' }]);
+      expect(setColsSpy).toHaveBeenCalledWith(mockWithoutColumns);
+    });
+  });
+
+  describe('hideColumnByIds method', () => {
+    it('should loop through the Ids provided and call hideColumnById on each of them with same options', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
+      const hideByIdSpy = jest.spyOn(service, 'hideColumnById');
+
+      service.hideColumnByIds(['field2', 'field3']);
+
+      expect(hideByIdSpy).toHaveBeenCalledTimes(2);
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(1, 'field2', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: false, triggerEvent: false });
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(2, 'field3', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: false, triggerEvent: false });
+      expect(autoSizeSpy).toHaveBeenCalled();
+      expect(rxColChangedSpy).toHaveBeenCalledWith(expect.toBeArray());
+    });
+
+    it('should loop through the Ids provided and call hideColumnById on each of them with same options BUT not auto size columns neither trigger when both are disabled', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const rxColChangedSpy = jest.spyOn(service.onColumnsChanged, 'next');
+      const hideByIdSpy = jest.spyOn(service, 'hideColumnById');
+
+      service.hideColumnByIds(['field2', 'field3'], { autoResizeColumns: false, triggerEvent: false });
+
+      expect(hideByIdSpy).toHaveBeenCalledTimes(2);
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(1, 'field2', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: false, triggerEvent: false });
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(2, 'field3', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: false, triggerEvent: false });
+      expect(autoSizeSpy).not.toHaveBeenCalled();
+      expect(rxColChangedSpy).not.toHaveBeenCalled();
+    });
+
+    it('should loop through the Ids provided and call hideColumnById on each of them with same options and hide from column picker when "hideFromColumnPicker" is enabled', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const hideByIdSpy = jest.spyOn(service, 'hideColumnById');
+
+      service.hideColumnByIds(['field2', 'field3'], { hideFromColumnPicker: true });
+
+      expect(hideByIdSpy).toHaveBeenCalledTimes(2);
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(1, 'field2', { autoResizeColumns: false, hideFromColumnPicker: true, hideFromGridMenu: false, triggerEvent: false });
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(2, 'field3', { autoResizeColumns: false, hideFromColumnPicker: true, hideFromGridMenu: false, triggerEvent: false });
+    });
+
+    it('should loop through the Ids provided and call hideColumnById on each of them with same options and hide from column picker when "hideFromColumnPicker" is enabled', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      const hideByIdSpy = jest.spyOn(service, 'hideColumnById');
+
+      service.hideColumnByIds(['field2', 'field3'], { hideFromGridMenu: true });
+
+      expect(hideByIdSpy).toHaveBeenCalledTimes(2);
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(1, 'field2', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: true, triggerEvent: false });
+      expect(hideByIdSpy).toHaveBeenNthCalledWith(2, 'field3', { autoResizeColumns: false, hideFromColumnPicker: false, hideFromGridMenu: true, triggerEvent: false });
     });
   });
 

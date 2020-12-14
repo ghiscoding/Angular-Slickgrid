@@ -1,35 +1,28 @@
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-    <form class="form-inline">
-        <div class="form-group">
-            <label>Single Search: </label>
-            <select class="form-control" name="selectedColumn" [(ngModel)]="selectedColumn" (ngModelChange)="updateFilter()">
-                <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-            </select>
+  <form class="form-inline">
+    <div class="form-group">
+      <label>Single Search: </label>
+      <select class="form-control" data-test="search-column-list" name="selectedColumn" [(ngModel)]="selectedColumn"
+              (ngModelChange)="updateFilter()">
+        <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
+      </select>
 
-            <select class="form-control" name="selectedOperator" [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
-                <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
-            </select>
+      <select class="form-control" data-test="search-operator-list" name="selectedOperator"
+              [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
+        <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
+      </select>
 
-            <input type="text"
-                class="form-control"
-                name="searchValue"
-                placeholder="search value"
-                autocomplete="off"
-                (input)="updateFilter()"
-                [(ngModel)]="searchValue">
-        </div>
-    </form>
+      <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
+             placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
+    </div>
+  </form>
 
-    <hr />
+  <hr />
 
-    <angular-slickgrid
-        gridId="grid23"
-        [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions"
-        [dataset]="dataset"
-        (onAngularGridCreated)="angularGridReady($event)">
-    </angular-slickgrid>
+  <angular-slickgrid gridId="grid23" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
+  </angular-slickgrid>
 </div>

@@ -87,6 +87,18 @@ export const GlobalGridOptions: Partial<GridOption> = {
   enableExport: false, // CSV/Text with Tab Delimited
   enableGridMenu: true,
   enableHeaderMenu: true,
+  enableEmptyDataWarningMessage: true,
+  emptyDataWarning: {
+    className: 'slick-empty-data-warning',
+    message: 'No data to display.',
+    messageKey: 'EMPTY_DATA_WARNING_MESSAGE',
+    hideFrozenLeftWarning: false,
+    hideFrozenRightWarning: false,
+    leftViewportMarginLeft: '40%',
+    rightViewportMarginLeft: '40%',
+    frozenLeftViewportMarginLeft: '0px',
+    frozenRightViewportMarginLeft: '40%',
+  },
   enableMouseHoverHighlightRow: true,
   enableSorting: true,
   enableTextSelectionOnCells: true,

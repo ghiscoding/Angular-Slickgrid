@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Extension, ExtensionName, SlickEventHandler } from '../models/index';
+import { Column, ColumnPicker, Extension, ExtensionName, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 
@@ -10,6 +10,7 @@ declare const Slick: any;
 export class ColumnPickerExtension implements Extension {
   private _eventHandler: SlickEventHandler;
   private _addon: any;
+  private _columnPicker: ColumnPicker | null;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
@@ -25,6 +26,8 @@ export class ColumnPickerExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._columnPicker);
+    this._addon = null;
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
@@ -42,22 +45,30 @@ export class ColumnPickerExtension implements Extension {
       const forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
       const syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
 
-      this.sharedService.gridOptions.columnPicker = this.sharedService.gridOptions.columnPicker || {};
-      this.sharedService.gridOptions.columnPicker.columnTitle = this.sharedService.gridOptions.columnPicker.columnTitle || columnTitle;
-      this.sharedService.gridOptions.columnPicker.forceFitTitle = this.sharedService.gridOptions.columnPicker.forceFitTitle || forceFitTitle;
-      this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.sharedService.gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
+      this._columnPicker = this.sharedService.gridOptions.columnPicker || {};
+      this.sharedService.gridOptions.columnPicker = this._columnPicker;
+      this._columnPicker.columnTitle = this._columnPicker.columnTitle || columnTitle;
+      this._columnPicker.forceFitTitle = this._columnPicker.forceFitTitle || forceFitTitle;
+      this._columnPicker.syncResizeTitle = this._columnPicker.syncResizeTitle || syncResizeTitle;
       this._addon = new Slick.Controls.ColumnPicker(this.sharedService.allColumns, this.sharedService.grid, this.sharedService.gridOptions);
 
       if (this.sharedService.grid && this.sharedService.gridOptions.enableColumnPicker) {
-        if (this.sharedService.gridOptions.columnPicker.onExtensionRegistered) {
-          this.sharedService.gridOptions.columnPicker.onExtensionRegistered(this._addon);
+        if (this._columnPicker.onExtensionRegistered) {
+          this._columnPicker.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columns: any, grid: any }) => {
-          if (this.sharedService.gridOptions.columnPicker && typeof this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
-            this.sharedService.gridOptions.columnPicker.onColumnsChanged(e, args);
+        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columnId: string; showing: boolean; columns: Column[]; allColumns: Column[]; grid: any; }) => {
+          if (this._columnPicker && typeof this._columnPicker.onColumnsChanged === 'function') {
+            this._columnPicker.onColumnsChanged(e, args);
           }
           if (args && Array.isArray(args.columns) && args.columns.length !== this.sharedService.visibleColumns.length) {
             this.sharedService.visibleColumns = args.columns;
+          }
+          // if we're using frozen columns, we need to readjust pinning when the new hidden column becomes visible again on the left pinning container
+          // we need to readjust frozenColumn index because SlickGrid freezes by index and has no knowledge of the columns themselves
+          const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
+          if (frozenColumnIndex >= 0) {
+            const { showing: isColumnShown, columnId, allColumns, columns: visibleColumns } = args;
+            this.extensionUtility.readjustFrozenColumnIndexWhenNeeded(columnId, frozenColumnIndex, isColumnShown, allColumns, visibleColumns);
           }
         });
       }
@@ -68,32 +79,30 @@ export class ColumnPickerExtension implements Extension {
 
   /** Translate the Column Picker headers and also the last 2 checkboxes */
   translateColumnPicker() {
-    if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // update the properties by pointers, that is the only way to get Column Picker Control to see the new values
-      if (this.sharedService.gridOptions.columnPicker) {
-        this.emptyColumnPickerTitles();
-        this.sharedService.gridOptions.columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
-        this.sharedService.gridOptions.columnPicker.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
-        this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
-      }
+    // update the properties by pointers, that is the only way to get Column Picker Control to see the new values
+    if (this._columnPicker) {
+      this.emptyColumnPickerTitles();
+      this._columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+      this._columnPicker.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+      this._columnPicker.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+    }
 
-      // translate all columns (including hidden columns)
-      // eventually deprecate the "headerKey" and use only the "nameKey"
-      this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
-      this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
+    // translate all columns (including hidden columns)
+    // eventually deprecate the "headerKey" and use only the "nameKey"
+    this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+    this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
 
-      // update the Titles of each sections (command, customTitle, ...)
-      if (this._addon && this._addon.updateAllTitles) {
-        this._addon.updateAllTitles(this.sharedService.gridOptions.columnPicker);
-      }
+    // update the Titles of each sections (command, customTitle, ...)
+    if (this._addon && this._addon.updateAllTitles && this._columnPicker) {
+      this._addon.updateAllTitles(this._columnPicker);
     }
   }
 
   private emptyColumnPickerTitles() {
-    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.columnPicker) {
-      this.sharedService.gridOptions.columnPicker.columnTitle = '';
-      this.sharedService.gridOptions.columnPicker.forceFitTitle = '';
-      this.sharedService.gridOptions.columnPicker.syncResizeTitle = '';
+    if (this._columnPicker) {
+      this._columnPicker.columnTitle = '';
+      this._columnPicker.forceFitTitle = '';
+      this._columnPicker.syncResizeTitle = '';
     }
   }
 }

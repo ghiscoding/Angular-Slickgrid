@@ -11,8 +11,9 @@ export class SharedService {
   private _currentPagination: CurrentPagination;
   private _hideHeaderRowAfterPageLoad = false;
   private _visibleColumns: Column[];
-  private _hierarchicalDataset: any[];
-  onColumnsChanged = new Subject<Column[]>();
+  private _hierarchicalDataset: any[] | null;
+  private _frozenVisibleColumnId: string | number;
+  onHeaderMenuHideColumns = new Subject<Column[]>();
 
   // --
   // public
@@ -48,6 +49,15 @@ export class SharedService {
   /** Setter for SlickGrid DataView object */
   set dataView(dataView: any) {
     this._dataView = dataView;
+  }
+
+  /** Setter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  get frozenVisibleColumnId(): string | number {
+    return this._frozenVisibleColumnId;
+  }
+  /** Getter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  set frozenVisibleColumnId(columnId: string | number) {
+    this._frozenVisibleColumnId = columnId;
   }
 
   /** Getter for SlickGrid Grid object */
@@ -97,12 +107,12 @@ export class SharedService {
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  get hierarchicalDataset(): any[] {
+  get hierarchicalDataset(): any[] | null {
     return this._hierarchicalDataset;
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  set hierarchicalDataset(hierarchicalDataset: any[]) {
+  set hierarchicalDataset(hierarchicalDataset: any[] | null) {
     this._hierarchicalDataset = hierarchicalDataset;
   }
 }

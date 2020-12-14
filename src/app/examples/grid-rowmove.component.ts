@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   templateUrl: './grid-rowmove.component.html'
 })
-export class GridRowMoveComponent implements OnInit {
+export class GridRowMoveComponent implements OnInit, OnDestroy {
   title = 'Example 17: Row Move & Checkbox Selector';
   subTitle = `This example demonstrates using the <b>Slick.Plugins.RowMoveManager</b> plugin to easily move a row in the grid.<br/>
     <ul>
@@ -39,6 +39,12 @@ export class GridRowMoveComponent implements OnInit {
 
   get rowMoveInstance(): any {
     return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowMoveManager) || {};
+  }
+
+  ngOnDestroy() {
+    // nullify the callbacks to avoid mem leaks
+    this.onBeforeMoveRow = null;
+    this.onMoveRows = null;
   }
 
   ngOnInit(): void {
@@ -95,8 +101,8 @@ export class GridRowMoveComponent implements OnInit {
         disableRowSelection: true,
         cancelEditOnDrag: true,
         width: 30,
-        onBeforeMoveRows: (e, args) => this.onBeforeMoveRow(e, args),
-        onMoveRows: (e, args) => this.onMoveRows(e, args),
+        onBeforeMoveRows: this.onBeforeMoveRow,
+        onMoveRows: this.onMoveRows.bind(this),
 
         // you can change the move icon position of any extension (RowMove, RowDetail or RowSelector icon)
         // note that you might have to play with the position when using multiple extension
@@ -165,16 +171,19 @@ export class GridRowMoveComponent implements OnInit {
     for (let i = 0; i < rows.length; i++) {
       selectedRows.push(left.length + i);
     }
-
-    this.angularGrid.slickGrid.resetActiveCell();
+    args.grid.resetActiveCell();
     this.dataset = tmpDataset;
   }
 
   hideDurationColumnDynamically() {
-    const columnIndex = this.angularGrid.slickGrid.getColumns().findIndex(col => col.id === 'duration');
-    if (columnIndex >= 0) {
-      this.angularGrid.gridService.hideColumnByIndex(columnIndex);
-    }
+    // -- you can hide by one Id or multiple Ids:
+    // hideColumnById(id, options), hideColumnByIds([ids], options)
+    // you can also provide options, defaults are: { autoResizeColumns: true, triggerEvent: true, hideFromColumnPicker: false, hideFromGridMenu: false }
+
+    this.angularGrid.gridService.hideColumnById('duration');
+
+    // or with multiple Ids and extra options
+    // this.angularGrid.gridService.hideColumnByIds(['duration', 'finish'], { hideFromColumnPicker: true, hideFromGridMenu: false });
   }
 
   // Disable/Enable Filtering/Sorting functionalities

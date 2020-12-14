@@ -2,6 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
     "importHelpers": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -13,7 +14,7 @@
     "noImplicitReturns": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "es2015",
     "typeRoots": [
       "node_modules/@types",
       "typings"
@@ -22,7 +23,7 @@
       "es2017",
       "dom"
     ],
-    "module": "es2015",
+    "module": "esnext",
     "baseUrl": "./",
     "paths": {
       "jszip": [

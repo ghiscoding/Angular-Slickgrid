@@ -81,7 +81,7 @@ export class SliderEditor implements Editor {
     // if user chose to display the slider number on the right side, then update it every time it changes
     // we need to use both "input" and "change" event to be all cross-browser
     if (!this.editorParams.hideSliderNumber) {
-      this._$editorElm.on('input change', (event: KeyboardEvent & { target: HTMLInputElement }) => {
+      this._$editorElm.on('input change', (event: JQuery.Event & { target: HTMLInputElement }) => {
         const value = event && event.target && event.target.value || '';
         if (value) {
           const elements = document.getElementsByClassName(this._elementRangeOutputId);
@@ -99,7 +99,10 @@ export class SliderEditor implements Editor {
   }
 
   destroy() {
-    this._$editorElm.off('input change mouseup').remove();
+    if (this._$editorElm) {
+      this._$editorElm.off('input change mouseup touchend').remove();
+      this._$editorElm = null;
+    }
   }
 
   focus() {

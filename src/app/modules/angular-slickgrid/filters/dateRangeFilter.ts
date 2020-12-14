@@ -1,6 +1,6 @@
 import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType } from '../services/utilities';
+import { destroyObjectDomElementProps, mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType } from '../services/utilities';
 import {
   Column,
   ColumnFilter,
@@ -119,12 +119,19 @@ export class DateRangeFilter implements Filter {
    * destroy the filter
    */
   destroy() {
+    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
+      this.flatInstance.destroy();
+      if (this.flatInstance.element) {
+        destroyObjectDomElementProps(this.flatInstance);
+      }
+    }
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
     }
-    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
-      this.flatInstance.destroy();
-    }
+    this.flatInstance = null;
+    this.$filterElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   hide() {
@@ -166,7 +173,7 @@ export class DateRangeFilter implements Filter {
   // private functions
   // ------------------
   private buildDatePickerInput(searchTerms?: SearchTerm | SearchTerm[]) {
-    const columnId = this.columnDef && this.columnDef.id;
+    const columnId = this.columnDef && this.columnDef.id || '';
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnFilter.type || this.columnDef.type || FieldType.dateUtc);
     const userFilterOptions = (this.columnFilter && this.columnFilter.filterOptions || {}) as FlatpickrOption;

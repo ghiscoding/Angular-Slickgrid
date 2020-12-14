@@ -2,6 +2,115 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.24.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.24.0...v2.24.1) (2020-12-10)
+
+
+### Features
+
+* **filters:** use offset left to calculate auto position (left/right) ([9d79e2d](https://github.com/ghiscoding/angular-slickgrid/commit/9d79e2d149b21fb8766e0ad40cbbd4cf4f6572e6))
+
+## [2.24.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.3...v2.24.0) (2020-12-10)
+
+
+### Features
+
+* **editors:** add few editor options to LongText (textarea) Editor ([38c7442](https://github.com/ghiscoding/angular-slickgrid/commit/38c7442792afd1d8512da7c5a1e5886e2d93c4a4))
+* **filters:** add auto position (left/right) to multiple-select lib ([1b23b84](https://github.com/ghiscoding/angular-slickgrid/commit/1b23b84f7d9d099301b757ec9d59bf254e13b837))
+
+
+### Bug Fixes
+
+* **core:** make @types/jquery as a dependency to avoid build error ([966ebb0](https://github.com/ghiscoding/angular-slickgrid/commit/966ebb0f68fa0a06d84e7551ad72420156e2ccf8))
+* **editors:** Select Editor option to return flat data w/complex object ([a3e6427](https://github.com/ghiscoding/angular-slickgrid/commit/a3e6427928035cb353e1586660066dd622f3e736))
+* **exports:** when cell value is empty object return empty string ([0534d13](https://github.com/ghiscoding/angular-slickgrid/commit/0534d1304680d0e87b52bad8c29b341c878bb359))
+
+### [2.23.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.2...v2.23.3) (2020-12-02)
+
+
+### Features
+
+* **core:** add enableMouseWheelScrollHandler grid option ([3150124](https://github.com/ghiscoding/angular-slickgrid/commit/31501249701458e07fa8e914b9efee48f8c4e036))
+
+
+### Bug Fixes
+
+* **core:** showing/hiding column shouldn't affect its freezing position ([7907cb8](https://github.com/ghiscoding/angular-slickgrid/commit/7907cb8c89de067b0a0cb009f7aa110a417b14e7))
+* **formatters:** date formatters should accept ISO input & output to US ([482d0f5](https://github.com/ghiscoding/angular-slickgrid/commit/482d0f5d2c9d6ae561d36081917beaf420971726))
+
+### [2.23.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.1...v2.23.2) (2020-11-20)
+
+
+### Bug Fixes
+
+* nullify grid/dataView/gridOptions when destroying to avoid leak ([b995b65](https://github.com/ghiscoding/angular-slickgrid/commit/b995b65fad93b293516630e974bf5a4988b53fdc))
+* **core:** header columns grouping misbehave after hiding column ([c89a21b](https://github.com/ghiscoding/angular-slickgrid/commit/c89a21b245107d4377b1d74c2aa970f17efdb0fe))
+* **extensions:** CellExternalCopyBuffer onKeyDown event leak, fix [#635](https://github.com/ghiscoding/angular-slickgrid/issues/635) ([#636](https://github.com/ghiscoding/angular-slickgrid/issues/636)) ([9ce8326](https://github.com/ghiscoding/angular-slickgrid/commit/9ce8326d046b9097965c5658a11da43b2bf2e0f6))
+
+### [2.23.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.0...v2.23.1) (2020-11-18)
+
+
+### Features
+
+* **core:** add "Empty Data" warning message when grid is empty ([#631](https://github.com/ghiscoding/angular-slickgrid/issues/631)) ([8f72e38](https://github.com/ghiscoding/angular-slickgrid/commit/8f72e387a0e16fa205160e60fb31a55e6f9fadd1))
+* **formatters:** add a fake hyperlink formatter ([#630](https://github.com/ghiscoding/angular-slickgrid/issues/630)) ([694f0ea](https://github.com/ghiscoding/angular-slickgrid/commit/694f0eaecf50db6f77f734cfd0b4ce0ddeae4e25))
+* **formatters:** add AlignRight and AlignCenter Formatters ([#634](https://github.com/ghiscoding/angular-slickgrid/issues/634)) ([3645d60](https://github.com/ghiscoding/angular-slickgrid/commit/3645d6055ed617a84ee28fccdad944fc1a538ffe))
+* **services:** add 2x new methods hideColumnById or ..byIds ([#633](https://github.com/ghiscoding/angular-slickgrid/issues/633)) ([e4455a9](https://github.com/ghiscoding/angular-slickgrid/commit/e4455a9aa052d0f01ff8715a029e8534f2b73395))
+
+
+### Bug Fixes
+
+* **backend:** OData/GraphQL pagination should display warning on empty ([#632](https://github.com/ghiscoding/angular-slickgrid/issues/632)) ([7d32bac](https://github.com/ghiscoding/angular-slickgrid/commit/7d32bac0e78afd4a48b1403a49d0fb614762ce0c))
+* **core:** clear dataset when destroying & fix few unsubscribed events ([#629](https://github.com/ghiscoding/angular-slickgrid/issues/629)) ([0ee3421](https://github.com/ghiscoding/angular-slickgrid/commit/0ee3421b86374616533e2e9ebc2945d13705782b))
+* **core:** Flatpickr is not destroyed properly & leaks detached elements ([#627](https://github.com/ghiscoding/angular-slickgrid/issues/627)) ([a9f7027](https://github.com/ghiscoding/angular-slickgrid/commit/a9f7027dbaf6d520ecb2fd868a55e96d7c1bff7b)), closes [#625](https://github.com/ghiscoding/angular-slickgrid/issues/625)
+* **core:** mem leaks w/orphan DOM elements when disposing, fixes [#625](https://github.com/ghiscoding/angular-slickgrid/issues/625) ([#626](https://github.com/ghiscoding/angular-slickgrid/issues/626)) ([d1e284f](https://github.com/ghiscoding/angular-slickgrid/commit/d1e284fcb1fffec7f15bd3056f857f394db38aa0))
+* **core:** properly dispose plugins to avoid detached DOM elements ([#628](https://github.com/ghiscoding/angular-slickgrid/issues/628)) ([3b4ccc4](https://github.com/ghiscoding/angular-slickgrid/commit/3b4ccc4891fa5bb983adff9f446adf77c9c84409))
+
+## [2.23.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.5...v2.23.0) (2020-11-02)
+
+
+### Features
+
+* **core:** update project lib to Angular 8 with newer ng-packagr ([#617](https://github.com/ghiscoding/angular-slickgrid/issues/617)) ([edae737](https://github.com/ghiscoding/angular-slickgrid/commit/edae737f744f78e1857a90dc02b37d25cc5c6899))
+
+
+### Bug Fixes
+
+* **core:** revert to use WebPack to run Cypress E2E tests ([3b3c643](https://github.com/ghiscoding/angular-slickgrid/commit/3b3c64399c76186577b88e6005834e07a2b9e49b))
+* **extensions:** import jQuery mousewheel only with frozen, fixes [#618](https://github.com/ghiscoding/angular-slickgrid/issues/618) ([#619](https://github.com/ghiscoding/angular-slickgrid/issues/619)) ([c3b52db](https://github.com/ghiscoding/angular-slickgrid/commit/c3b52db384fb967a2ad0c8a33093b7dae1a09209))
+* **filters:** slider filter setValues really change input value ([#621](https://github.com/ghiscoding/angular-slickgrid/issues/621)) ([212c275](https://github.com/ghiscoding/angular-slickgrid/commit/212c275c7f3303b3462296d03e748b73760c30d6))
+
+### [2.22.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.4...v2.22.5) (2020-10-29)
+
+
+### Features
+
+* **chore:** update Cypress reporter call with mochawesome ([#614](https://github.com/ghiscoding/angular-slickgrid/issues/614)) ([07bd99a](https://github.com/ghiscoding/angular-slickgrid/commit/07bd99a486004c290fe44bc8a57c8246ae30b1a9))
+
+
+### Bug Fixes
+
+* **core:** unsubscribe every possible events ([#611](https://github.com/ghiscoding/angular-slickgrid/issues/611)) ([2a92e78](https://github.com/ghiscoding/angular-slickgrid/commit/2a92e78cf0cabf53210bc6c4ac51132eb7f5a116)), closes [#610](https://github.com/ghiscoding/angular-slickgrid/issues/610)
+* **interfaces:** column types in GridStateChange ([#609](https://github.com/ghiscoding/angular-slickgrid/issues/609)) ([8705aac](https://github.com/ghiscoding/angular-slickgrid/commit/8705aaca18232a639e9d4cd767740f97f8b9665c))
+* **styling:** add missing pointer cursor to flatpickr inputs ([32cd122](https://github.com/ghiscoding/angular-slickgrid/commit/32cd122df3d5646be583dc8926f6ce8371593c83))
+* **styling:** flatpickr bg-color should be using SASS variable ([#616](https://github.com/ghiscoding/angular-slickgrid/issues/616)) ([8a613d4](https://github.com/ghiscoding/angular-slickgrid/commit/8a613d43899dff20fffac26f439b07e12b00fbef))
+
+### [2.22.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.3...v2.22.4) (2020-10-14)
+
+### [2.22.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.2...v2.22.3) (2020-10-14)
+
+### [2.22.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.1...v2.22.2) (2020-10-14)
+
+
+### Features
+
+* **styling:** add frozen on all possible elements with SASS variables ([#599](https://github.com/ghiscoding/angular-slickgrid/issues/599)) ([a6f292c](https://github.com/ghiscoding/angular-slickgrid/commit/a6f292c8c4ef90cd6bca606b0609efdf4ceab1e1))
+
+
+### Bug Fixes
+
+* **core:** don't override alwaysShowVerticalScroll flag ([#600](https://github.com/ghiscoding/angular-slickgrid/issues/600)) ([4eb9237](https://github.com/ghiscoding/angular-slickgrid/commit/4eb923772f80c224c9b93fe051c39e4578c0645f)), closes [#537](https://github.com/ghiscoding/angular-slickgrid/issues/537) [6pac/SlickGrid#537](https://github.com/6pac/SlickGrid/issues/537) [#537](https://github.com/ghiscoding/angular-slickgrid/issues/537) [6pac/SlickGrid#537](https://github.com/6pac/SlickGrid/issues/537)
+* **core:** hide Grid Menu Filter/Sort cmd when disabling functionality ([#607](https://github.com/ghiscoding/angular-slickgrid/issues/607)) ([6a68e23](https://github.com/ghiscoding/angular-slickgrid/commit/6a68e239dc832c293282454e2a6cbf7470f83eae))
+
 ### [2.22.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.22.0...v2.22.1) (2020-10-02)
 
 

@@ -1,13 +1,14 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, GridOption } from './../modules/angular-slickgrid';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { AngularGridInstance, Column, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './grid-headermenu.component.html',
   styleUrls: ['./grid-headermenu.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GridHeaderMenuComponent implements OnInit {
+export class GridHeaderMenuComponent implements OnInit, OnDestroy {
   title = 'Example 8: Header Menu Plugin';
   subTitle = `
     This example demonstrates using the <b>Slick.Plugins.HeaderMenu</b> plugin to easily add menus to colum headers.<br/>
@@ -29,6 +30,7 @@ export class GridHeaderMenuComponent implements OnInit {
     </ul>
   `;
 
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -37,6 +39,11 @@ export class GridHeaderMenuComponent implements OnInit {
 
   constructor(private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {
@@ -143,8 +150,10 @@ export class GridHeaderMenuComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 }

@@ -28,7 +28,7 @@ Thanks for filing a General issue! However, before you submit, please read the f
 | Operating System  | x.y        | 
 | NPM/Node/Yarn     | x.y        | 
 
-### Context or Topic 
+### Context
 <!-- REQUIRED - Describe what you wish to discuss -->
 
 ### Expected Behavior

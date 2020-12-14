@@ -27,6 +27,13 @@ jobs:
           name: Upload Jest coverage to Codecov
           command: bash <(curl -s https://codecov.io/bash)
       - run:
+          name: Website Prod Build (GitHub demo site)
+          command: yarn run build:demo
+      # - run:
+      #     name: Run Web Server
+      #     command: yarn run serve:demo
+      #     background: true
+      - run:
           name: Start Dev WebServer
           command: yarn start
           background: true
@@ -48,7 +55,4 @@ jobs:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
             cd test/cypress
-            yarn cypress:ci:mochawesome
-      - run:
-          name: Build Demo Site
-          command: yarn run ng:build
+            yarn cypress:ci

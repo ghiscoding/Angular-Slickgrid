@@ -48,10 +48,10 @@ export class InputMaskFilter extends InputFilter {
     // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
     this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
 
-    this.$filterElm.on('keyup input change', (e: any) => {
+    this.$filterElm.on('keyup input', (e: any) => {
       let value = '';
       if (e && e.target && e.target.value) {
         let targetValue = e.target.value;

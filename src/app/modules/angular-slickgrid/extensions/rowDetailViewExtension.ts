@@ -26,6 +26,7 @@ export interface CreatedView {
 export class RowDetailViewExtension implements Extension {
   rowDetailContainer: ViewContainerRef;
   private _addon: any;
+  private _addonOptions: RowDetailView;
   private _eventHandler: SlickEventHandler;
   private _preloadComponent: Type<object>;
   private _views: CreatedView[] = [];
@@ -67,6 +68,8 @@ export class RowDetailViewExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._addonOptions);
+    this._addonOptions = null;
 
     // also unsubscribe all RxJS subscriptions
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
@@ -115,7 +118,8 @@ export class RowDetailViewExtension implements Extension {
           }
 
           // finally register the Row Detail View Plugin
-          this._addon = new Slick.Plugins.RowDetailView(gridOptions.rowDetailView);
+          this._addonOptions = gridOptions.rowDetailView;
+          this._addon = new Slick.Plugins.RowDetailView(this._addonOptions);
         }
         const iconColumn: Column = this._addon.getColumnDefinition();
         if (typeof iconColumn === 'object') {

@@ -31,8 +31,8 @@ export class AutoCompleteEditor implements Editor {
   private _autoCompleteOptions: AutocompleteOption;
   private _currentValue: any;
   private _defaultTextValue: string;
-  private _elementCollection: any[];
-  private _lastInputEvent: KeyboardEvent;
+  private _elementCollection: any[] | null;
+  private _lastInputEvent: JQuery.Event;
 
   /** The JQuery DOM element */
   private _$editorElm: any;
@@ -73,7 +73,7 @@ export class AutoCompleteEditor implements Editor {
   }
 
   /** Get the Final Collection used in the AutoCompleted Source (this may vary from the "collection" especially when providing a customStructure) */
-  get elementCollection(): any[] {
+  get elementCollection(): any[] | null {
     return this._elementCollection;
   }
 
@@ -140,11 +140,18 @@ export class AutoCompleteEditor implements Editor {
   }
 
   destroy() {
-    this._$editorElm.off('keydown.nav').remove();
+    if (this._$editorElm) {
+      this._$editorElm.autocomplete('destroy');
+      this._$editorElm.off('keydown.nav').remove();
+    }
+    this._$editorElm = null;
+    this._elementCollection = null;
   }
 
   focus() {
-    this._$editorElm.focus().select();
+    if (this._$editorElm) {
+      this._$editorElm.focus().select();
+    }
   }
 
   getValue() {
@@ -322,7 +329,7 @@ export class AutoCompleteEditor implements Editor {
 
     this._$editorElm = $(`<input type="text" role="presentation" autocomplete="off" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: KeyboardEvent) => {
+      .on('keydown.nav', (event: JQuery.Event) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();
@@ -384,7 +391,7 @@ export class AutoCompleteEditor implements Editor {
     // in case the user wants to save even an empty value,
     // we need to subscribe to the onKeyDown event for that use case and clear the current value
     if (this.columnEditor.alwaysSaveOnEnterKey) {
-      this._$editorElm.keydown((event: KeyboardEvent) => {
+      this._$editorElm.keydown((event: JQuery.Event) => {
         if (event.keyCode === KeyCode.ENTER) {
           this._currentValue = null;
         }

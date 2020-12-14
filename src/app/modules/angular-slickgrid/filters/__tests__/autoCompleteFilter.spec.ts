@@ -163,7 +163,7 @@ describe('AutoCompleteFilter', () => {
 
     filterElm.focus();
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 109, bubbles: true, cancelable: true }));
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 109, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 109, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-gender.filled');
     const autocompleteListElms = document.body.querySelectorAll<HTMLLIElement>('ul.ui-autocomplete li');
 
@@ -182,7 +182,7 @@ describe('AutoCompleteFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-gender.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -200,7 +200,7 @@ describe('AutoCompleteFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-gender.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -216,7 +216,7 @@ describe('AutoCompleteFilter', () => {
 
     filterElm.focus();
     filterElm.value = 'a';
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const autocompleteListElms = document.body.querySelectorAll<HTMLLIElement>('ul.ui-autocomplete li');
 
     // expect(autocompleteListElms.length).toBe(2);
@@ -289,7 +289,7 @@ describe('AutoCompleteFilter', () => {
       filter.setValues('male');
 
       filterElm.focus();
-      filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+      filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
       const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-gender.filled');
 
       expect(autocompleteUlElms.length).toBe(1);
@@ -311,7 +311,7 @@ describe('AutoCompleteFilter', () => {
       filter.setValues('male');
 
       filterElm.focus();
-      filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+      filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
       // after await (or timeout delay) we'll get the Subject Observable
       mockCollection.push('other');

@@ -9,12 +9,17 @@ declare const Slick: any;
 @Injectable()
 export class CheckboxSelectorExtension implements Extension {
   private _addon: any;
+  private _rowSelectionPlugin: any;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
 
   dispose() {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
+    }
+    this._addon = null;
+    if (this._rowSelectionPlugin && this._rowSelectionPlugin.destroy) {
+      this._rowSelectionPlugin.destroy();
     }
   }
 
@@ -73,6 +78,7 @@ export class CheckboxSelectorExtension implements Extension {
         setTimeout(() => this._addon.selectRows(this.sharedService.gridOptions.preselectedRows));
       }
 
+      this._rowSelectionPlugin = rowSelectionPlugin;
       return rowSelectionPlugin;
     }
     return null;

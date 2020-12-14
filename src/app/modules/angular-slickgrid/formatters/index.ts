@@ -1,8 +1,10 @@
 import { FieldType } from '../models/index';
 import { getAssociatedDateFormatter } from './formatterUtilities';
+import { alignRightFormatter } from './alignRightFormatter';
 import { arrayObjectToCsvFormatter } from './arrayObjectToCsvFormatter';
 import { arrayToCsvFormatter } from './arrayToCsvFormatter';
 import { boldFormatter } from './boldFormatter';
+import { centerFormatter } from './centerFormatter';
 import { checkboxFormatter } from './checkboxFormatter';
 import { checkmarkFormatter } from './checkmarkFormatter';
 import { collectionFormatter } from './collectionFormatter';
@@ -14,6 +16,7 @@ import { dollarColoredBoldFormatter } from './dollarColoredBoldFormatter';
 import { dollarColoredFormatter } from './dollarColoredFormatter';
 import { dollarFormatter } from './dollarFormatter';
 import { editIconFormatter } from './editIconFormatter';
+import { fakeHyperlinkFormatter } from './fakeHyperlinkFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { iconFormatter } from './iconFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
@@ -35,6 +38,12 @@ import { bsDropdownFormatter } from './bsDropdownFormatter';
 
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export const Formatters = {
+  /** Align cell value to the center (alias to Formatters.center)  */
+  alignCenter: centerFormatter,
+
+  /** Align cell value to the right */
+  alignRight: alignRightFormatter,
+
   /**
    * Takes an array of complex objects converts it to a comma delimited string.
    * Requires to pass an array of "propertyNames" in the column definition the generic "params" property
@@ -51,6 +60,9 @@ export const Formatters = {
 
   /** boostrap dropdown formatter */
   bsDropdown: bsDropdownFormatter,
+
+  /** Center a text value horizontally */
+  center: centerFormatter,
 
   /** When value is filled (true), it will display a checkbox Unicode icon */
   checkbox: checkboxFormatter,
@@ -70,6 +82,7 @@ export const Formatters = {
    * this.columnDefs = [{ id: 'username', field: 'user.firstName', ... }]
    * OR this.columnDefs = [{ id: 'username', field: 'user', params: { complexField: 'user.firstName' }, ... }]
    */
+  complex: complexObjectFormatter,
   complexObject: complexObjectFormatter,
 
   /**
@@ -149,6 +162,9 @@ export const Formatters = {
 
   /** Displays a Font-Awesome edit icon (fa-pencil) */
   editIcon: editIconFormatter,
+
+  /** Takes any text value and display it as a fake a hyperlink (only styled as an hyperlink), this can be used in combo with "onCellClick" event */
+  fakeHyperlink: fakeHyperlinkFormatter,
 
   /**
    * Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https).

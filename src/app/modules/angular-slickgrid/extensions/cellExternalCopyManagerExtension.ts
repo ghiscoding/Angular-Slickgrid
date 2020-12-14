@@ -10,6 +10,7 @@ import {
   SlickEventHandler,
 } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
+import { BindingEventService } from '../services/bindingEvent.service';
 import { sanitizeHtmlToText } from '../services/utilities';
 import { SharedService } from '../services/shared.service';
 
@@ -20,16 +21,19 @@ declare const $: any;
 @Injectable()
 export class CellExternalCopyManagerExtension implements Extension {
   private _addon: any;
-  private _addonOptions: ExcelCopyBufferOption;
+  private _addonOptions: ExcelCopyBufferOption | null;
+  private _bindingEventService: BindingEventService;
+  private _cellSelectionModel: any;
   private _eventHandler: SlickEventHandler;
   private _commandQueue: EditCommand[];
   private _undoRedoBuffer: EditUndoRedoBuffer;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
+    this._bindingEventService = new BindingEventService();
   }
 
-  get addonOptions(): ExcelCopyBufferOption {
+  get addonOptions(): ExcelCopyBufferOption | null {
     return this._addonOptions;
   }
 
@@ -48,13 +52,21 @@ export class CellExternalCopyManagerExtension implements Extension {
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
+    this._bindingEventService.unbindAll();
+
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    if (this._cellSelectionModel && this._cellSelectionModel.destroy) {
+      this._cellSelectionModel.destroy();
+    }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._addonOptions);
+    this._addon = null;
+    this._addonOptions = null;
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
-  getAddonInstance() {
+  getAddonInstance(): any {
     return this._addon;
   }
 
@@ -63,31 +75,34 @@ export class CellExternalCopyManagerExtension implements Extension {
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
       this.createUndoRedoBuffer();
-      this.hookUndoShortcutKey();
+      this._bindingEventService.bind(document.body, 'keydown', this.handleKeyDown.bind(this));
 
       this._addonOptions = { ...this.getDefaultOptions(), ...this.sharedService.gridOptions.excelCopyBufferOptions } as ExcelCopyBufferOption;
-      this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
+      this._cellSelectionModel = new Slick.CellSelectionModel();
+      this.sharedService.grid.setSelectionModel(this._cellSelectionModel);
       this._addon = new Slick.CellExternalCopyManager(this._addonOptions);
-      this.sharedService.grid.registerPlugin(this._addon);
+      if (this._addon) {
+        this.sharedService.grid.registerPlugin(this._addon);
+      }
 
       // hook to all possible events
-      if (this.sharedService.grid && this.sharedService.gridOptions.excelCopyBufferOptions) {
-        if (this.sharedService.gridOptions.excelCopyBufferOptions.onExtensionRegistered) {
-          this.sharedService.gridOptions.excelCopyBufferOptions.onExtensionRegistered(this._addon);
+      if (this.sharedService.grid && this._addonOptions) {
+        if (this._addonOptions.onExtensionRegistered) {
+          this._addonOptions.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onCopyCells, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCells === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCells(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onCopyCells === 'function') {
+            this._addonOptions.onCopyCells(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onCopyCancelled, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCancelled === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onCopyCancelled(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onCopyCancelled === 'function') {
+            this._addonOptions.onCopyCancelled(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onPasteCells, (e: any, args: { ranges: SelectedRange[] }) => {
-          if (this.sharedService.gridOptions.excelCopyBufferOptions && typeof this.sharedService.gridOptions.excelCopyBufferOptions.onPasteCells === 'function') {
-            this.sharedService.gridOptions.excelCopyBufferOptions.onPasteCells(e, args);
+          if (this._addonOptions && typeof this._addonOptions.onPasteCells === 'function') {
+            this._addonOptions.onPasteCells(e, args);
           }
         });
       }
@@ -177,16 +192,14 @@ export class CellExternalCopyManagerExtension implements Extension {
   }
 
   /** Hook an undo shortcut key hook that will redo/undo the copy buffer using Ctrl+(Shift)+Z keyboard events */
-  private hookUndoShortcutKey() {
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      const keyCode = e.keyCode || e.code;
-      if (keyCode === 90 && (e.ctrlKey || e.metaKey)) {
-        if (e.shiftKey) {
-          this._undoRedoBuffer.redo(); // Ctrl + Shift + Z
-        } else {
-          this._undoRedoBuffer.undo(); // Ctrl + Z
-        }
+  private handleKeyDown(e: KeyboardEvent) {
+    const keyCode = e.keyCode || e.code;
+    if (keyCode === 90 && (e.ctrlKey || e.metaKey)) {
+      if (e.shiftKey) {
+        this._undoRedoBuffer.redo(); // Ctrl + Shift + Z
+      } else {
+        this._undoRedoBuffer.undo(); // Ctrl + Z
       }
-    });
+    }
   }
 }

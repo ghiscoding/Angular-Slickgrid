@@ -40,16 +40,16 @@ export interface Country {
 export class GridGraphqlWithoutPaginationComponent implements OnInit {
   title = 'Example 27: GraphQL Basic API without Pagination';
   subTitle = `
-  Use it as a basic GraphQL API with any external public APIs (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
+  Use basic GraphQL query with any external public APIs (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
   <ul>
     <li>This Examples uses a Public GraphQL API that you can find at this link <a href="https://countries.trevorblades.com/" target="_blank">https://countries.trevorblades.com/</a></li>
-    <li>Compare to the regular and default GraphQL implementation, you will find the following differenecs</li>
+    <li>Compare to the regular and default GraphQL implementation, you will find the following differences</li>
     <ul>
-      <li>There are no Pagination and we only use GraphQL once to load the data</li>
+      <li>There are no Pagination and we only use GraphQL <b>once</b> to load the data, then we use the grid as a regular local in-memory grid</li>
       <li>We enabled the following 2 flags "useLocalFiltering" and "useLocalSorting" to use regular (in memory) DataView filtering/sorting</li>
     </ul>
-    <li>NOTE - This Example calls multiple GraphQL queries, this is ONLY for demo purposes, you would typically only call 1 query (which is what GraphQL is good at)</li>
-    <li>This demo is mainly to show the use of GraphqlService to build the query and retrieve the data but also to show how to mix that with usage of local Filtering/Sorting strategies</li>
+    <li>NOTE - This Example calls multiple GraphQL queries, this is <b>ONLY</b> for demo purposes, you would typically only call 1 query (which is what GraphQL is good at)</li>
+    <li>This example is mainly to demo the use of GraphqlService to build the query and retrieve the data but also to demo how to mix that with local (in-memory) Filtering/Sorting strategies</li>
   </ul>
   `;
   angularGrid: AngularGridInstance;
@@ -73,36 +73,6 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       { id: 'countryPhone', field: 'phone', name: 'Phone Area Code', maxWidth: 110, sortable: true, filterable: true, columnGroup: 'Country' },
       { id: 'countryCurrency', field: 'currency', name: 'Currency', maxWidth: 90, sortable: true, filterable: true, columnGroup: 'Country' },
       { id: 'countryEmoji', field: 'emoji', name: 'Emoji', maxWidth: 90, sortable: true, columnGroup: 'Country' },
-      {
-        id: 'continentCode', field: 'continent.code', name: 'Code', maxWidth: 90,
-        sortable: true,
-        filterable: true,
-        filter: {
-          model: Filters.singleSelect,
-          collectionAsync: this.getContinents(),
-          collectionOptions: {
-            // the data is not at the root of the array, so we must tell the Select Filter where to pull the data
-            collectionInsideObjectProperty: 'data.continents',
-            addBlankEntry: true,
-            separatorBetweenTextLabels: ': ',
-          },
-          customStructure: {
-            value: 'code',
-            label: 'code',
-            labelSuffix: 'name',
-          }
-        },
-        formatter: Formatters.complexObject, columnGroup: 'Continent',
-      },
-      {
-        id: 'continentName', field: 'continent.name', name: 'Name', width: 60, sortable: true,
-        filterable: true, formatter: Formatters.complexObject, columnGroup: 'Continent'
-      },
-      {
-        id: 'languageCode', field: 'languages.code', name: 'Codes', maxWidth: 100,
-        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['code'], useFormatterOuputToFilter: true }, columnGroup: 'Language',
-        filterable: true,
-      },
       {
         id: 'languageName', field: 'languages.name', name: 'Names', width: 60,
         formatter: Formatters.arrayObjectToCsv, columnGroup: 'Language',
@@ -139,7 +109,63 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       },
       {
         id: 'languageNative', field: 'languages.native', name: 'Native', width: 60,
-        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['native'] }, columnGroup: 'Language',
+        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['native'], useFormatterOuputToFilter: true }, columnGroup: 'Language',
+        filterable: true,
+        filter: {
+          model: Filters.multipleSelect,
+          collectionAsync: this.getLanguages(),
+          operator: OperatorType.inContains,
+          collectionOptions: {
+            addBlankEntry: true,
+            // the data is not at the root of the array, so we must tell the Select Filter where to pull the data
+            collectionInsideObjectProperty: 'data.languages'
+          },
+          collectionFilterBy: [
+            // filter out any empty values
+            { property: 'native', value: '', operator: 'NE' },
+            { property: 'native', value: null, operator: 'NE' },
+          ],
+          collectionSortBy: {
+            property: 'native'
+          },
+          customStructure: {
+            value: 'native',
+            label: 'native',
+          },
+          filterOptions: {
+            filter: true
+          } as MultipleSelectOption
+        },
+      },
+      {
+        id: 'languageCode', field: 'languages.code', name: 'Codes', maxWidth: 100,
+        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['code'], useFormatterOuputToFilter: true }, columnGroup: 'Language',
+        filterable: true,
+      },
+      {
+        id: 'continentName', field: 'continent.name', name: 'Name', width: 60, sortable: true,
+        filterable: true, formatter: Formatters.complexObject, columnGroup: 'Continent'
+      },
+      {
+        id: 'continentCode', field: 'continent.code', name: 'Code', maxWidth: 90,
+        sortable: true,
+        filterable: true,
+        filter: {
+          model: Filters.singleSelect,
+          collectionAsync: this.getContinents(),
+          collectionOptions: {
+            // the data is not at the root of the array, so we must tell the Select Filter where to pull the data
+            collectionInsideObjectProperty: 'data.continents',
+            addBlankEntry: true,
+            separatorBetweenTextLabels: ': ',
+          },
+          customStructure: {
+            value: 'code',
+            label: 'code',
+            labelSuffix: 'name',
+          }
+        },
+        formatter: Formatters.complexObject, columnGroup: 'Continent',
       },
     ];
 
@@ -212,7 +238,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    * We also need to resolve the data in a flat array (singleSelect/multipleSelect Filters only accept data at the root of the array)
    */
   getLanguages() {
-    const languageQuery = `query { languages { code, name  }}`;
+    const languageQuery = `query { languages { code, name, native  }}`;
     return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query: languageQuery });
   }
 }

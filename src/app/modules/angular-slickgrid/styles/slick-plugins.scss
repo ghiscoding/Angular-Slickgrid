@@ -755,29 +755,29 @@ input.search-filter {
 
 .search-filter .flatpickr {
   input.form-control {
-    cursor: pointer;
     border-left: none;
   }
+}
+.search-filter.flatpickr,
+.search-filter .flatpickr {
+  flex: 1;
+  cursor: pointer;
 
-  .flatpickr {
-    flex: 1;
+  input.flatpickr.form-control,
+  .flatpickr-input.form-control {
+    background-color: $flatpickr-bgcolor;
+    font-family: $filter-placeholder-font-family;
+    font-size: $font-size-base;
+    border-radius: $compound-filter-border-radius;
+    width: 100%;
+    &[readonly] {
+      background-color: $flatpickr-bgcolor;
+    }
+  }
+  .form-control[readonly],
+  .flatpickr.form-control[readonly] {
     cursor: pointer;
-
-    input.flatpickr.form-control,
-    .flatpickr-input.form-control {
-      background-color: $flatpickr-bgcolor;
-      font-family: $filter-placeholder-font-family;
-      font-size: $font-size-base;
-      border-radius: $compound-filter-border-radius;
-      width: 100%;
-      &[readonly] {
-        background-color: $flatpickr-bgcolor;
-      }
-    }
-    .form-control[readonly],
-    .flatpickr.form-control[readonly] {
-      background-color: $flatpickr-bgcolor;
-    }
+    background-color: $flatpickr-bgcolor;
   }
 }
 input.flatpickr-input.form-control,

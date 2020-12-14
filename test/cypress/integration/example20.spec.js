@@ -40,6 +40,130 @@ describe('Example 20 - Frozen Grid', () => {
     cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(1)').should('contain', '2009-05-05');
   });
 
+  it('should hide "Title" column from Grid Menu and expect last frozen column to be "% Complete"', () => {
+    const newColumnList = ['#', '% Complete', 'Start', 'Finish', 'Cost | Duration', 'Effort Driven', 'Title 1', 'Title 2', 'Title 3', 'Title 4'];
+
+    cy.get('#grid20')
+      .find('button.slick-gridmenu-button')
+      .click({ force: true });
+
+    cy.get('#grid20')
+      .get('.slick-gridmenu:visible')
+      .find('.slick-gridmenu-list')
+      .children('li:visible:nth(1)')
+      .children('label')
+      .should('contain', 'Title')
+      .click({ force: true });
+
+    cy.get('#grid20')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(newColumnList[index]));
+
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 2 * 2);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 8 * 2);
+
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '');
+
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '2009-01-01');
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(1)').should('contain', '2009-05-05');
+  });
+
+  it('should show again "Title" column from Grid Menu and expect last frozen column to still be "% Complete"', () => {
+    cy.get('#grid20')
+      .get('.slick-gridmenu:visible')
+      .find('.slick-gridmenu-list')
+      .children('li:visible:nth(1)')
+      .children('label')
+      .should('contain', 'Title')
+      .click({ force: true });
+
+    cy.get('#grid20')
+      .get('.slick-gridmenu:visible')
+      .find('span.close')
+      .click({ force: true });
+
+    cy.get('#grid20')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
+
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 3 * 2);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 8 * 2);
+
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '');
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(1)').should('contain', 'Task 0');
+
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '2009-01-01');
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(1)').should('contain', '2009-05-05');
+  });
+
+  it('should hide "Title" column from Header Menu and expect last frozen column to be "% Complete"', () => {
+    const newColumnList = ['#', '% Complete', 'Start', 'Finish', 'Cost | Duration', 'Effort Driven', 'Title 1', 'Title 2', 'Title 3', 'Title 4'];
+
+    cy.get('#grid20')
+      .find('.slick-header-column:nth(1)')
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .should('be.hidden')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(7)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Hide Column')
+      .click();
+
+    cy.get('#grid20')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(newColumnList[index]));
+
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 2 * 2);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 8 * 2);
+
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '');
+
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '2009-01-01');
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(1)').should('contain', '2009-05-05');
+  });
+
+  it('should show again "Title" column from Column Picker and expect last frozen column to still be "% Complete"', () => {
+    cy.get('#grid20')
+      .find('.slick-header-column:nth(5)')
+      .trigger('mouseover')
+      .trigger('contextmenu')
+      .invoke('show');
+
+    cy.get('.slick-columnpicker')
+      .find('.slick-columnpicker-list')
+      .children('li:nth-child(2)')
+      .children('label')
+      .should('contain', 'Title')
+      .click();
+
+    cy.get('.slick-columnpicker:visible')
+      .find('span.close')
+      .trigger('click')
+      .click();
+
+    cy.get('#grid20')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
+
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 3 * 2);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 8 * 2);
+
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '');
+    cy.get('.grid-canvas-left > [style="top:0px"] > .slick-cell:nth(1)').should('contain', 'Task 0');
+
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(0)').should('contain', '2009-01-01');
+    cy.get('.grid-canvas-right > [style="top:0px"] > .slick-cell:nth(1)').should('contain', '2009-05-05');
+  });
+
   it('should click on the "Remove Frozen Columns" button to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
     cy.get('[data-test=remove-frozen-column-button]')
       .click({ force: true });

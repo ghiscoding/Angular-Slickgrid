@@ -77,14 +77,48 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['abc'], shouldTriggerQuery: true });
   });
 
-  it('should call "setValues" an operator and with with extra spaces at the beginning of the searchTerms and trim value when "enableFilterTrimWhiteSpace" is enabled in grid options', () => {
+  it('should call "setValues" and expect that value to be in the callback when triggered by ENTER key', () => {
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    filter.setValues('abc');
+    const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
+
+    filterElm.focus();
+    const event = new (window.window as any).Event('keyup', { bubbles: true, cancelable: true });
+    event.key = 'Enter';
+    filterElm.dispatchEvent(event);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
+
+    expect(filterFilledElms.length).toBe(1);
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['abc'], shouldTriggerQuery: true });
+  });
+
+  it('should call "setValues" and expect that value NOT to be in the callback when triggered by a keyup event that is NOT the ENTER key', () => {
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    filter.setValues('abc');
+    const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
+
+    filterElm.focus();
+    const event = new (window.window as any).Event('keyup', { bubbles: true, cancelable: true });
+    event.key = 'a';
+    filterElm.dispatchEvent(event);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
+
+    expect(filterFilledElms.length).toBe(0);
+    expect(spyCallback).not.toHaveBeenCalled();
+  });
+
+  it('should call "setValues" an operator and with extra spaces at the beginning of the searchTerms and trim value when "enableFilterTrimWhiteSpace" is enabled in grid options', () => {
     gridOptionMock.enableFilterTrimWhiteSpace = true;
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
@@ -93,7 +127,7 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -110,7 +144,7 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -125,7 +159,7 @@ describe('InputFilter', () => {
 
     filterElm.focus();
     filterElm.value = 'a';
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    filterElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['a'], shouldTriggerQuery: true });
   });

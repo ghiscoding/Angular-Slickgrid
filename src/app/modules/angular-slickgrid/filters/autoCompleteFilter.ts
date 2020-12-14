@@ -20,7 +20,7 @@ import {
   SearchTerm,
 } from './../models/index';
 import { CollectionService } from '../services/collection.service';
-import { castToPromise, getDescendantProperty, toKebabCase } from '../services/utilities';
+import { castToPromise, getDescendantProperty, toKebabCase, unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -29,7 +29,7 @@ declare const $: any;
 export class AutoCompleteFilter implements Filter {
   private _autoCompleteOptions: AutocompleteOption;
   private _clearFilterTriggered = false;
-  private _collection: any[];
+  private _collection: any[] | null;
   private _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
@@ -78,7 +78,7 @@ export class AutoCompleteFilter implements Filter {
   }
 
   /** Getter for the Collection Used by the Filter */
-  get collection(): any[] {
+  get collection(): any[] | null {
     return this._collection;
   }
 
@@ -183,7 +183,7 @@ export class AutoCompleteFilter implements Filter {
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$filterElm.val('');
-      this.$filterElm.trigger('keyup');
+      this.$filterElm.trigger('input');
     }
   }
 
@@ -191,9 +191,14 @@ export class AutoCompleteFilter implements Filter {
    * destroy the filter
    */
   destroy() {
+    // also unsubscribe all RxJS subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
     if (this.$filterElm) {
-      this.$filterElm.off('keyup').remove();
+      this.$filterElm.off('input').remove();
     }
+    this.$filterElm = null;
+    this._collection = null;
   }
 
   /** Set value(s) on the DOM element */
@@ -246,10 +251,8 @@ export class AutoCompleteFilter implements Filter {
   }
 
   protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>): Promise<boolean> {
-    let awaitedCollection: any = [];
-
     if (collectionAsync) {
-      awaitedCollection = await castToPromise(collectionAsync);
+      const awaitedCollection = await castToPromise(collectionAsync);
       this.renderDomElementFromCollectionAsync(awaitedCollection);
 
       // because we accept Promises & HttpClient Observable only execute once
@@ -318,9 +321,9 @@ export class AutoCompleteFilter implements Filter {
     this._collection = newCollection;
     this.$filterElm = this.createDomElement(filterTemplate, newCollection, searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterElm.on('keyup', (e: any) => {
+    this.$filterElm.on('input', (e: any) => {
       let value = e && e.target && e.target.value || '';
       const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
       if (typeof value === 'string' && enableWhiteSpaceTrim) {

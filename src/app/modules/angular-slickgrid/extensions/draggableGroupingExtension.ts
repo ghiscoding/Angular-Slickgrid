@@ -1,6 +1,6 @@
 
 import { SharedService } from '../services/shared.service';
-import { Extension, ExtensionName, GridOption, Grouping, SlickEventHandler } from '../models/index';
+import { DraggableGrouping, Extension, ExtensionName, GridOption, Grouping, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { Injectable } from '@angular/core';
 
@@ -11,6 +11,7 @@ declare const Slick: any;
 export class DraggableGroupingExtension implements Extension {
   private _eventHandler: SlickEventHandler;
   private _addon: any;
+  private _draggableGroupingOptions: DraggableGrouping | null;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
@@ -27,6 +28,9 @@ export class DraggableGroupingExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._draggableGroupingOptions);
+    this._addon = null;
+    this._draggableGroupingOptions = null;
   }
 
   /**
@@ -57,12 +61,13 @@ export class DraggableGroupingExtension implements Extension {
 
       // Events
       if (this.sharedService.grid && this.sharedService.gridOptions.draggableGrouping) {
-        if (this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered) {
-          this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._addon);
+        this._draggableGroupingOptions = this.sharedService.gridOptions.draggableGrouping;
+        if (this._draggableGroupingOptions.onExtensionRegistered) {
+          this._draggableGroupingOptions.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onGroupChanged, (e: any, args: { caller?: string; groupColumns: Grouping[] }) => {
-          if (this.sharedService.gridOptions.draggableGrouping && typeof this.sharedService.gridOptions.draggableGrouping.onGroupChanged === 'function') {
-            this.sharedService.gridOptions.draggableGrouping.onGroupChanged(e, args);
+          if (this._draggableGroupingOptions && typeof this._draggableGroupingOptions.onGroupChanged === 'function') {
+            this._draggableGroupingOptions.onGroupChanged(e, args);
           }
         });
       }

@@ -18,7 +18,7 @@ export class TreeDataService {
     return this.dataView && this.dataView.getItems && this.dataView.getItems();
   }
 
-  get datasetHierarchical(): any[] | undefined {
+  get datasetHierarchical(): any[] | null {
     return this.sharedService.hierarchicalDataset;
   }
 

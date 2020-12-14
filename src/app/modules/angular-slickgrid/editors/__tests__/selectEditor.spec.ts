@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { SelectEditor } from '../selectEditor';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, FieldType, OperatorType } from '../../models';
+import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, FieldType, OperatorType, ColumnEditor } from '../../models';
 
 const containerId = 'demo-container';
 
@@ -414,6 +414,19 @@ describe('SelectEditor', () => {
 
         expect(output).toEqual([{ label: 'male', value: 'male' }, { label: 'other', value: 'other' }]);
         expect(currentValue).toEqual({});
+      });
+
+      it('should return flat value when using a dot (.) notation for complex object with a collection of option/label pair and using "serializeComplexValueFormat" as "flat"', () => {
+        mockColumn.field = 'employee.gender';
+        mockItemData = { id: 1, employee: { id: 24, gender: ['male', 'other'] }, isActive: true };
+        (mockColumn.internalColumnEditor as ColumnEditor).serializeComplexValueFormat = 'flat';
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
+        const currentValue = editor.currentValue;
+
+        expect(output).toEqual(['male', 'other']);
+        expect(currentValue).toEqual('');
       });
 
       it('should return object value when using a dot (.) notation and we override the object path using "complexObjectPath" to find correct values', () => {

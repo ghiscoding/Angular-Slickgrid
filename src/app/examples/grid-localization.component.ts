@@ -1,5 +1,6 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnDestroy, OnInit, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
   Column,
@@ -10,7 +11,8 @@ import {
   Formatter,
   Formatters,
   GridOption,
-  GridStateChange
+  GridStateChange,
+  unsubscribeAllObservables
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 1500;
@@ -27,7 +29,7 @@ const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any
   templateUrl: './grid-localization.component.html'
 })
 @Injectable()
-export class GridLocalizationComponent implements OnInit {
+export class GridLocalizationComponent implements OnInit, OnDestroy {
   title = 'Example 12: Localization (i18n)';
   subTitle = `Support multiple locales with the ngx-translate plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
   <ol class="small">
@@ -55,6 +57,7 @@ export class GridLocalizationComponent implements OnInit {
     </ol>
   `;
 
+  private subscriptions: Subscription[] = [];
   angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -68,6 +71,11 @@ export class GridLocalizationComponent implements OnInit {
     const defaultLang = 'en';
     this.translate.use(defaultLang);
     this.selectedLanguage = defaultLang;
+  }
+
+  ngOnDestroy() {
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {
@@ -266,8 +274,10 @@ export class GridLocalizationComponent implements OnInit {
 
   switchLanguage() {
     const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLanguage).subscribe(() => {
-      this.selectedLanguage = nextLanguage;
-    });
+    this.subscriptions.push(
+      this.translate.use(nextLanguage).subscribe(() => {
+        this.selectedLanguage = nextLanguage;
+      })
+    );
   }
 }

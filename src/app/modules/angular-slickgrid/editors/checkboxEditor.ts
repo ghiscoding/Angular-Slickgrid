@@ -64,6 +64,7 @@ export class CheckboxEditor implements Editor {
 
   destroy(): void {
     this._$input.remove();
+    this._$input = null;
   }
 
   focus(): void {

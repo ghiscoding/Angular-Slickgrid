@@ -207,7 +207,9 @@ export class SelectEditor implements Editor {
 
         // is the field a complex object, "address.streetNumber"
         const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
-        if (isComplexObject && typeof c === 'object') {
+        const serializeComplexValueFormat = this.columnEditor && this.columnEditor.serializeComplexValueFormat || 'object';
+
+        if (isComplexObject && typeof c === 'object' && serializeComplexValueFormat === 'object') {
           return c;
         }
 
@@ -242,8 +244,9 @@ export class SelectEditor implements Editor {
     // is the field a complex object, "address.streetNumber"
     const fieldName = this.columnDef && this.columnDef.field;
     const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
+    const serializeComplexValueFormat = this.columnEditor && this.columnEditor.serializeComplexValueFormat || 'object';
 
-    if (isComplexObject && typeof itemFound === 'object') {
+    if (isComplexObject && typeof itemFound === 'object' && serializeComplexValueFormat === 'object') {
       return itemFound;
     } else if (itemFound && itemFound.hasOwnProperty(this.valueName)) {
       const labelText = itemFound[this.valueName];
@@ -359,13 +362,12 @@ export class SelectEditor implements Editor {
     this._destroying = true;
     if (this.$editorElm && typeof this.$editorElm.multipleSelect === 'function') {
       this.$editorElm.multipleSelect('destroy');
+      this.$editorElm.remove();
       const elementClassName = this.elementName.toString().replace('.', '\\.'); // make sure to escape any dot "." from CSS class to avoid console error
       $(`[name=${elementClassName}].ms-drop`).remove();
-    }
-    if (this.$editorElm && typeof this.$editorElm.remove === 'function') {
       this.$editorElm.remove();
+      this.$editorElm = null;
     }
-    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
   }
 
   loadValue(item: any): void {
@@ -379,7 +381,7 @@ export class SelectEditor implements Editor {
       // else we use the path provided in the Field Column Definition
       const objectPath = this.columnEditor && this.columnEditor.complexObjectPath || fieldName;
       const currentValue = (isComplexObject) ? getDescendantProperty(item, objectPath) : item[fieldName];
-      const value = (isComplexObject && currentValue.hasOwnProperty(this.valueName)) ? currentValue[this.valueName] : currentValue;
+      const value = (isComplexObject && currentValue && currentValue.hasOwnProperty(this.valueName)) ? currentValue[this.valueName] : currentValue;
 
       if (this.isMultipleSelect && Array.isArray(value)) {
         this.loadMultipleValues(value);

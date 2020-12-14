@@ -10,6 +10,7 @@ import 'slickgrid/slick.dataview';
 // ...then everything else...
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { isObservable, Observable, Subscription } from 'rxjs';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -38,7 +39,7 @@ import {
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { isObservable, Observable, Subscription } from 'rxjs';
+import { SlickEmptyWarningComponent } from './slick-empty-warning.component';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -77,6 +78,7 @@ import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 // using external non-typed js libraries
 declare const Slick: any;
 declare const $: any;
+declare function require(name: string);
 
 const slickgridEventPrefix = 'sg';
 
@@ -120,7 +122,7 @@ const slickgridEventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
-  private _dataset: any[];
+  private _dataset: any[] | null;
   private _columnDefinitions: Column[];
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
   private _angularGridInstances: AngularGridInstance | undefined;
@@ -131,8 +133,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
-  dataView: any;
-  grid: any;
+  private _paginationOptions: Pagination | undefined;
+  private slickEmptyWarning: SlickEmptyWarningComponent;
+  dataView: any | null;
+  grid: any | null;
   gridHeightString: string;
   gridWidthString: string;
   groupingDefinition: any = {};
@@ -141,7 +145,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   customFooterOptions: CustomFooterOption;
   locales: Locale;
   metrics: Metrics;
-  paginationOptions: Pagination;
   showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
@@ -165,6 +168,20 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Input() customDataView: any;
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
+
+  @Input()
+  get paginationOptions(): Pagination | undefined {
+    return this._paginationOptions;
+  }
+  set paginationOptions(options: Pagination | undefined) {
+    if (options && this._paginationOptions) {
+      this._paginationOptions = { ...this._paginationOptions, ...options };
+    } else {
+      this._paginationOptions = options;
+    }
+    this.gridOptions.pagination = this._paginationOptions;
+    this.paginationService.updateTotalItems(options && options.totalItems || 0, true);
+  }
 
   @Input()
   set gridHeight(height: number) {
@@ -196,19 +213,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   @Input()
-  get datasetHierarchical(): any[] {
+  get datasetHierarchical(): any[] | null {
     return this.sharedService.hierarchicalDataset;
   }
-  set datasetHierarchical(newHierarchicalDataset: any[]) {
+  set datasetHierarchical(newHierarchicalDataset: any[] | null) {
     this.sharedService.hierarchicalDataset = newHierarchicalDataset;
 
-    if (this.filterService && this.filterService.clearFilters) {
+    if (newHierarchicalDataset && this.columnDefinitions && this.filterService && this.filterService.clearFilters) {
       this.filterService.clearFilters();
     }
 
     // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
     setTimeout(() => {
-      if (this.dataView && this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
+      if (newHierarchicalDataset && this.dataView && this.sortService && this.sortService.processTreeDataInitialSort && this.gridOptions && this.gridOptions.enableTreeData) {
         this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
         this.sortService.processTreeDataInitialSort();
       }
@@ -238,7 +255,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private treeDataService: TreeDataService,
     @Optional() private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
-  ) { }
+  ) {
+    this.slickEmptyWarning = new SlickEmptyWarningComponent(this.translate);
+  }
 
   ngAfterViewInit() {
     this.initialization();
@@ -255,7 +274,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngOnInit(): void {
     this.onBeforeGridCreate.emit(true);
-
     if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
       this.gridHeightString = `${this._fixedHeight}px`;
       this.gridWidthString = `${this._fixedWidth}px`;
@@ -269,34 +287,66 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroy(shouldEmptyDomElementContainer = false) {
-    this.dataView = undefined;
-    this.gridOptions = {};
     this.extensionService.dispose();
     this.filterService.dispose();
     this.gridEventService.dispose();
     this.gridStateService.dispose();
+    this.gridService.dispose();
     this.groupingAndColspanService.dispose();
     this.paginationService.dispose();
     this.resizer.dispose();
     this.sortService.dispose();
     this.treeDataService.dispose();
+
+    // dispose the Components
+    this.slickEmptyWarning.dispose();
+
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
+    if (this.dataView) {
+      if (this.dataView && this.dataView.setItems) {
+        this.dataView.setItems([]);
+      }
+      if (this.dataView.destroy) {
+        this.dataView.destroy();
+      }
+    }
     if (this.grid && this.grid.destroy) {
-      this.grid.destroy();
+      this.grid.destroy(shouldEmptyDomElementContainer);
+    }
+
+    if (this.backendServiceApi) {
+      for (const prop of Object.keys(this.backendServiceApi)) {
+        this.backendServiceApi[prop] = null;
+      }
+      this.backendServiceApi = null;
+    }
+    for (const prop of Object.keys(this.columnDefinitions)) {
+      this.columnDefinitions[prop] = null;
+    }
+    for (const prop of Object.keys(this.sharedService)) {
+      this.sharedService[prop] = null;
     }
 
     // we could optionally also empty the content of the grid container DOM element
     if (shouldEmptyDomElementContainer) {
-      this.destroyGridContainerElm();
+      this.emptyGridContainerElm();
     }
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
+    this._dataset = null;
+    this.datasetHierarchical = null;
+    this._columnDefinitions = [];
+    this._angularGridInstances = null;
+    this.grid = null;
+    this.gridOptions = null;
+    this.dataView = null;
   }
 
-  destroyGridContainerElm() {
+  emptyGridContainerElm() {
     const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId || 'grid1';
     $(gridContainerId).empty();
   }
@@ -321,11 +371,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (backendApi.service instanceof GraphqlService || typeof backendApi.service.getDatasetName === 'function') {
         backendApi.internalPostProcess = (processResult: GraphqlResult | GraphqlPaginatedResult) => {
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          this._dataset = [];
           if (processResult && processResult.data && processResult.data[datasetName]) {
-            this._dataset = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
+            const data = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
             const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as GraphqlPaginatedResult).data[datasetName].totalCount : (processResult as GraphqlResult).data[datasetName].length;
-            this.refreshGridData(this._dataset, totalCount || 0);
+            this.refreshGridData(data, totalCount || 0);
           }
         };
       }
@@ -359,6 +408,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
+    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(dataset)) {
+      const finalTotalCount = totalCount || dataset.length;
+      this.displayEmptyDataWarning(finalTotalCount < 1);
+    }
+
     if (Array.isArray(dataset) && this.grid && this.dataView && typeof this.dataView.setItems === 'function') {
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
@@ -389,7 +443,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.showPagination = (this.gridOptions && (this.gridOptions.enablePagination || (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined))) ? true : false;
 
       if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
-        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
+        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
         const totalRecords = totalCount !== undefined ? totalCount : (this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems);
@@ -461,6 +515,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   //
   // private functions
   // ------------------
+
+  private displayEmptyDataWarning(showWarning = true) {
+    this.slickEmptyWarning.grid = this.grid;
+    this.slickEmptyWarning && this.slickEmptyWarning.showEmptyDataMessage(showWarning);
+  }
 
   private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
@@ -569,6 +628,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           itemCount: args && args.current || 0,
           totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
         };
+
+        // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
+        if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
+          this.displayEmptyDataWarning(args.current === 0);
+        }
       });
 
       // when dealing with Tree Data View, make sure we have necessary tree data options
@@ -661,9 +725,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
               .catch((error: any) => onBackendError(error, backendApi));
           } else if (isObservable(process)) {
-            process.subscribe(
-              (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
-              (error: any) => onBackendError(error, backendApi)
+            this.subscriptions.push(
+              process.subscribe(
+                (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
+                (error: any) => onBackendError(error, backendApi)
+              )
             );
           }
         });
@@ -722,10 +788,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private initialization() {
+    // when detecting a frozen grid, we'll automatically enable the mousewheel scroll handler so that we can scroll from both left/right frozen containers
+    if (this.gridOptions && ((this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0) || this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) && this.gridOptions.enableMouseWheelScrollHandler === undefined) {
+      this.gridOptions.enableMouseWheelScrollHandler = true;
+    }
+
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
-    this.paginationOptions = this.gridOptions.pagination;
+    this._paginationOptions = this.gridOptions.pagination;
     this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
     this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
@@ -767,13 +838,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // emit the Grid & DataView object to make them available in parent component
     this.onGridCreated.emit(this.grid);
 
+    // when it's a frozen grid, we need to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward
+    const frozenColumnIndex = this.gridOptions.frozenColumn !== undefined ? this.gridOptions.frozenColumn : -1;
+    if (frozenColumnIndex >= 0 && frozenColumnIndex <= this._columnDefinitions.length) {
+      this.sharedService.frozenVisibleColumnId = this._columnDefinitions[frozenColumnIndex].id || '';
+    }
+
     // initialize the SlickGrid grid
     this.grid.init();
 
     if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
       this.onDataviewCreated.emit(this.dataView);
       this.dataView.beginUpdate();
-      this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems(this._dataset || [], this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
@@ -800,7 +877,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       }
 
-      if (this._dataset.length > 0) {
+      const datasetLn = this.dataView.getLength() || this._dataset && this._dataset.length || 0;
+      if (datasetLn > 0) {
         if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
           this.loadRowSelectionPresetWhenExists();
         }
@@ -948,14 +1026,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private loadLocalGridPagination() {
     if (this.gridOptions) {
       this.totalItems = Array.isArray(this.dataset) ? this.dataset.length : 0;
-      if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
+      if (this._paginationOptions && this.dataView && this.dataView.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo() || {};
-        if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== slickPagingInfo.totalRows) {
+        if (slickPagingInfo.hasOwnProperty('totalRows') && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
           this.totalItems = slickPagingInfo.totalRows;
         }
       }
-      this.paginationOptions.totalItems = this.totalItems;
-      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
+      this._paginationOptions.totalItems = this.totalItems;
+      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
       this.initializePaginationService(paginationOptions);
     }
   }
@@ -1063,7 +1141,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private swapInternalEditorToSlickGridFactoryEditor(columnDefinitions: Column[]) {
     return columnDefinitions.map((column: Column | any) => {
       // on every Editor that have a "collectionAsync", resolve the data and assign it to the "collection" property
-      if (column.editor && column.editor.collectionAsync) {
+      if (column && column.editor && column.editor.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };

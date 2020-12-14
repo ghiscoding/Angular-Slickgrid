@@ -41,6 +41,11 @@ export class CompoundSliderFilter implements Filter {
 
   constructor(protected translate: TranslateService) { }
 
+  /** Getter for the Filter Operator */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
+  }
+
   /** Getter to know what would be the default operator when none is specified */
   get defaultOperator(): OperatorType | OperatorString {
     return OperatorType.empty;
@@ -68,7 +73,7 @@ export class CompoundSliderFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || this.defaultOperator;
+    return this._operator || this.columnFilter.operator || this.defaultOperator;
   }
 
   /** Setter for the Filter Operator */
@@ -100,14 +105,10 @@ export class CompoundSliderFilter implements Filter {
     // and initialize it if searchTerm is filled
     this.$filterElm = this.createDomElement(searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.change((e: any) => {
-      this.onTriggerEvent(e);
-    });
-    this.$selectOperatorElm.change((e: any) => {
-      this.onTriggerEvent(e);
-    });
+    this.$filterInputElm.on('change', this.onTriggerEvent.bind(this));
+    this.$selectOperatorElm.on('change', this.onTriggerEvent.bind(this));
 
     // if user chose to display the slider number on the right side, then update it every time it changes
     // we need to use both "input" and "change" event to be all cross-browser
@@ -149,9 +150,15 @@ export class CompoundSliderFilter implements Filter {
    * destroy the filter
    */
   destroy() {
-    if (this.$filterElm) {
-      this.$filterElm.off('input change').remove();
+    if (this.$filterInputElm) {
+      this.$filterInputElm.off('input change').remove();
+      this.$selectOperatorElm.off('change').remove();
     }
+    this.$filterInputElm = null;
+    this.$filterElm = null;
+    this.$selectOperatorElm = null;
+    this.callback = null;
+    this.onTriggerEvent = null;
   }
 
   /**

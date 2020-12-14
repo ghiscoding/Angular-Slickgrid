@@ -341,6 +341,7 @@ describe('headerMenuExtension', () => {
         jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(1);
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
         const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const setOptionSpy = jest.spyOn(gridStub, 'setOptions');
         const visibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
         const updatedColumnsMock = [{
           id: 'field1', field: 'field1', nameKey: 'TITLE', width: 100,
@@ -357,6 +358,35 @@ describe('headerMenuExtension', () => {
 
         extension.hideColumn(columnsMock[1]);
 
+        expect(setOptionSpy).not.toHaveBeenCalled();
+        expect(visibleSpy).toHaveBeenCalledWith(updatedColumnsMock);
+        expect(setColumnsSpy).toHaveBeenCalledWith(updatedColumnsMock);
+      });
+
+      it('should call hideColumn and expect "setOptions" to be called with new "frozenColumn" index when the grid is detected to be a frozen grid', () => {
+        gridOptionsMock.frozenColumn = 1;
+        jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+        jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(1);
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const setOptionSpy = jest.spyOn(gridStub, 'setOptions');
+        const visibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+        const updatedColumnsMock = [{
+          id: 'field1', field: 'field1', nameKey: 'TITLE', width: 100,
+          header: {
+            menu: {
+              items: [
+                { iconCssClass: 'fa fa-thumb-tack', title: 'Geler les colonnes', command: 'freeze-columns', positionOrder: 48 },
+                { divider: true, command: '', positionOrder: 49 },
+                { command: 'hide', iconCssClass: 'fa fa-times', positionOrder: 55, title: 'Cacher la colonne' }
+              ]
+            }
+          }
+        }] as Column[];
+
+        extension.hideColumn(columnsMock[1]);
+
+        expect(setOptionSpy).toHaveBeenCalledWith({ frozenColumn: 0 });
         expect(visibleSpy).toHaveBeenCalledWith(updatedColumnsMock);
         expect(setColumnsSpy).toHaveBeenCalledWith(updatedColumnsMock);
       });
@@ -416,7 +446,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, alwaysShowVerticalScroll: false });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true });
         expect(setColumnsSpy).toHaveBeenCalled();
       });
 
@@ -429,7 +459,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[1], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, alwaysShowVerticalScroll: false });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, enableMouseWheelScrollHandler: true });
         expect(setColumnsSpy).toHaveBeenCalled();
       });
 

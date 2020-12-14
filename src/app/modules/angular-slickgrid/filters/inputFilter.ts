@@ -83,26 +83,9 @@ export class InputFilter implements Filter {
     // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
     this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
+    // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterElm.on('keyup input change', (e: any) => {
-      let value = e && e.target && e.target.value || '';
-      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
-      if (typeof value === 'string' && enableWhiteSpaceTrim) {
-        value = value.trim();
-      }
-
-      if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-        this.$filterElm.removeClass('filled');
-      } else {
-        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
-      }
-      // reset both flags for next use
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
-    });
+    this.$filterElm.on('keyup input', this.handleInputChange.bind(this));
   }
 
   /**
@@ -114,7 +97,7 @@ export class InputFilter implements Filter {
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$filterElm.val('');
-      this.$filterElm.trigger('keyup');
+      this.$filterElm.trigger('input');
     }
   }
 
@@ -123,8 +106,10 @@ export class InputFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      this.$filterElm.off('keyup input change').remove();
+      this.$filterElm.off('keyup input').remove();
     }
+    this.$filterElm = null;
+    this.callback = null;
   }
 
   /** Set value(s) on the DOM element */
@@ -179,5 +164,29 @@ export class InputFilter implements Filter {
     }
 
     return $filterElm;
+  }
+
+  protected handleInputChange(e: any) {
+    // we'll use the "input" event for everything (keyup, change, mousewheel & spinner)
+    // with 1 small exception, we need to use the keyup event to handle ENTER key, everything will be processed by the "input" event
+    if (e && e.type === 'keyup' && e.key !== 'Enter') {
+      return;
+    }
+    let value = e && e.target && e.target.value || '';
+    const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+    if (typeof value === 'string' && enableWhiteSpaceTrim) {
+      value = value.trim();
+    }
+
+    if (this._clearFilterTriggered) {
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this.$filterElm.removeClass('filled');
+    } else {
+      value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
+      this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+    }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 }

@@ -412,6 +412,24 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
 }
 
 /**
+ * Loop through all properties of an object and nullify any properties that are instanceof HTMLElement,
+ * if we detect an array then use recursion to go inside it and apply same logic
+ * @param obj - object containing 1 or more properties with DOM Elements
+ */
+export function destroyObjectDomElementProps(obj: any) {
+  if (obj) {
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key])) {
+        destroyObjectDomElementProps(obj[key]);
+      }
+      if (obj[key] instanceof HTMLElement) {
+        obj[key] = null;
+      }
+    }
+  }
+}
+
+/**
  * Format a number following options passed as arguments (decimals, separator, ...)
  * @param input
  * @param minDecimal

@@ -7,7 +7,7 @@ const flatpickr: FlatpickrFn = _flatpickr as any; // patch for rollup
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 import { Constants } from './../constants';
-import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType, setDeepValue, getDescendantProperty } from './../services/utilities';
+import { destroyObjectDomElementProps, getDescendantProperty, mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType, setDeepValue } from './../services/utilities';
 import {
   Column,
   ColumnEditor,
@@ -160,16 +160,22 @@ export class DateEditor implements Editor {
 
   destroy() {
     this.hide();
-    this._$input.remove();
-    if (this._$editorInputElm && this._$editorInputElm.remove) {
-      this._$editorInputElm.remove();
-    }
-    if (this._$inputWithData && typeof this._$inputWithData.remove === 'function') {
-      this._$inputWithData.remove();
-    }
     if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
       this.flatInstance.destroy();
+      if (this.flatInstance.element) {
+        setTimeout(() => destroyObjectDomElementProps(this.flatInstance));
+      }
+      this.flatInstance = null;
     }
+    if (this._$editorInputElm) {
+      this._$editorInputElm.remove();
+      this._$editorInputElm = null;
+    }
+    if (this._$inputWithData) {
+      this._$inputWithData.remove();
+      this._$inputWithData = null;
+    }
+    this._$input.remove();
   }
 
   focus() {
