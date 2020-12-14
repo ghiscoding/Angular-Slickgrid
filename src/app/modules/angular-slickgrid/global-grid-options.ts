@@ -125,7 +125,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     useUtf8WithBom: true
   },
   forceFitColumns: false,
-  frozenHeaderWidthCalcDifferential: 1,
+  frozenHeaderWidthCalcDifferential: 0,
   gridMenu: {
     hideClearAllFiltersCommand: false,
     hideClearAllSortingCommand: false,
