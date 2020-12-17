@@ -119,7 +119,7 @@ export class CollectionService<T = any> {
               // collection of objects with a property name provided
               const sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
               const objectProperty = sortBy.property;
-              const fieldType = sortBy.fieldType || FieldType.string;
+              const fieldType = sortBy.fieldType || columnDef && columnDef.type || FieldType.string;
               const value1 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
               const value2 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
 
@@ -136,7 +136,7 @@ export class CollectionService<T = any> {
         // collection of objects with a property name provided
         const objectProperty = sortByOptions.property;
         const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
-        const fieldType = sortByOptions.fieldType || FieldType.string;
+        const fieldType = sortByOptions.fieldType || columnDef && columnDef.type || FieldType.string;
 
         if (objectProperty) {
           sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
@@ -151,7 +151,7 @@ export class CollectionService<T = any> {
         }
       } else if (sortByOptions && !sortByOptions.property) {
         const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
-        const fieldType = sortByOptions.fieldType || FieldType.string;
+        const fieldType = sortByOptions.fieldType || columnDef && columnDef.type || FieldType.string;
 
         sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
           const value1 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow1 || ' ') : dataRow1;
