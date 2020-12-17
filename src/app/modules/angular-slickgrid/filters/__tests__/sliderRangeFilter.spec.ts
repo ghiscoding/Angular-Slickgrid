@@ -118,7 +118,7 @@ describe('SliderRangeFilter', () => {
     filter.init(filterArguments);
     filter.setValues(['2..80']);
 
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'RangeExclusive', searchTerms: [2, 80], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'RangeInclusive', searchTerms: [2, 80], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" and expect that value to be in the callback when triggered', () => {
@@ -127,7 +127,7 @@ describe('SliderRangeFilter', () => {
     filter.init(filterArguments);
     filter.setValues([3, 84]);
 
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'RangeExclusive', searchTerms: [3, 84], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'RangeInclusive', searchTerms: [3, 84], shouldTriggerQuery: true });
   });
 
   it('should create the input filter with default search terms range when passed as a filter argument', () => {

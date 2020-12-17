@@ -54,7 +54,7 @@ export class SliderRangeFilter implements Filter {
 
   /** Getter to know what would be the default operator when none is specified */
   get defaultOperator(): OperatorType | OperatorString {
-    return this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+    return this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeInclusive;
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
