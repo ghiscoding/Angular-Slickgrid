@@ -1,15 +1,15 @@
-import { Column, FieldType, SortDirectionNumber, Sorter } from './../models/index';
+import { Column, FieldType, GridOption, SortDirectionNumber } from './../models/index';
 import { Sorters } from './index';
 import { getAssociatedDateSorter } from './dateUtilities';
 
-export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn?: Column) {
+export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn?: Column, gridOptions?: GridOption) {
   let sortResult = 0;
 
   switch (fieldType) {
     case FieldType.float:
     case FieldType.integer:
     case FieldType.number:
-      sortResult = Sorters.numeric(value1, value2, sortDirection, sortColumn);
+      sortResult = Sorters.numeric(value1, value2, sortDirection, sortColumn, gridOptions);
       break;
     case FieldType.date:
     case FieldType.dateIso:
@@ -37,17 +37,17 @@ export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, 
     case FieldType.dateTimeUsShort:
     case FieldType.dateTimeUsShortAmPm:
     case FieldType.dateTimeUsShortAM_PM:
-      sortResult = getAssociatedDateSorter(fieldType).call(this, value1, value2, sortDirection, sortColumn);
+      sortResult = getAssociatedDateSorter(fieldType).call(this, value1, value2, sortDirection, sortColumn, gridOptions);
       break;
     case FieldType.object:
-      sortResult = Sorters.objectString(value1, value2, sortDirection, sortColumn);
+      sortResult = Sorters.objectString(value1, value2, sortDirection, sortColumn, gridOptions);
       break;
     case FieldType.string:
     case FieldType.text:
     case FieldType.password:
     case FieldType.readonly:
     default:
-      sortResult = Sorters.string(value1, value2, sortDirection, sortColumn);
+      sortResult = Sorters.string(value1, value2, sortDirection, sortColumn, gridOptions);
       break;
   }
 

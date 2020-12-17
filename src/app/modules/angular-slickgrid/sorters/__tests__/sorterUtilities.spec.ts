@@ -6,19 +6,19 @@ describe('sorterUtilities', () => {
   it('should call the Sorters.numeric when FieldType is number', () => {
     const spy = jest.spyOn(Sorters, 'numeric');
     sortByFieldType(FieldType.number, 0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
-    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
+    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' }, undefined);
   });
 
   it('should call the Sorters.numeric when FieldType is integer', () => {
     const spy = jest.spyOn(Sorters, 'numeric');
     sortByFieldType(FieldType.integer, 0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
-    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
+    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' }, undefined);
   });
 
   it('should call the Sorters.numeric when FieldType is float', () => {
     const spy = jest.spyOn(Sorters, 'numeric');
     sortByFieldType(FieldType.float, 0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
-    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' });
+    expect(spy).toHaveBeenCalledWith(0, 4, SortDirectionNumber.asc, { id: 'field1', field: 'field1' }, undefined);
   });
 
   it('should call the Sorters.objectString when FieldType is objectString', () => {
@@ -27,6 +27,6 @@ describe('sorterUtilities', () => {
     const mockColumn = { id: 'field1', field: 'field1', dataKey: 'firstName' } as Column;
     const spy = jest.spyOn(Sorters, 'objectString');
     sortByFieldType(FieldType.object, object1, object2, SortDirectionNumber.asc, mockColumn);
-    expect(spy).toHaveBeenCalledWith(object1, object2, SortDirectionNumber.asc, mockColumn);
+    expect(spy).toHaveBeenCalledWith(object1, object2, SortDirectionNumber.asc, mockColumn, undefined);
   });
 });

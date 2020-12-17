@@ -1,4 +1,4 @@
-import { Column, SortDirectionNumber } from '../../models';
+import { Column, GridOption, SortDirectionNumber } from '../../models';
 import { stringSorter } from '../stringSorter';
 
 describe('the String Sorter', () => {
@@ -44,7 +44,7 @@ describe('the String Sorter', () => {
     expect(inputArray).toEqual(['zebra', 'amazon', 'abc', 'John', 'Abe', '@at', '', null, null]);
   });
 
-  it('should return a sorted ascending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set', () => {
+  it('should return a sorted ascending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set in the column definition', () => {
     // from MDN specification quote: All undefined elements are sorted to the end of the array.
     const columnDef = { id: 'name', field: 'name', valueCouldBeUndefined: true } as Column;
     const direction = SortDirectionNumber.asc;
@@ -53,12 +53,30 @@ describe('the String Sorter', () => {
     expect(inputArray).toEqual(['', '@at', 'Abe', 'John', 'abc', 'amazon', 'zebra', undefined, undefined]);
   });
 
-  it('should return a sorted descending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set', () => {
+  it('should return a sorted descending array and move the undefined values to the end of the array when "valueCouldBeUndefined" is set in the column definition', () => {
     // from MDN specification quote: All undefined elements are sorted to the end of the array.
     const columnDef = { id: 'name', field: 'name', valueCouldBeUndefined: true } as Column;
     const direction = SortDirectionNumber.desc;
     const inputArray = ['amazon', undefined, 'zebra', undefined, '', '@at', 'John', 'Abe', 'abc'];
     inputArray.sort((value1, value2) => stringSorter(value1, value2, direction, columnDef));
+    expect(inputArray).toEqual(['zebra', 'amazon', 'abc', 'John', 'Abe', '@at', '', undefined, undefined]);
+  });
+
+  it('should return a sorted ascending array and move the undefined values to the end of the array when "cellValueCouldBeUndefined" is set in the grid options', () => {
+    // from MDN specification quote: All undefined elements are sorted to the end of the array.
+    const columnDef = { id: 'name', field: 'name' } as Column;
+    const direction = SortDirectionNumber.asc;
+    const inputArray = ['amazon', undefined, 'zebra', undefined, '', '@at', 'John', 'Abe', 'abc'];
+    inputArray.sort((value1, value2) => stringSorter(value1, value2, direction, columnDef, { cellValueCouldBeUndefined: true } as GridOption));
+    expect(inputArray).toEqual(['', '@at', 'Abe', 'John', 'abc', 'amazon', 'zebra', undefined, undefined]);
+  });
+
+  it('should return a sorted descending array and move the undefined values to the end of the array when "cellValueCouldBeUndefined" is set in the grid options', () => {
+    // from MDN specification quote: All undefined elements are sorted to the end of the array.
+    const columnDef = { id: 'name', field: 'name' } as Column;
+    const direction = SortDirectionNumber.desc;
+    const inputArray = ['amazon', undefined, 'zebra', undefined, '', '@at', 'John', 'Abe', 'abc'];
+    inputArray.sort((value1, value2) => stringSorter(value1, value2, direction, columnDef, { cellValueCouldBeUndefined: true } as GridOption));
     expect(inputArray).toEqual(['zebra', 'amazon', 'abc', 'John', 'Abe', '@at', '', undefined, undefined]);
   });
 });

@@ -442,12 +442,12 @@ export class SortService {
 
       // user could provide his own custom Sorter
       if (columnDef.sorter) {
-        const customSortResult = columnDef.sorter(value1, value2, sortDirection, columnDef);
+        const customSortResult = columnDef.sorter(value1, value2, sortDirection, columnDef, this._gridOptions);
         if (customSortResult !== SortDirectionNumber.neutral) {
           return customSortResult;
         }
       } else {
-        const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
+        const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef, this._gridOptions);
         if (sortResult !== SortDirectionNumber.neutral) {
           return sortResult;
         }
