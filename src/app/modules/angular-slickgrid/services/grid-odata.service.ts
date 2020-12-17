@@ -285,7 +285,7 @@ export class GridOdataService implements BackendService {
         if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
           searchTerms = searchTerms[0].split('..');
           if (!operator) {
-            operator = OperatorType.rangeExclusive;
+            operator = OperatorType.rangeInclusive;
           }
         }
 

@@ -154,7 +154,7 @@ export interface GridOption {
   /** Default placeholder to use in Filters that support placeholder (autocomplete, input, flatpickr, select, ...) */
   defaultFilterPlaceholder?: string;
 
-  /** Defaults to 'RangeExclusive', allows to change the default filter range operator */
+  /** Defaults to 'RangeInclusive', allows to change the default filter range operator */
   defaultFilterRangeOperator?: OperatorString | OperatorType;
 
   /** Draggable Grouping Plugin options & events */

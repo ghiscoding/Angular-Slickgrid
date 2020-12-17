@@ -828,7 +828,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive numbers when the search value contains 2 (..) to represent a range of numbers', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"2"}, {field:duration, operator:LT, value:"33"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'duration', field: 'duration' } as Column;
       const mockColumnFilters = {
         duration: { columnId: 'duration', columnDef: mockColumn, searchTerms: ['2..33'] },
@@ -856,7 +856,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive dates when the search value contains 2 (..) to represent a range of dates', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GT, value:"2001-01-01"}, {field:startDate, operator:LT, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GE, value:"2001-01-01"}, {field:startDate, operator:LE, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'startDate', field: 'startDate' } as Column;
       const mockColumnFilters = {
         startDate: { columnId: 'startDate', columnDef: mockColumn, searchTerms: ['2001-01-01..2001-01-31'] },
@@ -1037,7 +1037,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive numbers when the search value contains 2 (..) to represent a range of numbers', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"2"}, {field:duration, operator:LT, value:"33"}]) {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) {
         totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['2..33'] },
@@ -1053,7 +1053,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (..) separator', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"0.5"}, {field:duration, operator:LT, value:".88"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"0.5"}, {field:duration, operator:LE, value:".88"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['0.5...88'] },
       ] as CurrentFilter[];
@@ -1083,7 +1083,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive numbers when 2 searchTerms numbers are provided without any operator', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:2}, {field:duration, operator:LT, value:33}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:2}, {field:duration, operator:LE, value:33}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: [2, 33] },
       ] as CurrentFilter[];
@@ -1098,7 +1098,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive dates when the search value contains 2 (..) to represent a range of dates', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GT, value:"2001-01-01"}, {field:startDate, operator:LT, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GE, value:"2001-01-01"}, {field:startDate, operator:LE, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'startDate', searchTerms: ['2001-01-01..2001-01-31'] },
       ] as CurrentFilter[];
@@ -1128,7 +1128,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with search having a range of exclusive dates when 2 searchTerms dates are provided without any operator', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GT, value:"2001-01-01"}, {field:startDate, operator:LT, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GE, value:"2001-01-01"}, {field:startDate, operator:LE, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'startDate', searchTerms: ['2001-01-01', '2001-01-31'] },
       ] as CurrentFilter[];
