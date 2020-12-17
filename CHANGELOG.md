@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file. See [standa
 ### [2.24.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.24.0...v2.24.1) (2020-12-10)
 
 
-### Features
+### Bug Fixes
 
-* **filters:** use offset left to calculate auto position (left/right) ([9d79e2d](https://github.com/ghiscoding/angular-slickgrid/commit/9d79e2d149b21fb8766e0ad40cbbd4cf4f6572e6))
+* **filters:** use offset left to calculate multi-select auto position (left/right) ([9d79e2d](https://github.com/ghiscoding/angular-slickgrid/commit/9d79e2d149b21fb8766e0ad40cbbd4cf4f6572e6))
 
 ## [2.24.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.23.3...v2.24.0) (2020-12-10)
 

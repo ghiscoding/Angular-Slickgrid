@@ -47,6 +47,7 @@ const gridStub = {
   getColumns: jest.fn(),
   getSelectionModel: jest.fn(),
   getSelectedRows: jest.fn(),
+  setColumns: jest.fn(),
   setSelectedRows: jest.fn(),
   onColumnsReordered: new Slick.Event(),
   onColumnsResized: new Slick.Event(),
@@ -130,6 +131,64 @@ describe('GridStateService', () => {
           { columnId: 'field2', cssClass: '', headerCssClass: 'blue', width: 150 },
           { columnId: 'field3', cssClass: '', headerCssClass: '', width: 0 },
         ] as CurrentColumn[]);
+      });
+    });
+
+    describe('changeColumnsArrangement method', () => {
+      const rowCheckboxColumnMock: Column = { id: '_checkbox_selector', field: '_checkbox_selector', minWidth: 50 };
+      let presetColumnsMock: CurrentColumn[];
+      let columnsWithoutCheckboxMock: Column[];
+      let allColumnsMock: Column[];
+
+      beforeEach(() => {
+        allColumnsMock = [
+          rowCheckboxColumnMock,
+          { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+          { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
+          { id: 'field3', field: 'field3' },
+        ] as Column[];
+        columnsWithoutCheckboxMock = [
+          { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
+          { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+          { id: 'field3', field: 'field3' },
+        ] as Column[];
+        presetColumnsMock = [
+          { columnId: 'field2', width: 150, headerCssClass: 'blue' },
+          { columnId: 'field1', width: 100, cssClass: 'red' },
+          { columnId: 'field3' },
+        ] as CurrentColumn[];
+        jest.spyOn(service, 'getAssociatedGridColumns').mockReturnValue([...columnsWithoutCheckboxMock]);
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call the method and expect slickgrid "setColumns" and "autosizeColumns" to be called with newest columns', () => {
+        gridOptionMock.enableCheckboxSelector = true;
+        jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(allColumnsMock);
+        const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+        const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+
+        service.changeColumnsArrangement(presetColumnsMock);
+
+        expect(setColsSpy).toHaveBeenCalledWith([rowCheckboxColumnMock, ...columnsWithoutCheckboxMock]);
+        expect(autoSizeSpy).toHaveBeenCalled();
+      });
+
+      it('should call the method and expect only 1 method of slickgrid "setColumns" to be called when we define 2nd argument (triggerAutoSizeColumns) as False', () => {
+        const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+        const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+        const presetColumnsMock = [
+          { columnId: 'field2', width: 150, headerCssClass: 'blue' },
+          { columnId: 'field1', width: 100, cssClass: 'red' },
+          { columnId: 'field3' },
+        ] as CurrentColumn[];
+
+        service.changeColumnsArrangement(presetColumnsMock, false);
+
+        expect(setColsSpy).toHaveBeenCalledWith([rowCheckboxColumnMock, ...columnsWithoutCheckboxMock]);
+        expect(autoSizeSpy).not.toHaveBeenCalled();
       });
     });
 
@@ -829,6 +888,32 @@ describe('GridStateService', () => {
 
       expect(serviceSpy).toHaveBeenCalled();
       expect(onChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+  });
+
+  describe('resetToOriginalColumns method', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call the method and expect 2x slickgrid methods to be called by default "setColumns" & "autosizeColumns"', () => {
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+
+      service.resetToOriginalColumns();
+
+      expect(setColsSpy).toHaveBeenCalled();
+      expect(autoSizeSpy).toHaveBeenCalled();
+    });
+
+    it('should call the method and expect only 1 slickgrid methods to be called "setColumns"', () => {
+      const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+      const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+
+      service.resetToOriginalColumns(false);
+
+      expect(setColsSpy).toHaveBeenCalled();
+      expect(autoSizeSpy).not.toHaveBeenCalled();
     });
   });
 
