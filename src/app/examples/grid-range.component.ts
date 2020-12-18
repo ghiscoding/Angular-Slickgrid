@@ -50,8 +50,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       </ul>
       <ul>
         <li>note that the examples shown below for the operator, are case sensitive</li>
-        <li>by default the range are not inclusive which would be the same as defining the filter options to "operator: 'RangeExclusive'" or "operator: OperatoryType.rangeExclusive"</li>
-        <li>you can also set the inverse (inclusive) by defining the filter options to "operator: 'RangeInclusive'" or "operator: OperatoryType.rangeIncluside"</li>
+        <li>by default the range is inclusive which would be the same as defining the filter options to "operator: 'RangeInclusive'" or "operator: OperatoryType.rangeInclusive"</li>
+        <li>you can also set the inverse (exclusive) by defining the filter options to "operator: 'RangeExclusive'" or "operator: OperatoryType.rangeExclusive"</li>
       </ul>
       <li>Date Range with Flatpickr Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
     </ul>
@@ -108,7 +108,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
         filter: {
           model: Filters.sliderRange,
           maxValue: 100, // or you can use the filterOptions as well
-          operator: OperatorType.rangeInclusive, // defaults to exclusive
+          operator: OperatorType.rangeInclusive, // defaults to inclusive
           params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
           filterOptions: { min: 0, step: 5 } as JQueryUiSliderOption // you can also optionally pass any option of the jQuery UI Slider
         }
@@ -131,7 +131,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
         sortable: true,
         filterable: true, filter: {
           model: Filters.input,
-          operator: OperatorType.rangeExclusive // defaults to exclusive
+          operator: OperatorType.rangeExclusive // defaults to inclusive
         }
       },
       {

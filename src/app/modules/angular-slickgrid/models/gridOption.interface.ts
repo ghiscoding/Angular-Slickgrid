@@ -88,6 +88,14 @@ export interface GridOption {
   /** Cell menu options (Action menu) */
   cellMenu?: CellMenu;
 
+  /**
+   * Defaults to false, can the cell value (dataContext) be undefined?
+   * Typically undefined values are disregarded when sorting, when setting this flag it will adds extra logic to Sorting and also sort undefined value.
+   * This is an extra flag that user has to enable by themselve because Sorting undefined values has unwanted behavior in some use case
+   * (for example Row Detail has UI inconsistencies since undefined is used in the plugin's logic)
+   */
+  cellValueCouldBeUndefined?: boolean;
+
   /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
   checkboxSelector?: CheckboxSelector;
 
@@ -146,7 +154,7 @@ export interface GridOption {
   /** Default placeholder to use in Filters that support placeholder (autocomplete, input, flatpickr, select, ...) */
   defaultFilterPlaceholder?: string;
 
-  /** Defaults to 'RangeExclusive', allows to change the default filter range operator */
+  /** Defaults to 'RangeInclusive', allows to change the default filter range operator */
   defaultFilterRangeOperator?: OperatorString | OperatorType;
 
   /** Draggable Grouping Plugin options & events */

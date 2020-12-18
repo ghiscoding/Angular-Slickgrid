@@ -20,7 +20,7 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
 const gridOptionMock = {
-  defaultFilterRangeOperator: 'RangeExclusive',
+  defaultFilterRangeOperator: 'RangeInclusive',
   enablePagination: true,
   backendServiceApi: {
     service: undefined,
@@ -1409,7 +1409,7 @@ describe('GridOdataService', () => {
 
     it('should return a query with a filter with range of numbers when the preset is a filter range with 2 dots (..) separator', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
-      const expectation = `$top=10&$filter=(Duration gt 4 and Duration lt 88)`;
+      const expectation = `$top=10&$filter=(Duration ge 4 and Duration le 88)`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['4..88'] },
       ] as CurrentFilter[];
@@ -1425,7 +1425,7 @@ describe('GridOdataService', () => {
 
     it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (...) separator', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
-      const expectation = `$top=10&$filter=(Duration gt 0.5 and Duration lt .88)`;
+      const expectation = `$top=10&$filter=(Duration ge 0.5 and Duration le .88)`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['0.5...88'] },
       ] as CurrentFilter[];
@@ -1457,7 +1457,7 @@ describe('GridOdataService', () => {
 
     it('should return a query with a filter with range of dates when the preset is a filter range with 2 dots (..) separator', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'finish', field: 'finish', type: FieldType.date }];
-      const expectation = `$top=10&$filter=(Finish gt DateTime'2001-01-01T00:00:00Z' and Finish lt DateTime'2001-01-31T00:00:00Z')`;
+      const expectation = `$top=10&$filter=(Finish ge DateTime'2001-01-01T00:00:00Z' and Finish le DateTime'2001-01-31T00:00:00Z')`;
       const presetFilters = [
         { columnId: 'finish', searchTerms: ['2001-01-01..2001-01-31'] },
       ] as CurrentFilter[];
@@ -1489,7 +1489,7 @@ describe('GridOdataService', () => {
 
     it('should return a query with a filter with range of dates inclusive when the preset is a filter range with 2 searchTerms without an operator', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'finish', field: 'finish', type: FieldType.date }];
-      const expectation = `$top=10&$filter=(Finish gt DateTime'2001-01-01T00:00:00Z' and Finish lt DateTime'2001-01-31T00:00:00Z')`;
+      const expectation = `$top=10&$filter=(Finish ge DateTime'2001-01-01T00:00:00Z' and Finish le DateTime'2001-01-31T00:00:00Z')`;
       const presetFilters = [
         { columnId: 'finish', searchTerms: ['2001-01-01', '2001-01-31'] },
       ] as CurrentFilter[];
@@ -1526,7 +1526,7 @@ describe('GridOdataService', () => {
 
       it('should return a query with a filter with range of numbers when the preset is a filter range with 2 dots (..) separator but without pagination when "enablePagination" is set to False', () => {
         serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
-        const expectation = `$filter=(Duration gt 4 and Duration lt 88)`;
+        const expectation = `$filter=(Duration ge 4 and Duration le 88)`;
         const presetFilters = [
           { columnId: 'duration', searchTerms: ['4..88'] },
         ] as CurrentFilter[];

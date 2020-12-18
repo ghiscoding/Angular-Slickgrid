@@ -1,12 +1,14 @@
-import { Column, Sorter, SortDirectionNumber } from './../models/index';
+import { Column, GridOption, Sorter, SortDirectionNumber } from './../models/index';
 
-export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn: Column) => {
+export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn: Column, gridOptions?: GridOption) => {
   if (!sortColumn || !sortColumn.dataKey) {
     throw new Error('Sorting a "FieldType.object" requires you to provide the "dataKey" (object property name) of the object so that we can use it to sort correctly');
   }
 
   const stringValue1 = (value1 && value1.hasOwnProperty(sortColumn.dataKey)) ? value1[sortColumn.dataKey] : value1;
   const stringValue2 = (value2 && value2.hasOwnProperty(sortColumn.dataKey)) ? value2[sortColumn.dataKey] : value2;
+  const checkForUndefinedValues = sortColumn && sortColumn.valueCouldBeUndefined || gridOptions && gridOptions.cellValueCouldBeUndefined || false;
+
   if (sortDirection === undefined || sortDirection === null) {
     sortDirection = SortDirectionNumber.neutral;
   }
@@ -16,9 +18,9 @@ export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirecti
     position = -99e+10;
   } else if (typeof value2 !== 'object') {
     position = 99e+10;
-  } else if (!stringValue1) {
+  } else if (stringValue1 === null || (checkForUndefinedValues && stringValue1 === undefined)) {
     position = -1;
-  } else if (!stringValue2) {
+  } else if (stringValue2 === null || (checkForUndefinedValues && stringValue2 === undefined)) {
     position = 1;
   } else if (stringValue1 === stringValue2) {
     position = 0;

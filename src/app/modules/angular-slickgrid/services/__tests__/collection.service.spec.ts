@@ -316,7 +316,7 @@ describe('CollectionService', () => {
       describe('sortCollection method', () => {
         it('should return a collection of numbers sorted', () => {
           translate.use('en');
-          const columnDef = { id: 'count', field: 'count', fieldType: FieldType.number } as Column;
+          const columnDef = { id: 'count', field: 'count', type: FieldType.number } as Column;
 
           const result1 = service.sortCollection(columnDef, [0, -11, 3, 99999, -200], { sortDesc: false } as CollectionSortBy);
           const result2 = service.sortCollection(columnDef, [0, -11, 3, 99999, -200], { sortDesc: true } as CollectionSortBy);
@@ -328,7 +328,7 @@ describe('CollectionService', () => {
         it('should return a collection of translation values sorted', () => {
           translate.use('en');
           const roleCollection = ['SALES_REP', 'DEVELOPER', 'SALES_REP', null, 'HUMAN_RESOURCES', 'FINANCE_MANAGER', 'UNKNOWN'];
-          const columnDef = { id: 'count', field: 'count', fieldType: FieldType.string } as Column;
+          const columnDef = { id: 'count', field: 'count', type: FieldType.string } as Column;
 
           const result1 = service.sortCollection(columnDef, [...roleCollection], { sortDesc: false } as CollectionSortBy, true);
           const result2 = service.sortCollection(columnDef, [...roleCollection], { sortDesc: true } as CollectionSortBy, true);

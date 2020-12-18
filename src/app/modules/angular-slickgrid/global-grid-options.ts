@@ -75,7 +75,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   defaultFilter: Filters.input,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
   defaultFilterPlaceholder: '&#128269;',
-  defaultFilterRangeOperator: OperatorType.rangeExclusive,
+  defaultFilterRangeOperator: OperatorType.rangeInclusive,
   editable: false,
   enableAutoResize: true,
   enableAutoSizeColumns: true,
@@ -125,7 +125,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     useUtf8WithBom: true
   },
   forceFitColumns: false,
-  frozenHeaderWidthCalcDifferential: 1,
+  frozenHeaderWidthCalcDifferential: 0,
   gridMenu: {
     hideClearAllFiltersCommand: false,
     hideClearAllSortingCommand: false,

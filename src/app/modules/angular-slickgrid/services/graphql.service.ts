@@ -406,7 +406,7 @@ export class GraphqlService implements BackendService {
         if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
           searchTerms = searchTerms[0].split('..');
           if (!operator) {
-            operator = OperatorType.rangeExclusive;
+            operator = OperatorType.rangeInclusive;
           }
         }
 
@@ -429,7 +429,7 @@ export class GraphqlService implements BackendService {
           searchValue = searchTerms.join(',');
         } else if (searchTerms && searchTerms.length === 2 && (!operator || operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive)) {
           if (!operator) {
-            operator = OperatorType.rangeExclusive;
+            operator = OperatorType.rangeInclusive;
           }
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'GE' : 'GT'), value: searchTerms[0] });
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'LE' : 'LT'), value: searchTerms[1] });

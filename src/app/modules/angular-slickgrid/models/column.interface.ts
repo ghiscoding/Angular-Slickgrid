@@ -245,7 +245,8 @@ export interface Column<T = any> {
   validator?: EditorValidator;
 
   /**
-   * Can the value be undefined? Typically undefined values are disregarded when sorting, when set this flag will adds extra logic to Sorting and also sort undefined value.
+   * Defaults to false, can the value be undefined?
+   * Typically undefined values are disregarded when sorting, when setting this flag it will adds extra logic to Sorting and also sort undefined value.
    * This is an extra flag that user has to enable by themselve because Sorting undefined values has unwanted behavior in some use case
    * (for example Row Detail has UI inconsistencies since undefined is used in the plugin's logic)
    */
