@@ -328,11 +328,11 @@ export class GridOdataService implements BackendService {
           }
         } else {
           // Normalize all search values
-          const decimalSeparator = this.getDecimalSeparator(columnDef);
-          searchValue = this.normalizeSearchValue(fieldType, searchValue, odataVersion, decimalSeparator);
+          const decimalInputSeparators = this.getDecimalInputSeparators(columnDef);
+          searchValue = this.normalizeSearchValue(fieldType, searchValue, odataVersion, decimalInputSeparators);
           if (Array.isArray(searchTerms)) {
             searchTerms.forEach((part, index) => {
-              searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index], odataVersion, decimalSeparator);
+              searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index], odataVersion, decimalInputSeparators);
             });
           }
 
@@ -565,7 +565,7 @@ export class GridOdataService implements BackendService {
   /**
    * Normalizes the search value according to field type and oData version.
    */
-  private normalizeSearchValue(fieldType: FieldType, searchValue: any, version: number, decimalSeparator: string) {
+  private normalizeSearchValue(fieldType: FieldType, searchValue: any, version: number, decimalInputSeparators: string) {
     switch (fieldType) {
       case FieldType.date:
         searchValue = parseUtcDate(searchValue as string, true);
@@ -589,14 +589,19 @@ export class GridOdataService implements BackendService {
         if (typeof searchValue === 'string') {
           // Parse a valid decimal from the string.
 
-          // Remove all trailing decimal separators.
-          searchValue = searchValue.replace(new RegExp(`(\\${decimalSeparator}+$)`, 'g'), '');
-          // Replace leading decimal separators with '0{decimalSeparator}'
-          searchValue = searchValue.replace(new RegExp(`(^\\${decimalSeparator}+)`, 'g'), `0${decimalSeparator}`);
-          // Remove any non valid decimal character from the search string
-          searchValue = searchValue.replace(new RegExp(`[^0-9\-\\${decimalSeparator}]`, 'g'), '');
-          // Replace the decimal separator from the input with the oData decimal separator.
-          searchValue = searchValue.replace(decimalSeparator, '.');
+          // Replace all input decimal separators with the oData decimal separator.
+          for (const decimalInputSeparator of decimalInputSeparators) {
+            searchValue = searchValue.replace(decimalInputSeparator, '.');
+          }
+
+          // Replace double dots with single dots
+          searchValue = searchValue.replace(/\.\./g, '.');
+          // Remove a trailing dot
+          searchValue = searchValue.replace(/\.+$/g, '');
+          // Predix a leading dot with 0
+          searchValue = searchValue.replace(/^\.+/g, '0.');
+          // Remove any non valid decimal characters from the search string
+          searchValue = searchValue.replace(/(?!^\-)[^\d\.]/g, '');
 
           // if nothing left, search for 0
           if (searchValue === '') {
@@ -609,8 +614,13 @@ export class GridOdataService implements BackendService {
     return searchValue;
   }
 
-  private getDecimalSeparator(columnDef: Column) {
-    const optionName = 'decimalSeparator';
+  /**
+   * Returns all allowed decimal separators.
+   * For example in NL it is common when entering numbers that both ',' and '.' acct as the decimal separator,
+   * while displaying/formatting the ',' is the decimal separator and the '.' the thousand separator.
+   */
+  private getDecimalInputSeparators(columnDef: Column) {
+    const optionName = 'decimalInputSeparators';
     const params = columnDef && columnDef.filter && columnDef.filter.params;
     if (params && params.hasOwnProperty(optionName)) {
       return params[optionName];

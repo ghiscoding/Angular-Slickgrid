@@ -1596,9 +1596,9 @@ describe('GridOdataService', () => {
         expect(currentFilters).toEqual(presetFilters);
       });
 
-      it('should return a query to filter a search value with a "decimalSeparator" set', () => {
+      it('should return a query to filter a search value with "decimalInputSeparators" set', () => {
         const expectation = `$filter=(Duration eq 10.22)`;
-        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number, filter: { params: { decimalSeparator: ',' }} } as Column;
+        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number, filter: { params: { decimalInputSeparators: ',.' }} } as Column;
         const mockColumnFilters = {
           duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['10,22'] },
         } as ColumnFilters;
