@@ -328,11 +328,10 @@ export class GridOdataService implements BackendService {
           }
         } else {
           // Normalize all search values
-          const decimalInputSeparators = this.getDecimalInputSeparators(columnDef);
-          searchValue = this.normalizeSearchValue(fieldType, searchValue, odataVersion, decimalInputSeparators);
+          searchValue = this.normalizeSearchValue(fieldType, searchValue, odataVersion);
           if (Array.isArray(searchTerms)) {
             searchTerms.forEach((part, index) => {
-              searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index], odataVersion, decimalInputSeparators);
+              searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index], odataVersion);
             });
           }
 
@@ -565,7 +564,7 @@ export class GridOdataService implements BackendService {
   /**
    * Normalizes the search value according to field type and oData version.
    */
-  private normalizeSearchValue(fieldType: FieldType, searchValue: any, version: number, decimalInputSeparators: string) {
+  private normalizeSearchValue(fieldType: FieldType, searchValue: any, version: number) {
     switch (fieldType) {
       case FieldType.date:
         searchValue = parseUtcDate(searchValue as string, true);
@@ -589,11 +588,6 @@ export class GridOdataService implements BackendService {
         if (typeof searchValue === 'string') {
           // Parse a valid decimal from the string.
 
-          // Replace all input decimal separators with the oData decimal separator.
-          for (const decimalInputSeparator of decimalInputSeparators) {
-            searchValue = searchValue.replace(decimalInputSeparator, '.');
-          }
-
           // Replace double dots with single dots
           searchValue = searchValue.replace(/\.\./g, '.');
           // Remove a trailing dot
@@ -612,19 +606,5 @@ export class GridOdataService implements BackendService {
     }
 
     return searchValue;
-  }
-
-  /**
-   * Returns all allowed decimal separators.
-   * For example in NL it is common when entering numbers that both ',' and '.' acct as the decimal separator,
-   * while displaying/formatting the ',' is the decimal separator and the '.' the thousand separator.
-   */
-  private getDecimalInputSeparators(columnDef: Column) {
-    const optionName = 'decimalInputSeparators';
-    const params = columnDef && columnDef.filter && columnDef.filter.params;
-    if (params && params.hasOwnProperty(optionName)) {
-      return params[optionName];
-    }
-    return '.';
   }
 }

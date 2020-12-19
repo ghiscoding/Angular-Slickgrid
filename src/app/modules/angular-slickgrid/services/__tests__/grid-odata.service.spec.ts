@@ -1596,20 +1596,6 @@ describe('GridOdataService', () => {
         expect(currentFilters).toEqual(presetFilters);
       });
 
-      it('should return a query to filter a search value with "decimalInputSeparators" set', () => {
-        const expectation = `$filter=(Duration eq 10.22)`;
-        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number, filter: { params: { decimalInputSeparators: ',.' }} } as Column;
-        const mockColumnFilters = {
-          duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['10,22'] },
-        } as ColumnFilters;
-
-        service.init(serviceOptions, paginationOptions, gridStub);
-        service.updateFilters(mockColumnFilters, false);
-        const query = service.buildQuery();
-
-        expect(query).toBe(expectation);
-      });
-
       it('should return a query to filter a search value with a fraction of a number that is missing a leading 0', () => {
         const expectation = `$filter=(Duration eq 0.22)`;
         const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
@@ -1629,6 +1615,20 @@ describe('GridOdataService', () => {
         const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
         const mockColumnFilters = {
           duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['-2a2'] },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should return a query to filter a search value with an integer that contains invalid characters', () => {
+        const expectation = `$filter=(Duration eq 22)`;
+        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+        const mockColumnFilters = {
+          duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['22;'] },
         } as ColumnFilters;
 
         service.init(serviceOptions, paginationOptions, gridStub);
