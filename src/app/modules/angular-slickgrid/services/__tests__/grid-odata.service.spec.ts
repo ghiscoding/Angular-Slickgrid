@@ -1637,6 +1637,20 @@ describe('GridOdataService', () => {
 
         expect(query).toBe(expectation);
       });
+
+      it('should return a query to filter a search value with a number that only has a minus characters', () => {
+        const expectation = `$filter=(Duration eq 0)`;
+        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+        const mockColumnFilters = {
+          duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['-'] },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
     });
   });
 

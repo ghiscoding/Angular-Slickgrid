@@ -592,13 +592,15 @@ export class GridOdataService implements BackendService {
           searchValue = searchValue.replace(/\.\./g, '.');
           // Remove a trailing dot
           searchValue = searchValue.replace(/\.+$/g, '');
-          // Predix a leading dot with 0
+          // Prefix a leading dot with 0
           searchValue = searchValue.replace(/^\.+/g, '0.');
+          // Prefix leading dash dot with -0.
+          searchValue = searchValue.replace(/^\-+\.+/g, '-0.');
           // Remove any non valid decimal characters from the search string
           searchValue = searchValue.replace(/(?!^\-)[^\d\.]/g, '');
 
           // if nothing left, search for 0
-          if (searchValue === '') {
+          if (searchValue === '' || searchValue === '-') {
             searchValue = '0';
           }
         }
