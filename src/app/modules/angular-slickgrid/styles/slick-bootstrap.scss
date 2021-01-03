@@ -246,6 +246,12 @@
         border: none;
         padding: $header-row-filter-padding;
         background: $header-row-background-color;
+        .flatpickr {
+          input {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
       }
       .slick-headerrow-column input,
       .slick-headerrow-column select,
@@ -370,7 +376,7 @@
       }
       .slick-resizable-handle {
         width: 7px;
-        right: 0px;
+        right: 0;
         z-index: 1;
       }
       .slick-resizable-handle:hover {
@@ -435,5 +441,41 @@
   }
   .slick-viewport-bottom.slick-viewport-right {
     overflow-y: $frozen-overflow-right !important;
+  }
+  .input-group {
+    > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+      margin-left: 0;
+      &.ui-slider-horizontal {
+        margin-left: 10px;
+      }
+    }
+
+    .input-group-addon {
+      .input-group-text {
+        height: 100%;
+      }
+      &.input-group-append {
+        .input-group-text {
+          margin-left: -1px;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+      }
+      &.input-group-prepend {
+        .input-group-text {
+          margin-right: -1px;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      }
+    }
+  }
+}
+
+.slick-pagination {
+  height: 40px;
+
+  .slick-pagination-nav .pagination .page-item a[class*="icon-seek-"] {
+    line-height: 1rem;
   }
 }
