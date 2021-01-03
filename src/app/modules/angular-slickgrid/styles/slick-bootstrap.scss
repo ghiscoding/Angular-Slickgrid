@@ -473,9 +473,9 @@
 }
 
 .slick-pagination {
-  height: 40px;
+  height: $pagination-height;
 
   .slick-pagination-nav .pagination .page-item a[class*="icon-seek-"] {
-    line-height: 1rem;
+    line-height: $pagination-icon-line-height;
   }
 }
