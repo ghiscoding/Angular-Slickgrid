@@ -56,3 +56,6 @@ dist-demo
 **/junit.xml
 **/test-report.xml
 **/testresult.xml
+
+# Node Version Manager files
+.naverc

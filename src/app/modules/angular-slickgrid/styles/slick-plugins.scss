@@ -790,6 +790,21 @@ input.flatpickr.form-control {
     background-color: $flatpickr-bgcolor;
   }
 }
+.slickgrid-container {
+  .slick-headerrow {
+    .slick-headerrow-columns {
+      .slick-headerrow-column {
+        .input-group-prepend + .flatpickr {
+          input {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
 
 // ----------------------------------------------
 // Draggable Grouping Plugin
