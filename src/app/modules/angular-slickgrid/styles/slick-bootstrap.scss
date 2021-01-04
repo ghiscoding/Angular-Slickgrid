@@ -246,12 +246,6 @@
         border: none;
         padding: $header-row-filter-padding;
         background: $header-row-background-color;
-        .flatpickr {
-          input {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-          }
-        }
       }
       .slick-headerrow-column input,
       .slick-headerrow-column select,
@@ -469,13 +463,5 @@
         }
       }
     }
-  }
-}
-
-.slick-pagination {
-  height: $pagination-height;
-
-  .slick-pagination-nav .pagination .page-item a[class*="icon-seek-"] {
-    line-height: $pagination-icon-line-height;
   }
 }

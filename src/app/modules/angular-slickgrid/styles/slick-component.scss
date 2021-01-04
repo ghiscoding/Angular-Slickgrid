@@ -68,7 +68,7 @@
   border-bottom: $pagination-border-bottom;
   border-left: $pagination-border-left;
   width: 100%;
-  height: 34px;
+  height: $pagination-height;
   padding-top: 4px;
   vertical-align: middle;
   font-family: $font-family;
@@ -128,6 +128,7 @@
             color: $pagination-icon-color;
             text-decoration: none;
             font-family: $icon-font-family;
+            line-height: $pagination-icon-line-height;
             -webkit-text-stroke: $pagination-icon-seek-text-stroke;
             padding: $pagination-button-padding;
         }
