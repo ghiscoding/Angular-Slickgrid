@@ -208,7 +208,7 @@ export class DateRangeFilter implements Filter {
       mode: 'range',
       wrap: true,
       closeOnSelect: true,
-      locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
+      locale: currentLocale,
       onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         if (Array.isArray(selectedDates)) {
           this._currentDates = selectedDates;
@@ -221,6 +221,12 @@ export class DateRangeFilter implements Filter {
         // since backend request are only executed after user start typing, changing the time should be treated the same way
         const newEvent = pickerOptions.enableTime ? new CustomEvent('keyup') : undefined;
         this.onTriggerEvent(newEvent);
+      },
+      errorHandler: (error) => {
+        if (error.toString().includes('invalid locale')) {
+          console.warn(`[Angular-Slickgrid] Flatpickr missing locale imports (${currentLocale}), will revert to English as the default locale.
+          See Flatpickr Localization for more info, for example if we want to use French, then we can import it with:  import 'flatpickr/dist/l10n/fr';`);
+        }
       }
     };
 
@@ -275,24 +281,6 @@ export class DateRangeFilter implements Filter {
     }
 
     return this.$filterInputElm;
-  }
-
-  /** Load a different set of locales for Flatpickr to be localized */
-  private loadFlatpickrLocale(language: string) {
-    let locales = 'en';
-
-    try {
-      if (language !== 'en') {
-        // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-        const localeDefault: any = require(`flatpickr/dist/l10n/${language}.js`).default;
-        locales = (localeDefault && localeDefault[language]) ? localeDefault[language] : 'en';
-      }
-    } catch (e) {
-      console.warn(`[Angular-Slickgrid - DateRange Filter] It seems that "${language}" is not a locale supported by Flatpickr, we will use "en" instead. `
-        + `To avoid seeing this message, you can specifically set "filter: { filterOptions: { locale: 'en' } }" in your column definition.`);
-      return 'en';
-    }
-    return locales;
   }
 
   private onTriggerEvent(e: Event | undefined) {
