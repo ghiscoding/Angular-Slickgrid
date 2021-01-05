@@ -662,10 +662,7 @@ describe('gridMenuExtension', () => {
         instance.onCommand.notify({ grid: gridStub, command: 'export-excel' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(excelExportSpy).toHaveBeenCalledWith({
-          filename: 'export',
-          format: FileType.xlsx,
-        });
+        expect(excelExportSpy).toHaveBeenCalled();
       });
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-csv"', () => {
@@ -678,9 +675,7 @@ describe('gridMenuExtension', () => {
         expect(onCommandSpy).toHaveBeenCalled();
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.comma,
-          filename: 'export',
           format: FileType.csv,
-          useUtf8WithBom: true
         });
       });
 
@@ -694,9 +689,7 @@ describe('gridMenuExtension', () => {
         expect(onCommandSpy).toHaveBeenCalled();
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.tab,
-          filename: 'export',
           format: FileType.txt,
-          useUtf8WithBom: true
         });
       });
 

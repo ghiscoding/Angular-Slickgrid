@@ -853,10 +853,7 @@ describe('contextMenuExtension', () => {
         const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-excel') as MenuCommandItem;
         menuItemCommand.action(new CustomEvent('change'), { command: 'export-excel', cell: 0, row: 0 } as any);
 
-        expect(excelExportSpy).toHaveBeenCalledWith({
-          filename: 'export',
-          format: FileType.xlsx,
-        });
+        expect(excelExportSpy).toHaveBeenCalled();
       });
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-csv"', () => {
@@ -870,9 +867,7 @@ describe('contextMenuExtension', () => {
 
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.comma,
-          filename: 'export',
           format: FileType.csv,
-          useUtf8WithBom: true
         });
       });
 
@@ -887,9 +882,7 @@ describe('contextMenuExtension', () => {
 
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.tab,
-          filename: 'export',
           format: FileType.txt,
-          useUtf8WithBom: true
         });
       });
 

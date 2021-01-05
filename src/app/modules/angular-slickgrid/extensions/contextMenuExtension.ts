@@ -230,9 +230,7 @@ export class ContextMenuExtension implements Extension {
             positionOrder: 51,
             action: () => this.exportService.exportToFile({
               delimiter: DelimiterType.comma,
-              filename: 'export',
               format: FileType.csv,
-              useUtf8WithBom: true,
             }),
           }
         );
@@ -250,10 +248,7 @@ export class ContextMenuExtension implements Extension {
             disabled: false,
             command: commandName,
             positionOrder: 52,
-            action: () => this.excelExportService.exportToExcel({
-              filename: 'export',
-              format: FileType.xlsx,
-            }),
+            action: () => this.excelExportService.exportToExcel(),
           }
         );
       }
@@ -272,9 +267,7 @@ export class ContextMenuExtension implements Extension {
             positionOrder: 53,
             action: () => this.exportService.exportToFile({
               delimiter: DelimiterType.tab,
-              filename: 'export',
               format: FileType.txt,
-              useUtf8WithBom: true,
             }),
           }
         );

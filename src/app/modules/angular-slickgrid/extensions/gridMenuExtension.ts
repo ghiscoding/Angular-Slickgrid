@@ -398,23 +398,16 @@ export class GridMenuExtension implements Extension {
         case 'export-csv':
           this.exportService.exportToFile({
             delimiter: DelimiterType.comma,
-            filename: 'export',
             format: FileType.csv,
-            useUtf8WithBom: true,
           });
           break;
         case 'export-excel':
-          this.excelExportService.exportToExcel({
-            filename: 'export',
-            format: FileType.xlsx,
-          });
+          this.excelExportService.exportToExcel();
           break;
         case 'export-text-delimited':
           this.exportService.exportToFile({
             delimiter: DelimiterType.tab,
-            filename: 'export',
             format: FileType.txt,
-            useUtf8WithBom: true,
           });
           break;
         case 'toggle-filter':
