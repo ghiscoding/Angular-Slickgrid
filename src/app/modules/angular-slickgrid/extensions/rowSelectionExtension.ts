@@ -1,6 +1,7 @@
+import 'slickgrid/plugins/slick.rowselectionmodel';
 import { Injectable } from '@angular/core';
-import { Extension, ExtensionName } from './../models/index';
-import { ExtensionUtility } from './extensionUtility';
+
+import { Extension } from './../models/index';
 import { SharedService } from '../services/shared.service';
 
 // using external non-typed js libraries
@@ -10,7 +11,7 @@ declare const Slick: any;
 export class RowSelectionExtension implements Extension {
   private _addon: any;
 
-  constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
+  constructor(private sharedService: SharedService) { }
 
   dispose() {
     if (this._addon && this._addon.destroy) {
@@ -26,9 +27,6 @@ export class RowSelectionExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
-
       this._addon = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
       this.sharedService.grid.setSelectionModel(this._addon);
       return this._addon;

@@ -6,6 +6,7 @@ import 'slickgrid/lib/jquery.mousewheel';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
+import 'slickgrid/slick.groupitemmetadataprovider';
 
 // ...then everything else...
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
@@ -24,7 +25,6 @@ import {
   ColumnEditor,
   CustomFooterOption,
   DataViewOption,
-  ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
   GridOption,
@@ -78,7 +78,6 @@ import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 // using external non-typed js libraries
 declare const Slick: any;
 declare const $: any;
-declare function require(name: string);
 
 const slickgridEventPrefix = 'sg';
 
@@ -807,7 +806,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       let dataViewOptions: DataViewOption = { inlineFilters: dataviewInlineFilters };
 
       if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
-        this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
         this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
         dataViewOptions = { ...dataViewOptions, groupItemMetadataProvider: this.groupItemMetadataProvider };

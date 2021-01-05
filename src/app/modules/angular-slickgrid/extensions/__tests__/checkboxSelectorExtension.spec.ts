@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { CheckboxSelectorExtension } from '../checkboxSelectorExtension';
-import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { Column } from '../../models';
 
@@ -27,24 +26,23 @@ const mockSelectionModel = jest.fn().mockImplementation(() => ({
   destroy: jest.fn()
 }));
 
-jest.mock('slickgrid/plugins/slick.checkboxselectcolumn', () => mockAddon);
-Slick.CheckboxSelectColumn = mockAddon;
-
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
-Slick.RowSelectionModel = mockSelectionModel;
 
 describe('checkboxSelectorExtension', () => {
-  let translate: TranslateService;
+  jest.mock('slickgrid/plugins/slick.checkboxselectcolumn', () => mockAddon);
+  Slick.CheckboxSelectColumn = mockAddon;
+
+  jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
+  Slick.RowSelectionModel = mockSelectionModel;
+
   let extension: CheckboxSelectorExtension;
   const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CheckboxSelectorExtension, ExtensionUtility, SharedService],
+      providers: [CheckboxSelectorExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
     extension = TestBed.get(CheckboxSelectorExtension);
-    translate = TestBed.get(TranslateService);
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {

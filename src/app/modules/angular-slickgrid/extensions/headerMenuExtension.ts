@@ -1,5 +1,7 @@
+import 'slickgrid/plugins/slick.headermenu';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { Constants } from '../constants';
 import {
   Column,
@@ -7,7 +9,6 @@ import {
   CurrentSorter,
   EmitterType,
   Extension,
-  ExtensionName,
   GridOption,
   HeaderMenu,
   Locale,
@@ -74,8 +75,6 @@ export class HeaderMenuExtension implements Extension {
       // get locales provided by user in forRoot or else use default English locales via the Constants
       this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
 
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.headerMenu);
       this.sharedService.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.sharedService.gridOptions.headerMenu };
       if (this.sharedService.gridOptions.enableHeaderMenu) {
         this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);

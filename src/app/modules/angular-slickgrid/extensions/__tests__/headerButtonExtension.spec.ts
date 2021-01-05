@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { HeaderButtonExtension } from '../headerButtonExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -19,13 +19,12 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   destroy: jest.fn()
 }));
 
-jest.mock('slickgrid/plugins/slick.headerbuttons', () => mockAddon);
-Slick.Plugins = {
-  HeaderButtons: mockAddon
-};
-
 describe('headerButtonExtension', () => {
-  let translate: TranslateService;
+  jest.mock('slickgrid/plugins/slick.headerbuttons', () => mockAddon);
+  Slick.Plugins = {
+    HeaderButtons: mockAddon
+  };
+
   let extension: HeaderButtonExtension;
   const mockOnCommandArgs = {
     button: {
@@ -52,7 +51,6 @@ describe('headerButtonExtension', () => {
       imports: [TranslateModule.forRoot()]
     });
     extension = TestBed.get(HeaderButtonExtension);
-    translate = TestBed.get(TranslateService);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

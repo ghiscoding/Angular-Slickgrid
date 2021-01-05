@@ -1,8 +1,9 @@
+import 'slickgrid/plugins/slick.draggablegrouping';
+import { Injectable } from '@angular/core';
 
 import { SharedService } from '../services/shared.service';
-import { DraggableGrouping, Extension, ExtensionName, GridOption, Grouping, SlickEventHandler } from '../models/index';
+import { DraggableGrouping, Extension, GridOption, Grouping, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
-import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -39,9 +40,6 @@ export class DraggableGroupingExtension implements Extension {
    */
   create(gridOptions: GridOption) {
     if (gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.draggableGrouping);
-
       if (!this._addon) {
         this._addon = new Slick.DraggableGrouping(gridOptions.draggableGrouping || {});
       }

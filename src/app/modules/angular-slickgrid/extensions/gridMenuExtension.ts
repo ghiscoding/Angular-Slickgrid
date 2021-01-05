@@ -1,11 +1,12 @@
+import 'slickgrid/controls/slick.gridmenu';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { Constants } from '../constants';
 import {
   Column,
   DelimiterType,
   Extension,
-  ExtensionName,
   FileType,
   GridOption,
   GridMenu,
@@ -84,8 +85,6 @@ export class GridMenuExtension implements Extension {
       // get locales provided by user in forRoot or else use default English locales via the Constants
       this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
 
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.gridMenu);
       this._gridMenuOptions = { ...this.getDefaultGridMenuOptions(), ...this.sharedService.gridOptions.gridMenu };
       this.sharedService.gridOptions.gridMenu = this._gridMenuOptions;
 

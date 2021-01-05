@@ -5,7 +5,7 @@ import { ContextMenuExtension } from '../contextMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { ExcelExportService, ExportService, TreeDataService } from '../../services';
-import { Column, DelimiterType, FileType, GridOption, MenuCommandItem, MenuCommandItemCallbackArgs, MenuOptionItemCallbackArgs } from '../../models';
+import { Column, DelimiterType, FileType, GridOption, MenuCommandItem, } from '../../models';
 import { Formatters } from '../../formatters';
 
 declare const Slick: any;
@@ -64,14 +64,13 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onOptionSelected: new Slick.Event(),
 }));
 
-jest.mock('slickgrid/plugins/slick.contextmenu', () => mockAddon);
-Slick.Plugins = {
-  ContextMenu: mockAddon
-};
-
 describe('contextMenuExtension', () => {
+  jest.mock('slickgrid/plugins/slick.contextmenu', () => mockAddon);
+  Slick.Plugins = {
+    ContextMenu: mockAddon
+  };
+
   const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
-  let extensionUtility: ExtensionUtility;
   let translate: TranslateService;
   let extension: ContextMenuExtension;
   const sharedService = new SharedService();
@@ -133,7 +132,6 @@ describe('contextMenuExtension', () => {
         imports: [TranslateModule.forRoot()]
       });
       extension = TestBed.get(ContextMenuExtension);
-      extensionUtility = TestBed.get(ExtensionUtility);
       translate = TestBed.get(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',

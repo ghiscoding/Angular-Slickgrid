@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { RowSelectionExtension } from '../rowSelectionExtension';
-import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 
 declare const Slick: any;
@@ -19,21 +18,19 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   destroy: jest.fn()
 }));
 
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockAddon);
-Slick.RowSelectionModel = mockAddon;
-
 describe('rowSelectionExtension', () => {
-  let translate: TranslateService;
+  jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockAddon);
+  Slick.RowSelectionModel = mockAddon;
+
   let extension: RowSelectionExtension;
   const gridOptionsMock = { enableRowSelection: true } as GridOption;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RowSelectionExtension, ExtensionUtility, SharedService],
+      providers: [RowSelectionExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
     extension = TestBed.get(RowSelectionExtension);
-    translate = TestBed.get(TranslateService);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

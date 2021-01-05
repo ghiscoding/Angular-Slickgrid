@@ -66,12 +66,8 @@ const extensionServiceStub = {
 } as unknown as ExtensionService;
 
 const mockExtensionUtility = {
-  loadExtensionDynamically: jest.fn(),
   translateItems: jest.fn(),
 } as unknown as ExtensionUtility;
-export class ExtensionUtilityStub {
-  loadExtensionDynamically() { }
-}
 
 const groupingAndColspanServiceStub = {
   init: jest.fn(),
@@ -483,7 +479,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
     describe('use grouping', () => {
       it('should load groupItemMetaProvider to the DataView when using "draggableGrouping" feature', () => {
-        const extensionSpy = jest.spyOn(mockExtensionUtility, 'loadExtensionDynamically');
         const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
         const groupMetaSpy = jest.spyOn(mockGroupItemMetaProviderImplementation.prototype, 'constructor');
         const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
@@ -491,7 +486,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions.draggableGrouping = {};
         component.ngAfterViewInit();
 
-        expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
         expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything(), inlineFilters: false });
         expect(groupMetaSpy).toHaveBeenCalledWith();
         expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
@@ -500,7 +494,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should load groupItemMetaProvider to the DataView when using "enableGrouping" feature', () => {
-        const extensionSpy = jest.spyOn(mockExtensionUtility, 'loadExtensionDynamically');
         const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
         const groupMetaSpy = jest.spyOn(mockGroupItemMetaProviderImplementation.prototype, 'constructor');
         const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
@@ -508,7 +501,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions.enableGrouping = true;
         component.ngAfterViewInit();
 
-        expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
         expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything(), inlineFilters: false });
         expect(groupMetaSpy).toHaveBeenCalledWith();
         expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);

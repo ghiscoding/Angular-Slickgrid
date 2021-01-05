@@ -61,11 +61,6 @@ const mockGridMenuAddon = {
 };
 const mockAddon = jest.fn().mockImplementation(() => mockGridMenuAddon);
 
-jest.mock('slickgrid/controls/slick.gridmenu', () => mockAddon);
-Slick.Controls = {
-  GridMenu: mockAddon
-};
-
 // define a <div> container to simulate the grid container
 const template =
   `<div id="${containerId}" style="height: 800px; width: 600px;">
@@ -75,6 +70,11 @@ const template =
   </div>`;
 
 describe('gridMenuExtension', () => {
+  jest.mock('slickgrid/controls/slick.gridmenu', () => mockAddon);
+  Slick.Controls = {
+    GridMenu: mockAddon
+  };
+
   const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
   let extensionUtility: ExtensionUtility;
   let translate: TranslateService;
@@ -216,29 +216,29 @@ describe('gridMenuExtension', () => {
 
       it(`should call internal event handler subscribe and expect the "onColumnsChanged" option to be called
     and it should override "visibleColumns" when array passed as arguments is bigger than previous visible columns`, () => {
-        const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-        const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onColumnsChanged');
-        const onAfterSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onAfterMenuShow');
-        const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onBeforeMenuShow');
-        const onCloseSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onMenuClose');
-        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
-        const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+          const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+          const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onColumnsChanged');
+          const onAfterSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onAfterMenuShow');
+          const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onBeforeMenuShow');
+          const onCloseSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onMenuClose');
+          const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
+          const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
 
-        const instance = extension.register();
-        instance.onColumnsChanged.notify({ columns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
+          const instance = extension.register();
+          instance.onColumnsChanged.notify({ columns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalledTimes(5);
-        expect(handlerSpy).toHaveBeenCalledWith(
-          { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
-          expect.anything()
-        );
-        expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columns: columnsMock, grid: gridStub });
-        expect(onAfterSpy).not.toHaveBeenCalled();
-        expect(onBeforeSpy).not.toHaveBeenCalled();
-        expect(onCloseSpy).not.toHaveBeenCalled();
-        expect(onCommandSpy).not.toHaveBeenCalled();
-        expect(visibleColsSpy).toHaveBeenCalledWith(columnsMock);
-      });
+          expect(handlerSpy).toHaveBeenCalledTimes(5);
+          expect(handlerSpy).toHaveBeenCalledWith(
+            { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+            expect.anything()
+          );
+          expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columns: columnsMock, grid: gridStub });
+          expect(onAfterSpy).not.toHaveBeenCalled();
+          expect(onBeforeSpy).not.toHaveBeenCalled();
+          expect(onCloseSpy).not.toHaveBeenCalled();
+          expect(onCommandSpy).not.toHaveBeenCalled();
+          expect(visibleColsSpy).toHaveBeenCalledWith(columnsMock);
+        });
 
       it('should call internal "onColumnsChanged" event and expect "readjustFrozenColumnIndexWhenNeeded" method to be called when the grid is detected to be a frozen grid', () => {
         gridOptionsMock.frozenColumn = 0;

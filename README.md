@@ -50,9 +50,7 @@ If you are facing any issue with `ngx-translate` library while building your Ang
 |        7        |        11.x+        |
 
 ### Build Warnings (Angular 8+)
-Since Angular 8+, a few warnings started to appear when doing a Prod build and that was asked in a few separate issues. These warnings are **fine**, the reason is because Angular-Slickgrid loads all of the SlickGrid extensions dynamically [here](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/extensions/extensionUtility.ts#L29) depending on which flags you use in the grid options, with `require('slickgrid/plugins/slick....');` and Angular is complaining about the use of `require` (even though in our case we load dynamically to avoid adding plugins code in your build that you might not even use).
-
-These warnings are **normal** so the best way to fix this, is to simply remove the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
+You might get warnings about SlickGrid while doing a build, most of them are fine and the best way to fix this, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
 ```js
 module.exports = {
   packages: {
