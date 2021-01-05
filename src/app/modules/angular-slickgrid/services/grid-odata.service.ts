@@ -259,7 +259,7 @@ export class GridOdataService implements BackendService {
 
         let fieldName = (columnDef.filter && columnDef.filter.queryField) || columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || FieldType.string;
-        let searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
+        let searchTerms = (columnFilter && columnFilter.searchTerms ? [...columnFilter.searchTerms] : null) || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
@@ -282,16 +282,22 @@ export class GridOdataService implements BackendService {
           continue;
         }
 
-        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
-          searchTerms = searchTerms[0].split('..');
+        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') >= 0) {
           if (!operator) {
-            operator = OperatorType.rangeInclusive;
+            operator = this._gridOptions.defaultFilterRangeOperator;
+          }
+
+          searchTerms = searchTerms[0].split('..', 2);
+          if (searchTerms[0] === '') {
+            operator = operator === OperatorType.rangeInclusive ? '<=' : operator === OperatorType.rangeExclusive ? '<' : operator;
+            searchTerms = searchTerms.slice(1);
+            searchValue = searchTerms[0];
+          } else if (searchTerms[1] === '') {
+            operator = operator === OperatorType.rangeInclusive ? '>=' : operator === OperatorType.rangeExclusive ? '>' : operator;
+            searchTerms = searchTerms.slice(0, 1);
+            searchValue = searchTerms[0];
           }
         }
-
-        // escaping the search value
-        searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-        searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
 
         // if we didn't find an Operator but we have a Column Operator inside the Filter (DOM Element), we should use its default Operator
         // multipleSelect is "IN", while singleSelect is "EQ", else don't map any operator
@@ -299,9 +305,19 @@ export class GridOdataService implements BackendService {
           operator = columnDef.filter.operator;
         }
 
+        // No operator and 2 search terms should lead to default range operator.
+        if (!operator && Array.isArray(searchTerms) && searchTerms.length === 2 && searchTerms[0] && searchTerms[1]) {
+          operator = this._gridOptions.defaultFilterRangeOperator;
+        }
+
+        // Range with 1 searchterm should lead to equals for a date field.
+        if ((operator === OperatorType.rangeInclusive || OperatorType.rangeExclusive) && Array.isArray(searchTerms) && searchTerms.length === 1 && fieldType === FieldType.date) {
+          operator = OperatorType.equal;
+        }
+
         // if we still don't have an operator find the proper Operator to use by it's field type
         if (!operator) {
-          operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
+          operator = mapOperatorByFieldType(fieldType);
         }
 
         // extra query arguments
@@ -311,6 +327,14 @@ export class GridOdataService implements BackendService {
             this.saveColumnFilter(fieldName, fieldSearchValue, searchTerms);
           }
         } else {
+          // Normalize all search values
+          searchValue = this.normalizeSearchValue(fieldType, searchValue, odataVersion);
+          if (Array.isArray(searchTerms)) {
+            searchTerms.forEach((part, index) => {
+              searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index], odataVersion);
+            });
+          }
+
           searchBy = '';
 
           // titleCase the fieldName so that it matches the WebApi names
@@ -318,63 +342,40 @@ export class GridOdataService implements BackendService {
             fieldName = titleCase(fieldName || '');
           }
 
-          if (fieldType === FieldType.date) {
-            searchBy = this.filterBySearchDate(fieldName, operator, searchTerms, odataVersion);
-          } else if (searchTerms && searchTerms.length > 1 && (operator === 'IN' || operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN')) {
+          if (searchTerms && searchTerms.length > 1 && (operator === 'IN' || operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN')) {
             // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
-            const tmpSearchTerms = [];
-
+            const tmpSearchTerms: string[] = [];
             if (operator === 'IN') {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                if (fieldType === FieldType.string || fieldType === FieldType.text || fieldType === FieldType.readonly) {
-                  const searchVal = encodeURIComponent(searchTerms[j].replace(`'`, `''`));
-                  tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
-                } else {
-                  // Single quote escape is not needed for non string type
-                  tmpSearchTerms.push(`${fieldName} eq ${searchTerms[j]}`);
-                }
+                tmpSearchTerms.push(`${fieldName} eq ${searchTerms[j]}`);
               }
               searchBy = tmpSearchTerms.join(' or ');
-              if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
-                searchBy = `(${searchBy})`;
-              }
             } else {
               // example:: (Stage ne "Expired" and Stage ne "Renewal")
               for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
-                const searchVal = encodeURIComponent(searchTerms[k].replace(`'`, `''`));
-                tmpSearchTerms.push(`${fieldName} ne '${searchVal}'`);
+                tmpSearchTerms.push(`${fieldName} ne ${searchTerms[k]}`);
               }
               searchBy = tmpSearchTerms.join(' and ');
-              if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
-                searchBy = `(${searchBy})`;
-              }
+            }
+            if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
+              searchBy = `(${searchBy})`;
             }
           } else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*' || operator === OperatorType.startsWith || operator === OperatorType.endsWith) {
             // first/last character is a '*' will be a startsWith or endsWith
-            searchBy = (operator === '*' || operator === '*z' || operator === OperatorType.endsWith) ? `endswith(${fieldName}, '${searchValue}')` : `startswith(${fieldName}, '${searchValue}')`;
-          } else if (fieldType === FieldType.string || fieldType === FieldType.text || fieldType === FieldType.readonly) {
-            // string field needs to be in single quotes
-            if (operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) {
-              searchBy = this.odataQueryVersionWrapper('substring', odataVersion, fieldName, searchValue);
-              if (operator === OperatorType.notContains) {
-                searchBy = `not ${searchBy}`;
-              }
-            } else if (operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive) {
-              // example:: (Duration >= 5 and Duration <= 10)
-              searchBy = this.filterBySearchTermRange(fieldName, operator, searchTerms);
-            } else {
-              searchBy = `${fieldName} ${this.mapOdataOperator(operator)} '${searchValue}'`;
+            searchBy = (operator === '*' || operator === '*z' || operator === OperatorType.endsWith) ? `endswith(${fieldName}, ${searchValue})` : `startswith(${fieldName}, ${searchValue})`;
+          } else if (operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive) {
+            // example:: (Name >= 'Bob' and Name <= 'Jane')
+            searchBy = this.filterBySearchTermRange(fieldName, operator, searchTerms);
+          } else if ((operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) &&
+            (fieldType === FieldType.string || fieldType === FieldType.text || fieldType === FieldType.readonly)) {
+            searchBy = odataVersion >= 4 ? `contains(${fieldName}, ${searchValue})` : `substringof(${searchValue}, ${fieldName})`;
+            if (operator === OperatorType.notContains) {
+              searchBy = `not ${searchBy}`;
             }
           } else {
-            if (operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive) {
-              // example:: (Duration >= 5 and Duration <= 10)
-              searchBy = this.filterBySearchTermRange(fieldName, operator, searchTerms);
-            } else {
-              // any other field type (or undefined type)
-              searchValue = (fieldType === FieldType.number || fieldType === FieldType.boolean) ? searchValue : `'${searchValue}'`;
-              searchBy = `${fieldName} ${this.mapOdataOperator(operator)} ${searchValue}`;
-            }
+            // any other field type (or undefined type)
+            searchBy = `${fieldName} ${this.mapOdataOperator(operator)} ${searchValue}`;
           }
 
           // push to our temp array and also trim white spaces
@@ -535,77 +536,77 @@ export class GridOdataService implements BackendService {
     });
   }
 
-  private odataQueryVersionWrapper(queryType: 'dateTime' | 'substring', version: number, fieldName: string, searchValue = ''): string {
-    let query = '';
-    switch (queryType) {
-      case 'dateTime':
-        query = version >= 4 ? searchValue : `DateTime'${searchValue}'`;
-        break;
-      case 'substring':
-        query = version >= 4 ? `contains(${fieldName}, '${searchValue}')` : `substringof('${searchValue}', ${fieldName})`;
-        break;
-    }
-    return query;
-  }
-
-  /**
-   * Filter by a search date, the searchTerms might be a single value or range of dates (2 searchTerms OR 1 string separated by 2 dots "date1..date2")
-   * Also depending on the OData version number, the output will be different, previous version must wrap dates with DateTime
-   * - version 2-3:: Finish gt DateTime'2019-08-12T00:00:00Z'
-   * - version 4:: Finish gt 2019-08-12T00:00:00Z
-   */
-  private filterBySearchDate(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[], version: number): string {
-    let query = '';
-    let searchValues: SearchTerm[] = [];
-    if (Array.isArray(searchTerms) && searchTerms.length > 1) {
-      searchValues = searchTerms;
-      if (operator !== OperatorType.rangeExclusive && operator !== OperatorType.rangeInclusive && this._gridOptions.defaultFilterRangeOperator) {
-        operator = this._gridOptions.defaultFilterRangeOperator;
-      }
-    }
-
-    // single search value
-    if (searchValues.length === 0 && Array.isArray(searchTerms) && searchTerms.length === 1 && searchTerms[0]) {
-      const searchValue1 = this.odataQueryVersionWrapper('dateTime', version, fieldName, parseUtcDate(searchTerms[0] as string, true));
-      if (searchValue1) {
-        return `${fieldName} ${this.mapOdataOperator(operator)} ${searchValue1}`;
-      }
-    }
-
-    // multiple search value (date range)
-    if (Array.isArray(searchValues) && searchValues.length === 2 && searchValues[0] && searchValues[1]) {
-      // date field needs to be UTC and within DateTime function
-      const searchValue1 = this.odataQueryVersionWrapper('dateTime', version, fieldName, parseUtcDate(searchValues[0] as string, true));
-      const searchValue2 = this.odataQueryVersionWrapper('dateTime', version, fieldName, parseUtcDate(searchValues[1] as string, true));
-
-      if (searchValue1 && searchValue2) {
-        if (operator === OperatorType.rangeInclusive) {
-          // example:: (Finish >= DateTime'2019-08-11T00:00:00Z' and Finish <= DateTime'2019-09-12T00:00:00Z')
-          query = `(${fieldName} ge ${searchValue1} and ${fieldName} le ${searchValue2})`;
-        } else if (operator === OperatorType.rangeExclusive) {
-          // example:: (Finish > DateTime'2019-08-11T00:00:00Z' and Finish < DateTime'2019-09-12T00:00:00Z')
-          query = `(${fieldName} gt ${searchValue1} and ${fieldName} lt ${searchValue2})`;
-        }
-      }
-    }
-    return query;
-  }
-
   /**
    * Filter by a range of searchTerms (2 searchTerms OR 1 string separated by 2 dots "value1..value2")
    */
   private filterBySearchTermRange(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[]) {
     let query = '';
-
     if (Array.isArray(searchTerms) && searchTerms.length === 2) {
       if (operator === OperatorType.rangeInclusive) {
         // example:: (Duration >= 5 and Duration <= 10)
-        query = `(${fieldName} ge ${searchTerms[0]} and ${fieldName} le ${searchTerms[1]})`;
+        query = `(${fieldName} ge ${searchTerms[0]}`;
+        if (searchTerms[1] !== '') {
+          query += ` and ${fieldName} le ${searchTerms[1]}`;
+        }
+        query += ')';
       } else if (operator === OperatorType.rangeExclusive) {
         // example:: (Duration > 5 and Duration < 10)
-        query = `(${fieldName} gt ${searchTerms[0]} and ${fieldName} lt ${searchTerms[1]})`;
+        query = `(${fieldName} gt ${searchTerms[0]}`;
+        if (searchTerms[1] !== '') {
+          query += ` and ${fieldName} lt ${searchTerms[1]}`;
+        }
+        query += ')';
       }
     }
     return query;
+  }
+
+  /**
+   * Normalizes the search value according to field type and oData version.
+   */
+  private normalizeSearchValue(fieldType: FieldType, searchValue: any, version: number) {
+    switch (fieldType) {
+      case FieldType.date:
+        searchValue = parseUtcDate(searchValue as string, true);
+        searchValue = version >= 4 ? searchValue : `DateTime'${searchValue}'`;
+        break;
+      case FieldType.string:
+      case FieldType.text:
+      case FieldType.readonly:
+        if (typeof searchValue === 'string') {
+          // escape single quotes by doubling them
+          searchValue = searchValue.replace(/'/g, `''`);
+          // encode URI of the final search value
+          searchValue = encodeURIComponent(searchValue);
+          // strings need to be quoted.
+          searchValue = `'${searchValue}'`;
+        }
+        break;
+      case FieldType.integer:
+      case FieldType.number:
+      case FieldType.float:
+        if (typeof searchValue === 'string') {
+          // Parse a valid decimal from the string.
+
+          // Replace double dots with single dots
+          searchValue = searchValue.replace(/\.\./g, '.');
+          // Remove a trailing dot
+          searchValue = searchValue.replace(/\.+$/g, '');
+          // Prefix a leading dot with 0
+          searchValue = searchValue.replace(/^\.+/g, '0.');
+          // Prefix leading dash dot with -0.
+          searchValue = searchValue.replace(/^\-+\.+/g, '-0.');
+          // Remove any non valid decimal characters from the search string
+          searchValue = searchValue.replace(/(?!^\-)[^\d\.]/g, '');
+
+          // if nothing left, search for 0
+          if (searchValue === '' || searchValue === '-') {
+            searchValue = '0';
+          }
+        }
+        break;
+    }
+
+    return searchValue;
   }
 }
