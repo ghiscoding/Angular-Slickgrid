@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { DateEditor } from '../dateEditor';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, KeyCode, FieldType } from '../../models';
+import { Column, EditorArguments, GridOption, FieldType } from '../../models';
 import * as moment from 'moment-mini';
 
 const KEY_CHAR_A = 97;
@@ -423,14 +423,27 @@ describe('DateEditor', () => {
     });
 
     describe('with different locale', () => {
-      it('should display text in new locale', (done) => {
-        gridOptionMock.i18n = translate;
+      it('should display a console warning when locale is not previously imported', (done) => {
+        const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
 
-        translate.use('fr-CA'); // will be trimmed to "fr"
+        gridOptionMock.i18n = translate;
+        translate.use('zz-yy'); // will be trimmed to 2 chars "zz"
+        editor = new DateEditor(editorArguments);
+        setTimeout(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(`[Angular-Slickgrid] Flatpickr missing locale imports (zz), will revert to English as the default locale.`));
+          done();
+        });
+      });
+
+      it('should display text in new locale', async () => {
+        await (await import('flatpickr/dist/l10n/fr')).French;
+
+        gridOptionMock.i18n = translate;
+        translate.use('fr');
         editor = new DateEditor(editorArguments);
 
         const spy = jest.spyOn(editor.flatInstance, 'open');
-        const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+        const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
         const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>(' .flatpickr-monthDropdown-months option');
 
         editor.show();
@@ -439,7 +452,6 @@ describe('DateEditor', () => {
         expect(selectonOptionElms.length).toBe(12);
         expect(selectonOptionElms[0].textContent).toBe('janvier');
         expect(spy).toHaveBeenCalled();
-        done();
       });
     });
   });

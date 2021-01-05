@@ -139,6 +139,7 @@ describe('CompoundDateFilter', () => {
       closeOnSelect: true,
       dateFormat: 'Y-m-d',
       defaultDate: '',
+      errorHandler: expect.toBeFunction(),
       locale: 'en',
       onChange: expect.anything(),
       wrap: true,
@@ -236,8 +237,10 @@ describe('CompoundDateFilter', () => {
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['2000-01-01T05:00:00.000Z'], shouldTriggerQuery: true });
   });
 
-  it('should work with different locale when locale is changed', () => {
-    translate.use('fr-CA'); // will be trimmed to "fr"
+  it('should work with different locale when locale is changed', async () => {
+    await (await import('flatpickr/dist/l10n/fr')).French;
+
+    translate.use('fr');
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
     mockColumn.filter.operator = '<=';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
@@ -245,7 +248,7 @@ describe('CompoundDateFilter', () => {
     filter.init(filterArguments);
     const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
     const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
-    const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>(' .flatpickr-monthDropdown-months option');
+    const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>('.flatpickr-monthDropdown-months option');
 
     filter.show();
 
@@ -262,10 +265,10 @@ describe('CompoundDateFilter', () => {
     expect(selectonOptionElms[0].textContent).toBe('janvier');
   });
 
-  it('should throw an error and use English locale when user tries to load an unsupported Flatpickr locale', () => {
-    translate.use('zx');
+  it('should display a console warning when locale is not previously imported', (done) => {
     const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
 
+    translate.use('zz-yy'); // will be trimmed to 2 chars "zz"
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
     mockColumn.filter.operator = '<=';
 
@@ -279,9 +282,12 @@ describe('CompoundDateFilter', () => {
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.toInclude('[Angular-Slickgrid - CompoundDate Filter] It seems that "zx" is not a locale supported by Flatpickr'));
-    expect(selectonOptionElms.length).toBe(12);
-    expect(selectonOptionElms[0].textContent).toBe('January');
+    setTimeout(() => {
+      expect(selectonOptionElms.length).toBe(12);
+      expect(selectonOptionElms[0].textContent).toBe('January');
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(`[Angular-Slickgrid] Flatpickr missing locale imports (zz), will revert to English as the default locale.`));
+      done();
+    });
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
