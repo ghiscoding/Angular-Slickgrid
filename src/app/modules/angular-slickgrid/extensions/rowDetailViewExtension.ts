@@ -211,14 +211,20 @@ export class RowDetailViewExtension implements Extension {
         // --
         // hook some events needed by the Plugin itself
 
-        this._eventHandler.subscribe(this.sharedService.grid.onColumnsReordered, () => this.redrawAllViewComponents());
+        // we need to redraw the open detail views if we change column position (column reorder)
+        this._eventHandler.subscribe(this.sharedService.grid.onColumnsReordered, this.redrawAllViewComponents.bind(this));
+
+        // on row selection changed, we also need to redraw
+        if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
+          this._eventHandler.subscribe(this.sharedService.grid.onSelectedRowsChanged, this.redrawAllViewComponents.bind(this));
+        }
 
         // on sort, all row detail are collapsed so we can dispose of all the Views as well
-        this._eventHandler.subscribe(this.sharedService.grid.onSort, () => this.disposeAllViewComponents());
+        this._eventHandler.subscribe(this.sharedService.grid.onSort, this.disposeAllViewComponents.bind(this));
 
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
-          this.filterService.onFilterChanged.subscribe(() => this.redrawAllViewComponents())
+          this.filterService.onFilterChanged.subscribe(this.redrawAllViewComponents.bind(this))
         );
       }
       return this._addon;
