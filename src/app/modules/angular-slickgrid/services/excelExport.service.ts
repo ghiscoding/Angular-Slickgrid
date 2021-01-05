@@ -21,10 +21,15 @@ import {
 } from '../models/index';
 import { Constants } from '../constants';
 import { exportWithFormatterWhenDefined } from './export-utilities';
-import { addWhiteSpaces, getTranslationPrefix, mapMomentDateFormatWithFieldType, sanitizeHtmlToText, titleCase } from './utilities';
+import { addWhiteSpaces, deepCopy, getTranslationPrefix, mapMomentDateFormatWithFieldType, sanitizeHtmlToText, titleCase } from './utilities';
 
 // using external non-typed js libraries
 declare let $: any;
+
+const DEFAULT_EXPORT_OPTIONS: ExcelExportOption = {
+  filename: 'export',
+  format: FileType.xlsx
+};
 
 @Injectable()
 export class ExcelExportService {
@@ -80,14 +85,14 @@ export class ExcelExportService {
    *
    * Example: exportToExcel({ format: FileType.csv, delimiter: DelimiterType.comma })
    */
-  exportToExcel(options: ExcelExportOption): Promise<boolean> {
+  exportToExcel(options?: ExcelExportOption): Promise<boolean> {
     if (!this._grid || !this._dataView) {
       throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
     }
 
     return new Promise((resolve, reject) => {
       this.onGridBeforeExportToExcel.next(true);
-      this._excelExportOptions = $.extend(true, {}, this._gridOptions.excelExportOptions, options);
+      this._excelExportOptions = deepCopy({ ...DEFAULT_EXPORT_OPTIONS, ...this._gridOptions.excelExportOptions, ...options });
       this._fileFormat = this._excelExportOptions.format || FileType.xlsx;
 
       // prepare the Excel Workbook & Sheet
