@@ -1,6 +1,6 @@
 import { ApplicationRef, Component } from '@angular/core';
 import { TestBed, ComponentFixture, async } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { RowDetailViewExtension } from '../rowDetailViewExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -61,23 +61,21 @@ const mockSelectionModel = jest.fn().mockImplementation(() => ({
   destroy: jest.fn()
 }));
 
-jest.mock('slickgrid/plugins/slick.rowdetailview', () => mockAddon);
-Slick.Plugins = {
-  RowDetailView: mockAddon
-};
-
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
-Slick.RowSelectionModel = mockSelectionModel;
-
 @Component({
   template: `<h4>Loading...</h4>`
 })
 export class TestPreloadComponent { }
 
 describe('rowDetailViewExtension', () => {
+  jest.mock('slickgrid/plugins/slick.rowdetailview', () => mockAddon);
+  Slick.Plugins = {
+    RowDetailView: mockAddon
+  };
+
+  jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
+  Slick.RowSelectionModel = mockSelectionModel;
+
   let fixture: ComponentFixture<TestPreloadComponent>;
-  let component: TestPreloadComponent;
-  let translate: TranslateService;
   let extension: RowDetailViewExtension;
   const div = document.createElement('div');
   div.innerHTML = `<div class="container_loading"></div><div class="container_field1"></div>`;
@@ -119,9 +117,7 @@ describe('rowDetailViewExtension', () => {
       imports: [TranslateModule.forRoot()]
     });
     fixture = TestBed.createComponent(TestPreloadComponent);
-    component = fixture.componentInstance;
     extension = TestBed.get(RowDetailViewExtension);
-    translate = TestBed.get(TranslateService);
   }));
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {
@@ -408,8 +404,8 @@ describe('rowDetailViewExtension', () => {
       expect(onBeforeRowSpy).not.toHaveBeenCalled();
       expect(onRowOutViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-      });
+          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+        });
       expect(onRowBackViewSpy).not.toHaveBeenCalled();
     });
 
@@ -443,8 +439,8 @@ describe('rowDetailViewExtension', () => {
       expect(onRowOutViewSpy).not.toHaveBeenCalled();
       expect(onRowBackViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-      });
+          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+        });
     });
 
     it('should call Angular Util "createAngularComponentAppendToDom" when grid "onColumnsReordered" is triggered', (done) => {

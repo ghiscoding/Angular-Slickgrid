@@ -1,3 +1,4 @@
+import 'slickgrid/plugins/slick.contextmenu';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -6,7 +7,6 @@ import {
   ContextMenu,
   DelimiterType,
   Extension,
-  ExtensionName,
   FileType,
   MenuCallbackArgs,
   MenuCommandItem,
@@ -83,9 +83,6 @@ export class ContextMenuExtension implements Extension {
 
       // keep original user context menu, useful when switching locale to translate
       this._userOriginalContextMenu = { ...this._contextMenuOptions };
-
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.contextMenu);
 
       // merge the original commands with the built-in internal commands
       const originalCommandItems = this._userOriginalContextMenu && Array.isArray(this._userOriginalContextMenu.commandItems) ? this._userOriginalContextMenu.commandItems : [];

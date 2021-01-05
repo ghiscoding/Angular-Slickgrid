@@ -1,6 +1,7 @@
+import 'slickgrid/plugins/slick.autotooltips';
 import { Injectable } from '@angular/core';
-import { Extension, ExtensionName } from '../models/index';
-import { ExtensionUtility } from './extensionUtility';
+
+import { Extension } from '../models/index';
 import { SharedService } from '../services/shared.service';
 
 // using external non-typed js libraries
@@ -10,7 +11,7 @@ declare const Slick: any;
 export class AutoTooltipExtension implements Extension {
   private _addon: any;
 
-  constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
+  constructor(private sharedService: SharedService) { }
 
   dispose() {
     if (this._addon && this._addon.destroy) {
@@ -26,8 +27,6 @@ export class AutoTooltipExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.autoTooltip);
       this._addon = new Slick.AutoTooltips(this.sharedService.gridOptions.autoTooltipOptions || {});
       this.sharedService.grid.registerPlugin(this._addon);
       return this._addon;

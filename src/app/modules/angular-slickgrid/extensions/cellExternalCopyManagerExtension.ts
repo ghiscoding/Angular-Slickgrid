@@ -1,11 +1,12 @@
+import 'slickgrid/plugins/slick.cellexternalcopymanager';
 import { Injectable } from '@angular/core';
+
 import {
   Column,
   EditCommand,
   EditUndoRedoBuffer,
   ExcelCopyBufferOption,
   Extension,
-  ExtensionName,
   SelectedRange,
   SlickEventHandler,
 } from '../models/index';
@@ -72,8 +73,6 @@ export class CellExternalCopyManagerExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
       this.createUndoRedoBuffer();
       this._bindingEventService.bind(document.body, 'keydown', this.handleKeyDown.bind(this));
 

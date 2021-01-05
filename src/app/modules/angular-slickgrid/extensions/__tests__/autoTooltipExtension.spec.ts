@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { AutoTooltipExtension } from '../autoTooltipExtension';
-import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 
 declare const Slick: any;
@@ -17,17 +16,17 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   destroy: jest.fn()
 }));
 
-jest.mock('slickgrid/plugins/slick.autotooltips', () => mockAddon);
-Slick.AutoTooltips = mockAddon;
-
 describe('autoTooltipExtension', () => {
+  jest.mock('slickgrid/plugins/slick.autotooltips', () => mockAddon);
+  Slick.AutoTooltips = mockAddon;
+
   let translate: TranslateService;
   let extension: AutoTooltipExtension;
   const gridOptionsMock = { enableAutoTooltip: true } as GridOption;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AutoTooltipExtension, ExtensionUtility, SharedService],
+      providers: [AutoTooltipExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
     extension = TestBed.get(AutoTooltipExtension);

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { DraggableGroupingExtension } from '../draggableGroupingExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -19,11 +19,10 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onGroupChanged: new Slick.Event(),
 }));
 
-jest.mock('slickgrid/plugins/slick.draggablegrouping', () => mockAddon);
-Slick.DraggableGrouping = mockAddon;
-
 describe('draggableGroupingExtension', () => {
-  let translate: TranslateService;
+  jest.mock('slickgrid/plugins/slick.draggablegrouping', () => mockAddon);
+  Slick.DraggableGrouping = mockAddon;
+
   let extension: DraggableGroupingExtension;
   const gridOptionsMock = {
     enableDraggableGrouping: true,
@@ -42,7 +41,6 @@ describe('draggableGroupingExtension', () => {
       imports: [TranslateModule.forRoot()]
     });
     extension = TestBed.get(DraggableGroupingExtension);
-    translate = TestBed.get(TranslateService);
   });
 
   it('should return null after calling "create" method when the grid options is missing', () => {

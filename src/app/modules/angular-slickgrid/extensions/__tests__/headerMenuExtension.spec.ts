@@ -50,14 +50,13 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onCommand: new Slick.Event(),
 }));
 
-jest.mock('slickgrid/plugins/slick.headermenu', () => mockAddon);
-Slick.Plugins = {
-  HeaderMenu: mockAddon
-};
-
 describe('headerMenuExtension', () => {
+  jest.mock('slickgrid/plugins/slick.headermenu', () => mockAddon);
+  Slick.Plugins = {
+    HeaderMenu: mockAddon
+  };
+
   const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
-  let extensionUtility: ExtensionUtility;
   let translate: TranslateService;
   let extension: HeaderMenuExtension;
   const gridOptionsMock = {
@@ -104,7 +103,6 @@ describe('headerMenuExtension', () => {
         imports: [TranslateModule.forRoot()]
       });
       extension = TestBed.get(HeaderMenuExtension);
-      extensionUtility = TestBed.get(ExtensionUtility);
       translate = TestBed.get(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',

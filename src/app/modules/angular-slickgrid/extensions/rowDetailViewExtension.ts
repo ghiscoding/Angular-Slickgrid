@@ -1,9 +1,11 @@
+import 'slickgrid/plugins/slick.rowdetailview';
+import 'slickgrid/plugins/slick.rowselectionmodel';
 import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
-import { Column, Extension, ExtensionName, GridOption, RowDetailView, SlickEventHandler } from '../models/index';
+import { Column, Extension, GridOption, RowDetailView, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { FilterService } from '../services/filter.service';
@@ -88,9 +90,6 @@ export class RowDetailViewExtension implements Extension {
    */
   create(columnDefinitions: Column[], gridOptions: GridOption) {
     if (columnDefinitions && gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.rowDetailView);
-
       if (!gridOptions.rowDetailView) {
         throw new Error('The Row Detail View requires options to be passed via the "rowDetailView" property of the Grid Options');
       }
@@ -155,7 +154,6 @@ export class RowDetailViewExtension implements Extension {
 
       // this also requires the Row Selection Model to be registered as well
       if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
-        this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
         rowSelectionPlugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || { selectActiveRow: true });
         this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
       }

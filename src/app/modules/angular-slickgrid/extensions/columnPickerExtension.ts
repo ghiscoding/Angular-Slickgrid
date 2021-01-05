@@ -1,5 +1,7 @@
+import 'slickgrid/controls/slick.columnpicker';
 import { Injectable } from '@angular/core';
-import { Column, ColumnPicker, Extension, ExtensionName, SlickEventHandler } from '../models/index';
+
+import { Column, ColumnPicker, Extension, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { SharedService } from '../services/shared.service';
 
@@ -37,9 +39,6 @@ export class ColumnPickerExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin (addon) with RequireJS
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.columnPicker);
-
       // localization support for the picker
       const columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
       const forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');

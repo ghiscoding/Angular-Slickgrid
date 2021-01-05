@@ -4,7 +4,7 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { CellMenuExtension } from '../cellMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column, GridOption, MenuCommandItemCallbackArgs, MenuOptionItemCallbackArgs } from '../../models';
+import { Column, GridOption } from '../../models';
 
 declare const Slick: any;
 
@@ -37,12 +37,13 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onOptionSelected: new Slick.Event(),
 }));
 
-jest.mock('slickgrid/plugins/slick.cellmenu', () => mockAddon);
-Slick.Plugins = {
-  CellMenu: mockAddon
-};
 
 describe('CellMenuExtension', () => {
+  jest.mock('slickgrid/plugins/slick.cellmenu', () => mockAddon);
+  Slick.Plugins = {
+    CellMenu: mockAddon
+  };
+
   const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
   let extensionUtility: ExtensionUtility;
   let translate: TranslateService;

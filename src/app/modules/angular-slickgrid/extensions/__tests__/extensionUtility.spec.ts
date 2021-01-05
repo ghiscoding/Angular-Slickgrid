@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 import { ExtensionUtility } from '../extensionUtility';
-import { Column, ExtensionName, GridOption, SlickGrid } from '../../models';
+import { Column, GridOption, SlickGrid } from '../../models';
 import { SharedService } from '../../services/shared.service';
 
 declare let Slick: any;
@@ -93,99 +93,6 @@ describe('ExtensionUtility', () => {
         SORT_DESCENDING: 'Sort Descending',
       });
       translate.use('fr');
-    });
-
-    describe('loadExtensionDynamically method', () => {
-      it('should check that autoTooltip gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.autoTooltip);
-        const autoTooltip = new Slick.AutoTooltips();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(autoTooltip).not.toBeNull();
-      });
-
-      it('should check that cellExternalCopyManager gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
-        const autoTooltip = new Slick.Plugins.CellExternalCopyManager();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(autoTooltip).not.toBeNull();
-      });
-
-      it('should check that cellMenu gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.cellMenu);
-        const cellMenu = new Slick.Plugins.CellMenu();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(cellMenu).not.toBeNull();
-      });
-
-      it('should check that columnPicker gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.columnPicker);
-        const columnPicker = new Slick.Controls.ColumnPicker();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(columnPicker).not.toBeNull();
-      });
-
-      it('should check that contextMenu gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.contextMenu);
-        const contextMenu = new Slick.Plugins.ContextMenu();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(contextMenu).not.toBeNull();
-      });
-
-      it('should check that draggableGrouping gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.draggableGrouping);
-        const draggableGrouping = new Slick.DraggableGrouping();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(draggableGrouping).not.toBeNull();
-      });
-
-      it('should check that gridMenu gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.gridMenu);
-        const gridMenu = new Slick.Controls.GridMenu();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(gridMenu).not.toBeNull();
-      });
-
-      it('should check that groupItemMetaProvider gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
-        const groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(groupItemMetadataProvider).not.toBeNull();
-      });
-
-      it('should check that headerButton gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.headerButton);
-        const headerButton = new Slick.Plugins.HeaderButtons();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(headerButton).not.toBeNull();
-      });
-
-      it('should check that headerMenu gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.headerMenu);
-        const headerMenu = new Slick.Plugins.HeaderMenu();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(headerMenu).not.toBeNull();
-      });
-
-      it('should check that rowSelection gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.rowSelection);
-        const rowSelection = new Slick.RowSelectionModel();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(rowSelection).not.toBeNull();
-      });
-
-      it('should check that rowDetail gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.rowDetailView);
-        const rowDetailView = new Slick.Plugins.RowDetailView();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(rowDetailView).not.toBeNull();
-      });
-
-      it('should check that rowMoveManager gets loaded', () => {
-        utility.loadExtensionDynamically(ExtensionName.rowMoveManager);
-        const rowMoveManager = new Slick.RowMoveManager();
-        expect(mockAddon).toHaveBeenCalled();
-        expect(rowMoveManager).not.toBeNull();
-      });
     });
 
     describe('getPickerTitleOutputString method', () => {

@@ -22,12 +22,12 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   onColumnsChanged: new Slick.Event(),
 }));
 
-jest.mock('slickgrid/controls/slick.columnpicker', () => mockAddon);
-Slick.Controls = {
-  ColumnPicker: mockAddon
-};
-
 describe('columnPickerExtension', () => {
+  jest.mock('slickgrid/controls/slick.columnpicker', () => mockAddon);
+  Slick.Controls = {
+    ColumnPicker: mockAddon
+  };
+
   const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
   let extensionUtility: ExtensionUtility;
   let translate: TranslateService;
@@ -103,21 +103,21 @@ describe('columnPickerExtension', () => {
 
     it(`should call internal event handler subscribe and expect the "onColumnsChanged" grid option to be called when addon notify is called
     and it should override "visibleColumns" when array passed as arguments is bigger than previous visible columns`, () => {
-      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.columnPicker, 'onColumnsChanged');
-      const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+        const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+        const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.columnPicker, 'onColumnsChanged');
+        const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
 
-      const instance = extension.register();
-      instance.onColumnsChanged.notify({ columnId: 'field1', showing: true, columns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
+        const instance = extension.register();
+        instance.onColumnsChanged.notify({ columnId: 'field1', showing: true, columns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
 
-      expect(handlerSpy).toHaveBeenCalledTimes(1);
-      expect(handlerSpy).toHaveBeenCalledWith(
-        { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
-        expect.anything()
-      );
-      expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columnId: 'field1', showing: true, columns: columnsMock, grid: gridStub });
-      expect(visibleColsSpy).toHaveBeenCalledWith(columnsMock);
-    });
+        expect(handlerSpy).toHaveBeenCalledTimes(1);
+        expect(handlerSpy).toHaveBeenCalledWith(
+          { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+          expect.anything()
+        );
+        expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columnId: 'field1', showing: true, columns: columnsMock, grid: gridStub });
+        expect(visibleColsSpy).toHaveBeenCalledWith(columnsMock);
+      });
 
     it('should call internal "onColumnsChanged" event and expect "readjustFrozenColumnIndexWhenNeeded" method to be called when the grid is detected to be a frozen grid', () => {
       gridOptionsMock.frozenColumn = 0;
