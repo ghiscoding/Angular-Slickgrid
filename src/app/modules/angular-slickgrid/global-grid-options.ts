@@ -1,5 +1,5 @@
 import { Column, DelimiterType, FileType, GridOption, OperatorType } from './models/index';
-import { Filters } from './filters/index';
+import { Filters } from './filters/filters.index';
 
 /** Global Grid Options Defaults */
 export const GlobalGridOptions: Partial<GridOption> = {
