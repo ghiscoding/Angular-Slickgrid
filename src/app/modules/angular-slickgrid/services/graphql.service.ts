@@ -382,6 +382,7 @@ export class GraphqlService implements BackendService {
         }
 
         const fieldName = (columnDef.filter && columnDef.filter.queryField) || columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
+        const fieldType = columnDef.type || FieldType.string;
         let searchTerms = columnFilter && columnFilter.searchTerms || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
@@ -392,7 +393,7 @@ export class GraphqlService implements BackendService {
           throw new Error(`GraphQL filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield").`);
         }
 
-        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+        fieldSearchValue = `${fieldSearchValue}`; // make sure it's a string
         const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
         let operator = columnFilter.operator || ((matches) ? matches[1] : '');
         searchValue = (!!matches) ? matches[2] : '';
@@ -403,16 +404,23 @@ export class GraphqlService implements BackendService {
           continue;
         }
 
-        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
-          searchTerms = searchTerms[0].split('..');
+        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') >= 0) {
           if (!operator) {
-            operator = OperatorType.rangeInclusive;
+            operator = this._gridOptions.defaultFilterRangeOperator as OperatorString;
+          }
+          searchTerms = searchTerms[0].split('..', 2);
+          if (searchTerms[0] === '') {
+            operator = operator === OperatorType.rangeInclusive ? '<=' : operator === OperatorType.rangeExclusive ? '<' : operator;
+            searchTerms = searchTerms.slice(1);
+            searchValue = searchTerms[0];
+          } else if (searchTerms[1] === '') {
+            operator = operator === OperatorType.rangeInclusive ? '>=' : operator === OperatorType.rangeExclusive ? '>' : operator;
+            searchTerms = searchTerms.slice(0, 1);
+            searchValue = searchTerms[0];
           }
         }
 
         if (typeof searchValue === 'string') {
-          // escaping the search value
-          searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
           if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
             operator = ((operator === '*' || operator === '*z') ? 'EndsWith' : 'StartsWith') as OperatorString;
           }
@@ -424,13 +432,28 @@ export class GraphqlService implements BackendService {
           operator = columnDef.filter.operator;
         }
 
+        // No operator and 2 search terms should lead to default range operator.
+        if (!operator && Array.isArray(searchTerms) && searchTerms.length === 2 && searchTerms[0] && searchTerms[1]) {
+          operator = this._gridOptions.defaultFilterRangeOperator as OperatorString;
+        }
+
+        // Range with 1 searchterm should lead to equals for a date field.
+        if ((operator === OperatorType.rangeInclusive || OperatorType.rangeExclusive) && Array.isArray(searchTerms) && searchTerms.length === 1 && fieldType === FieldType.date) {
+          operator = OperatorType.equal;
+        }
+
+        // Normalize all search values
+        searchValue = this.normalizeSearchValue(fieldType, searchValue);
+        if (Array.isArray(searchTerms)) {
+          searchTerms.forEach((_part, index) => {
+            searchTerms[index] = this.normalizeSearchValue(fieldType, searchTerms[index]);
+          });
+        }
+
         // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
         if (searchTerms && searchTerms.length > 1 && (operator === 'IN' || operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN')) {
           searchValue = searchTerms.join(',');
-        } else if (searchTerms && searchTerms.length === 2 && (!operator || operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive)) {
-          if (!operator) {
-            operator = OperatorType.rangeInclusive;
-          }
+        } else if (searchTerms && searchTerms.length === 2 && (operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive)) {
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'GE' : 'GT'), value: searchTerms[0] });
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'LE' : 'LT'), value: searchTerms[1] });
           continue;
@@ -438,7 +461,7 @@ export class GraphqlService implements BackendService {
 
         // if we still don't have an operator find the proper Operator to use by it's field type
         if (!operator) {
-          operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
+          operator = mapOperatorByFieldType(fieldType);
         }
 
         // build the search array
@@ -605,5 +628,45 @@ export class GraphqlService implements BackendService {
       }
       return tmpFilter;
     });
+  }
+
+  /** Normalizes the search value according to field type. */
+  private normalizeSearchValue(fieldType: typeof FieldType[keyof typeof FieldType], searchValue: any) {
+    switch (fieldType) {
+      case FieldType.date:
+      case FieldType.string:
+      case FieldType.text:
+      case FieldType.readonly:
+        if (typeof searchValue === 'string') {
+          // escape single quotes by doubling them
+          searchValue = searchValue.replace(/'/g, `''`);
+        }
+        break;
+      case FieldType.integer:
+      case FieldType.number:
+      case FieldType.float:
+        if (typeof searchValue === 'string') {
+          // Parse a valid decimal from the string.
+
+          // Replace double dots with single dots
+          searchValue = searchValue.replace(/\.\./g, '.');
+          // Remove a trailing dot
+          searchValue = searchValue.replace(/\.+$/g, '');
+          // Prefix a leading dot with 0
+          searchValue = searchValue.replace(/^\.+/g, '0.');
+          // Prefix leading dash dot with -0.
+          searchValue = searchValue.replace(/^\-+\.+/g, '-0.');
+          // Remove any non valid decimal characters from the search string
+          searchValue = searchValue.replace(/(?!^\-)[^\d\.]/g, '');
+
+          // if nothing left, search for 0
+          if (searchValue === '' || searchValue === '-') {
+            searchValue = '0';
+          }
+        }
+        break;
+    }
+
+    return searchValue;
   }
 }

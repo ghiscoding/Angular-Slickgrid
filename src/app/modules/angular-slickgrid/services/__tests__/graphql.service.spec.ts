@@ -26,6 +26,7 @@ function removeSpaces(textS) {
 
 const gridOptionMock = {
   enablePagination: true,
+  defaultFilterRangeOperator: OperatorType.rangeInclusive,
   backendServiceApi: {
     service: undefined,
     options: { datasetName: '' },
@@ -827,11 +828,67 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
-    it('should return a query with search having a range of exclusive numbers when the search value contains 2 (..) to represent a range of numbers', () => {
+    it('should return a query with search having a range of exclusive numbers when the search value contains 2 dots (..) to represent a range of numbers', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'duration', field: 'duration' } as Column;
       const mockColumnFilters = {
         duration: { columnId: 'duration', columnDef: mockColumn, searchTerms: ['2..33'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator, the "RangeInclusive" operator and the range has an unbounded end', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"5"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator, the "RangeInclusive" operator and the range has an unbounded begin', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:LE, value:"5"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['..5'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator, the "RangeExclusive" operator and the range has an unbounded end', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"5"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..'], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator, the "RangeExclusive" operator and the range has an unbounded begin', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:LT, value:"5"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['..5'], operator: 'RangeExclusive' },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);
@@ -855,7 +912,7 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
-    it('should return a query with search having a range of exclusive dates when the search value contains 2 (..) to represent a range of dates', () => {
+    it('should return a query with search having a range of exclusive dates when the search value contains 2 dots (..) to represent a range of dates', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GE, value:"2001-01-01"}, {field:startDate, operator:LE, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'startDate', field: 'startDate' } as Column;
       const mockColumnFilters = {
@@ -874,6 +931,38 @@ describe('GraphqlService', () => {
       const mockColumn = { id: 'startDate', field: 'startDate' } as Column;
       const mockColumnFilters = {
         startDate: { columnId: 'startDate', columnDef: mockColumn, searchTerms: ['2001-01-01', '2001-01-31'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query with a date equal when only 1 searchTerms is provided and even if the operator is set to a range', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:company,operator:Contains,value:"abc"},{field:updatedDate,operator:EQ,value:"2001-01-20"}]){totalCount,nodes{id,company,gender,name}}}`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20'], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query without any date filtering when searchTerms is an empty array', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:company,operator:Contains,value:"abc"}]){totalCount,nodes{id,company,gender,name}}}`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: [], operator: 'RangeExclusive' },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);
@@ -1033,10 +1122,10 @@ describe('GraphqlService', () => {
 
   describe('presets', () => {
     beforeEach(() => {
-      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration' }, { id: 'startDate', field: 'startDate' }];
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }, { id: 'startDate', field: 'startDate' }];
     });
 
-    it('should return a query with search having a range of exclusive numbers when the search value contains 2 (..) to represent a range of numbers', () => {
+    it('should return a query with search having a range of exclusive numbers when the search value contains 2 dots (..) to represent a range of numbers', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) {
         totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
@@ -1052,8 +1141,8 @@ describe('GraphqlService', () => {
       expect(currentFilters).toEqual(presetFilters);
     });
 
-    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (..) separator', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"0.5"}, {field:duration, operator:LE, value:".88"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 2 dots (..) separator and range ends with a fraction', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"0.5"}, {field:duration, operator:LE, value:"0.88"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['0.5...88'] },
       ] as CurrentFilter[];
@@ -1097,7 +1186,7 @@ describe('GraphqlService', () => {
       expect(currentFilters).toEqual(presetFilters);
     });
 
-    it('should return a query with search having a range of exclusive dates when the search value contains 2 (..) to represent a range of dates', () => {
+    it('should return a query with search having a range of exclusive dates when the search value contains 2 dots (..) to represent a range of dates', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:startDate, operator:GE, value:"2001-01-01"}, {field:startDate, operator:LE, value:"2001-01-31"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'startDate', searchTerms: ['2001-01-01..2001-01-31'] },
@@ -1140,6 +1229,62 @@ describe('GraphqlService', () => {
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query to filter a search value with a fraction of a number that is missing a leading 0', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:duration,operator:EQ,value:"0.22"}]){totalCount,nodes{id,company,gender,duration,startDate}}}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['.22'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query without invalid characters to filter a search value that does contains invalid characters', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:duration,operator:EQ,value:"-22"}]){totalCount,nodes{id,company,gender,duration,startDate}}}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.float } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['-2a2'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query without invalid characters to filter a search value with an integer that contains invalid characters', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:duration,operator:EQ,value:"22"}]){totalCount,nodes{id,company,gender,duration,startDate}}}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.integer } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['22;'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should return a query without invalid characters to filter a search value with a number that only has a minus characters', () => {
+      const expectation = `query{users(first:10,offset:0,filterBy:[{field:duration,operator:EQ,value:"0"}]){totalCount,nodes{id,company,gender,duration,startDate}}}`;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['-'] },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
   });
 
