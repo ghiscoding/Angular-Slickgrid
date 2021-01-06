@@ -1,7 +1,9 @@
 import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import Flatpickr from 'flatpickr';
+import * as flatpickr_ from 'flatpickr';
 import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+import { FlatpickrFn } from 'flatpickr/dist/types/instance';
+const flatpickr: FlatpickrFn = (flatpickr_ && flatpickr_['default'] || flatpickr_) as any; // patch for rollup
 
 import { Constants } from '../constants';
 import {
@@ -239,7 +241,7 @@ export class CompoundDateFilter implements Filter {
       placeholder = this.columnFilter.placeholder;
     }
     const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
+    this.flatInstance = (flatpickr && $filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
     return $filterInputElm;
   }
 
