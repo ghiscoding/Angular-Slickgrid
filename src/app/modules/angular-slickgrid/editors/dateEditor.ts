@@ -137,7 +137,7 @@ export class DateEditor implements Editor {
       }
 
       this._$editorInputElm = $(`<div class="flatpickr input-group"></div>`);
-      const closeButtonElm = $(`<span class="input-group-btn" data-clear>
+      const closeButtonElm = $(`<span class="input-group-btn input-group-append" data-clear>
           <button class="btn btn-default icon-close" type="button"></button>
         </span>`);
       this._$input = $(`<input type="text" data-input data-defaultDate="${this.defaultDate}" class="${inputCssClasses.replace(/\./g, ' ')}" placeholder="${placeholder}" title="${title}" />`);
