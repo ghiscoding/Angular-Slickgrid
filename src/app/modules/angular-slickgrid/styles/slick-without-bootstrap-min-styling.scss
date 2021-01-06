@@ -113,6 +113,10 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
+  .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
+    z-index: 2;
+    margin-left: -1px;
+  }
 
   .input-group-addon:not(:first-child):not(:last-child),
   .input-group-btn:not(:first-child):not(:last-child),

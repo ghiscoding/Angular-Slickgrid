@@ -10,12 +10,12 @@ const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
 export class SliderEditor implements Editor {
+  private _defaultValue = 0;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   private _$editorElm: any;
   private _$input: any;
   $sliderNumber: any;
-  defaultValue: any;
   originalValue: any;
 
   /** SlickGrid Grid object */
@@ -63,8 +63,8 @@ export class SliderEditor implements Editor {
 
     // define the input & slider number IDs
     const itemId = this.args && this.args.item && this.args.item.id;
-    this._elementRangeInputId = `rangeInput_${this.columnDef.field}_${itemId}`;
-    this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}_${itemId}`;
+    this._elementRangeInputId = `rangeInput_${this.columnDef.id}_${itemId}`;
+    this._elementRangeOutputId = `rangeOutput_${this.columnDef.id}_${itemId}`;
 
     // create HTML string template
     const editorTemplate = this.buildTemplateHtmlString();
@@ -143,10 +143,10 @@ export class SliderEditor implements Editor {
     if (item && fieldName !== undefined) {
       // is the field a complex object, "address.streetNumber"
       const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
-      let value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      let value = (isComplexObject) ? getDescendantProperty(item, fieldName) : (item.hasOwnProperty(fieldName) ? item[fieldName] : this._defaultValue);
 
       if (value === '' || value === null || value === undefined) {
-        value = this.defaultValue; // load default value when item doesn't have any value
+        value = this._defaultValue; // load default value when item doesn't have any value
       }
       this.originalValue = +value;
       this._$input.val(value);
@@ -198,7 +198,7 @@ export class SliderEditor implements Editor {
     const maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE;
     const defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
     const step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP;
-    this.defaultValue = defaultValue;
+    this._defaultValue = defaultValue;
 
     if (this.editorParams.hideSliderNumber) {
       return `
