@@ -55,4 +55,4 @@ jobs:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
             cd test/cypress
-            yarn cypress:ci
+            npx cypress run --config-file cypress.json --reporter mochawesome --record --key=$CIRCLE_CI_KEY
