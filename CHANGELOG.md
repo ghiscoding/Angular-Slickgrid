@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.25.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.24.1...v2.25.0) (2021-01-06)
+
+
+### Features
+
+* **core:** export Editors, Filters & Formatters as Public ([e244218](https://github.com/ghiscoding/angular-slickgrid/commit/e2442184f11e313150208f2b580ceb73fd3700f5))
+* **core:** methods to change column positions/visibilities dynamically ([49ab5e5](https://github.com/ghiscoding/angular-slickgrid/commit/49ab5e589b12eada71c214054920e7a2e9e02404))
+* **editors:** add Column Editor collectionOverride option ([96cbd78](https://github.com/ghiscoding/angular-slickgrid/commit/96cbd7861765da28bf425666960404cf03c5dcad))
+
+
+### Bug Fixes
+
+* **backend:** GraphQL queries with input filter ([8465610](https://github.com/ghiscoding/angular-slickgrid/commit/8465610439a31bb77362c92dc92c35a707e0a641)), closes [#656](https://github.com/ghiscoding/angular-slickgrid/issues/656)
+* **backend:** oData queries with input filter ([5822de1](https://github.com/ghiscoding/angular-slickgrid/commit/5822de1c12133841a2ba563d3969ce4b9c5c6856))
+* **build:** import Flatpickr Locale on demand via regular imports ([ef06543](https://github.com/ghiscoding/angular-slickgrid/commit/ef065436b40bee8fc175214b74d52f9a79db1a93))
+* **core:** add console error if any of column def id includes dot ([b1aa321](https://github.com/ghiscoding/angular-slickgrid/commit/b1aa32140b80945ee151b9bc9191d9f46e0d11ee))
+* **core:** range default should be inclusive instead of exclusive ([4990162](https://github.com/ghiscoding/angular-slickgrid/commit/499016236ed7d584769b8128d10d12c927d7f1e2)), closes [#650](https://github.com/ghiscoding/angular-slickgrid/issues/650)
+* **core:** use regular imports instead of require to load plugins ([b5204e5](https://github.com/ghiscoding/angular-slickgrid/commit/b5204e5156f51d5e549d48d0532b99a11498fb7c))
+* **editors:** slider value not shown with undefined & fix small styling ([b85c6c5](https://github.com/ghiscoding/angular-slickgrid/commit/b85c6c59609bd8ad2b663510242316cc052102b9))
+* **exports:** should be able to change export file name, fixes [#655](https://github.com/ghiscoding/angular-slickgrid/issues/655) ([7b2a9ef](https://github.com/ghiscoding/angular-slickgrid/commit/7b2a9ef7b13893cb74040bb2a8c95b08b3a7d8bb))
+* **plugin:** Row Detail loses html content when used with Row Selection ([93b59c7](https://github.com/ghiscoding/angular-slickgrid/commit/93b59c766665bc8f4b60786edbf48497aec06962))
+* **sorting:** add cellValueCouldBeUndefined in grid option for sorting ([24584b1](https://github.com/ghiscoding/angular-slickgrid/commit/24584b13369a95cf111f790f27213f3692e04061))
+
 ### [2.24.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.24.0...v2.24.1) (2020-12-10)
 
 
