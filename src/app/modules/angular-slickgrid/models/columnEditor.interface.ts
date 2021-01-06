@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import {
   CollectionCustomStructure,
   CollectionFilterBy,
@@ -32,7 +33,7 @@ export interface ColumnEditor {
   collection?: any[];
 
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
-  collectionAsync?: Promise<any>;
+  collectionAsync?: Promise<any> | Observable<any>;
 
   /** We could filter 1 or more items from the collection */
   collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
