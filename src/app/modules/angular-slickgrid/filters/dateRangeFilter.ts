@@ -14,10 +14,12 @@ import {
   OperatorType,
   SearchTerm,
 } from '../models/index';
-import Flatpickr from 'flatpickr';
-import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+import * as flatpickr_ from 'flatpickr';
 import * as moment_ from 'moment-mini';
-const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+import { FlatpickrFn } from 'flatpickr/dist/types/instance';
+const flatpickr: FlatpickrFn = (flatpickr_ && flatpickr_['default'] || flatpickr_) as any; // patch for rollup
+const moment = moment_['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -243,7 +245,7 @@ export class DateRangeFilter implements Filter {
       placeholder = this.columnFilter.placeholder;
     }
     const $filterInputElm: any = $(`<div class="flatpickr search-filter filter-${columnId}"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
+    this.flatInstance = (flatpickr && $filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
     return $filterInputElm;
   }
 

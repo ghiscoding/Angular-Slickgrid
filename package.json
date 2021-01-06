@@ -99,10 +99,10 @@
     }
   },
   "dependencies": {
-    "@types/jquery": "^3.5.1",
-    "dompurify": "^2.2.2",
+    "@types/jquery": "^3.5.5",
+    "dompurify": "^2.2.6",
     "excel-builder-webpacker": "^1.0.6",
-    "flatpickr": "^4.6.6",
+    "flatpickr": "^4.6.9",
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "jquery-ui-dist": "^1.12.1",
@@ -133,11 +133,11 @@
     "@ng-select/ng-select": "^2.15.3",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "@types/dompurify": "^2.0.1",
+    "@types/dompurify": "^2.2.0",
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^24.0.25",
     "@types/moment": "^2.13.0",
-    "@types/node": "^13.13.4",
+    "@types/node": "^14.14.20",
     "@types/text-encoding-utf-8": "^1.0.1",
     "babel-jest": "^24.9.0",
     "bootstrap": "3.4.1",
@@ -173,9 +173,9 @@
     "tslib": "^2.0.1",
     "tslint": "^5.20.1",
     "typescript": "3.5.3",
-    "uglify-js": "^3.12.1",
+    "uglify-js": "^3.12.4",
     "vinyl-paths": "^2.1.0",
-    "yargs": "^15.4.1",
+    "yargs": "^16.2.0",
     "zone.js": "~0.9.1"
   }
 }
