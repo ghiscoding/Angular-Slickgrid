@@ -64,12 +64,10 @@ module.exports = {
   }
 };
 ```
-You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silent the warning.
+You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silent the warnings.
 ```json
 "options": {
-  "allowedCommonJsDependencies": [
-    "angular-slickgrid"
-  ]
+  "allowedCommonJsDependencies": ["angular-slickgrid"]
 }
 ```
 
