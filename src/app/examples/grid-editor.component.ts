@@ -254,6 +254,11 @@ export class GridEditorComponent implements OnInit {
             value: 0,
             operator: OperatorType.notEqual
           },
+          // you could also provide a collection override to filter/sort based on the item dataContext or whatever else
+          // collectionOverride: (updatedCollection, args) => {
+          //   console.log(args);
+          //   return updatedCollection.filter((col) => args.dataContext.id % 2 ? col.value < 50 : col.value >= 50);
+          // },
           editorOptions: {
             maxHeight: 400
           }

@@ -23,7 +23,7 @@
     "postbuild:gh-demo:with-e2e": "npm run cypress:ci",
     "delete:dist": "cross-env rimraf dist",
     "cypress": "cd test/cypress && node node_modules/cypress/bin/cypress open",
-    "cypress:ci": "cd test/cypress && npm run cypress:ci",
+    "cypress:ci": "cd test/cypress && npm run cypress:ci --record",
     "test": "npm run test:jest",
     "test:jest": "node_modules/.bin/jest --config test/jest.config.js",
     "jest:clear": "node_modules/.bin/jest --clearCache",
