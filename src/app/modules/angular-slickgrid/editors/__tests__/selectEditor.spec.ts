@@ -634,6 +634,24 @@ describe('SelectEditor', () => {
       });
     });
 
+    describe('collectionOverride callback option', () => {
+      it('should create the multi-select editor and expect a different collection outputed when using the override', () => {
+        mockColumn.internalColumnEditor = {
+          collection: ['other', 'male', 'female'],
+          collectionOverride: (inputCollection) => inputCollection.filter(item => item !== 'other')
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector('.ms-parent.ms-filter.editor-gender button.ms-choice') as HTMLButtonElement;
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(2);
+        expect(editorListElm[0].value).toBe('male');
+        expect(editorListElm[1].value).toBe('female');
+      });
+    });
+
     describe('collectionInsideObjectProperty setting', () => {
       it('should create the multi-select editor with a value/label pair collection that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', () => {
         mockColumn.internalColumnEditor = {

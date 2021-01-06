@@ -1,7 +1,9 @@
+import { Observable } from 'rxjs';
 import {
   CollectionCustomStructure,
   CollectionFilterBy,
   CollectionOption,
+  CollectionOverrideArgs,
   CollectionSortBy,
   EditorValidator,
   FieldType,
@@ -31,13 +33,19 @@ export interface ColumnEditor {
   collection?: any[];
 
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
-  collectionAsync?: Promise<any>;
+  collectionAsync?: Promise<any> | Observable<any>;
+
+  /** We could filter 1 or more items from the collection */
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
   /** Options to change the behavior of the "collection" */
   collectionOptions?: CollectionOption;
 
-  /** We could filter 1 or more items from the collection */
-  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
+  /**
+   * A collection override allows you to manipulate the collection provided to the Column Editor.
+   * NOTE: if you provide a "customStructure" it will still be applied on the collection, in other words make sure that the collection returned by the override does have the properties defined in the "customStructure".
+   */
+  collectionOverride?: (collectionInput: any[], args: CollectionOverrideArgs) => any[];
 
   /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
   collectionSortBy?: CollectionSortBy | CollectionSortBy[];

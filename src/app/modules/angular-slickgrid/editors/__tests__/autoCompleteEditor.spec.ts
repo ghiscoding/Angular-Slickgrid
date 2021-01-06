@@ -245,6 +245,23 @@ describe('AutoCompleteEditor', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    describe('collectionOverride callback option', () => {
+      it('should create the editor and expect a different collection outputed when using the override', () => {
+        mockColumn.internalColumnEditor = {
+          collection: [{ value: 'other', label: 'Other' }, { value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }],
+          collectionOverride: (inputCollection) => inputCollection.filter(item => item.value !== 'other')
+        };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.destroy();
+        editor.init();
+        const editorCount = divContainer.querySelectorAll('input.editor-text.editor-gender').length;
+
+        expect(editorCount).toBe(1);
+        expect(editor.elementCollection).toEqual([{ value: 'male', label: 'Male', labelPrefix: '', labelSuffix: '' }, { value: 'female', label: 'Female', labelPrefix: '', labelSuffix: '' }]);
+      });
+    });
+
     describe('applyValue method', () => {
       it('should apply the value to the gender property when it passes validation', () => {
         mockColumn.internalColumnEditor.validator = null;

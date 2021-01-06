@@ -157,8 +157,8 @@ export class SelectEditor implements Editor {
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column | undefined {
-    return this.args && this.args.column;
+  get columnDef(): Column {
+    return this.args.column;
   }
 
   /** Get Column Editor object */
@@ -550,6 +550,11 @@ export class SelectEditor implements Editor {
     // user might want to filter and/or sort certain items of the collection
     newCollection = this.filterCollection(newCollection);
     newCollection = this.sortCollection(newCollection);
+
+    // user could also override the collection
+    if (this.columnEditor && this.columnEditor.collectionOverride) {
+      newCollection = this.columnEditor.collectionOverride(newCollection, { column: this.columnDef, dataContext: this.args.item, grid: this.grid });
+    }
 
     // step 1, create HTML string template
     const editorTemplate = this.buildTemplateHtmlString(newCollection);
