@@ -634,6 +634,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       });
 
+      // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
+      if (this.gridOptions && this.gridOptions.enableTreeData && this.gridOptions.enablePagination) {
+        throw new Error('[Angular-Slickgrid] It looks like you are trying to use Tree Data with Pagination but unfortunately that is simply not supported because of its complexity.');
+      }
+
       // when dealing with Tree Data View, make sure we have necessary tree data options
       if (this.gridOptions && this.gridOptions.enableTreeData && (!this.gridOptions.treeDataOptions || !this.gridOptions.treeDataOptions.columnId)) {
         throw new Error('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName" (depending if your array is hierarchical or flat) for the Tree Data to work properly');
