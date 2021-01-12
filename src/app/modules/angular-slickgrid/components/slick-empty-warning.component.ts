@@ -61,6 +61,18 @@ export class SlickEmptyWarningComponent {
       return false;
     }
 
+    // when dealing with a grid that has "autoHeight" option, we need to override 2 height that get miscalculated
+    // that is because it is not aware that we are adding this slick empty element in this grid DOM
+    if (this.gridOptions.autoHeight) {
+      const leftPaneElm = document.querySelector<HTMLDivElement>('.slick-pane.slick-pane-top.slick-pane-left');
+      if (leftPaneElm && leftPaneElm.style && gridCanvasLeftElm && gridCanvasLeftElm.style) {
+        const leftPaneHeight = parseInt(leftPaneElm.style.height, 10) || 0;
+        const gridRowHeight = this.gridOptions.rowHeight || 0;
+        leftPaneElm.style.height = `${leftPaneHeight + gridRowHeight}px`;
+        gridCanvasLeftElm.style.height = `${gridRowHeight}px`;
+      }
+    }
+
     // warning message could come from a translation key or by the warning options
     let warningMessage = mergedOptions.message;
     if (this.gridOptions.enableTranslate && this.translate && this.translate.instant && mergedOptions && mergedOptions.messageKey) {
