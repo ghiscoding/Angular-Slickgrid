@@ -888,6 +888,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.loadPresetsWhenDatasetInitialized();
         this._isDatasetInitialized = true;
       }
+
+      if (datasetLn === 0 && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
+        this.displayEmptyDataWarning(true);
+      }
     }
 
     // user might want to hide the header row on page load but still have `enableFiltering: true`
