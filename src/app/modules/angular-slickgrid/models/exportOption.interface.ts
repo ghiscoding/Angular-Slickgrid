@@ -14,7 +14,7 @@ export interface ExportOption {
   filename?: string;
 
   /** file type format, .csv/.txt (this will provide the extension) */
-  format?: FileType;
+  format?: FileType.csv | FileType.txt;
 
   /** The column header title (at A0 in Excel) of the Group by. If nothing is provided it will use "Group By" (which is a translated value of GROUP_BY i18n) */
   groupingColumnHeaderTitle?: string;
