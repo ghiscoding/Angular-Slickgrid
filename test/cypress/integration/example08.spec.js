@@ -123,7 +123,7 @@ describe('Example 8 - Header Menu Plugin', () => {
     cy.get('#grid8')
       .find('.slick-row .slick-cell:nth(2)')
       .each($row => {
-        expect(+$row.text()).to.be.greaterThan(80);
+        expect(+$row.text()).to.be.greaterThan(60);
       });
   });
 
