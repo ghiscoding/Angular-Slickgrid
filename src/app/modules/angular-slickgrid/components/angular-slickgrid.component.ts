@@ -269,6 +269,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         Without that the grid will seem empty while in fact it just does not have any height define.`
       );
     }
+
+    // recheck the empty warning message after grid is shown so that it works in every use case
+    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
+      const finalTotalCount = this.dataset.length;
+      this.displayEmptyDataWarning(finalTotalCount < 1);
+    }
   }
 
   ngOnInit(): void {

@@ -301,7 +301,7 @@ export interface GridOption {
   /** Some default options to set for the export service */
   exportOptions?: ExportOption;
 
-  /** Defaults to 25, which is the grid footer row panel height */
+  /** Defaults to 25, which is the grid footer row panel height (must be a number) */
   footerRowHeight?: number;
 
   /** Do we want to force fit columns in the grid at all time? */
@@ -340,7 +340,7 @@ export interface GridOption {
   /** Grid DOM element ID */
   gridId?: string;
 
-  /** Header row height in pixels (only type the number). Header row is where the filters are. */
+  /** Header row height in pixels (must be a number), that is the Filter header row height. */
   headerRowHeight?: number;
 
   /** Header button options */
@@ -402,7 +402,7 @@ export interface GridOption {
   /** Row Detail View Plugin options & events (columnId, cssClass, toolTip, width) */
   rowDetailView?: RowDetailView;
 
-  /** Grid row height in pixels (only type the number). Row of cell values. */
+  /** Grid row height in pixels (must be a number). Height of each cell row. */
   rowHeight?: number;
 
   /** Row Move Manager Plugin options & events */
