@@ -25,7 +25,7 @@ import {
   SlickEventHandler,
 } from './../models/index';
 import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
-import { getDescendantProperty } from './utilities';
+import { getDescendantProperty, mapOperatorByFieldType } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
 import { SharedService } from './shared.service';
@@ -43,7 +43,7 @@ export class FilterService {
   private _eventHandler: SlickEventHandler;
   private _isFilterFirstRender = true;
   private _firstColumnIdRendered = '';
-  private _filtersMetadata: any[] = [];
+  protected _filtersMetadata: Array<Filter> = [];
   private _columnFilters: ColumnFilters = {};
   private _grid: any;
   private _onSearchChange: SlickEvent | null;
@@ -130,7 +130,7 @@ export class FilterService {
     if (Array.isArray(this._filtersMetadata)) {
       this._filtersMetadata.forEach((filter) => {
         if (filter && filter.destroy) {
-          filter.destroy(true);
+          filter.destroy();
         }
       });
     }
@@ -228,7 +228,7 @@ export class FilterService {
     }
 
     // find the filter object and call its clear method with true (the argument tells the method it was called by a clear filter)
-    const colFilter: Filter = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
+    const colFilter: Filter | undefined = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
     if (colFilter && colFilter.clear) {
       colFilter.clear(true);
     }
@@ -830,6 +830,7 @@ export class FilterService {
       const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
       const columnDef = args.columnDef || null;
       const columnId = columnDef && columnDef.id || '';
+      const fieldType = columnDef && columnDef.filter && columnDef.filter.type || columnDef && columnDef.type || FieldType.string;
       const operator = args.operator || undefined;
       const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
       const termsCount = hasSearchTerms && searchTerms && searchTerms.length;
@@ -847,9 +848,7 @@ export class FilterService {
             columnDef,
             searchTerms,
           };
-          if (operator) {
-            colFilter.operator = operator;
-          }
+          colFilter.operator = operator || mapOperatorByFieldType(fieldType);
           this._columnFilters[colId] = colFilter;
         }
       }
@@ -868,7 +867,7 @@ export class FilterService {
           columnId,
           columnDef,
           columnFilters: this._columnFilters,
-          operator,
+          operator: operator || mapOperatorByFieldType(fieldType),
           searchTerms,
           grid: this._grid
         }, eventData);

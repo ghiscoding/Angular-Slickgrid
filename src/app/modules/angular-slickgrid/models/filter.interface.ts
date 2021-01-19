@@ -20,14 +20,20 @@ export interface Filter {
   /** SlickGrid grid object */
   grid: any;
 
-  /** Array of defined search terms to pre-load */
-  searchTerms?: SearchTerm[];
+  /** The default search operator for the filter when not provided */
+  defaultOperator?: OperatorString | OperatorType;
 
   /** The search operator for the filter */
   operator: OperatorType | OperatorString;
 
-  /** You can use "params" to pass any types of arguments to your Filter */
+  /** You can use "params" to pass any generic arguments to your Filter */
   params?: any | any[];
+
+  /** Array of defined search terms to pre-load */
+  searchTerms?: SearchTerm[];
+
+  // --
+  // public functions
 
   /** Filter class initialization, executed by the FilterService right after creating the Filter */
   init: (args: FilterArguments, isFilterFirstRender?: boolean) => void;
@@ -42,5 +48,5 @@ export interface Filter {
   getValues?: () => SearchTerm | SearchTerm[] | undefined;
 
   /** Set value(s) on the DOM element */
-  setValues: (values: SearchTerm | SearchTerm[] | undefined) => void;
+  setValues: (values: SearchTerm | SearchTerm[] | undefined, operator?: OperatorType | OperatorString) => void;
 }
