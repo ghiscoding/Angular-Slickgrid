@@ -228,7 +228,7 @@ export class FilterService {
     }
 
     // find the filter object and call its clear method with true (the argument tells the method it was called by a clear filter)
-    const colFilter: Filter = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
+    const colFilter: Filter | undefined = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
     if (colFilter && colFilter.clear) {
       colFilter.clear(true);
     }
