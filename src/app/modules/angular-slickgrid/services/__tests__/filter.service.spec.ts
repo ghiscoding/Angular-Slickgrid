@@ -8,10 +8,11 @@ import { of, throwError } from 'rxjs';
 import {
   BackendService,
   Column,
+  ColumnFilters,
   CurrentFilter,
+  FieldType,
   GridMenuItem,
   GridOption,
-  FieldType,
   MenuCommandItem,
   SlickEventHandler,
 } from '../../models';
@@ -19,7 +20,7 @@ import { Filters } from '../../filters';
 import { FilterService } from '../filter.service';
 import { FilterFactory } from '../../filters/filterFactory';
 import { SharedService } from '../shared.service';
-import { SlickgridConfig, CollectionService } from '../..';
+import { CollectionService, SlickgridConfig } from '../../index';
 import * as utilities from '../../services/backend-utilities';
 
 const mockRefreshBackendDataset = jest.fn();
@@ -1361,11 +1362,11 @@ describe('FilterService', () => {
         gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
         gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
 
-        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['map'] } };
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', operator: 'Contains', searchTerms: ['map'] } };
         service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['map'] }], true, true, true);
         const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
-        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['map',] }]);
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', operator: 'Contains', searchTerms: ['map',] }]);
         expect(output).toBe(true);
         expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
         expect(preFilterSpy).toHaveReturnedWith([21, 4, 5]);
@@ -1385,11 +1386,11 @@ describe('FilterService', () => {
         gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
         gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
 
-        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['map'] } };
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', operator: 'Contains', searchTerms: ['map'] } };
         service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['map'] }], true, true, true);
         const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
-        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['map',] }]);
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', operator: 'Contains', searchTerms: ['map',] }]);
         expect(output).toBe(false);
         expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
         expect(preFilterSpy).toHaveReturnedWith([21, 4, 5]);
@@ -1409,13 +1410,13 @@ describe('FilterService', () => {
         gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
         gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
 
-        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['unknown'] } };
+        const columnFilters = { file: { columnDef: mockColumn1, columnId: 'file', searchTerms: ['unknown'] } } as ColumnFilters;
         service.updateFilters([{ columnId: 'file', operator: '', searchTerms: ['unknown'] }], true, true, true);
         const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
-        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', searchTerms: ['unknown',] }]);
+        expect(spyRxjs).toHaveBeenCalledWith([{ columnId: 'file', operator: 'Contains', searchTerms: ['unknown',] }]);
         expect(output).toBe(false);
-        expect(preFilterSpy).toHaveBeenCalledWith(dataset, columnFilters);
+        expect(preFilterSpy).toHaveBeenCalledWith(dataset, { ...columnFilters, file: { ...columnFilters.file, operator: 'Contains' } }); // it will use Contains by default
         expect(preFilterSpy).toHaveReturnedWith([]);
       });
     });
