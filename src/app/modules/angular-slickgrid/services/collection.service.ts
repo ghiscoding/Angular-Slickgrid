@@ -15,7 +15,7 @@ import { uniqueArray } from './utilities';
 
 @Injectable()
 export class CollectionService<T = any> {
-  constructor(@Optional() private translate: TranslateService) { }
+  constructor(@Optional() private readonly translate: TranslateService) { }
 
   /**
    * Filter 1 or more items from a collection

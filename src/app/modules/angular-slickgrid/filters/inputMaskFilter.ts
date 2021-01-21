@@ -2,7 +2,7 @@ import { InputFilter } from './inputFilter';
 import { FilterArguments } from '../models/filterArguments.interface';
 
 export class InputMaskFilter extends InputFilter {
-  private _inputMask: string;
+  protected _inputMask: string;
 
   /** Initialize the Filter */
   constructor() {
@@ -86,7 +86,7 @@ export class InputMaskFilter extends InputFilter {
   }
 
   /** From a regular string, we will use the mask to output a new string */
-  private maskValue(inputValue: string): string {
+  protected maskValue(inputValue: string): string {
     let i = 0;
     let maskedValue = '';
 
@@ -107,7 +107,7 @@ export class InputMaskFilter extends InputFilter {
   }
 
   /** From a masked string, we will remove the mask and make a regular string again */
-  private unmaskValue(maskedValue: string): string {
+  protected unmaskValue(maskedValue: string): string {
     // remove anything else but digits and chars from both the input mask and the input masked value for later comparison
     // e.g. (000) 000-0000 would return 0000000000
     const valueWithoutSymbols = maskedValue.replace(/[^0-9a-z]*/gi, '');
