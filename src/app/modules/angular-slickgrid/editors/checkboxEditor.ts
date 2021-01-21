@@ -10,13 +10,13 @@ declare const $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CheckboxEditor implements Editor {
-  private _$input: any;
+  protected _$input: any;
   originalValue: boolean;
 
   /** SlickGrid Grid object */
   grid: any;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }

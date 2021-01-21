@@ -28,14 +28,14 @@ const MIN_LENGTH = 3;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class AutoCompleteEditor implements Editor {
-  private _autoCompleteOptions: AutocompleteOption;
-  private _currentValue: any;
-  private _defaultTextValue: string;
-  private _elementCollection: any[] | null;
-  private _lastInputEvent: JQuery.Event;
+  protected _autoCompleteOptions: AutocompleteOption;
+  protected _currentValue: any;
+  protected _defaultTextValue: string;
+  protected _elementCollection: any[] | null;
+  protected _lastInputEvent: JQuery.Event;
 
   /** The JQuery DOM element */
-  private _$editorElm: any;
+  protected _$editorElm: any;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -54,7 +54,7 @@ export class AutoCompleteEditor implements Editor {
 
   forceUserInput: boolean;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
@@ -268,10 +268,10 @@ export class AutoCompleteEditor implements Editor {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
-  // this function should be PRIVATE but for unit tests purposes we'll make it public until a better solution is found
+  // this function should be protected but for unit tests purposes we'll make it public until a better solution is found
   // a better solution would be to get the autocomplete DOM element to work with selection but I couldn't find how to do that in Jest
   onSelect(_event: Event, ui: { item: any; }) {
     if (ui && ui.item) {
@@ -288,7 +288,7 @@ export class AutoCompleteEditor implements Editor {
     return false;
   }
 
-  private renderCustomItem(ul: HTMLElement, item: any) {
+  protected renderCustomItem(ul: HTMLElement, item: any) {
     const templateString = this._autoCompleteOptions && this._autoCompleteOptions.renderItem && this._autoCompleteOptions.renderItem.templateCallback(item) || '';
 
     // sanitize any unauthorized html tags like script and others
@@ -301,7 +301,7 @@ export class AutoCompleteEditor implements Editor {
       .appendTo(ul);
   }
 
-  private renderCollectionItem(ul: HTMLElement, item: any) {
+  protected renderCollectionItem(ul: HTMLElement, item: any) {
     const isRenderHtmlEnabled = this.columnEditor && this.columnEditor.enableRenderHtml || false;
     const prefixText = item.labelPrefix || '';
     const labelText = item.label || '';
@@ -319,7 +319,7 @@ export class AutoCompleteEditor implements Editor {
       .appendTo(ul);
   }
 
-  private renderDomElement(collection: any[]) {
+  protected renderDomElement(collection: any[]) {
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Autocomplete Editor is not a valid array.');
     }

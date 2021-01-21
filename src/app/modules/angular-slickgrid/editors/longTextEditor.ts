@@ -25,10 +25,10 @@ declare const $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class LongTextEditor implements Editor {
-  private _locales: Locale;
-  private _$textarea: any;
-  private _$currentLengthElm: any;
-  private _$wrapper: any;
+  protected _locales: Locale;
+  protected _$textarea: any;
+  protected _$currentLengthElm: any;
+  protected _$wrapper: any;
   defaultValue: any;
 
   /** SlickGrid Grid object */
@@ -38,9 +38,9 @@ export class LongTextEditor implements Editor {
   gridOptions: GridOption;
 
   /** The translate library */
-  private _translate: TranslateService;
+  protected _translate: TranslateService;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
@@ -289,10 +289,10 @@ export class LongTextEditor implements Editor {
   }
 
   // --
-  // private functions
+  // protected functions
   // ------------------
 
-  private handleKeyDown(event: KeyboardEvent) {
+  protected handleKeyDown(event: KeyboardEvent) {
     const keyCode = event.keyCode || event.code;
     if (keyCode === KeyCode.ENTER && event.ctrlKey) {
       this.save();
@@ -313,7 +313,7 @@ export class LongTextEditor implements Editor {
   }
 
   /** On every input change event, we'll update the current text length counter */
-  private handleOnInputChange(event: JQuery.Event & { originalEvent: any, target: HTMLTextAreaElement }) {
+  protected handleOnInputChange(event: JQuery.Event & { originalEvent: any, target: HTMLTextAreaElement }) {
     const maxLength = this.columnEditor && this.columnEditor.maxLength;
 
     // when user defines a maxLength, we'll make sure that it doesn't go over this limit if so then truncate the text (disregard the extra text)
@@ -337,7 +337,7 @@ export class LongTextEditor implements Editor {
    * @param maxLength - max acceptable length
    * @returns truncated - returns True if it truncated or False otherwise
    */
-  private truncateText($inputElm: JQuery<HTMLTextAreaElement>, maxLength: number): boolean {
+  protected truncateText($inputElm: JQuery<HTMLTextAreaElement>, maxLength: number): boolean {
     const text = $inputElm.val() + '';
     if (text.length > maxLength) {
       $inputElm.val(text.substring(0, maxLength));

@@ -31,14 +31,14 @@ declare const $: any;
  * https://chmln.github.io/flatpickr
  */
 export class DateEditor implements Editor {
-  private _$inputWithData: any;
-  private _$input: any;
-  private _$editorInputElm: any;
-  private _originalDate: string;
-  private _pickerMergedOptions: FlatpickrOption;
+  protected _$inputWithData: any;
+  protected _$input: any;
+  protected _$editorInputElm: any;
+  protected _originalDate: string;
+  protected _pickerMergedOptions: FlatpickrOption;
 
   /** The translate library */
-  private _translate: TranslateService;
+  protected _translate: TranslateService;
 
   flatInstance: any;
   defaultDate: string;
@@ -50,7 +50,7 @@ export class DateEditor implements Editor {
   /** Grid options */
   gridOptions: GridOption;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }

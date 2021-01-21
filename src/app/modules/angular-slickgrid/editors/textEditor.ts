@@ -10,14 +10,14 @@ declare const $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class TextEditor implements Editor {
-  private _lastInputEvent: JQuery.Event;
-  private _$input: any;
+  protected _lastInputEvent: JQuery.Event;
+  protected _$input: any;
   originalValue: string;
 
   /** SlickGrid Grid object */
   grid: any;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
