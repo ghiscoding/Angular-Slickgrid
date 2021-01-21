@@ -624,20 +624,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.bindOnClick(grid, dataView);
 
     if (dataView && grid) {
-      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
+      // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
+      // we will do that via the following 2 handlers (onSetItemsCalled, onRowCountChanged)
+      this._eventHandler.subscribe(dataView.onSetItemsCalled, () => {
+        this.handleOnItemsChanged(this.dataset.length);
+      });
+
+      this._eventHandler.subscribe(dataView.onRowCountChanged, (_e: Event, args: any) => {
         grid.invalidate();
-
-        this.metrics = {
-          startTime: new Date(),
-          endTime: new Date(),
-          itemCount: args && args.current || 0,
-          totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
-        };
-
-        // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
-        if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
-          this.displayEmptyDataWarning(args.current === 0);
-        }
+        this.handleOnItemsChanged(args.current || 0);
       });
 
       // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
@@ -773,6 +768,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
         this.sortService.loadGridSorters(gridOptions.presets.sorters);
       }
+    }
+  }
+
+  /** When data changes in the DataView, we'll refresh the metrics and/or display a warning if the dataset is empty */
+  private handleOnItemsChanged(itemCount: number) {
+    this.metrics = {
+      startTime: new Date(),
+      endTime: new Date(),
+      itemCount: itemCount,
+      totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
+    };
+
+    // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
+    if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
+      this.displayEmptyDataWarning(itemCount === 0);
     }
   }
 
