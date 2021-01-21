@@ -31,25 +31,25 @@ require('flatpickr');
 declare const $: any;
 
 export class CompoundDateFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private _currentDate: Date;
-  private _flatpickrOptions: FlatpickrOption;
-  private _shouldTriggerQuery = true;
-  private $filterElm: any;
-  private $filterInputElm: any;
-  private $selectOperatorElm: any;
-  private _currentValue: string;
-  private _operator: OperatorType | OperatorString;
+  protected _clearFilterTriggered = false;
+  protected _currentDate: Date;
+  protected _flatpickrOptions: FlatpickrOption;
+  protected _shouldTriggerQuery = true;
+  protected $filterElm: any;
+  protected $filterInputElm: any;
+  protected $selectOperatorElm: any;
+  protected _currentValue: string;
+  protected _operator: OperatorType | OperatorString;
   flatInstance: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(@Optional() private translate: TranslateService) { }
+  constructor(@Optional() protected readonly translate: TranslateService) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
-  private get gridOptions(): GridOption {
+  protected get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
@@ -182,9 +182,9 @@ export class CompoundDateFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
-  private buildDatePickerInput(searchTerm?: SearchTerm) {
+  protected buildDatePickerInput(searchTerm?: SearchTerm) {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnFilter.type || this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnFilter.type || this.columnDef.type || FieldType.dateUtc);
     const userFilterOptions = (this.columnFilter && this.columnFilter.filterOptions || {}) as FlatpickrOption;
@@ -245,7 +245,7 @@ export class CompoundDateFilter implements Filter {
     return $filterInputElm;
   }
 
-  private getOptionValues(): { operator: OperatorString, description: string }[] {
+  protected getOptionValues(): { operator: OperatorString, description: string }[] {
     return [
       { operator: '', description: '' },
       { operator: '=', description: this.getOutputText('EQUAL_TO', 'TEXT_EQUAL_TO', 'Equal to') },
@@ -258,7 +258,7 @@ export class CompoundDateFilter implements Filter {
   }
 
   /** Get Locale, Translated or a Default Text if first two aren't detected */
-  private getOutputText(translationKey: string, localeText: string, defaultText: string): string {
+  protected getOutputText(translationKey: string, localeText: string, defaultText: string): string {
     if (this.gridOptions && this.gridOptions.enableTranslate && this.translate && this.translate.instant) {
       const translationPrefix = getTranslationPrefix(this.gridOptions);
       return this.translate.instant(`${translationPrefix}${translationKey}`);
@@ -269,7 +269,7 @@ export class CompoundDateFilter implements Filter {
   /**
    * Create the DOM element
    */
-  private createDomElement(searchTerm?: SearchTerm) {
+  protected createDomElement(searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
@@ -320,7 +320,7 @@ export class CompoundDateFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private onTriggerEvent(e: Event | undefined) {
+  protected onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this.$filterElm.removeClass('filled');

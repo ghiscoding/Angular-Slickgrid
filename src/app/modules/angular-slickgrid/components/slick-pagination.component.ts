@@ -26,7 +26,7 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   textPage = 'Page';
 
   /** Constructor */
-  constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) { }
+  constructor(private readonly paginationService: PaginationService, @Optional() private readonly translate: TranslateService) { }
 
   get availablePageSizes(): number[] {
     return this.paginationService.availablePageSizes;

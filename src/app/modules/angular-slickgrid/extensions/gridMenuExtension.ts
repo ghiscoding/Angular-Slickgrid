@@ -38,13 +38,13 @@ export class GridMenuExtension implements Extension {
   private _userOriginalGridMenu: GridMenu;
 
   constructor(
-    private excelExportService: ExcelExportService,
-    private exportService: ExportService,
-    private extensionUtility: ExtensionUtility,
-    private filterService: FilterService,
-    private sharedService: SharedService,
-    private sortService: SortService,
-    @Optional() private translate: TranslateService,
+    private readonly excelExportService: ExcelExportService,
+    private readonly exportService: ExportService,
+    private readonly extensionUtility: ExtensionUtility,
+    private readonly filterService: FilterService,
+    private readonly sharedService: SharedService,
+    private readonly sortService: SortService,
+    @Optional() private readonly translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }

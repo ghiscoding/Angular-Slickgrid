@@ -8,7 +8,7 @@ import { getTranslationPrefix } from '../services/utilities';
 
 @Injectable()
 export class ExtensionUtility {
-  constructor(private sharedService: SharedService, @Optional() private translate: TranslateService) { }
+  constructor(private sharedService: SharedService, @Optional() private readonly translate: TranslateService) { }
 
   /**
    * From a Grid Menu object property name, we will return the correct title output string following this order

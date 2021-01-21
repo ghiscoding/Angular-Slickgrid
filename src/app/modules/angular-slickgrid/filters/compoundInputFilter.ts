@@ -21,20 +21,19 @@ import { getTranslationPrefix, mapOperatorToShorthandDesignation } from '../serv
 declare const $: any;
 
 export class CompoundInputFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private _locales: Locale;
-  private _shouldTriggerQuery = true;
-  private _inputType = 'text';
-  private $filterElm: any;
-  private $filterInputElm: any;
-  private $selectOperatorElm: any;
-  private _operator: OperatorType | OperatorString;
+  protected _clearFilterTriggered = false;
+  protected _shouldTriggerQuery = true;
+  protected _inputType = 'text';
+  protected $filterElm: any;
+  protected $filterInputElm: any;
+  protected $selectOperatorElm: any;
+  protected _operator: OperatorType | OperatorString;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(protected translate: TranslateService) { }
+  constructor(protected readonly translate: TranslateService) { }
 
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
@@ -47,7 +46,7 @@ export class CompoundInputFilter implements Filter {
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
-  private get gridOptions(): GridOption {
+  protected get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
@@ -147,10 +146,10 @@ export class CompoundInputFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
-  private buildInputHtmlString() {
+  protected buildInputHtmlString() {
     let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
@@ -158,7 +157,7 @@ export class CompoundInputFilter implements Filter {
     return `<input type="${this._inputType || 'text'}" role="presentation"  autocomplete="off" class="form-control compound-input" placeholder="${placeholder}" /><span></span>`;
   }
 
-  private getOptionValues(): { operator: OperatorString, description: string }[] {
+  protected getOptionValues(): { operator: OperatorString, description: string }[] {
     const type = (this.columnDef.type && this.columnDef.type) ? this.columnDef.type : FieldType.string;
     let optionValues = [];
 
@@ -191,7 +190,7 @@ export class CompoundInputFilter implements Filter {
   }
 
   /** Get Locale, Translated or a Default Text if first two aren't detected */
-  private getOutputText(translationKey: string, localeText: string, defaultText: string): string {
+  protected getOutputText(translationKey: string, localeText: string, defaultText: string): string {
     if (this.gridOptions && this.gridOptions.enableTranslate && this.translate && this.translate.instant) {
       const translationPrefix = getTranslationPrefix(this.gridOptions);
       return this.translate.instant(`${translationPrefix}${translationKey}`);
@@ -202,7 +201,7 @@ export class CompoundInputFilter implements Filter {
   /**
    * Create the DOM element
    */
-  private createDomElement(searchTerm?: SearchTerm) {
+  protected createDomElement(searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
@@ -251,7 +250,7 @@ export class CompoundInputFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private onTriggerEvent(e: KeyboardEvent | undefined) {
+  protected onTriggerEvent(e: KeyboardEvent | undefined) {
     // we'll use the "input" event for everything (keyup, change, mousewheel & spinner)
     // with 1 small exception, we need to use the keyup event to handle ENTER key, everything will be processed by the "input" event
     if (e && e.type === 'keyup' && e.key !== 'Enter') {

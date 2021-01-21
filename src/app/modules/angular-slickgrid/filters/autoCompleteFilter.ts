@@ -27,10 +27,10 @@ declare const $: any;
 
 @Injectable()
 export class AutoCompleteFilter implements Filter {
-  private _autoCompleteOptions: AutocompleteOption;
-  private _clearFilterTriggered = false;
-  private _collection: any[] | null;
-  private _shouldTriggerQuery = true;
+  protected _autoCompleteOptions: AutocompleteOption;
+  protected _clearFilterTriggered = false;
+  protected _collection: any[] | null;
+  protected _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
@@ -65,7 +65,7 @@ export class AutoCompleteFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(protected translate: TranslateService, protected collectionService: CollectionService) { }
+  constructor(protected readonly translate: TranslateService, protected readonly collectionService: CollectionService) { }
 
   /** Getter for the Autocomplete Option */
   get autoCompleteOptions(): Partial<AutocompleteOption> {
@@ -346,7 +346,7 @@ export class AutoCompleteFilter implements Filter {
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString() {
+  protected buildTemplateHtmlString() {
     const columnId = this.columnDef && this.columnDef.id;
     let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     if (this.columnFilter && this.columnFilter.placeholder) {
@@ -359,7 +359,7 @@ export class AutoCompleteFilter implements Filter {
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string, collection: any[], searchTerm?: SearchTerm) {
+  protected createDomElement(filterTemplate: string, collection: any[], searchTerm?: SearchTerm) {
     const columnId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(columnId);
     $($headerElm).empty();
@@ -447,10 +447,10 @@ export class AutoCompleteFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
-  // this function should be PRIVATE but for unit tests purposes we'll make it public until a better solution is found
+  // this function should be protected but for unit tests purposes we'll make it public until a better solution is found
   // a better solution would be to get the autocomplete DOM element to work with selection but I couldn't find how to do that in Jest
   onSelect(event: Event, ui: { item: any; }) {
     if (ui && ui.item) {

@@ -6,7 +6,7 @@ export class MultipleSelectFilter extends SelectFilter {
   /**
    * Initialize the Filter
    */
-  constructor(protected translate: TranslateService, protected collectionService: CollectionService) {
+  constructor(protected readonly translate: TranslateService, protected readonly collectionService: CollectionService) {
     super(translate, collectionService, true);
   }
 }
