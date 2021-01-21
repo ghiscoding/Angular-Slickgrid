@@ -12,14 +12,14 @@ const defaultDecimalPlaces = 0;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class FloatEditor implements Editor {
-  private _lastInputEvent: JQuery.Event;
-  private _$input: any;
+  protected _lastInputEvent: JQuery.Event;
+  protected _$input: any;
   originalValue: number | string;
 
   /** SlickGrid Grid object */
   grid: any;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }

@@ -10,18 +10,18 @@ const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
 export class SliderEditor implements Editor {
-  private _defaultValue = 0;
-  private _elementRangeInputId: string;
-  private _elementRangeOutputId: string;
-  private _$editorElm: any;
-  private _$input: any;
+  protected _defaultValue = 0;
+  protected _elementRangeInputId: string;
+  protected _elementRangeOutputId: string;
+  protected _$editorElm: any;
+  protected _$input: any;
   $sliderNumber: any;
   originalValue: any;
 
   /** SlickGrid Grid object */
   grid: any;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
@@ -49,7 +49,7 @@ export class SliderEditor implements Editor {
   }
 
   /** Getter for the Editor Generic Params */
-  private get editorParams(): any {
+  protected get editorParams(): any {
     return this.columnEditor.params || {};
   }
 
@@ -185,13 +185,13 @@ export class SliderEditor implements Editor {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString() {
+  protected buildTemplateHtmlString() {
     const fieldId = this.columnDef && this.columnDef.id;
     const title = this.columnEditor && this.columnEditor.title || '';
     const minValue = this.columnEditor.hasOwnProperty('minValue') ? this.columnEditor.minValue : DEFAULT_MIN_VALUE;
