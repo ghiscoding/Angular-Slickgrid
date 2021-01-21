@@ -28,9 +28,9 @@ export class CellMenuExtension implements Extension {
   private _locales: Locale;
 
   constructor(
-    private extensionUtility: ExtensionUtility,
-    private sharedService: SharedService,
-    @Optional() private translate: TranslateService,
+    private readonly extensionUtility: ExtensionUtility,
+    private readonly sharedService: SharedService,
+    @Optional() private readonly translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }

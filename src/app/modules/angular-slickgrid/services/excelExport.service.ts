@@ -48,7 +48,7 @@ export class ExcelExportService {
   onGridBeforeExportToExcel = new Subject<boolean>();
   onGridAfterExportToExcel = new Subject<{ blob?: Blob; filename: string; format?: string; }>();
 
-  constructor(@Optional() private translate: TranslateService) { }
+  constructor(@Optional() private readonly translate: TranslateService) { }
 
   private get datasetIdName(): string {
     return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';

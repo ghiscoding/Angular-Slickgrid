@@ -33,12 +33,12 @@ export class ContextMenuExtension implements Extension {
   private _userOriginalContextMenu: ContextMenu | undefined;
 
   constructor(
-    private excelExportService: ExcelExportService,
-    private exportService: ExportService,
-    private extensionUtility: ExtensionUtility,
-    private sharedService: SharedService,
-    private treeDataService: TreeDataService,
-    @Optional() private translate: TranslateService,
+    private readonly excelExportService: ExcelExportService,
+    private readonly exportService: ExportService,
+    private readonly extensionUtility: ExtensionUtility,
+    private readonly sharedService: SharedService,
+    private readonly treeDataService: TreeDataService,
+    @Optional() private readonly translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }

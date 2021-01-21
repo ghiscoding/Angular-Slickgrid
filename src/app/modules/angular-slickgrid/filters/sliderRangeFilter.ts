@@ -21,24 +21,24 @@ const DEFAULT_STEP = 1;
 
 /** A Slider Range Filter which uses jQuery UI, this is only meant to be used as a range filter (with 2 handles lowest & highest values) */
 export class SliderRangeFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private _currentValues: number[];
-  private _shouldTriggerQuery = true;
-  private _sliderOptions: JQueryUiSliderOption;
-  private $filterElm: any;
-  private $filterContainerElm: any;
+  protected _clearFilterTriggered = false;
+  protected _currentValues: number[];
+  protected _shouldTriggerQuery = true;
+  protected _sliderOptions: JQueryUiSliderOption;
+  protected $filterElm: any;
+  protected $filterContainerElm: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
   /** Getter for the Filter Generic Params */
-  private get filterParams(): any {
+  protected get filterParams(): any {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
   }
 
   /** Getter for the `filter` properties */
-  private get filterProperties(): ColumnFilter {
+  protected get filterProperties(): ColumnFilter {
     return this.columnDef && this.columnDef.filter;
   }
 
@@ -174,14 +174,14 @@ export class SliderRangeFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
   /**
    * From the html template string, create a DOM element
    * @param searchTerm optional preset search terms
    */
-  private createDomElement(searchTerms?: SearchTerm | SearchTerm[]) {
+  protected createDomElement(searchTerms?: SearchTerm | SearchTerm[]) {
     if (this.columnFilter && this.columnFilter.filterOptions && (this.columnFilter.filterOptions.change || this.columnFilter.filterOptions.slide)) {
       throw new Error(`[Angular-Slickgrid] You cannot override the "change" and/or the "slide" callback methods
         since they are used in SliderRange Filter itself, however any other methods can be used for example the "create", "start", "stop" methods.`);
@@ -260,7 +260,7 @@ export class SliderRangeFilter implements Filter {
   }
 
   /** On a value change event triggered */
-  private onValueChanged(e: Event, ui: JQueryUiSliderResponse) {
+  protected onValueChanged(e: Event, ui: JQueryUiSliderResponse) {
     const values = ui && Array.isArray(ui.values) ? ui.values : [];
     const value = values.join('..');
 

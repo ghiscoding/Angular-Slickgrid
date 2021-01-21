@@ -42,7 +42,7 @@ export class ExportService {
   onGridBeforeExportToFile = new Subject<boolean>();
   onGridAfterExportToFile = new Subject<{ content?: string; filename: string; format: string; useUtf8WithBom: boolean; }>();
 
-  constructor(@Optional() private translate: TranslateService) { }
+  constructor(@Optional() private readonly translate: TranslateService) { }
 
   private get datasetIdName(): string {
     return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';

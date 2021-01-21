@@ -32,11 +32,11 @@ export class HeaderMenuExtension implements Extension {
   private _locales: Locale;
 
   constructor(
-    private extensionUtility: ExtensionUtility,
-    private filterService: FilterService,
-    private sharedService: SharedService,
-    private sortService: SortService,
-    @Optional() private translate: TranslateService,
+    private readonly extensionUtility: ExtensionUtility,
+    private readonly filterService: FilterService,
+    private readonly sharedService: SharedService,
+    private readonly sortService: SortService,
+    @Optional() private readonly translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }

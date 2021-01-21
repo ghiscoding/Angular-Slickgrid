@@ -16,16 +16,16 @@ import { Optional } from '@angular/core';
 declare const $: any;
 
 export class NativeSelectFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private _shouldTriggerQuery = true;
-  private _currentValues: any | any[] = [];
+  protected _clearFilterTriggered = false;
+  protected _shouldTriggerQuery = true;
+  protected _currentValues: any | any[] = [];
   $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(@Optional() private translate: TranslateService) { }
+  constructor(@Optional() protected readonly translate: TranslateService) { }
 
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
@@ -152,10 +152,10 @@ export class NativeSelectFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
-  private buildTemplateHtmlString() {
+  protected buildTemplateHtmlString() {
     const collection = this.columnFilter && this.columnFilter.collection || [];
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Native Select Filter is not a valid array.');
@@ -188,7 +188,7 @@ export class NativeSelectFilter implements Filter {
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
+  protected createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();

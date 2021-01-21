@@ -28,9 +28,9 @@ import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode,
 declare const $: any;
 
 export class SelectFilter implements Filter {
-  private _isMultipleSelect = true;
-  private _locales: Locale;
-  private _shouldTriggerQuery = true;
+  protected _isMultipleSelect = true;
+  protected _locales: Locale;
+  protected _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
@@ -58,7 +58,11 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(@Optional() protected translate: TranslateService, protected collectionService: CollectionService, isMultipleSelect = true) {
+  constructor(
+    @Optional() protected readonly translate: TranslateService,
+    protected readonly collectionService: CollectionService,
+    isMultipleSelect = true
+  ) {
     this._isMultipleSelect = isMultipleSelect;
   }
 
@@ -520,7 +524,7 @@ export class SelectFilter implements Filter {
     this.defaultOptions = options;
   }
 
-  private onTriggerEvent(e: Event | undefined) {
+  protected onTriggerEvent(e: Event | undefined) {
     const selectedItems = this.getValues();
     if (Array.isArray(selectedItems) && selectedItems.length > 1 || (selectedItems.length === 1 && selectedItems[0] !== '')) {
       this.isFilled = true;
