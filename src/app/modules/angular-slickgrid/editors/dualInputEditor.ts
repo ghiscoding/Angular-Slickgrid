@@ -23,15 +23,15 @@ declare const Slick: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class DualInputEditor implements Editor {
-  private _bindEventService: BindingEventService;
-  private _eventHandler: SlickEventHandler;
-  private _isValueSaveCalled = false;
-  private _lastEventType: string | undefined;
-  private _lastInputKeyEvent: JQuery.Event;
-  private _leftInput: HTMLInputElement;
-  private _rightInput: HTMLInputElement;
-  private _leftFieldName: string;
-  private _rightFieldName: string;
+  protected _bindEventService: BindingEventService;
+  protected _eventHandler: SlickEventHandler;
+  protected _isValueSaveCalled = false;
+  protected _lastEventType: string | undefined;
+  protected _lastInputKeyEvent: JQuery.Event;
+  protected _leftInput: HTMLInputElement;
+  protected _rightInput: HTMLInputElement;
+  protected _leftFieldName: string;
+  protected _rightFieldName: string;
   originalLeftValue: string | number;
   originalRightValue: string | number;
 
@@ -41,7 +41,7 @@ export class DualInputEditor implements Editor {
   /** Grid options */
   gridOptions: GridOption;
 
-  constructor(private args: EditorArguments) {
+  constructor(protected args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-Slickgrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
