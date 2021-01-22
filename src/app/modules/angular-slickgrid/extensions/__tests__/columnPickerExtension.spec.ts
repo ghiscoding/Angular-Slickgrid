@@ -132,7 +132,7 @@ describe('columnPickerExtension', () => {
         { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
         expect.anything()
       );
-      expect(readjustSpy).toHaveBeenCalledWith('field1', 0, false, columnsMock, columnsMock.slice(0, 1));
+      expect(readjustSpy).toHaveBeenCalledWith(0, columnsMock, columnsMock.slice(0, 1));
     });
 
     it('should dispose of the addon', () => {

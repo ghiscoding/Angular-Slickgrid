@@ -75,28 +75,15 @@ export class ExtensionUtility {
    * When using ColumnPicker/GridMenu to show/hide a column, we potentially need to readjust the grid option "frozenColumn" index.
    * That is because SlickGrid freezes by column index and it has no knowledge of the columns themselves and won't change the index, we need to do that ourselves whenever necessary.
    * Note: we call this method right after the visibleColumns array got updated, it won't work properly if we call it before the setting the visibleColumns.
-   * @param {String} pickerColumnId - what is the column id triggered by the picker
    * @param {Number} frozenColumnIndex - current frozenColumn index
-   * @param {Boolean} showingColumn - is the column being shown or hidden?
    * @param {Array<Object>} allColumns - all columns (including hidden ones)
    * @param {Array<Object>} visibleColumns - only visible columns (excluding hidden ones)
    */
-  readjustFrozenColumnIndexWhenNeeded(pickerColumnId: string | number, frozenColumnIndex: number, showingColumn: boolean, allColumns: Column[], visibleColumns: Column[]) {
-    if (frozenColumnIndex >= 0 && pickerColumnId) {
-      // calculate a possible frozenColumn index variance
-      let frozenColIndexVariance = 0;
-      if (showingColumn) {
-        const definedFrozenColumnIndex = visibleColumns.findIndex(col => col.id === this.sharedService.frozenVisibleColumnId);
-        const columnIndex = visibleColumns.findIndex(col => col.id === pickerColumnId);
-        frozenColIndexVariance = (columnIndex >= 0 && (frozenColumnIndex >= columnIndex || definedFrozenColumnIndex === columnIndex)) ? 1 : 0;
-      } else {
-        const columnIndex = allColumns.findIndex(col => col.id === pickerColumnId);
-        frozenColIndexVariance = (columnIndex >= 0 && frozenColumnIndex >= columnIndex) ? -1 : 0;
-      }
-      // if we have a variance different than 0 then apply it
-      const newFrozenColIndex = frozenColumnIndex + frozenColIndexVariance;
-      if (frozenColIndexVariance !== 0) {
-        this.sharedService.grid.setOptions({ frozenColumn: newFrozenColIndex });
+  readjustFrozenColumnIndexWhenNeeded(frozenColumnIndex: number, allColumns: Column[], visibleColumns: Column[]) {
+    if (frozenColumnIndex >= 0) {
+      const recalculatedFrozenColumnIndex = visibleColumns.findIndex(col => col.id === this.sharedService.frozenVisibleColumnId);
+      if (recalculatedFrozenColumnIndex >= 0 && recalculatedFrozenColumnIndex !== frozenColumnIndex) {
+        this.sharedService.grid.setOptions({ frozenColumn: recalculatedFrozenColumnIndex });
       }
 
       // to freeze columns, we need to take only the visible columns and we also need to use setColumns() when some of them are hidden

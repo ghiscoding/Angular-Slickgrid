@@ -124,8 +124,8 @@ export class GridMenuExtension implements Extension {
           // we need to readjust frozenColumn index because SlickGrid freezes by index and has no knowledge of the columns themselves
           const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
           if (frozenColumnIndex >= 0) {
-            const { showing: isColumnShown, columnId, allColumns, columns: visibleColumns } = args;
-            this.extensionUtility.readjustFrozenColumnIndexWhenNeeded(columnId, frozenColumnIndex, isColumnShown, allColumns, visibleColumns);
+            const { allColumns, columns: visibleColumns } = args;
+            this.extensionUtility.readjustFrozenColumnIndexWhenNeeded(frozenColumnIndex, allColumns, visibleColumns);
           }
         });
         this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: MenuCommandItemCallbackArgs) => {

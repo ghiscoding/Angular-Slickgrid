@@ -156,42 +156,42 @@ describe('ExtensionUtility', () => {
         jest.clearAllMocks();
       });
 
-      it('should increase "frozenColumn" from 0 to 1 when showing a column that was previously hidden and its index is lower or equal to provided argument (2nd arg, frozenColumnIndex)', () => {
+      it('should increase "frozenColumn" from 0 to 1 when showing a column that was previously hidden and its index is lower or equal to provided argument of frozenColumnIndex', () => {
         const allColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
         const visibleColumns = [{ id: 'field1' }, { id: 'field2' }] as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
-        utility.readjustFrozenColumnIndexWhenNeeded('field1', 0, true, allColumns, visibleColumns);
+        utility.readjustFrozenColumnIndexWhenNeeded(0, allColumns, visibleColumns);
 
         expect(setOptionSpy).toHaveBeenCalledWith({ frozenColumn: 1 });
       });
 
-      it('should keep "frozenColumn" at 0 when showing a column that was previously hidden and its index is greater than provided argument (2nd arg, frozenColumnIndex)', () => {
-        const allColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
+      it('should keep "frozenColumn" at 1 when showing a column that was previously hidden and its index is greater than provided argument of frozenColumnIndex', () => {
+        const allColumns = [{ id: 'field1' }, { id: 'field2' }] as Column[];
         const visibleColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
-        utility.readjustFrozenColumnIndexWhenNeeded('field3', 0, true, allColumns, visibleColumns);
+        utility.readjustFrozenColumnIndexWhenNeeded(1, allColumns, visibleColumns);
 
         expect(setOptionSpy).not.toHaveBeenCalled();
       });
 
-      it('should decrease "frozenColumn" from 1 to 0 when hiding a column that was previously shown and its index is lower or equal to provided argument (2nd arg, frozenColumnIndex)', () => {
+      it('should decrease "frozenColumn" from 1 to 0 when hiding a column that was previously shown and its index is lower or equal to provided argument of frozenColumnIndex', () => {
         const allColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
-        const visibleColumns = [{ id: 'field1' }, { id: 'field2' }] as Column[];
+        const visibleColumns = [{ id: 'field2' }] as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
-        utility.readjustFrozenColumnIndexWhenNeeded('field1', 1, false, allColumns, visibleColumns);
+        utility.readjustFrozenColumnIndexWhenNeeded(1, allColumns, visibleColumns);
 
         expect(setOptionSpy).toHaveBeenCalledWith({ frozenColumn: 0 });
       });
 
-      it('should keep "frozenColumn" at 1 when hiding a column that was previously hidden and its index is greater than provided argument (2nd arg, frozenColumnIndex)', () => {
+      it('should keep "frozenColumn" at 1 when hiding a column that was previously hidden and its index is greater than provided argument of frozenColumnIndex', () => {
         const allColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
         const visibleColumns = [{ id: 'field1' }, { id: 'field2' }] as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
-        utility.readjustFrozenColumnIndexWhenNeeded('field3', 1, false, allColumns, visibleColumns);
+        utility.readjustFrozenColumnIndexWhenNeeded(1, allColumns, visibleColumns);
 
         expect(setOptionSpy).not.toHaveBeenCalled();
       });
@@ -201,7 +201,7 @@ describe('ExtensionUtility', () => {
         const visibleColumns = [{ id: 'field1' }, { field: 'field2' }] as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
-        utility.readjustFrozenColumnIndexWhenNeeded('fiel3', 0, true, allColumns, visibleColumns);
+        utility.readjustFrozenColumnIndexWhenNeeded(0, allColumns, visibleColumns);
 
         expect(setOptionSpy).not.toHaveBeenCalled();
       });
