@@ -120,6 +120,18 @@ describe('Example 21 - Row Detail View', () => {
     const expectedTasks = ['Task 0', 'Task 1', 'Task 3', 'Task 4', 'Task 5'];
 
     cy.get('#grid21')
+      .find('.slick-row:nth(2)')
+      .click();
+
+    cy.get('#grid21')
+      .find('.innerDetailView_3 .container_3')
+      .as('detailContainer3');
+
+    cy.get('@detailContainer3')
+      .find('h3')
+      .contains('Task 3');
+
+    cy.get('#grid21')
       .find('.slick-row:nth(0)')
       .click();
 
@@ -130,18 +142,6 @@ describe('Example 21 - Row Detail View', () => {
     cy.get('@detailContainer0')
       .find('h3')
       .contains('Task 0');
-
-    cy.get('#grid21')
-      .find('.slick-row:nth(8)')
-      .click();
-
-    cy.get('#grid21')
-      .find('.innerDetailView_3 .container_3')
-      .as('detailContainer3');
-
-    cy.get('@detailContainer3')
-      .find('h3')
-      .contains('Task 3');
 
     cy.get('[data-test=close-all-btn]')
       .click();
@@ -154,7 +154,7 @@ describe('Example 21 - Row Detail View', () => {
       .should('not.exist');
 
     cy.get('#grid21')
-      .find('.innerDetailView_3 .container_3')
+      .find('.innerDetailView_1 .container_1')
       .should('not.exist');
 
     cy.get('#grid21')

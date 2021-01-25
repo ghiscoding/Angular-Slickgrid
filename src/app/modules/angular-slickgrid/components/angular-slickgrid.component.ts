@@ -625,14 +625,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (dataView && grid) {
       // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
-      // we will do that via the following 2 handlers (onSetItemsCalled, onRowCountChanged)
-      this._eventHandler.subscribe(dataView.onSetItemsCalled, () => {
-        this.handleOnItemsChanged(this.dataset.length);
-      });
-
-      this._eventHandler.subscribe(dataView.onRowCountChanged, (_e: Event, args: any) => {
+      this._eventHandler.subscribe(dataView.onRowsOrCountChanged, (_e: Event, args: any) => {
         grid.invalidate();
-        this.handleOnItemsChanged(args.current || 0);
+        this.handleOnItemCountChanged(args.currentRowCount || 0);
       });
 
       // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
@@ -772,7 +767,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** When data changes in the DataView, we'll refresh the metrics and/or display a warning if the dataset is empty */
-  private handleOnItemsChanged(itemCount: number) {
+  private handleOnItemCountChanged(itemCount: number) {
     this.metrics = {
       startTime: new Date(),
       endTime: new Date(),
