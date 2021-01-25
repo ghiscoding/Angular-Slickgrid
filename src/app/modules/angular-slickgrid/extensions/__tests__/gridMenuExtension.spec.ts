@@ -253,7 +253,7 @@ describe('gridMenuExtension', () => {
           { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
           expect.anything()
         );
-        expect(readjustSpy).toHaveBeenCalledWith('field1', 0, false, columnsMock, columnsMock.slice(0, 1));
+        expect(readjustSpy).toHaveBeenCalledWith(0, columnsMock, columnsMock.slice(0, 1));
       });
 
       it('should call internal event handler subscribe and expect the "onBeforeMenuShow" option to be called when addon notify is called', () => {
@@ -355,8 +355,8 @@ describe('gridMenuExtension', () => {
         const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
 
         const instance = extension.register();
-        instance.onColumnsChanged.notify(columnsMock.slice(0, 1), new Slick.EventData(), gridStub);
-        instance.onMenuClose.notify({ grid: gridStub, menu: {} }, new Slick.EventData(), gridStub);
+        instance.onColumnsChanged.notify({ columnId: 'field1', showing: true, grid: gridStub, allColumns: columnsMock, columns: columnsMock.slice(0, 1) }, new Slick.EventData(), gridStub);
+        instance.onMenuClose.notify({ allColumns: columnsMock, visibleColumns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
 
         expect(handlerSpy).toHaveBeenCalled();
         expect(onCloseSpy).toHaveBeenCalled();

@@ -219,17 +219,17 @@ export class HeaderMenuExtension implements Extension {
   hideColumn(column: Column) {
     if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns && this.sharedService.grid.getColumnIndex) {
       const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
-      const currentColumns = this.sharedService.grid.getColumns() as Column[];
+      const currentVisibleColumns = this.sharedService.grid.getColumns() as Column[];
 
       // if we're using frozen columns, we need to readjust pinning when the new hidden column is on the left pinning container
       // we need to do this because SlickGrid freezes by index and has no knowledge of the columns themselves
-      const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn || -1;
+      const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
       if (frozenColumnIndex >= 0 && frozenColumnIndex >= columnIndex) {
         this.sharedService.grid.setOptions({ frozenColumn: frozenColumnIndex - 1 });
       }
 
       // then proceed with hiding the column in SlickGrid & trigger an event when done
-      const visibleColumns = arrayRemoveItemByIndex(currentColumns, columnIndex);
+      const visibleColumns = arrayRemoveItemByIndex(currentVisibleColumns, columnIndex);
       this.sharedService.visibleColumns = visibleColumns;
       this.sharedService.grid.setColumns(visibleColumns);
       this.sharedService.onHeaderMenuHideColumns.next(visibleColumns);
