@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.25.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.25.0...v2.25.1) (2021-01-25)
+
+
+### Features
+
+* **editors:** change all private keyword to protected for extensability ([#680](https://github.com/ghiscoding/angular-slickgrid/issues/680)) ([029a90c](https://github.com/ghiscoding/angular-slickgrid/commit/029a90ce2f776f606e6947dc9a95b24ca3d17dfa))
+* **filters:** change all private keyword to protected for extensability ([#679](https://github.com/ghiscoding/angular-slickgrid/issues/679)) ([e5b5e8d](https://github.com/ghiscoding/angular-slickgrid/commit/e5b5e8d9a3d40870135058d39154786962e7675c))
+
+
+### Bug Fixes
+
+* **comp:** empty data warning should work with autoheight grid, fix [#671](https://github.com/ghiscoding/angular-slickgrid/issues/671) ([58c593b](https://github.com/ghiscoding/angular-slickgrid/commit/58c593bcac753140e9abc788cdf927a283ae5349))
+* **filters:** Grid State filters should always include an operator ([#676](https://github.com/ghiscoding/angular-slickgrid/issues/676)) ([9ded204](https://github.com/ghiscoding/angular-slickgrid/commit/9ded20477272781a46a5f2996144896ca3110944))
+* **metrics:** refresh metrics also when providing new data to DataView ([#677](https://github.com/ghiscoding/angular-slickgrid/issues/677)) ([7b95401](https://github.com/ghiscoding/angular-slickgrid/commit/7b9540183fe80c6bd3acf8d4f63a93f9f89ac5d1))
+* **metrics:** use onRowsOrCountChanged to refresh metrics ([#681](https://github.com/ghiscoding/angular-slickgrid/issues/681)) ([ceb0d77](https://github.com/ghiscoding/angular-slickgrid/commit/ceb0d772c8bbb8cef82a280fb0b5a268859923b1))
+* **pinning:** recalculate frozen idx properly when column shown changes ([#682](https://github.com/ghiscoding/angular-slickgrid/issues/682)) ([996125d](https://github.com/ghiscoding/angular-slickgrid/commit/996125d9c116a276a389fdab46f43f937ed6c62c))
+* **plugins:** throw when Tree Data used with Pagination, closes [#658](https://github.com/ghiscoding/angular-slickgrid/issues/658) ([672db5f](https://github.com/ghiscoding/angular-slickgrid/commit/672db5f903d2a696e74cc04bf76d74ae7a6214de))
+* **typings:** add specific file type to export service options ([b99c6e4](https://github.com/ghiscoding/angular-slickgrid/commit/b99c6e44b8564c5a8423078e1865a7ac9d89b6fa))
+
 ## [2.25.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.24.1...v2.25.0) (2021-01-06)
 
 
