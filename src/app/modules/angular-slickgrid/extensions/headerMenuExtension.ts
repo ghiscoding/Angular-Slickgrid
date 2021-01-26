@@ -225,7 +225,8 @@ export class HeaderMenuExtension implements Extension {
       // we need to do this because SlickGrid freezes by index and has no knowledge of the columns themselves
       const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
       if (frozenColumnIndex >= 0 && frozenColumnIndex >= columnIndex) {
-        this.sharedService.grid.setOptions({ frozenColumn: frozenColumnIndex - 1 });
+        this.sharedService.gridOptions.frozenColumn = frozenColumnIndex - 1;
+        this.sharedService.grid.setOptions({ frozenColumn: this.sharedService.gridOptions.frozenColumn });
       }
 
       // then proceed with hiding the column in SlickGrid & trigger an event when done
