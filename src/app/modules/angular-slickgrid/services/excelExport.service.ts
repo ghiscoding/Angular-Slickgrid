@@ -273,7 +273,7 @@ export class ExcelExportService {
   private getColumnStyles(columns: Column[]): any[] {
     const grouping = this._dataView && this._dataView.getGrouping && this._dataView.getGrouping();
     const columnStyles = [];
-    if (grouping) {
+    if (Array.isArray(grouping) && grouping.length > 0) {
       columnStyles.push({
         bestFit: true,
         columnStyles: (this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.customColumnWidth) || 10
@@ -374,7 +374,7 @@ export class ExcelExportService {
     // get grouped column titles and if found, we will add a "Group by" column at the first column index
     // if it's a CSV format, we'll escape the text in double quotes
     const grouping = this._dataView && this._dataView.getGrouping && this._dataView.getGrouping();
-    if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+    if (Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
       return groupByColumnHeader;
     } else {
