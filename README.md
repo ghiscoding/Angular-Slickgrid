@@ -12,7 +12,7 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, this is the most active fork since the original @mleibman fork was closed some time ago by his author for personal reasons. Also worth to know, I also contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid), a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and it also means that jQuery is a dependecy. 
+One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, it is the most active fork since the original author @mleibman stopped working on his original repo. Also worth knowing that I have contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid) and a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and that also means jQuery is a dependency.
 
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
@@ -21,7 +21,7 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ### Like it? :star: it
-You like and use this great library `Angular-Slickgrid`? Be sure to upvote :star: and feel free to contribute. :construction_worker:
+You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:
 
 ### Like my work?
 If you like my work, you can also support me with caffeine :coffee:
@@ -40,7 +40,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 
 ### ngx-translate Compatibility
 
-If you are facing any issue with `ngx-translate` library while building your Angular Project. You need to make sure `@ngx-translate/core` is part of your dependencies, even if you just use 1 Locale, because it is a `peerDependency` of Angular-Slickgrid (we use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should be removed by tree shaking process after a running a build). See their version compatibility table below
+If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even if you just use a single Locale, because it is a `peerDependency` of Angular-Slickgrid. We use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should be removed by tree shaking process after a running a build. See their version compatibility table below
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
@@ -50,7 +50,7 @@ If you are facing any issue with `ngx-translate` library while building your Ang
 |        7        |        11.x+        |
 
 ### Build Warnings (Angular 8+)
-You might get warnings about SlickGrid while doing a build, most of them are fine and the best way to fix this, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
+You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
 ```js
 module.exports = {
   packages: {
@@ -72,7 +72,7 @@ You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to you
 ```
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Angular-Slickgrid reached **100%** Unit Test Coverage, we are talking about +10,000 lines of code (+2,700 unit tests) that are now fully tested with [Jest](https://jestjs.io/). There are also over +350 Cypress E2E tests to cover most UI functionalities on nearly all Examples of Angular-Slickgrid.
+Angular-Slickgrid reached **100%** Unit Test Coverage, we are talking about +10,000 lines of code (+2,700 unit tests) that are now fully tested with [Jest](https://jestjs.io/). There are also +350 Cypress E2E tests to cover most UI functionalities on nearly all Examples of Angular-Slickgrid.
 
 ## Installation
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
@@ -88,7 +88,7 @@ Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular
 There are also 2 new Themes, Material & Salesforce that are available as well and if you wish to use SVG then take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
 
 #### Working Demo
-For a complete and working local demo, you can clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used for demoing both the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete and working local demo, you can (should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used to update the GitHub demo pages for the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
 cd bootstrap4-demo-with-translate
@@ -98,9 +98,6 @@ npm start
 
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
-
-### You want to help and contribute?
-You like the library and would like contribute? That would be awesome, the first thing you can do is head over to the [Version 2.x - Project](https://github.com/ghiscoding/Angular-Slickgrid/projects/1), there are some tasks that I would gladly like receiving help with. One of the biggest task is to increase Jest unit tests code coverage and/or more Cypress E2E tests.
 
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
@@ -118,17 +115,19 @@ Fear not, and just simply reference the `SlickGrid` and `DataView` objects, just
 
 Screenshots from the demo app with the `Bootstrap` theme.
 
+_Note that the styling changed a bit, the best is to simply head over to the [Live Demo](https://ghiscoding.github.io/Angular-Slickgrid) page._
+
 ### Slickgrid example with Formatters (last column shown is a custom Formatter)
 
-#### You can also see the Grid Menu opened (aka hambuger menu)
+#### _You can also see the Grid Menu opened (aka hambuger menu)_
 
 ![Default Slickgrid Example](/screenshots/formatters.png)
 
-### Filter and Sort (clientside with DataView)
+### Filters and Multi-Column Sort
 
 ![Filter and Sort](/screenshots/filter_and_sort.png)
 
-### Editors and/or onCellClick
+### Inline Editing
 
 ![Editors](/screenshots/editors.png)
 
@@ -141,6 +140,6 @@ Screenshots from the demo app with the `Bootstrap` theme.
 ![Draggable Grouping](/screenshots/draggable-grouping.png)
 
 ### Slickgrid Example with Server Side (Filter/Sort/Pagination)
-#### Comes with OData & GraphQL support (you can implement custom too)
+#### Comes with OData & GraphQL support (you can implement custom ones too)
 
 ![Slickgrid Server Side](/screenshots/pagination.png)
