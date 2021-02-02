@@ -723,8 +723,10 @@ export class GridService {
 
       if (this._dataView.getIdxById(itemId) !== undefined) {
         const rowNumber = this._dataView.getRowById(itemId);
-        rowNumbers.push(rowNumber);
-        this._grid.updateRow(rowNumber);
+        if (rowNumber !== undefined) {
+          rowNumbers.push(rowNumber);
+          this._grid.updateRow(rowNumber);
+        }
       }
     });
 
