@@ -144,6 +144,33 @@ describe('Example 3 - Grid with Editors', () => {
       .scrollTo('top');
   });
 
+  it('should be able to filter and search "Task 2222" in the new column and expect only 1 row showing in the grid', () => {
+    cy.get('input.search-filter.filter-title1')
+      .type('Task 2222', { force: true })
+      .should('have.value', 'Task 2222');
+
+    cy.get('.slick-row').should('have.length', 1);
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(2)`).should('contain', 'Task 2222');
+  });
+
+  it('should hover over the last "Title" column and click on "Clear Filter" and expect grid to have all rows shown', () => {
+    cy.get('.slick-header-column:nth-child(14)')
+      .first()
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(4)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Remove Filter')
+      .click();
+
+    cy.get('.slick-row').should('have.length.greaterThan', 1);
+  });
+
   it('should be able to dynamically remove last 2 added Title columns', () => {
     cy.get('[data-test=remove-title-column]')
       .click()
