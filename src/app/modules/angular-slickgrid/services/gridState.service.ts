@@ -1,5 +1,6 @@
-import * as isequal_ from 'lodash.isequal';
-const isequal = isequal_; // patch to fix rollup to work
+import { Injectable } from '@angular/core';
+import { dequal } from 'dequal';
+import { Subject, Subscription } from 'rxjs';
 
 import {
   Column,
@@ -18,10 +19,8 @@ import {
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { SortService } from './sort.service';
-import { Subject, Subscription } from 'rxjs';
 import { unsubscribeAllObservables } from './utilities';
 import { SharedService } from './shared.service';
-import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -470,7 +469,7 @@ export class GridStateService {
         setTimeout(() => {
           const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
-          if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
         });
@@ -511,7 +510,7 @@ export class GridStateService {
           // this could happen if the previous step was a page change
           const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
-          if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
 
@@ -536,7 +535,7 @@ export class GridStateService {
     const filteredDataContextIds = this.refreshFilteredRowSelections();
 
     // when selection changed, we'll send a Grid State event with the selection changes
-    if (!isequal(this._selectedFilteredRowDataContextIds, previousSelectedFilteredRowDataContextIds)) {
+    if (!dequal(this._selectedFilteredRowDataContextIds, previousSelectedFilteredRowDataContextIds)) {
       const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds, filteredDataContextIds } as CurrentRowSelection;
       this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState({ requestRefreshRowFilteredRow: false }) });
     }

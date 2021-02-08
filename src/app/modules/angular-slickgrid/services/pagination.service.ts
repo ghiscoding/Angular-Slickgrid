@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
+import { dequal } from 'dequal';
 import { Subscription, isObservable, Subject } from 'rxjs';
-import * as isequal_ from 'lodash.isequal';
-const isequal = isequal_; // patch to fix rollup to work
 
 import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, GridOption, Pagination, ServicePagination } from '../models';
 import { FilterService } from './filter.service';
@@ -249,7 +248,7 @@ export class PaginationService {
     const currentPagination = this.getCurrentPagination();
     this.sharedService.currentPagination = currentPagination;
 
-    if (triggerChangedEvent && !isequal(previousPagination, currentPagination)) {
+    if (triggerChangedEvent && !dequal(previousPagination, currentPagination)) {
       this.onPaginationChanged.next(currentPagination);
     }
   }
