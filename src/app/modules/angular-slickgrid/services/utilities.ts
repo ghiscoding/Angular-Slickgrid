@@ -280,36 +280,6 @@ export function htmlEntityEncode(input: any): string {
 }
 
 /**
- * Compares two arrays of characters to determine if all the items are equal
- * @param a first array
- * @param b second array to compare with a
- * @param [orderMatters=false] flag if the order matters, if not arrays will be sorted before comparison
- * @return boolean true if equal, else false
- */
-export function charArraysEqual<T = any>(a: T[], b: T[], orderMatters: boolean = false): boolean {
-  if (!a || !b || !Array.isArray(a) || !Array.isArray(a)) {
-    return false;
-  }
-
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  if (!orderMatters && a.sort && b.sort) {
-    a.sort();
-    b.sort();
-  }
-
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
  * Try casting an input of type Promise | Observable into a Promise type.
  * @param object which could be of type Promise or Observable
  * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error

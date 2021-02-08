@@ -1,4 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
+import { dequal } from 'dequal';
 import { Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
@@ -20,7 +21,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { charArraysEqual, findOrDefault, getDescendantProperty, getTranslationPrefix, htmlEncode, setDeepValue, unsubscribeAllObservables } from '../services/utilities';
+import { findOrDefault, getDescendantProperty, getTranslationPrefix, htmlEncode, setDeepValue } from '../services/utilities';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -443,7 +444,7 @@ export class SelectEditor implements Editor {
 
   isValueChanged(): boolean {
     if (this.isMultipleSelect) {
-      return !charArraysEqual(this.$editorElm.val(), this.originalValue);
+      return !dequal(this.$editorElm.val(), this.originalValue);
     }
     return this.$editorElm.val() !== this.originalValue;
   }

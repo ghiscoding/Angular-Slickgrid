@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
+import { dequal } from 'dequal';
 import { isObservable, Subject } from 'rxjs';
-
-import * as isequal_ from 'lodash.isequal';
-const isequal = isequal_; // patch to fix rollup to work
 
 import {
   Column,
@@ -860,7 +858,7 @@ export class FilterService {
       // trigger an event only if Filters changed or if ENTER key was pressed
       const eventKey = event && event.key;
       const eventKeyCode = event && event.keyCode;
-      if (this._onSearchChange && (eventKey === 'Enter' || eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters))) {
+      if (this._onSearchChange && (eventKey === 'Enter' || eventKeyCode === KeyCode.ENTER || !dequal(oldColumnFilters, this._columnFilters))) {
         this._onSearchChange.notify({
           clearFilterTriggered: args.clearFilterTriggered,
           shouldTriggerQuery: args.shouldTriggerQuery,

@@ -6,7 +6,6 @@ import {
   addWhiteSpaces,
   arrayRemoveItemByIndex,
   castToPromise,
-  charArraysEqual,
   convertHierarchicalViewToParentChildArray,
   convertParentChildArrayToHierarchicalView,
   decimalFormatted,
@@ -145,52 +144,6 @@ describe('Service/Utilies', () => {
     it('should be able to encode unicode characters and also latin accents', () => {
       const result = htmlEntityEncode(`Sam's 🚀🦄 español`);
       expect(result).toBe(`&#83;&#97;&#109;&#39;&#115;&#32;&#55357;&#56960;&#55358;&#56708;&#32;&#101;&#115;&#112;&#97;&#241;&#111;&#108;`);
-    });
-  });
-
-  describe('arraysEqual method', () => {
-    it('should return false when at least 1 input is not an array', () => {
-      const array1 = null;
-      const array2 = [];
-      const isEqual = charArraysEqual(array1, array2);
-      expect(isEqual).toBe(false);
-    });
-
-    it('should compare 2 empty arrays and return true', () => {
-      const array1 = [];
-      const array2 = [];
-      const isEqual = charArraysEqual(array1, array2);
-      expect(isEqual).toBe(true);
-    });
-
-    it('should compare 2 arrays of chars with different length and return false', () => {
-      const array1 = ['a', 'b'];
-      const array2 = ['a', 'b', 'c'];
-      const isEqual = charArraysEqual(array1, array2);
-      expect(isEqual).toBe(false);
-    });
-
-    it('should compare 2 arrays of chars with same content in different order and return true', () => {
-      const array1 = ['a', 'b', 'c'];
-      const array2 = ['a', 'c', 'b'];
-      const isEqual = charArraysEqual(array1, array2);
-      expect(isEqual).toBe(true);
-    });
-
-    it('should compare 2 arrays of chars with same content in different order and return true', () => {
-      const array1 = ['a', 'b', 'c'];
-      const array2 = ['a', 'c', 'b'];
-      const array3 = ['a', 'b', 'c'];
-
-      expect(charArraysEqual(array1, array2, true)).toBe(false);
-      expect(charArraysEqual(array1, array3, true)).toBe(true);
-    });
-
-    it('should not work when comparing 2 arrays of objects and return false', () => {
-      const array1 = [{ id: 1, name: 'a', order: 3 }, { id: 2, name: 'def', order: 45 }];
-      const array2 = [{ id: 1, name: 'a', order: 3 }, { id: 2, name: 'def', order: 45 }];
-      const isEqual = charArraysEqual(array1, array2);
-      expect(isEqual).toBe(false);
     });
   });
 
