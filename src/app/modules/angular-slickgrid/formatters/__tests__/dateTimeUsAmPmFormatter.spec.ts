@@ -16,7 +16,7 @@ describe('the DateTimeShortUs Formatter', () => {
 
   it('should provide a dateIso formatted input and return a formatted date value without time when valid date value is provided', () => {
     const value = '2019-05-03 02:36:07';
-    const result = Formatters.dateTimeUsAmPm(0, 0, value, { input: 'dateIso' } as unknown as Column, {}, {});
+    const result = Formatters.dateTimeUsAmPm(0, 0, value, { type: 'dateIso' } as unknown as Column, {}, {});
     expect(result).toBe('05/03/2019 02:36:07 am');
   });
 

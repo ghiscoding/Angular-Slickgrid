@@ -16,7 +16,7 @@ describe('the DateEuro Formatter', () => {
 
   it('should provide a dateIso formatted input and return a formatted date value without time when valid date value is provided', () => {
     const value = '2019-05-03 00:00:01';
-    const result = Formatters.dateEuro(0, 0, value, { input: 'dateIso' } as unknown as Column, {}, {});
+    const result = Formatters.dateEuro(0, 0, value, { type: 'dateIso' } as unknown as Column, {}, {});
     expect(result).toBe('03/05/2019');
   });
 
