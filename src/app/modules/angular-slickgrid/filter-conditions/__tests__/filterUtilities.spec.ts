@@ -189,7 +189,7 @@ describe('filterUtilities', () => {
     });
 
     it('should return False when value1 is not "IN_CONTAINS" value2 collection', () => {
-      const output = testFilterCondition('IN_CONTAINS', 'Task1,Task4', ['Task2', 'Task3']);
+      const output = testFilterCondition('IN_CONTAINS', 'Task11,Task4', ['Task 1', 'Task2', 'Task3']);
       expect(output).toBeFalsy();
     });
 
@@ -199,8 +199,8 @@ describe('filterUtilities', () => {
     });
 
     it('should return True when value1 is "NOT_IN_CONTAINS" value2 collection', () => {
-      const output1 = testFilterCondition('NIN_CONTAINS', 'Task1,Task4', ['Task2', 'Task3']);
-      const output2 = testFilterCondition('NOT_IN_CONTAINS', 'Task1,Task4', ['Task2', 'Task3']);
+      const output1 = testFilterCondition('NIN_CONTAINS', 'Task11,Task4', ['Task 1', 'Task2', 'Task3']);
+      const output2 = testFilterCondition('NOT_IN_CONTAINS', 'Task11,Task4', ['Task 1', 'Task2', 'Task3']);
 
       expect(output1).toBeTruthy();
       expect(output2).toBeTruthy();
