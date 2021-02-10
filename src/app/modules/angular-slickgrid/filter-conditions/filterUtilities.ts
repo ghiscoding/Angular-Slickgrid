@@ -27,35 +27,58 @@ export function compareObjects(o1: any, o2: any, compareKey?: string): boolean {
   return true;
 }
 
+/** Simple check to see if the given Operator is meant to be used with a collection check */
+export function isCollectionOperator(operator: OperatorString): boolean {
+  const inputOperator = operator && operator.toUpperCase() || '';
+  switch (inputOperator) {
+    case 'IN':
+    case 'NIN':
+    case 'NOT_IN':
+    case 'IN_CONTAINS':
+    case 'NIN_CONTAINS':
+    case 'NOT_IN_CONTAINS':
+      return true;
+    default:
+      return false;
+  }
+}
+
 export const testFilterCondition = (operator: OperatorString, value1: any, value2: any): boolean => {
   switch (operator) {
     case '<':
-    case 'LT': return (value1 < value2);
+    case 'LT':
+      return (value1 < value2);
     case '<=':
-    case 'LE': return (value1 <= value2);
+    case 'LE':
+      return (value1 <= value2);
     case '>':
-    case 'GT': return (value1 > value2);
+    case 'GT':
+      return (value1 > value2);
     case '>=':
-    case 'GE': return (value1 >= value2);
+    case 'GE':
+      return (value1 >= value2);
     case '!=':
     case '<>':
-    case 'NE': return (value1 !== value2);
+    case 'NE':
+      return (value1 !== value2);
     case '=':
     case '==':
-    case 'EQ': return (value1 === value2);
-    case 'IN': return ((value2 && value2.indexOf) ? (value2.indexOf(value1) > -1) : false);
+    case 'EQ':
+      return (value1 === value2);
+    case 'IN':
+      return ((value2 && Array.isArray(value2 as string[])) ? (value2.includes(value1)) : false);
     case 'NIN':
     case 'NOT_IN':
-      return ((value2 && value2.includes) ? (!value2.includes(value1)) : false);
+      return ((value2 && Array.isArray(value2 as string[])) ? (!value2.includes(value1)) : false);
     case 'IN_CONTAINS':
-      if (value2 && Array.isArray(value2) && value2.findIndex) {
-        return ((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+      if (value2 && Array.isArray(value2) && typeof value1 === 'string') {
+        return value2.some(item => value1.split(',').includes(item));
       }
       return false;
     case 'NIN_CONTAINS':
     case 'NOT_IN_CONTAINS':
-      if (value2 && Array.isArray(value2) && value2.findIndex) {
-        return !((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+      if (value2 && Array.isArray(value2) && typeof value1 === 'string') {
+        return !value2.some(item => value1.split(',').includes(item));
       }
       return false;
   }

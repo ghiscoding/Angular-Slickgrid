@@ -2,7 +2,7 @@ export enum OperatorType {
   /** value is empty */
   empty = '',
 
-  /** value contains x */
+  /** value contains in x (search for substring in the string) */
   contains = 'Contains',
 
   /** value not contains x (inversed of contains) */
@@ -51,7 +51,7 @@ export enum OperatorType {
   notIn = 'NOT_IN',
 
   /**
-   * Find a substring contained inside a collection
+   * Find a substring contained inside a collection, note that it has to be a CSV string.
    * For example, this condition would return True with "IN_CONTAINS":: value='Task2,Task3', collection=['Task2','Task3']
    * This would have returned False with "IN" because 'Task2' does not equal 'Task2,Task3'. However 'Task2' is contained in 'Task2,Task3'
    */

@@ -57,15 +57,40 @@ describe('collectionSearchFilterCondition method', () => {
     expect(output).toBe(false);
   });
 
+  it('should return True even when Operator is "Not IN" and the cell value is not in search terms', () => {
+    const options1 = { dataKey: '', operator: 'NIN', cellValue: 'bar', fieldType: FieldType.string, searchTerms: ['foo'] } as FilterConditionOption;
+    const options2 = { dataKey: '', operator: 'NOT_IN', cellValue: 'bar', fieldType: FieldType.string, searchTerms: ['foo'] } as FilterConditionOption;
+
+    const output1 = collectionSearchFilterCondition(options1);
+    const output2 = collectionSearchFilterCondition(options2);
+
+    expect(output1).toBe(true);
+    expect(output2).toBe(true);
+  });
+
   it('should return True when input value contains searchTerms content', () => {
     const options = { dataKey: '', operator: 'IN_CONTAINS', cellValue: 'Task2,Task3', fieldType: FieldType.string, searchTerms: ['Task2', 'Task3'] } as FilterConditionOption;
     const output = collectionSearchFilterCondition(options);
     expect(output).toBe(true);
   });
 
+  it('should return True when input value is not found when using "not in contains" searchTerms content', () => {
+    const options1 = { dataKey: '', operator: 'NIN_CONTAINS', cellValue: 'Task11,Task22,Task33', fieldType: FieldType.string, searchTerms: ['Task1', 'Task2', 'Task3'] } as FilterConditionOption;
+    const options2 = { dataKey: '', operator: 'NOT_IN_CONTAINS', cellValue: 'Task11,Task22,Task33', fieldType: FieldType.string, searchTerms: ['Task1', 'Task2', 'Task3'] } as FilterConditionOption;
+    const output1 = collectionSearchFilterCondition(options1);
+    const output2 = collectionSearchFilterCondition(options2);
+
+    expect(output1).toBe(true);
+    expect(output2).toBe(true);
+  });
+
   it('should return False when input value not in contains searchTerms content', () => {
-    const options = { dataKey: '', operator: 'NIN_CONTAINS', cellValue: 'Task2,Task3', fieldType: FieldType.string, searchTerms: ['Task2', 'Task3'] } as FilterConditionOption;
-    const output = collectionSearchFilterCondition(options);
-    expect(output).toBe(false);
+    const options1 = { dataKey: '', operator: 'NIN_CONTAINS', cellValue: 'Task1,Task3', fieldType: FieldType.string, searchTerms: ['Task1', 'Task2', 'Task3'] } as FilterConditionOption;
+    const options2 = { dataKey: '', operator: 'NOT_IN_CONTAINS', cellValue: 'Task1,Task3', fieldType: FieldType.string, searchTerms: ['Task1', 'Task2', 'Task3'] } as FilterConditionOption;
+    const output1 = collectionSearchFilterCondition(options1);
+    const output2 = collectionSearchFilterCondition(options2);
+
+    expect(output1).toBe(false);
+    expect(output2).toBe(false);
   });
 });
