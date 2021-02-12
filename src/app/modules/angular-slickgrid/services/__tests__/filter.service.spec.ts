@@ -778,7 +778,7 @@ describe('FilterService', () => {
       service.init(gridStub);
       const columnFilter = { columnDef: mockColumn1, columnId: 'firstName', type: FieldType.string };
       const filterCondition = service.parseFormInputFilterConditions(searchTerms, columnFilter);
-      const parsedSearchTerms = getParsedSearchTermsByFieldType(filterCondition.searchTerms, 'text');
+      const parsedSearchTerms = getParsedSearchTermsByFieldType(filterCondition.searchTerms, FieldType.text);
       const columnFilters = { firstName: { ...columnFilter, operator: filterCondition.operator, searchTerms: filterCondition.searchTerms, parsedSearchTerms } };
       const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
@@ -794,7 +794,7 @@ describe('FilterService', () => {
       service.init(gridStub);
       const columnFilter = { columnDef: mockColumn1, columnId: 'firstName', type: FieldType.string };
       const filterCondition = service.parseFormInputFilterConditions(searchTerms, columnFilter);
-      const parsedSearchTerms = getParsedSearchTermsByFieldType(filterCondition.searchTerms, 'text');
+      const parsedSearchTerms = getParsedSearchTermsByFieldType(filterCondition.searchTerms, FieldType.text);
       const columnFilters = { firstName: { ...columnFilter, operator: filterCondition.operator, searchTerms: filterCondition.searchTerms, parsedSearchTerms } };
       const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
