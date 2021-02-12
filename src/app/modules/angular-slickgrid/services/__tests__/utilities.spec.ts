@@ -20,6 +20,7 @@ import {
   htmlEncode,
   htmlEntityDecode,
   htmlEntityEncode,
+  isNumber,
   mapMomentDateFormatWithFieldType,
   mapFlatpickrDateFormatWithFieldType,
   mapOperatorByFieldType,
@@ -144,6 +145,33 @@ describe('Service/Utilies', () => {
     it('should be able to encode unicode characters and also latin accents', () => {
       const result = htmlEntityEncode(`Sam's 🚀🦄 español`);
       expect(result).toBe(`&#83;&#97;&#109;&#39;&#115;&#32;&#55357;&#56960;&#55358;&#56708;&#32;&#101;&#115;&#112;&#97;&#241;&#111;&#108;`);
+    });
+  });
+
+  describe('isNumber method', () => {
+    it('should return True when comparing a number from a number/string variable when strict mode is disable', () => {
+      const result1 = isNumber(22);
+      const result2 = isNumber('33');
+
+      expect(result1).toBeTrue();
+      expect(result2).toBeTrue();
+    });
+
+    it('should return False when comparing string that has a number but also other text within and the strict mode is disable', () => {
+      const result = isNumber('33test');
+      expect(result).toBeFalse();
+    });
+
+    it('should return False when comparing a number from a string variable with strict mode enabled', () => {
+      const result1 = isNumber(null, true);
+      const result2 = isNumber(undefined, true);
+      const result3 = isNumber('33', true);
+      const result4 = isNumber('33test', true);
+
+      expect(result1).toBeFalse();
+      expect(result2).toBeFalse();
+      expect(result3).toBeFalse();
+      expect(result4).toBeFalse();
     });
   });
 

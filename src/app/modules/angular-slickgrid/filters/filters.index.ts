@@ -41,7 +41,7 @@ export const Filters = {
   /** Range Date Filter (uses the Flactpickr Date picker with range option) */
   dateRange: DateRangeFilter,
 
-  /** Alias to inputText, input type text filter */
+  /** Alias to inputText, input type text filter (this is the default filter when no type is provided) */
   input: InputFilter,
 
   /**

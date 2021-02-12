@@ -195,9 +195,10 @@ export interface Column<T = any> {
 
   /**
    * When you do not know at hand the name of the Field to use for querying,
-   * the lib will run your callback to find out which Field name you want to use by the logic you defined.
-   * Useful when you only know the Field name by executing a certain logic in order to get the Field name to query from.
-   * @param {string} item data context
+   * the lib will run this callback when provided to find out which Field name you want to use by the logic you defined.
+   * Useful when you don't know in advance the field name to query from and/or is returned dynamically
+   * and can change on earch row while executing the code at that moment.
+   * @param {Object} dataContext - item data object
    * @return {string} name of the Field that will end up being used to query
    */
   queryFieldNameGetterFn?: (dataContext: T) => string;
