@@ -1,9 +1,8 @@
 import { Column, Formatter } from './../models/index';
-import { formatNumber } from './../services/utilities';
+import { formatNumber, isNumber } from './../services/utilities';
 import { getValueFromParamsOrFormatterOptions } from './formatterUtilities';
 
 export const decimalFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
-  const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
   const params = columnDef.params || {};
   let minDecimal = getValueFromParamsOrFormatterOptions('minDecimal', columnDef, grid, 2);
   let maxDecimal = getValueFromParamsOrFormatterOptions('maxDecimal', columnDef, grid, 2);
@@ -22,7 +21,7 @@ export const decimalFormatter: Formatter = (row: number, cell: number, value: an
     maxDecimal = (params.maxDecimalPlaces !== null && params.maxDecimalPlaces);
   }
 
-  if (isNumber) {
+  if (isNumber(value)) {
     return formatNumber(value, minDecimal, maxDecimal, displayNegativeNumberWithParentheses, '', '', decimalSeparator, thousandSeparator);
   }
   return value;
