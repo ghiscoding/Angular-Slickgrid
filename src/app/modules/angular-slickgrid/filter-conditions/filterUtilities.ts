@@ -43,8 +43,9 @@ export function isCollectionOperator(operator: OperatorString): boolean {
   }
 }
 
+/** Execute the test on the filter condition given an operator and both values, returns a boolean */
 export const testFilterCondition = (operator: OperatorString, value1: any, value2: any): boolean => {
-  switch (operator) {
+  switch (operator.toUpperCase()) {
     case '<':
     case 'LT':
       return (value1 < value2);

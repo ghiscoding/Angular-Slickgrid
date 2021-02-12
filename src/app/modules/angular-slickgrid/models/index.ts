@@ -128,6 +128,7 @@ export * from './pagingInfo.interface';
 export * from './queryArgument.interface';
 export * from './rowDetailView.interface';
 export * from './rowMoveManager.interface';
+export * from './searchColumnFilter.interface';
 export * from './searchTerm.type';
 export * from './selectedRange.interface';
 export * from './selectOption.interface';

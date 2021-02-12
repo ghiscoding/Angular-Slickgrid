@@ -393,7 +393,7 @@ export class GraphqlService implements BackendService {
           throw new Error(`GraphQL filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield").`);
         }
 
-        fieldSearchValue = `${fieldSearchValue}`; // make sure it's a string
+        fieldSearchValue = (fieldSearchValue === undefined || fieldSearchValue === null) ? '' : `${fieldSearchValue}`; // make sure it's a string
         const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
         let operator = columnFilter.operator || ((matches) ? matches[1] : '');
         searchValue = (!!matches) ? matches[2] : '';

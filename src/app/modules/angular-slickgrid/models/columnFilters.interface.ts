@@ -1,5 +1,5 @@
-import { ColumnFilter } from './columnFilter.interface';
+import { SearchColumnFilter } from './searchColumnFilter.interface';
 
 export interface ColumnFilters {
-  [key: string]: ColumnFilter;
+  [key: string]: SearchColumnFilter;
 }

@@ -335,6 +335,19 @@ export function htmlEncodedStringWithPadding(inputStr: string, paddingLength: nu
 }
 
 /**
+ * Check if input value is a number, by default it won't be a strict checking
+ * but optionally we could check for strict equality, for example in strict "3" will return False but without strict it will return True
+ * @param value - input value of any type
+ * @param strict - when using strict it also check for strict equality, for example in strict "3" will return but without strict it will return true
+ */
+export function isNumber(value: any, strict = false) {
+  if (strict) {
+    return (value === null || value === undefined || typeof value === 'string') ? false : !isNaN(value);
+  }
+  return (value === null || value === undefined || value === '') ? false : !isNaN(+value);
+}
+
+/**
   * Take a number (or a string) and display it as a formatted decimal string with defined minimum and maximum decimals
   * @param input
   * @param minDecimal

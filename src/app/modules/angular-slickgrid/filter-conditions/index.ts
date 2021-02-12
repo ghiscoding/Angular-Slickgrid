@@ -1,16 +1,8 @@
-import { FilterConditionOption } from './../models/filterConditionOption.interface';
-import { booleanFilterCondition } from './booleanFilterCondition';
-import { executeMappedCondition } from './executeMappedCondition';
-import { collectionSearchFilterCondition } from './collectionSearchFilterCondition';
-import { numberFilterCondition } from './numberFilterCondition';
-import { stringFilterCondition } from './stringFilterCondition';
-import { testFilterCondition } from './filterUtilities';
-
-export const FilterConditions = {
-  executeMappedCondition,
-  booleanFilter: booleanFilterCondition,
-  collectionSearchFilter: collectionSearchFilterCondition,
-  numberFilter: numberFilterCondition,
-  stringFilter: stringFilterCondition,
-  testFilter: testFilterCondition
-};
+export * from './stringFilterCondition';
+export * from './objectFilterCondition';
+export * from './numberFilterCondition';
+export * from './filterUtilities';
+export * from './filterConditions.index';
+export * from './filterConditionProcesses';
+export * from './collectionSearchFilterCondition';
+export * from './booleanFilterCondition';

@@ -213,4 +213,30 @@ describe('Example 3 - Grid with Editors', () => {
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(11)`).click();
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(11) > input.editor-checkbox.editor-effort-driven`).uncheck();
   });
+
+  it('should open the "Prerequisites" Filter then choose "Task 3", "Task 4" and "Task 8" from the list and expect to see 2 rows of data in the grid', () => {
+    cy.get('div.ms-filter.filter-prerequisites')
+      .trigger('click');
+
+    cy.get('.ms-drop')
+      .contains(/^Task 3$/) // use regexp to avoid finding first Task 3 which is in fact Task 399
+      .click();
+
+    cy.get('.ms-drop')
+      .contains(/^Task 4$/)
+      .click();
+
+    cy.get('.ms-drop')
+      .contains(/^Task 8$/)
+      .click();
+
+    cy.get('.ms-ok-button')
+      .click();
+
+    cy.get('.slick-row')
+      .should('have.length', 2);
+
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(2)`).should('contain', 'Task 4');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(2)`).should('contain', 'Task 8');
+  });
 });
