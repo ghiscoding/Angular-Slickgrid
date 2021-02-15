@@ -25,13 +25,13 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
   selector: 'swt-common-grid',
   template: `<angular-slickgrid gridId='common-grid'
                       #angularSlickGrid
+                      [gridHeight]="200"
                       (onDataviewCreated)="dataviewReady($event)"
                       (onGridCreated)="gridReady($event)"
                       [columnDefinitions]="columnDefinitions"
                       [gridOptions]="gridOptions"
-                      [dataset]="dataset"
-                      >
-                      </angular-slickgrid>`,
+                      [dataset]="dataset">
+              </angular-slickgrid>`,
   styles: [`
        :host ::ng-deep .gridPane{
             width: 100%!important;
