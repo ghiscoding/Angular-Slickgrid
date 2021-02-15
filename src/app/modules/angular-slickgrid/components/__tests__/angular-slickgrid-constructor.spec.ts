@@ -172,6 +172,7 @@ const mockDataView = {
   beginUpdate: jest.fn(),
   endUpdate: jest.fn(),
   getItem: jest.fn(),
+  getItemCount: jest.fn(),
   getItems: jest.fn(),
   getLength: jest.fn(),
   getItemMetadata: jest.fn(),
