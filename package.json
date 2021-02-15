@@ -136,7 +136,7 @@
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^24.0.25",
     "@types/moment": "^2.13.0",
-    "@types/node": "^14.14.22",
+    "@types/node": "^14.14.28",
     "@types/text-encoding-utf-8": "^1.0.1",
     "babel-jest": "^24.9.0",
     "bootstrap": "3.4.1",

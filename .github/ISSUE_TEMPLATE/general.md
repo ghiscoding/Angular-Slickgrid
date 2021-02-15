@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- YOU MUST FILL IN THIS TEMPLATE OR ELSE IT WILL BE AUTO-CLOSE BY THE BOT -->
+<!-- YOU MUST FILL IN THIS ISSUE TEMPLATE OR ELSE IT WILL BE AUTO-CLOSE BY THE BOT -->
 
 <!---
 Thanks for filing a General issue! However, before you submit, please read the following:

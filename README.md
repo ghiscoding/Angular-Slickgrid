@@ -38,6 +38,9 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
+### Note on RxJS
+Please note that RxJS is fixed at version `6.3.3` and will certainly not work with version `7.0.0`. Why you might ask? Because they made structurale changes in version `6.4.0` which would impact anyone using Angular-Slickgrid that haven't upgraded and for that reason the version used by the lib is fixed at `6.3.3`. Also note that I will not release a major version of Angular-Slickgrid just to support RxJS 7 (which is still in Beta), a major version of Angular-Slickgrid is many months away.
+
 ### ngx-translate Compatibility
 
 If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even if you just use a single Locale, because it is a `peerDependency` of Angular-Slickgrid. We use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should be removed by tree shaking process after a running a build. See their version compatibility table below
