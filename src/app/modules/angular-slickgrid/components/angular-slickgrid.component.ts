@@ -772,7 +772,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       startTime: new Date(),
       endTime: new Date(),
       itemCount: itemCount,
-      totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
+      totalItemCount: this.dataView && this.dataView.getItemCount() || 0
     };
 
     // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty

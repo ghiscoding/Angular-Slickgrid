@@ -73,13 +73,13 @@ export const testFilterCondition = (operator: OperatorString, value1: any, value
       return ((value2 && Array.isArray(value2 as string[])) ? (!value2.includes(value1)) : false);
     case 'IN_CONTAINS':
       if (value2 && Array.isArray(value2) && typeof value1 === 'string') {
-        return value2.some(item => value1.split(',').includes(item));
+        return value2.some(item => value1.split(/[\s,]+/).includes(item));
       }
       return false;
     case 'NIN_CONTAINS':
     case 'NOT_IN_CONTAINS':
       if (value2 && Array.isArray(value2) && typeof value1 === 'string') {
-        return !value2.some(item => value1.split(',').includes(item));
+        return !value2.some(item => value1.split(/[\s,]+/).includes(item));
       }
       return false;
   }

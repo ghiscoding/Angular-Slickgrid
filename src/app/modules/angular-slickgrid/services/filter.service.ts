@@ -23,7 +23,7 @@ import {
   SlickEventHandler,
 } from './../models/index';
 import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
-import { deepCopy, getDescendantProperty, mapOperatorByFieldType } from './utilities';
+import { deepCopy, getDescendantProperty, mapOperatorByFieldType, sanitizeHtmlToText } from './utilities';
 import { FilterConditions, getParsedSearchTermsByFieldType } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
 import { SharedService } from './shared.service';
@@ -472,11 +472,13 @@ export class FilterService {
     }
 
     // when using localization (i18n), we should use the formatter output to search as the new cell value
+    // we will also sanitize/remove HTML tags out of the text (which might be added by multiple-select)
     if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
       const dataView = grid.getData();
       const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
       const rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item[idPropName]) : 0;
       cellValue = (columnDef && typeof columnDef.formatter === 'function') ? columnDef.formatter(rowIndex || 0, columnIndex, cellValue, columnDef, item, this._grid) : '';
+      cellValue = sanitizeHtmlToText(cellValue); // also remove any html tag
     }
 
     // make sure cell value is always a string

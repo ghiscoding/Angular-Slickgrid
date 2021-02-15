@@ -26,4 +26,3 @@ export const decimalFormatter: Formatter = (row: number, cell: number, value: an
   }
   return value;
 };
-
