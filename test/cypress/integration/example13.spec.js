@@ -41,7 +41,7 @@ describe('Example 13 - Custom Backend Server Pagination', () => {
       .should('be.visible', false);
   });
 
-  it('should filter with "New" Status and expect query string to contains the search and the page to be back to Page 1', () => {
+  xit('should filter with "New" Status and expect query string to contains the search and the page to be back to Page 1', () => {
     cy.get('input.search-filter.filter-status')
       .type('New');
 
@@ -59,7 +59,7 @@ describe('Example 13 - Custom Backend Server Pagination', () => {
       .should('be.visible', false);
   });
 
-  it('should go to last page 5 and expect query to be updated accordingly', () => {
+  xit('should go to last page 5 and expect query to be updated accordingly', () => {
     cy.get('.icon-seek-end').click();
 
     cy.get('.fa-refresh.fa-spin')
