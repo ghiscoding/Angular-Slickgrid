@@ -204,7 +204,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
     };
   }
 
-  displaySpinner(isProcessing) {
+  displaySpinner(isProcessing: boolean) {
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -227,9 +227,9 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    * So we will have to write, by hand, the query to get the continents code & name
    * We also need to resolve the data in a flat array (singleSelect/multipleSelect Filters only accept data at the root of the array)
    */
-  getContinents() {
+  getContinents(): Observable<GraphqlResult<{ code: string; name: string; }>> {
     const continentQuery = `query { continents { code, name  }}`;
-    return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query: continentQuery });
+    return this.http.post<GraphqlResult<{ code: string; name: string; }>>(COUNTRIES_API, { query: continentQuery });
   }
 
   /**
@@ -237,8 +237,8 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    * So we will have to write, by hand, the query to get the languages code & name
    * We also need to resolve the data in a flat array (singleSelect/multipleSelect Filters only accept data at the root of the array)
    */
-  getLanguages() {
+  getLanguages(): Observable<GraphqlResult<{ code: string; name: string; native: string; }>> {
     const languageQuery = `query { languages { code, name, native  }}`;
-    return this.http.post<GraphqlResult<Country>>(COUNTRIES_API, { query: languageQuery });
+    return this.http.post<GraphqlResult<{ code: string; name: string; native: string; }>>(COUNTRIES_API, { query: languageQuery });
   }
 }
