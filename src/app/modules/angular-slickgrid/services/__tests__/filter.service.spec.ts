@@ -1184,6 +1184,96 @@ describe('FilterService', () => {
     });
   });
 
+  describe('updateSingleFilter method', () => {
+    let mockColumn1: Column;
+    let mockColumn2: Column;
+    let mockArgs1;
+    let mockArgs2;
+
+    beforeEach(() => {
+      gridOptionMock.enableFiltering = true;
+      gridOptionMock.backendServiceApi = undefined;
+      mockColumn1 = { id: 'firstName', name: 'firstName', field: 'firstName', };
+      mockColumn2 = { id: 'isActive', name: 'isActive', field: 'isActive', type: FieldType.boolean, };
+      mockArgs1 = { grid: gridStub, column: mockColumn1, node: document.getElementById(DOM_ELEMENT_ID) };
+      mockArgs2 = { grid: gridStub, column: mockColumn2, node: document.getElementById(DOM_ELEMENT_ID) };
+      sharedService.allColumns = [mockColumn1, mockColumn2];
+    });
+
+    it('should call "updateSingleFilter" method and expect event "emitFilterChanged" to be trigged local when using "bindLocalOnFilter" and also expect filters to be set in dataview', () => {
+      const expectation = {
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', type: FieldType.string },
+      };
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const setFilterArgsSpy = jest.spyOn(dataViewStub, 'setFilterArgs');
+      const refreshSpy = jest.spyOn(dataViewStub, 'refresh');
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1 as any, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2 as any, new Slick.EventData(), gridStub);
+      service.updateSingleFilter({ columnId: 'firstName', searchTerms: ['Jane'], operator: 'StartsWith' });
+
+      expect(setFilterArgsSpy).toHaveBeenCalledWith({ columnFilters: expectation, grid: gridStub });
+      expect(refreshSpy).toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledWith('local');
+      expect(service.getColumnFilters()).toEqual({
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', type: FieldType.string },
+      });
+    });
+
+    it('should call "updateSingleFilter" method and expect event "emitFilterChanged" to be trigged local when using "bindBackendOnFilter" and also expect filters to be set in dataview', () => {
+      const expectation = {
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', type: FieldType.string },
+      };
+      gridOptionMock.backendServiceApi = {
+        filterTypingDebounce: 0,
+        service: backendServiceStub,
+        process: () => new Promise((resolve) => resolve(jest.fn())),
+      };
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateFilters');
+      const backendProcessSpy = jest.spyOn(backendServiceStub, 'processOnFilterChanged');
+
+      service.init(gridStub);
+      service.bindBackendOnFilter(gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1 as any, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2 as any, new Slick.EventData(), gridStub);
+      service.updateSingleFilter({ columnId: 'firstName', searchTerms: ['Jane'], operator: 'StartsWith' });
+
+      expect(emitSpy).toHaveBeenCalledWith('remote');
+      expect(backendProcessSpy).not.toHaveBeenCalled();
+      expect(backendUpdateSpy).toHaveBeenCalledWith(expectation, true);
+      expect(service.getColumnFilters()).toEqual(expectation);
+      expect(mockRefreshBackendDataset).toHaveBeenCalledWith(gridOptionMock);
+    });
+
+    it('should expect filter to be sent to the backend when using "bindBackendOnFilter" without triggering a filter changed event neither a backend query when both flag arguments are set to false', () => {
+      const expectation = {
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', type: FieldType.string },
+      };
+      gridOptionMock.backendServiceApi = {
+        filterTypingDebounce: 0,
+        service: backendServiceStub,
+        process: () => new Promise((resolve) => resolve(jest.fn())),
+      };
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateFilters');
+      const backendProcessSpy = jest.spyOn(backendServiceStub, 'processOnFilterChanged');
+
+      service.init(gridStub);
+      service.bindBackendOnFilter(gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1 as any, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2 as any, new Slick.EventData(), gridStub);
+      service.updateSingleFilter({ columnId: 'firstName', searchTerms: ['Jane'], operator: 'StartsWith' }, false, false);
+
+      expect(backendProcessSpy).not.toHaveBeenCalled();
+      expect(emitSpy).not.toHaveBeenCalled();
+      expect(mockRefreshBackendDataset).not.toHaveBeenCalled();
+      expect(backendUpdateSpy).toHaveBeenCalledWith(expectation, true);
+      expect(service.getColumnFilters()).toEqual(expectation);
+    });
+  });
+
   describe('disableFilterFunctionality method', () => {
     beforeEach(() => {
       gridOptionMock.enableFiltering = true;

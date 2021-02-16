@@ -15,8 +15,15 @@
         <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
       </select>
 
-      <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
-             placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
+      <div class="input-group">
+        <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
+               placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
+        <div class="input-group-btn">
+          <button class="btn btn-default" data-test="clear-search-value" (click)="cleargridSearchInput()">
+            <span class="icon fa fa-times"></span>
+          </button>
+        </div>
+      </div>
     </div>
   </form>
 

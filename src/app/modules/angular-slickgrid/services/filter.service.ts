@@ -832,6 +832,55 @@ export class FilterService {
     }
   }
 
+  /**
+   * Update a Single Filter dynamically just by providing (columnId, operator and searchTerms)
+   * You can also choose emit (default) a Filter Changed event that will be picked by the Grid State Service.
+   *
+   * Also for backend service only, you can choose to trigger a backend query (default) or not if you wish to do it later,
+   * this could be useful when using updateFilters & updateSorting and you wish to only send the backend query once.
+   * @param filters array
+   * @param triggerEvent defaults to True, do we want to emit a filter changed event?
+   */
+  updateSingleFilter(filter: CurrentFilter, emitChangedEvent = true, triggerBackendQuery = true) {
+    const columnDef = this.sharedService.allColumns.find(col => col.id === filter.columnId);
+    if (columnDef && filter.columnId) {
+      this._columnFilters = {};
+      if (Array.isArray(filter.searchTerms) && (filter.searchTerms.length > 1 || (filter.searchTerms.length === 1 && filter.searchTerms[0] !== ''))) {
+        // pass a columnFilter object as an object which it's property name must be a column field name (e.g.: 'duration': {...} )
+        this._columnFilters[filter.columnId] = {
+          columnId: filter.columnId,
+          operator: filter.operator,
+          searchTerms: filter.searchTerms,
+          columnDef,
+          type: columnDef.type || FieldType.string,
+        };
+      }
+
+      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+
+      if (backendApi) {
+        const backendApiService = backendApi && backendApi.service;
+        if (backendApiService && backendApiService.updateFilters) {
+          backendApiService.updateFilters(this._columnFilters, true);
+          if (triggerBackendQuery) {
+            refreshBackendDataset(this._gridOptions);
+          }
+        }
+      } else {
+        this._dataView.setFilterArgs({
+          columnFilters: this._columnFilters,
+          grid: this._grid
+        });
+        this._dataView.refresh();
+      }
+
+      if (emitChangedEvent) {
+        const emitterType = backendApi ? EmitterType.remote : EmitterType.local;
+        this.emitFilterChanged(emitterType);
+      }
+    }
+  }
+
   // --
   // protected functions
   // -------------------
