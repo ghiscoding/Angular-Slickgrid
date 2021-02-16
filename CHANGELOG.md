@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.26.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.25.1...v2.26.0) (2021-02-16)
+
+
+### Features
+
+* **filters:** add updateSingleFilter for a single external filter ([#699](https://github.com/ghiscoding/angular-slickgrid/issues/699)) ([677beb4](https://github.com/ghiscoding/angular-slickgrid/commit/677beb4016f03a6a2086a516cceac8117f24ea4a))
+* **perf:** huge filtering execution speed improvements ([#694](https://github.com/ghiscoding/angular-slickgrid/issues/694)) ([f93a24d](https://github.com/ghiscoding/angular-slickgrid/commit/f93a24db90a1155995fbbf3c20b11a97a504fbc5))
+* **perf:** improve date sorting speed ([#691](https://github.com/ghiscoding/angular-slickgrid/issues/691)) ([1040352](https://github.com/ghiscoding/angular-slickgrid/commit/1040352922d6c3922327d6a5ba5ed594846ad4bf))
+* **services:** add bulk transactions in Grid Service CRUD methods ([#687](https://github.com/ghiscoding/angular-slickgrid/issues/687)) ([277e627](https://github.com/ghiscoding/angular-slickgrid/commit/277e6275f71340ebcaea43b03aadb595bc973cad))
+* **tests:** add Cypress E2E tests to Bootstrap Tabs Example ([#698](https://github.com/ghiscoding/angular-slickgrid/issues/698)) ([b8d1d14](https://github.com/ghiscoding/angular-slickgrid/commit/b8d1d145c13abf0458d63c3aa5c91534ac6e59aa))
+
+
+### Bug Fixes
+
+* **backend:** incorrect item with GraphQL and useLocalFiltering ([#697](https://github.com/ghiscoding/angular-slickgrid/issues/697)) ([aa78e76](https://github.com/ghiscoding/angular-slickgrid/commit/aa78e7600f6088a59913d8bad41b75e1beffa21c))
+* **exports:** Excel Export custom width applies the width to next column ([#683](https://github.com/ghiscoding/angular-slickgrid/issues/683)) ([fffa711](https://github.com/ghiscoding/angular-slickgrid/commit/fffa711660fb6a62515da693f53425263bac916a))
+* **filters:** don't use indexOf NOT_IN_CONTAINS ([#693](https://github.com/ghiscoding/angular-slickgrid/issues/693)) ([844e167](https://github.com/ghiscoding/angular-slickgrid/commit/844e167317d349df0b50fe9a3a4c4a76ef9e21de))
+* **frozen:** hiding multiple columns when using pinning gets out of sync ([#684](https://github.com/ghiscoding/angular-slickgrid/issues/684)) ([a453d76](https://github.com/ghiscoding/angular-slickgrid/commit/a453d763e90280ad5b0f2c963c8d0ad348d66e1e))
+* **plugin:** recreate header menu w/adding column dynamically, fix [#689](https://github.com/ghiscoding/angular-slickgrid/issues/689) ([#690](https://github.com/ghiscoding/angular-slickgrid/issues/690)) ([1b89e2f](https://github.com/ghiscoding/angular-slickgrid/commit/1b89e2fa079acfcf14ea77744ca9a7de40bcceaa))
+
 ### [2.25.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.25.0...v2.25.1) (2021-01-25)
 
 
