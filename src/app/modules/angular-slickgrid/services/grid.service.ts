@@ -266,7 +266,7 @@ export class GridService {
     const item = this._dataView.getItem(rowNumber);
     const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
 
-    if (item && item[idPropName]) {
+    if (item && item[idPropName] !== undefined) {
       item.rowClass = 'highlight';
       this._dataView.updateItem(item[idPropName], item);
       this.renderGrid();
@@ -281,7 +281,7 @@ export class GridService {
 
       // delete the row's CSS highlight classes once the delay is passed
       setTimeout(() => {
-        if (item && item[idPropName]) {
+        if (item && item[idPropName] !== undefined) {
           delete item.rowClass;
           if (this._dataView.getIdxById(item[idPropName]) !== undefined) {
             this._dataView.updateItem(item[idPropName], item);

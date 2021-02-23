@@ -4,6 +4,7 @@ import { GridService, ExtensionService, FilterService, GridStateService, SortSer
 import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare const Slick: any;
+jest.useFakeTimers();
 
 const mockSelectionModel = {
   init: jest.fn(),
@@ -39,6 +40,7 @@ const dataviewStub = {
   deleteItem: jest.fn(),
   deleteItems: jest.fn(),
   getIdxById: jest.fn(),
+  getItemMetadata: jest.fn(),
   getItem: jest.fn(),
   getRowById: jest.fn(),
   insertItem: jest.fn(),
@@ -1079,7 +1081,7 @@ describe('Grid Service', () => {
   });
 
   describe('highlightRowByMetadata method', () => {
-    it('should hightlight a row with a fading start & end delay', (done) => {
+    it('should hightlight a row with a fading start & end delay', () => {
       const mockColumn = { id: 'field2', field: 'field2', width: 150, rowClass: 'red' } as Column;
       const getItemSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(mockColumn);
       const getIndexSpy = jest.spyOn(dataviewStub, 'getIdxById').mockReturnValue(0);
@@ -1087,15 +1089,13 @@ describe('Grid Service', () => {
       const renderSpy = jest.spyOn(service, 'renderGrid');
 
       service.highlightRowByMetadata(2, 1, 1);
+      jest.runAllTimers(); // fast-forward timer
 
-      setTimeout(() => {
-        expect(getItemSpy).toHaveBeenCalledWith(2);
-        expect(updateSpy).toHaveBeenCalledTimes(3);
-        expect(updateSpy).toHaveBeenCalledWith(mockColumn.id, mockColumn);
-        expect(renderSpy).toHaveBeenCalled();
-        expect(getIndexSpy).toHaveBeenCalled();
-        done();
-      }, 5);
+      expect(getItemSpy).toHaveBeenCalledWith(2);
+      expect(updateSpy).toHaveBeenCalledTimes(3);
+      expect(updateSpy).toHaveBeenCalledWith(mockColumn.id, mockColumn);
+      expect(renderSpy).toHaveBeenCalled();
+      expect(getIndexSpy).toHaveBeenCalled();
     });
   });
 
@@ -1489,6 +1489,28 @@ describe('Grid Service', () => {
 
       expect(extensionSpy).toHaveBeenCalled();
       expect(gridStateSpy).toHaveBeenCalledWith(mockColumns);
+    });
+  });
+
+  describe('highlightRow method', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should be able to highlight first row at zero index', () => {
+      const mockRowMetadata = (rowNumber) => ({ cssClasses: `row-${rowNumber}` });
+      const mockItem = { id: 0, firstName: 'John', lastName: 'Doe' };
+      jest.spyOn(service, 'getItemRowMetadataToHighlight').mockReturnValue(mockRowMetadata);
+      jest.spyOn(dataviewStub, 'getItem').mockReturnValue(mockItem);
+      jest.spyOn(dataviewStub, 'getIdxById').mockReturnValue(0);
+      const updateSpy = jest.spyOn(dataviewStub, 'updateItem');
+      const renderSpy = jest.spyOn(service, 'renderGrid');
+
+      service.highlightRow(0, 10, 15);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(updateSpy).toHaveBeenCalledWith(0, mockItem)
+      expect(renderSpy).toHaveBeenCalledTimes(3);
     });
   });
 
