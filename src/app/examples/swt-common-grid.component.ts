@@ -45,25 +45,25 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 @Injectable()
 export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendService {
 
-  private logger: Logger = null;
+  private logger: Logger;
   private defaultPageSize = 20;
 
   @Input() gridHeight = 100;
   @Input() gridWidth = 600;
 
-  gridHeightString: string;
-  gridWidthString: string;
+  gridHeightString!: string;
+  gridWidthString!: string;
 
-  @ViewChild('angularSlickGrid', { static: true }) angularSlickGrid: AngularSlickgridComponent;
+  @ViewChild('angularSlickGrid', { static: true }) angularSlickGrid!: AngularSlickgridComponent;
 
   columnDefinitions: Column[] = [];
-  dataset: any[];
+  dataset!: any[];
   gridObj: any;
   dataviewObj: any;
   isAutoEdit = false;
   updatedObject: any;
   isMultiSelect = true;
-  selectedObjects: any[];
+  selectedObjects!: any[];
   selectedObject: any;
 
   // Slick grid
@@ -73,8 +73,8 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
   selects: any;
   id: any;
 
-  options: BackendServiceOption;
-  pagination: Pagination;
+  options!: BackendServiceOption;
+  pagination?: Pagination;
 
 
   @Output('onFilterChanged') onFilterChanged_: EventEmitter<FilterChangedArgs> = new EventEmitter<FilterChangedArgs>();
@@ -124,21 +124,21 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   @Input('pagination')
   set paginationComponent(value: SwtCommonGridPaginationComponent) {
-    this.logger.info('method [pagination] - START, assigned datagrid pagination object: ', value.realPagination);
+    this.logger!.info('method [pagination] - START, assigned datagrid pagination object: ', value.realPagination);
     if (value.realPagination) {
       this._paginationComponent = value;
       this.gridOptions.backendServiceApi = {
         service: this,
         preProcess: () => { },
-        process: (query) => {
+        process: () => {
           return null;
         },
-        postProcess: (response) => { }
-      };
+        postProcess: () => { }
+      } as any;
       this._paginationComponent.gridPaginationOptions = this.gridOptions;
       this.angularSlickGrid.createBackendApiInternalPostProcessCallback(this.gridOptions);
     }
-    this.logger.info('method [pagination] - START');
+    this.logger!.info('method [pagination] - START');
   }
 
   get paginationComponent(): SwtCommonGridPaginationComponent {
@@ -207,14 +207,14 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         const outputType = null;
         const params = null;
 
-        const col = {
+        const col: any = {
           id: this.columnData[index].dataelement,
           name: this.columnData[index].heading,
           field: this.columnData[index].dataelement,
           sortable: this.columnData[index].sort,
           filterable: this.columnData[index].filterable,
           type,
-          editor,
+          editor: editor,
           formatter,
           filter,
           outputType,
@@ -272,7 +272,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
       const rowData: any = [];
       for (key in row) {
         if (row.hasOwnProperty(key)) {
-          rowData[key] = row[key].content;
+          rowData[key] = (row as any)[key].content;
         }
       }
       dataProvider[index] = Object.assign(rowData, idObj);
@@ -294,13 +294,13 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     return this.dataset;
   }
 
-  gridReady(grid) {
+  gridReady(grid: any) {
     this.logger.info('method [gridReady] - START');
     this.gridObj = grid;
     this.logger.info('method [gridReady] - END');
   }
 
-  dataviewReady(dataview) {
+  dataviewReady(dataview: any) {
     this.logger.info('method [dataviewReady] - START/END', dataview);
     this.dataviewObj = dataview;
   }
@@ -335,11 +335,11 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
+  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): Promise<string> | string {
     this.logger.info('method [onFilterChanged] - START', args);
     this.filteredGridColumns = '';
     let timing = 0;
-    if (event.type === 'keyup' || event.type === 'keydown') {
+    if (event && (event.type === 'keyup' || event.type === 'keydown')) {
       timing = DEFAULT_FILTER_TYPING_DEBOUNCE;
       clearTimeout(timer);
     }
@@ -363,7 +363,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     }, timing);
 
     this.logger.info('method [onFilterChanged] - END');
-    return null;
+    return '';
   }
 
 
@@ -372,7 +372,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(event: Event | undefined, args: PaginationChangedArgs) {
     this.logger.info('method [onPaginationChanged] - START');
     this.currentPage = args.newPage;
     this.onPaginationChanged_.emit(args);
@@ -385,12 +385,12 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnSortChanged(event: Event, args: SortChangedArgs) {
+  processOnSortChanged(event: Event | undefined, args: SortChangedArgs) {
     this.logger.info('method [onSortChanged] - START');
     this.sortedGridColumn = '';
-    const sortDirection = '|' + args.sortCols[0].sortAsc + '|';
+    const sortDirection = '|' + args!.sortCols![0].sortAsc + '|';
     for (let idx = 0; idx < this.columnDefinitions.length; idx++) {
-      if (this.columnDefinitions[idx].field === args.sortCols[0].sortCol.field) {
+      if (this.columnDefinitions[idx].field === args!.sortCols![0].sortCol.field) {
         this.sortedGridColumn = '' + idx + sortDirection;
       }
     }

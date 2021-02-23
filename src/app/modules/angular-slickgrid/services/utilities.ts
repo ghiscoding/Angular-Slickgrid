@@ -16,8 +16,8 @@ declare const $: any;
  */
 export function addToArrayWhenNotExists<T = any>(inputArray: T[], inputItem: T, itemIdPropName = 'id') {
   let arrayRowIndex = -1;
-  if (typeof inputItem === 'object' && inputItem.hasOwnProperty(itemIdPropName)) {
-    arrayRowIndex = inputArray.findIndex((item) => item[itemIdPropName] === inputItem[itemIdPropName]);
+  if (typeof inputItem === 'object' && itemIdPropName in inputItem) {
+    arrayRowIndex = inputArray.findIndex((item) => (item as any)[itemIdPropName] === (inputItem as any)[itemIdPropName]);
   } else {
     arrayRowIndex = inputArray.findIndex((item) => item === inputItem);
   }
@@ -69,16 +69,16 @@ export function convertParentChildArrayToHierarchicalView<T = any>(flatArray: T[
   // make them accessible by guid on this map
   const all = {};
 
-  inputArray.forEach((item) => all[item[identifierPropName]] = item);
+  inputArray.forEach((item) => (all as any)[(item as any)[identifierPropName]] = item);
 
   // connect childrens to its parent, and split roots apart
   Object.keys(all).forEach((id) => {
-    const item = all[id];
+    const item = (all as any)[id];
     if (item[parentPropName] === null || !item.hasOwnProperty(parentPropName)) {
       delete item[parentPropName];
       roots.push(item);
     } else if (item[parentPropName] in all) {
-      const p = all[item[parentPropName]];
+      const p = (all as any)[item[parentPropName]];
       if (!(childrenPropName in p)) {
         p[childrenPropName] = [];
       }
@@ -126,18 +126,18 @@ export function convertHierarchicalViewToParentChildArrayByReference<T = any>(hi
   if (Array.isArray(hierarchicalArray)) {
     for (const item of hierarchicalArray) {
       if (item) {
-        const itemExist = outputArrayRef.find((itm: T) => itm[identifierPropName] === item[identifierPropName]);
+        const itemExist = outputArrayRef.find((itm: T) => (itm as any)[identifierPropName] === (item as any)[identifierPropName]);
         if (!itemExist) {
-          item[treeLevelPropName] = treeLevel; // save tree level ref
-          item[parentPropName] = parentId || null;
+          (item as any)[treeLevelPropName] = treeLevel; // save tree level ref
+          (item as any)[parentPropName] = parentId || null;
           outputArrayRef.push(item);
         }
-        if (Array.isArray(item[childrenPropName])) {
+        if (Array.isArray((item as any)[childrenPropName])) {
           treeLevel++;
-          convertHierarchicalViewToParentChildArrayByReference(item[childrenPropName], outputArrayRef, options, treeLevel, item[identifierPropName]);
+          convertHierarchicalViewToParentChildArrayByReference((item as any)[childrenPropName], outputArrayRef, options, treeLevel, (item as any)[identifierPropName]);
           treeLevel--;
-          item[hasChildrenFlagPropName] = true;
-          delete item[childrenPropName]; // remove the children property
+          (item as any)[hasChildrenFlagPropName] = true;
+          delete (item as any)[childrenPropName]; // remove the children property
         }
       }
     }
@@ -164,7 +164,7 @@ export function deepCopy(obj: any) {
     // Recursively copy it's value and add to the clone
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        clone[key] = deepCopy(obj[key]);
+        (clone as any)[key] = deepCopy(obj[key]);
       }
     }
     return clone;
@@ -200,19 +200,19 @@ export function deepCopy(obj: any) {
  * @param predicate
  * @param childrenPropertyName
  */
-export function findItemInHierarchicalStructure<T = any>(hierarchicalArray: T[], predicate: (item: T) => boolean, childrenPropertyName: string): T {
+export function findItemInHierarchicalStructure<T = any>(hierarchicalArray: T[], predicate: (item: T) => boolean, childrenPropertyName: string): T | undefined {
   if (!childrenPropertyName) {
     throw new Error('findRecursive requires parameter "childrenPropertyName"');
   }
   const initialFind = hierarchicalArray.find(predicate);
-  const elementsWithChildren = hierarchicalArray.filter((x: T) => x.hasOwnProperty(childrenPropertyName) && x[childrenPropertyName]);
+  const elementsWithChildren = hierarchicalArray.filter((x: T) => childrenPropertyName in x && (x as any)[childrenPropertyName]);
   if (initialFind) {
     return initialFind;
   } else if (elementsWithChildren.length) {
     const childElements: T[] = [];
     elementsWithChildren.forEach((item: T) => {
-      if (item.hasOwnProperty(childrenPropertyName)) {
-        childElements.push(...item[childrenPropertyName]);
+      if (childrenPropertyName in item) {
+        childElements.push(...(item as any)[childrenPropertyName]);
       }
     });
     return findItemInHierarchicalStructure<T>(childElements, predicate, childrenPropertyName);
@@ -231,7 +231,7 @@ export function htmlDecode(encodedStr: string): string {
     const dom = parser.parseFromString(
       '<!doctype html><body>' + encodedStr,
       'text/html');
-    return dom && dom.body && dom.body.textContent;
+    return dom && dom.body && dom.body.textContent || '';
   } else {
     // for some browsers that might not support DOMParser, use jQuery instead
     return $('<div/>').html(encodedStr).text();
@@ -252,7 +252,7 @@ export function htmlEncode(inputValue: string): string {
     '\'': '&#39;'
   };
   // all symbols::  /[&<>"'`=\/]/g
-  return (inputValue || '').toString().replace(/[&<>"']/g, (s) => entityMap[s]);
+  return (inputValue || '').toString().replace(/[&<>"']/g, (s) => (entityMap as any)[s]);
 }
 
 /**
@@ -433,20 +433,20 @@ export function formatNumber(input: number | string, minDecimal?: number, maxDec
   if (calculatedValue < 0) {
     const absValue = Math.abs(calculatedValue);
     if (displayNegativeNumberWithParentheses) {
-      if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+      if (!isNaN(minDecimal as number) || !isNaN(maxDecimal as number)) {
         return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix})`;
       }
       const formattedValue = thousandSeparatorFormatted(`${absValue}`, thousandSeparator);
       return `(${symbolPrefix}${formattedValue}${symbolSuffix})`;
     } else {
-      if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+      if (!isNaN(minDecimal as number) || !isNaN(maxDecimal as number)) {
         return `-${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix}`;
       }
       const formattedValue = thousandSeparatorFormatted(`${absValue}`, thousandSeparator);
       return `-${symbolPrefix}${formattedValue}${symbolSuffix}`;
     }
   } else {
-    if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+    if (!isNaN(minDecimal as number) || !isNaN(maxDecimal as number)) {
       return `${symbolPrefix}${decimalFormatted(input, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix}`;
     }
     const formattedValue = thousandSeparatorFormatted(`${input}`, thousandSeparator);
@@ -455,8 +455,8 @@ export function formatNumber(input: number | string, minDecimal?: number, maxDec
 }
 
 /** From a dot (.) notation path, find and return a property within an object given a path */
-export function getDescendantProperty<T = any>(obj: T, path: string): any {
-  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+export function getDescendantProperty<T = any>(obj: T, path: string): T {
+  return path.split('.').reduce((acc: T, part: string) => acc && (acc as any)[part], obj);
 }
 
 /** Get HTML Element position offset (without jQuery) */
@@ -880,13 +880,13 @@ export function setDeepValue<T = any>(obj: T, path: string | string[], value: an
     const e = path.shift();
     if (obj && e !== undefined) {
       setDeepValue(
-        obj[e] = Object.prototype.toString.call(obj[e]) === '[object Object]' ? obj[e] : {},
+        (obj as any)[e] = Object.prototype.toString.call((obj as any)[e]) === '[object Object]' ? (obj as any)[e] : {},
         path,
         value
       );
     }
   } else if (obj && path[0]) {
-    obj[path[0]] = value;
+    (obj as any)[(path as any)[0]] = value;
   }
 }
 

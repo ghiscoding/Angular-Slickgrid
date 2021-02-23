@@ -12,12 +12,12 @@ import { getTranslationPrefix, unsubscribeAllObservables } from '../services/uti
   templateUrl: './slick-pagination.component.html'
 })
 export class SlickPaginationComponent implements OnDestroy, OnInit {
-  @Input() gridOptions: GridOption;
+  @Input() gridOptions!: GridOption;
 
   private subscriptions: Subscription[] = [];
   private _enableTranslate = false;
-  private _gridOptions: GridOption;
-  private _locales: Locale;
+  private _gridOptions!: GridOption;
+  private _locales!: Locale;
 
   // text translations (handled by ngx-translate or by custom locale)
   textItemsPerPage = 'items per page';

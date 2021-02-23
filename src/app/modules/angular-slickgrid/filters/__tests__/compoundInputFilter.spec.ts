@@ -312,7 +312,7 @@ describe('CompoundInputFilter', () => {
 
     expect(filterInputElm.value).toBe('');
     expect(filterFilledElms.length).toBe(0);
-    expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
   });
 
   it('should trigger a callback with the clear filter but without querying when when calling the "clear" method with False as argument', () => {
@@ -327,7 +327,7 @@ describe('CompoundInputFilter', () => {
 
     expect(filterInputElm.value).toBe('');
     expect(filterFilledElms.length).toBe(0);
-    expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
 
   describe('with French I18N translations', () => {

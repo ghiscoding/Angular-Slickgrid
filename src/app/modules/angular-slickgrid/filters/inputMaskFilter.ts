@@ -2,7 +2,7 @@ import { InputFilter } from './inputFilter';
 import { FilterArguments } from '../models/filterArguments.interface';
 
 export class InputMaskFilter extends InputFilter {
-  protected _inputMask: string;
+  protected _inputMask = '';
 
   /** Initialize the Filter */
   constructor() {

@@ -48,15 +48,15 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     </ul>
   `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
   customDataView: any;
   gridObj: any;
-  gridOptions: GridOption;
+  gridOptions!: GridOption;
   dataset = [];
   loaderDataView: any;
   loading = false; // spinner when loading data
-  search: string;
+  search = '';
 
   constructor() {
     this.loaderDataView = new Slick.Data.RemoteModel();
@@ -126,7 +126,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     }
   }
 
-  onSort(e, args) {
+  onSort(e: Event, args: any) {
     if (this.gridObj && this.gridObj.getViewport && this.loaderDataView && this.loaderDataView.ensureData && this.loaderDataView.setSort) {
       const vp = this.gridObj.getViewport();
       if (args && args.sortCol && args.sortCol.field) {
@@ -136,7 +136,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     }
   }
 
-  onViewportChanged(e, args) {
+  onViewportChanged(e: Event, args: any) {
     if (this.gridObj && this.gridObj.getViewport && this.loaderDataView && this.loaderDataView.ensureData) {
       const vp = this.gridObj.getViewport();
       this.loaderDataView.ensureData(vp.top, vp.bottom);

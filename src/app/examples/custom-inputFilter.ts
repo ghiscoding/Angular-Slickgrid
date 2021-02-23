@@ -18,9 +18,9 @@ export class CustomInputFilter implements Filter {
   private _shouldTriggerQuery = true;
   private $filterElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
   operator: OperatorType | OperatorString = OperatorType.equal;
 
   constructor() { }
@@ -96,7 +96,7 @@ export class CustomInputFilter implements Filter {
   }
 
   /** Set value(s) on the DOM element */
-  setValues(values) {
+  setValues(values: SearchTerm | SearchTerm[]) {
     if (values) {
       this.$filterElm.val(values);
     }

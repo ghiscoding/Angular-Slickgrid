@@ -34,7 +34,7 @@ export function sliderValidator(inputValue: any, options: SliderValidatorOptions
     return {
       valid: false,
       msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
-        return mapValidation[matched];
+        return (mapValidation as any)[matched];
       })
     };
   }

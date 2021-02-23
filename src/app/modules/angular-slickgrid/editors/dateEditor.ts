@@ -3,7 +3,7 @@ import * as moment_ from 'moment-mini';
 import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
 import { FlatpickrFn } from 'flatpickr/dist/types/instance';
 const flatpickr: FlatpickrFn = (flatpickr_ && flatpickr_['default'] || flatpickr_) as any; // patch for rollup
-const moment = moment_['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from './../constants';
@@ -20,7 +20,7 @@ import {
   GridOption,
 } from './../models/index';
 
-declare function require(name: string);
+declare function require(name: string): any;
 require('flatpickr');
 
 // using external non-typed js libraries
@@ -34,15 +34,15 @@ export class DateEditor implements Editor {
   protected _$inputWithData: any;
   protected _$input: any;
   protected _$editorInputElm: any;
-  protected _originalDate: string;
-  protected _pickerMergedOptions: FlatpickrOption;
+  protected _originalDate = '';
+  protected _pickerMergedOptions!: FlatpickrOption;
 
   /** The translate library */
-  protected _translate: TranslateService;
+  protected _translate?: TranslateService;
 
   flatInstance: any;
-  defaultDate: string;
-  originalDate: string;
+  defaultDate?: string;
+  originalDate?: string;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -93,7 +93,7 @@ export class DateEditor implements Editor {
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
+  get validator(): EditorValidator | undefined {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 

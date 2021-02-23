@@ -18,12 +18,12 @@ export interface GridDimension {
 }
 
 export class ResizerService {
-  private _fixedHeight: number | null;
-  private _fixedWidth: number | null;
+  private _fixedHeight: number | undefined;
+  private _fixedWidth: number | undefined;
   private _grid: any;
   private _gridDomElm: any;
   private _gridContainerElm: any;
-  private _lastDimensions: GridDimension;
+  private _lastDimensions: GridDimension | undefined;
   private _timer: any;
   private _resizePaused = false;
   onGridAfterResize = new Subject<GridDimension>();
@@ -60,7 +60,7 @@ export class ResizerService {
   /** Bind an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
-  bindAutoResizeDataGrid(newSizes?: GridDimension) {
+  bindAutoResizeDataGrid(newSizes?: GridDimension): null | void {
     // if we can't find the grid to resize, return without binding anything
     if (this._gridDomElm === undefined || this._gridDomElm.offset() === undefined) {
       return null;
@@ -75,7 +75,7 @@ export class ResizerService {
     $(window).on(`resize.grid.${this._gridUid}`, this.handleResizeGrid.bind(this, newSizes));
   }
 
-  handleResizeGrid(newSizes: GridDimension, event: Event) {
+  handleResizeGrid(newSizes?: GridDimension, event?: Event) {
     this.onGridBeforeResize.next(event);
     if (!this._resizePaused) {
       // for some yet unknown reason, calling the resize twice removes any stuttering/flickering
@@ -163,7 +163,7 @@ export class ResizerService {
    * Return the last resize dimensions used by the service
    * @return last dimensions
    */
-  getLastResizeDimensions(): GridDimension {
+  getLastResizeDimensions(): GridDimension | undefined {
     return this._lastDimensions;
   }
 
@@ -187,13 +187,13 @@ export class ResizerService {
     });
   }
 
-  resizeGridCallback(newSizes: GridDimension) {
+  resizeGridCallback(newSizes?: GridDimension) {
     const lastDimensions = this.resizeGridWithDimensions(newSizes);
     this.onGridAfterResize.next(lastDimensions);
     return lastDimensions;
   }
 
-  resizeGridWithDimensions(newSizes?: GridDimension): GridDimension {
+  resizeGridWithDimensions(newSizes?: GridDimension): GridDimension | undefined {
     // calculate the available sizes with minimum height defined as a constant
     const availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
     const gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
@@ -202,8 +202,8 @@ export class ResizerService {
       // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
       // basically if user passes 1 of the dimension, let say he passes just the height,
       // we will use the height as a fixed height but the width will be resized by it's available space
-      const newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-      const newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+      const newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions && availableDimensions.height;
+      const newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions && availableDimensions.width;
 
       // apply these new height/width to the datagrid
       if (!this._gridOptions.autoHeight) {
@@ -230,12 +230,12 @@ export class ResizerService {
 
       // keep last resized dimensions & resolve them to the Promise
       this._lastDimensions = {
-        height: newHeight,
-        width: newWidth
+        height: newHeight || 0,
+        width: newWidth || 0
       };
 
       if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
-        this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+        this._lastDimensions.heightWithPagination = (newHeight || 0) + DATAGRID_PAGINATION_HEIGHT;
       }
     }
 

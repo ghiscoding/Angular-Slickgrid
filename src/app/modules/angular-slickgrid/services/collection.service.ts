@@ -15,7 +15,7 @@ import { uniqueArray } from './utilities';
 
 @Injectable()
 export class CollectionService<T = any> {
-  constructor(@Optional() private readonly translate: TranslateService) { }
+  constructor(@Optional() private readonly translate?: TranslateService) { }
 
   /**
    * Filter 1 or more items from a collection
@@ -62,21 +62,21 @@ export class CollectionService<T = any> {
       switch (operator) {
         case OperatorType.equal:
           if (objectProperty) {
-            filteredCollection = collection.filter((item) => item[objectProperty] === value);
+            filteredCollection = collection.filter((item) => (item as any)[objectProperty] === value);
           } else {
             filteredCollection = collection.filter((item) => item === value);
           }
           break;
         case OperatorType.contains:
           if (objectProperty) {
-            filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) !== -1);
+            filteredCollection = collection.filter((item) => (item as any)[objectProperty].toString().indexOf(value.toString()) !== -1);
           } else {
             filteredCollection = collection.filter((item: any) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) !== -1);
           }
           break;
         case OperatorType.notContains:
           if (objectProperty) {
-            filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) === -1);
+            filteredCollection = collection.filter((item) => (item as any)[objectProperty].toString().indexOf(value.toString()) === -1);
           } else {
             filteredCollection = collection.filter((item: any) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) === -1);
           }
@@ -84,7 +84,7 @@ export class CollectionService<T = any> {
         case OperatorType.notEqual:
         default:
           if (objectProperty) {
-            filteredCollection = collection.filter((item) => item[objectProperty] !== value);
+            filteredCollection = collection.filter((item) => (item as any)[objectProperty] !== value);
           } else {
             filteredCollection = collection.filter((item) => item !== value);
           }

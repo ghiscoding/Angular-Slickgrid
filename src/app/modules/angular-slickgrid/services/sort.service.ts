@@ -336,7 +336,7 @@ export class SortService {
     }
   }
 
-  onBackendSortChanged(event: Event, args: { multiColumnSort?: boolean; grid: any; sortCols: ColumnSort[]; clearSortTriggered?: boolean; }) {
+  onBackendSortChanged(event: Event | undefined, args: { multiColumnSort?: boolean; grid: any; sortCols: ColumnSort[]; clearSortTriggered?: boolean; }) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to bind the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -504,7 +504,7 @@ export class SortService {
 
       if (backendApi) {
         const backendApiService = backendApi && backendApi.service;
-        if (backendApiService) {
+        if (backendApiService && backendApiService.updateSorters) {
           backendApiService.updateSorters(undefined, sorters);
           if (triggerBackendQuery) {
             refreshBackendDataset(this._gridOptions);
@@ -537,7 +537,7 @@ export class SortService {
     const columnDefinitions = this._grid.getColumns();
 
     // loop through column definition to hide/show header menu commands
-    columnDefinitions.forEach((col) => {
+    columnDefinitions.forEach((col: Column) => {
       if (typeof col.sortable !== undefined) {
         col.sortable = !isDisabling;
       }

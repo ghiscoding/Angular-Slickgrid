@@ -33,7 +33,7 @@ export interface BackendServiceApi {
   // ------------------
 
   /** On error callback, when an error is thrown by the process execution */
-  onError?: (e) => void;
+  onError?: (e: Event) => void;
 
   /** On init (or on page load), what action to perform? */
   onInit?: (query: string) => Promise<any> | Observable<any>;

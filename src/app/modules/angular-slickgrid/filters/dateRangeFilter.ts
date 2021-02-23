@@ -19,7 +19,7 @@ import * as moment_ from 'moment-mini';
 import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
 import { FlatpickrFn } from 'flatpickr/dist/types/instance';
 const flatpickr: FlatpickrFn = (flatpickr_ && flatpickr_['default'] || flatpickr_) as any; // patch for rollup
-const moment = moment_['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -30,18 +30,18 @@ declare const $: any;
 
 export class DateRangeFilter implements Filter {
   protected _clearFilterTriggered = false;
-  protected _currentValue: string;
-  protected _currentDates: Date[];
-  protected _currentDateStrings: string[];
-  protected _flatpickrOptions: FlatpickrOption;
+  protected _currentValue: string = '';
+  protected _currentDates: Date[] = [];
+  protected _currentDateStrings: string[] = [];
+  protected _flatpickrOptions!: FlatpickrOption;
   protected _shouldTriggerQuery = true;
   protected $filterElm: any;
   protected $filterInputElm: any;
   flatInstance: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor(@Optional() private readonly translate: TranslateService) { }
 
@@ -132,8 +132,6 @@ export class DateRangeFilter implements Filter {
     }
     this.flatInstance = null;
     this.$filterElm = null;
-    this.callback = null;
-    this.onTriggerEvent = null;
   }
 
   hide() {
@@ -152,8 +150,8 @@ export class DateRangeFilter implements Filter {
    * Set value(s) on the DOM element
    * @params searchTerms
    */
-  setValues(searchTerms: SearchTerm[], operator?: OperatorType | OperatorString) {
-    let pickerValues = [];
+  setValues(searchTerms: SearchTerm[] | SearchTerm, operator?: OperatorType | OperatorString) {
+    let pickerValues: any[] = [];
 
     // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
     if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
@@ -186,7 +184,7 @@ export class DateRangeFilter implements Filter {
       currentLocale = currentLocale.substring(0, 2);
     }
 
-    let pickerValues = [];
+    let pickerValues: any[] = [];
 
     // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
     if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {

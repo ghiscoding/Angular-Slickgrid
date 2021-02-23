@@ -33,10 +33,10 @@ export class GridFormatterComponent implements OnInit {
     </ul>
   `;
 
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
-  angularGrid: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
+  angularGrid!: AngularGridInstance;
   resizerPaused = false;
 
   angularGridReady(angularGrid: AngularGridInstance) {
@@ -135,7 +135,7 @@ export class GridFormatterComponent implements OnInit {
     this.angularGrid.resizerService.pauseResizer(this.resizerPaused);
   }
 
-  toggleCompletedProperty(item) {
+  toggleCompletedProperty(item: any) {
     // toggle property
     if (typeof item === 'object') {
       item.completed = !item.completed;

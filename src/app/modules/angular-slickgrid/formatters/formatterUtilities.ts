@@ -1,4 +1,4 @@
-import { Column, FieldType, Formatter, GridOption } from '../models/index';
+import { Column, FieldType, Formatter, GridOption, FormatterOption } from '../models/index';
 import { mapMomentDateFormatWithFieldType } from '../services/utilities';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
@@ -16,7 +16,7 @@ export function getValueFromParamsOrFormatterOptions(optionName: string, columnD
   if (params && params.hasOwnProperty(optionName)) {
     return params[optionName];
   } else if (gridOptions.formatterOptions && gridOptions.formatterOptions.hasOwnProperty(optionName)) {
-    return gridOptions.formatterOptions[optionName];
+    return gridOptions.formatterOptions[optionName as keyof FormatterOption];
   }
   return defaultValue;
 }

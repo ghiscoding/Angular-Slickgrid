@@ -33,12 +33,12 @@ const DEFAULT_PAGE_SIZE = 20;
 
 export class GraphqlService implements BackendService {
   private _currentFilters: ColumnFilters | CurrentFilter[] = [];
-  private _currentPagination: CurrentPagination;
+  private _currentPagination?: CurrentPagination;
   private _currentSorters: CurrentSorter[] = [];
-  private _columnDefinitions: Column[];
+  private _columnDefinitions!: Column[];
   private _grid: any;
   private _datasetIdPropName = 'id';
-  options: GraphqlServiceOption;
+  options!: GraphqlServiceOption;
   pagination: Pagination | undefined;
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
     first: DEFAULT_ITEMS_PER_PAGE,
@@ -56,7 +56,7 @@ export class GraphqlService implements BackendService {
   }
 
   /** Initialization of the service, which acts as a constructor */
-  init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
+  init(serviceOptions?: GraphqlServiceOption | undefined, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     this.options = serviceOptions || { datasetName: '', columnDefinitions: [] };
     this.pagination = pagination;
@@ -138,7 +138,7 @@ export class GraphqlService implements BackendService {
       };
 
       if (!this.options.isWithCursor) {
-        datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+        datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +(this.options.paginationOptions as any)['offset'] : 0);
       }
     }
 
@@ -157,7 +157,7 @@ export class GraphqlService implements BackendService {
     if (this.options.extraQueryArguments) {
       // first: 20, ... userId: 123
       for (const queryArgument of this.options.extraQueryArguments) {
-        datasetFilters[queryArgument.field] = queryArgument.value;
+        (datasetFilters as any)[queryArgument.field] = queryArgument.value;
       }
     }
 
@@ -227,7 +227,7 @@ export class GraphqlService implements BackendService {
   }
 
   /** Get the Pagination that is currently used by the grid */
-  getCurrentPagination(): CurrentPagination {
+  getCurrentPagination(): CurrentPagination | undefined {
     return this._currentPagination;
   }
 
@@ -271,7 +271,7 @@ export class GraphqlService implements BackendService {
   /*
    * FILTERING
    */
-  processOnFilterChanged(event: Event, args: FilterChangedArgs): string {
+  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): string {
     const gridOptions: GridOption = this._gridOptions;
     const backendApi = gridOptions.backendServiceApi;
 
@@ -321,7 +321,7 @@ export class GraphqlService implements BackendService {
    *     }
    *   }
    */
-  processOnPaginationChanged(event: Event, args: PaginationChangedArgs): string {
+  processOnPaginationChanged(_event: Event | undefined, args: PaginationChangedArgs): string {
     const pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
     this.updatePagination(args.newPage, pageSize);
 
@@ -343,7 +343,7 @@ export class GraphqlService implements BackendService {
    *  }
    */
   // @deprecated note, we should remove "SortChangedArgs" and only use: ColumnSort | MultiColumnSort
-  processOnSortChanged(event: Event, args: SortChangedArgs | ColumnSort | MultiColumnSort): string {
+  processOnSortChanged(_event: Event | undefined, args: SortChangedArgs | ColumnSort | MultiColumnSort): string {
     const sortColumns = (args.multiColumnSort) ? (args as MultiColumnSort).sortCols : new Array({ sortCol: (args as ColumnSort).sortCol, sortAsc: (args as ColumnSort).sortAsc });
 
     // loop through all columns to inspect sorters & set the query
@@ -368,7 +368,7 @@ export class GraphqlService implements BackendService {
 
     for (const columnId in columnFilters) {
       if (columnFilters.hasOwnProperty(columnId)) {
-        const columnFilter = columnFilters[columnId];
+        const columnFilter = (columnFilters as any)[columnId];
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
         let columnDef: Column | undefined;
@@ -612,7 +612,7 @@ export class GraphqlService implements BackendService {
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
+    const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => (columnFilters as any)[key]) : columnFilters;
 
     if (!Array.isArray(filtersArray)) {
       return [];

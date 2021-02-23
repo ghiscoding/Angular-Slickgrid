@@ -32,19 +32,19 @@ declare const $: any;
 
 export class CompoundDateFilter implements Filter {
   protected _clearFilterTriggered = false;
-  protected _currentDate: Date;
-  protected _flatpickrOptions: FlatpickrOption;
+  protected _currentDate!: Date | undefined;
+  protected _flatpickrOptions!: FlatpickrOption;
   protected _shouldTriggerQuery = true;
   protected $filterElm: any;
   protected $filterInputElm: any;
   protected $selectOperatorElm: any;
-  protected _currentValue: string;
-  protected _operator: OperatorType | OperatorString;
+  protected _currentValue = '';
+  protected _operator!: OperatorType | OperatorString;
   flatInstance: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor(@Optional() protected readonly translate: TranslateService) { }
 
@@ -59,7 +59,7 @@ export class CompoundDateFilter implements Filter {
   }
 
   /** Getter for the Current Dates selected */
-  get currentDate(): Date {
+  get currentDate(): Date | undefined {
     return this._currentDate;
   }
 
@@ -149,8 +149,6 @@ export class CompoundDateFilter implements Filter {
       this.$selectOperatorElm.off('change').remove();
     }
     this.$filterElm = null;
-    this.callback = null;
-    this.onTriggerEvent = null;
   }
 
   hide() {
@@ -210,7 +208,7 @@ export class CompoundDateFilter implements Filter {
       locale: currentLocale,
       onChange: (selectedDates: Date[] | Date, dateStr: string) => {
         this._currentValue = dateStr;
-        this._currentDate = Array.isArray(selectedDates) && selectedDates[0];
+        this._currentDate = Array.isArray(selectedDates) && selectedDates[0] || undefined;
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
         // since backend request are only executed after user start typing, changing the time should be treated the same way
@@ -263,7 +261,7 @@ export class CompoundDateFilter implements Filter {
       const translationPrefix = getTranslationPrefix(this.gridOptions);
       return this.translate.instant(`${translationPrefix}${translationKey}`);
     }
-    return this.locales && this.locales[localeText] || defaultText;
+    return this.locales && this.locales[localeText as keyof Locale] || defaultText;
   }
 
   /**

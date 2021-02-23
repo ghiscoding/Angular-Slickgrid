@@ -22,15 +22,15 @@ const DEFAULT_STEP = 1;
 /** A Slider Range Filter which uses jQuery UI, this is only meant to be used as a range filter (with 2 handles lowest & highest values) */
 export class SliderRangeFilter implements Filter {
   protected _clearFilterTriggered = false;
-  protected _currentValues: number[];
+  protected _currentValues: number[] = [];
   protected _shouldTriggerQuery = true;
-  protected _sliderOptions: JQueryUiSliderOption;
+  protected _sliderOptions!: JQueryUiSliderOption;
   protected $filterElm: any;
   protected $filterContainerElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   /** Getter for the Filter Generic Params */
   protected get filterParams(): any {
@@ -39,7 +39,7 @@ export class SliderRangeFilter implements Filter {
 
   /** Getter for the `filter` properties */
   protected get filterProperties(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter;
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   /** Getter for the Column Filter */
@@ -110,7 +110,7 @@ export class SliderRangeFilter implements Filter {
       if (!this.filterParams.hideSliderNumbers) {
         this.renderSliderValues(lowestValue, highestValue);
       }
-      this.callback(null, { columnDef: this.columnDef, clearFilterTriggered: true, shouldTriggerQuery });
+      this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true, shouldTriggerQuery });
       this.$filterContainerElm.removeClass('filled');
     }
   }
@@ -125,8 +125,6 @@ export class SliderRangeFilter implements Filter {
     }
     this.$filterElm = null;
     this.$filterContainerElm = null;
-    this.callback = null;
-    this.onValueChanged = null;
   }
 
   /**
@@ -152,7 +150,7 @@ export class SliderRangeFilter implements Filter {
    */
   setValues(searchTerms: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (searchTerms) {
-      let sliderValues = [];
+      let sliderValues: any[] = [];
 
       // get the slider values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
       if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
@@ -188,9 +186,9 @@ export class SliderRangeFilter implements Filter {
     }
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
-    const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
-    const maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
-    const step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
+    const minValue = (this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE) as number;
+    const maxValue = (this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE) as number;
+    const step = (this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP) as number;
 
     let defaultStartValue: number = DEFAULT_MIN_VALUE;
     let defaultEndValue: number = DEFAULT_MAX_VALUE;

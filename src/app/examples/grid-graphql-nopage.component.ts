@@ -52,11 +52,11 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
     <li>This example is mainly to demo the use of GraphqlService to build the query and retrieve the data but also to demo how to mix that with local (in-memory) Filtering/Sorting strategies</li>
   </ul>
   `;
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
   dataset = [];
-  metrics: Metrics;
+  metrics!: Metrics;
 
   graphqlQuery = '';
   processing = true;
@@ -196,7 +196,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
         preProcess: () => !this.isDataLoaded ? this.displaySpinner(true) : '',
         process: (query) => this.getCountries(query),
         postProcess: (result: GraphqlResult<Country>) => {
-          this.metrics = result.metrics;
+          this.metrics = result.metrics as Metrics;
           this.displaySpinner(false);
           this.isDataLoaded = true;
         }

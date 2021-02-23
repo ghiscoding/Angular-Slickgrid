@@ -12,7 +12,7 @@ declare const Slick: any;
 export class HeaderButtonExtension implements Extension {
   private _eventHandler: SlickEventHandler;
   private _addon: any;
-  private _headerButtonOptions: HeaderButton | null;
+  private _headerButtonOptions!: HeaderButton | null;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();

@@ -45,11 +45,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     </ul>
   `;
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
   dataset = [];
-  metrics: Metrics;
+  metrics!: Metrics;
 
   graphqlQuery = '';
   processing = true;
@@ -201,7 +201,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (result: GraphqlPaginatedResult) => {
-          this.metrics = result.metrics;
+          this.metrics = result.metrics as Metrics;
           this.displaySpinner(false);
         }
       } as GraphqlServiceApi
@@ -215,7 +215,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     );
   }
 
-  displaySpinner(isProcessing) {
+  displaySpinner(isProcessing: boolean) {
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -243,7 +243,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.graphqlQuery = this.angularGrid.backendService.buildQuery();
+        this.graphqlQuery = this.angularGrid.backendService!.buildQuery();
         resolve(mockedResult);
       }, 100);
     });
@@ -270,7 +270,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
-  saveCurrentGridState(grid) {
+  saveCurrentGridState() {
     console.log('GraphQL current grid state', this.angularGrid.gridStateService.getCurrentGridState());
   }
 

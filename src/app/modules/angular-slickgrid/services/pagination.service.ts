@@ -16,16 +16,16 @@ declare const Slick: any;
 export class PaginationService {
   private _initialized = false;
   private _isLocalGrid = true;
-  private _backendServiceApi: BackendServiceApi;
+  private _backendServiceApi?: BackendServiceApi;
   private _dataFrom = 1;
   private _dataTo = 1;
-  private _itemsPerPage: number;
+  private _itemsPerPage = 0;
   private _pageCount = 1;
   private _pageNumber = 1;
   private _totalItems = 0;
-  private _availablePageSizes: number[];
+  private _availablePageSizes: number[] = [];
   private _eventHandler = new Slick.EventHandler();
-  private _paginationOptions: Pagination;
+  private _paginationOptions!: Pagination;
   private _subscriptions: Subscription[] = [];
   onPaginationChanged = new Subject<ServicePagination>();
   onPaginationVisibilityChanged = new Subject<{ visible: boolean }>();
@@ -44,7 +44,7 @@ export class PaginationService {
   }
 
   get availablePageSizes(): number[] {
-    return this._availablePageSizes;
+    return this._availablePageSizes || [];
   }
 
   get dataFrom(): number {
@@ -92,7 +92,7 @@ export class PaginationService {
     }
 
     if (this._isLocalGrid && this.dataView) {
-      this._eventHandler.subscribe(this.dataView.onPagingInfoChanged, (e, pagingInfo) => {
+      this._eventHandler.subscribe(this.dataView.onPagingInfoChanged, (_e: Event, pagingInfo: any) => {
         if (this._totalItems !== pagingInfo.totalRows) {
           this.updateTotalItems(pagingInfo.totalRows);
         }
@@ -267,14 +267,14 @@ export class PaginationService {
         const startTime = new Date();
 
         // run any pre-process, if defined, for example a spinner
-        if (this._backendServiceApi.preProcess) {
+        if (this._backendServiceApi && this._backendServiceApi.preProcess) {
           this._backendServiceApi.preProcess();
         }
 
-        const query = this._backendServiceApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+        const query = this._backendServiceApi && this._backendServiceApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage }) || '';
 
         // the processes can be Promises or an Observables (like HttpClient)
-        const process = this._backendServiceApi.process(query);
+        const process = this._backendServiceApi && this._backendServiceApi.process(query);
         if (process instanceof Promise) {
           process
             .then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => {

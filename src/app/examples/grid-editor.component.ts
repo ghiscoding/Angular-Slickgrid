@@ -5,12 +5,14 @@ import {
   AngularGridInstance,
   AutocompleteOption,
   Column,
+  EditCommand,
   Editors,
   EditorArgs,
   EditorValidator,
   FieldType,
   Filters,
   FlatpickrOption,
+  Formatter,
   Formatters,
   GridOption,
   LongTextEditorOption,
@@ -32,7 +34,7 @@ const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
 const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) => {
+const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArgs) => {
   // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
   const grid = args && args.grid;
   const gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
@@ -53,7 +55,7 @@ const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) =
 };
 
 // create a custom Formatter to show the Task + value
-const taskFormatter = (row, cell, value, columnDef, dataContext) => {
+const taskFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
   if (value && Array.isArray(value)) {
     const taskValues = value.map((val) => `Task ${val}`);
     const values = taskValues.join(', ');
@@ -86,11 +88,11 @@ export class GridEditorComponent implements OnInit {
   </ul>
   `;
 
-  private _commandQueue = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  private _commandQueue: any = [];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   gridObj: any;
   isAutoEdit = true;
   alertWarning: any;
@@ -333,7 +335,7 @@ export class GridEditorComponent implements OnInit {
                 data: {
                   q: request.term
                 },
-                success: (data) => response(data)
+                success: (data: any) => response(data)
               });
             }
           } as AutocompleteOption,
@@ -356,7 +358,7 @@ export class GridEditorComponent implements OnInit {
                 data: {
                   q: request.term
                 },
-                success: (data) => response(data)
+                success: (data: any) => response(data)
               });
             }
           } as AutocompleteOption,
@@ -499,8 +501,8 @@ export class GridEditorComponent implements OnInit {
     setTimeout(() => {
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
       if (requisiteColumnDef) {
-        const filterCollectionAsync = requisiteColumnDef.filter.collectionAsync;
-        const editorCollection = requisiteColumnDef.editor.collection;
+        const filterCollectionAsync = requisiteColumnDef.filter!.collectionAsync;
+        const editorCollection = requisiteColumnDef.editor!.collection;
 
         if (Array.isArray(editorCollection)) {
           // add the new row to the grid
@@ -533,8 +535,8 @@ export class GridEditorComponent implements OnInit {
   deleteItem() {
     const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
     if (requisiteColumnDef) {
-      const filterCollectionAsync = requisiteColumnDef.filter.collectionAsync;
-      const filterCollection = requisiteColumnDef.filter.collection;
+      const filterCollectionAsync = requisiteColumnDef.filter!.collectionAsync;
+      const filterCollection = requisiteColumnDef.filter!.collection;
 
       if (Array.isArray(filterCollection)) {
         // sort collection in descending order and take out last collection option
@@ -552,11 +554,11 @@ export class GridEditorComponent implements OnInit {
     }
   }
 
-  sortCollectionDescending(collection) {
+  sortCollectionDescending(collection: any[]) {
     return collection.sort((item1, item2) => item1.value - item2.value);
   }
 
-  mockData(itemCount, startingIndex = 0) {
+  mockData(itemCount: number, startingIndex = 0) {
     // mock a dataset
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
@@ -585,11 +587,11 @@ export class GridEditorComponent implements OnInit {
     return tempDataset;
   }
 
-  onCellChanged(e, args) {
+  onCellChanged(e: Event, args: any) {
     this.updatedObject = args.item;
   }
 
-  onCellClicked(e, args) {
+  onCellClicked(e: Event, args: any) {
     const metadata = this.angularGrid.gridService.getColumnFromEventArguments(args);
     console.log(metadata);
 
@@ -608,7 +610,7 @@ export class GridEditorComponent implements OnInit {
     }
   }
 
-  onValidationError(e, args) {
+  onValidationError(e: Event, args: any) {
     if (args.validationResults) {
       alert(args.validationResults.msg);
     }
@@ -671,7 +673,7 @@ export class GridEditorComponent implements OnInit {
     */
   }
 
-  setAutoEdit(isAutoEdit) {
+  setAutoEdit(isAutoEdit: boolean) {
     this.isAutoEdit = isAutoEdit;
     this.gridObj.setOptions({ autoEdit: isAutoEdit }); // change the grid option dynamically
     return true;

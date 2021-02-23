@@ -12,7 +12,7 @@ declare const Slick: any;
 export class ColumnPickerExtension implements Extension {
   private _eventHandler: SlickEventHandler;
   private _addon: any;
-  private _columnPicker: ColumnPicker | null;
+  private _columnPicker!: ColumnPicker | null;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();

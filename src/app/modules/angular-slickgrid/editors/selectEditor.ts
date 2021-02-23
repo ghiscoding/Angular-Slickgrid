@@ -34,7 +34,7 @@ export class SelectEditor implements Editor {
   $editorElm: any;
 
   /** Editor Multiple-Select options */
-  editorElmOptions: MultipleSelectOption;
+  editorElmOptions!: MultipleSelectOption;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
@@ -43,28 +43,28 @@ export class SelectEditor implements Editor {
   defaultOptions: MultipleSelectOption;
 
   /** The original item values that are set at the beginning */
-  originalValue: any[];
+  originalValue?: any[];
 
   /** The property name for values in the collection */
-  valueName: string;
+  valueName!: string;
 
   /** The property name for labels in the collection */
-  labelName: string;
+  labelName!: string;
 
   /** The property name for a prefix that can be added to the labels in the collection */
-  labelPrefixName: string;
+  labelPrefixName!: string;
 
   /** The property name for a suffix that can be added to the labels in the collection */
-  labelSuffixName: string;
+  labelSuffixName!: string;
 
   /** A label that can be added to each option and can be used as an alternative to display selected options */
-  optionLabel: string;
+  optionLabel!: string;
 
   /** Grid options */
   gridOptions: GridOption;
 
   /** Do we translate the label? */
-  enableTranslateLabel: boolean;
+  enableTranslateLabel = false;
 
   /** Locales */
   protected _locales: Locale;
@@ -77,15 +77,15 @@ export class SelectEditor implements Editor {
   protected _destroying = false;
 
   /** Collection Service */
-  protected _collectionService: CollectionService;
+  protected _collectionService!: CollectionService;
 
   /** The translate library */
-  protected _translate: TranslateService;
+  protected _translate?: TranslateService;
 
   /** SlickGrid Grid object */
   grid: any;
 
-  constructor(protected args: EditorArguments, protected isMultipleSelect) {
+  constructor(protected args: EditorArguments, protected isMultipleSelect: boolean) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
@@ -148,12 +148,12 @@ export class SelectEditor implements Editor {
 
   /** Get the Collection */
   get collection(): SelectOption[] {
-    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collection || [];
   }
 
 
   /** Getter for the Collection Options */
-  get collectionOptions(): CollectionOption {
+  get collectionOptions(): CollectionOption | undefined {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
   }
 
@@ -173,7 +173,7 @@ export class SelectEditor implements Editor {
   }
 
   /** Getter for the Custom Structure if exist */
-  protected get customStructure(): CollectionCustomStructure {
+  protected get customStructure(): CollectionCustomStructure | undefined {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
   }
 
@@ -215,8 +215,8 @@ export class SelectEditor implements Editor {
         }
 
         // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
-        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+        prefixText = (this.enableTranslateLabel && this._translate && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && this._translate && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
 
         if (isIncludingPrefixSuffix) {
           const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text); // add to a temp array for joining purpose and filter out empty text
@@ -257,8 +257,8 @@ export class SelectEditor implements Editor {
         let suffixText = itemFound[this.labelSuffixName] || '';
 
         // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
-        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+        prefixText = (this.enableTranslateLabel && this._translate && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && this._translate && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
 
         // add to a temp array for joining purpose and filter out empty text
         const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
@@ -273,8 +273,8 @@ export class SelectEditor implements Editor {
 
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
-    return this.columnEditor.validator || this.columnDef.validator;
+  get validator(): EditorValidator | undefined {
+    return this.columnEditor!.validator || this.columnDef.validator;
   }
 
   init() {
@@ -453,9 +453,9 @@ export class SelectEditor implements Editor {
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
-    const isRequired = this.columnEditor.required;
+    const isRequired = this.columnEditor!.required;
     const elmValue = (inputValue !== undefined) ? inputValue : this.$editorElm && this.$editorElm.val && this.$editorElm.val();
-    const errorMsg = this.columnEditor.errorMessage;
+    const errorMsg = this.columnEditor!.errorMessage;
 
     if (this.validator) {
       const value = (inputValue !== undefined) ? inputValue : (this.isMultipleSelect ? this.currentValues : this.currentValue);
@@ -485,7 +485,7 @@ export class SelectEditor implements Editor {
    * @param inputCollection
    * @return outputCollection filtered and/or sorted collection
    */
-  protected filterCollection(inputCollection) {
+  protected filterCollection(inputCollection: any[]) {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
@@ -503,7 +503,7 @@ export class SelectEditor implements Editor {
    * @param inputCollection
    * @return outputCollection sorted collection
    */
-  protected sortCollection(inputCollection) {
+  protected sortCollection(inputCollection: any[]) {
     let outputCollection = inputCollection;
 
     // user might want to sort the collection
@@ -518,7 +518,7 @@ export class SelectEditor implements Editor {
   protected renderDomElement(inputCollection: any[]) {
     if (!Array.isArray(inputCollection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty);
+      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty as string);
     }
     if (!Array.isArray(inputCollection)) {
       throw new Error('The "collection" passed to the Select Editor is not a valid array.');
@@ -572,7 +572,7 @@ export class SelectEditor implements Editor {
     let options = '';
     const fieldId = this.columnDef && this.columnDef.id;
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
-    const isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
+    const isRenderHtmlEnabled = this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
     // collection could be an Array of Strings OR Objects
@@ -587,7 +587,7 @@ export class SelectEditor implements Editor {
           throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
         }
         const labelKey = (option.labelKey || option[this.labelName]) as string;
-        const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
+        const labelText = (option.labelKey || ((this.enableTranslateLabel && this._translate) && labelKey)) ? this._translate && this._translate.instant(labelKey || ' ') : labelKey;
         let prefixText = option[this.labelPrefixName] || '';
         let suffixText = option[this.labelSuffixName] || '';
         let optionLabel = option[this.optionLabel] || '';
@@ -596,9 +596,9 @@ export class SelectEditor implements Editor {
         }
 
         // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
-        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
-        optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
+        prefixText = (this.enableTranslateLabel && this._translate && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && this._translate && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+        optionLabel = (this.enableTranslateLabel && this._translate && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
 
         // add to a temp array for joining purpose and filter out empty text
         const tmpOptionArray = [prefixText, labelText, suffixText].filter(text => (text !== undefined && text !== ''));

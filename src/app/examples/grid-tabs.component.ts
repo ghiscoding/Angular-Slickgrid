@@ -16,13 +16,13 @@ export class GridTabsComponent implements OnInit {
     <li>Load dataset through Http-Client. Also note we need to call a "resizeGrid()" after focusing on this tab</li>
   </ol>`;
 
-  angularGrid2: AngularGridInstance;
-  columnDefinitions1: Column[];
-  columnDefinitions2: Column[];
-  gridOptions1: GridOption;
-  gridOptions2: GridOption;
-  dataset1: any[];
-  dataset2: any[];
+  angularGrid2!: AngularGridInstance;
+  columnDefinitions1!: Column[];
+  columnDefinitions2!: Column[];
+  gridOptions1!: GridOption;
+  gridOptions2!: GridOption;
+  dataset1!: any[];
+  dataset2!: any[];
 
   constructor(private http: HttpClient) { }
 
@@ -38,7 +38,7 @@ export class GridTabsComponent implements OnInit {
     this.dataset1 = this.mockData();
 
     // load data with Http-Client
-    this.http.get((URL_CUSTOMERS)).subscribe((data: any[]) => this.dataset2 = data);
+    this.http.get((URL_CUSTOMERS)).subscribe(((data: any[]) => this.dataset2 = data) as any);
   }
 
   // Grid2 definition

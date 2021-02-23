@@ -25,7 +25,7 @@ export interface BackendService {
   clearSorters?: () => void;
 
   /** initialize the backend service with certain options */
-  init?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, grid?: any) => void;
+  init?: (serviceOptions?: BackendServiceOption | any, pagination?: Pagination, grid?: any) => void;
 
   /** Get the dataset name */
   getDatasetName?: () => string;
@@ -34,7 +34,7 @@ export interface BackendService {
   getCurrentFilters?: () => ColumnFilters | CurrentFilter[];
 
   /** Get the Pagination that is currently used by the grid */
-  getCurrentPagination?: () => CurrentPagination;
+  getCurrentPagination?: () => CurrentPagination | undefined;
 
   /** Get the Sorters that are currently used by the grid */
   getCurrentSorters?: () => CurrentSorter[];
@@ -60,11 +60,11 @@ export interface BackendService {
 
   /** Execute when any of the filters changed */
   // @deprecated return string output only in the future and remove Promise type
-  processOnFilterChanged: (event: Event, args: FilterChangedArgs) => string | Promise<string>;
+  processOnFilterChanged: (event: Event | undefined, args: FilterChangedArgs) => string | Promise<string>;
 
   /** Execute when the pagination changed */
   processOnPaginationChanged: (event: Event | undefined, args: PaginationChangedArgs) => string;
 
   /** Execute when any of the sorters changed */
-  processOnSortChanged: (event: Event, args: SortChangedArgs) => string;
+  processOnSortChanged: (event: Event | undefined, args: SortChangedArgs) => string;
 }

@@ -3,7 +3,7 @@ import { isNumber } from '../services/utilities';
 import { testFilterCondition } from './filterUtilities';
 
 /** Execute filter condition check on each cell */
-export const executeNumberFilterCondition: FilterCondition = (options: FilterConditionOption, parsedSearchValues: number[]) => {
+export const executeNumberFilterCondition: FilterCondition = ((options: FilterConditionOption, parsedSearchValues: number[]) => {
   const cellValue = parseFloat(options.cellValue);
   const [searchValue1, searchValue2] = parsedSearchValues;
 
@@ -18,7 +18,7 @@ export const executeNumberFilterCondition: FilterCondition = (options: FilterCon
     return (resultCondition1 && resultCondition2);
   }
   return testFilterCondition(options.operator || '==', cellValue, +searchValue1);
-};
+}) as FilterCondition;
 
 /**
  * From our search filter value(s), get the parsed value(s).

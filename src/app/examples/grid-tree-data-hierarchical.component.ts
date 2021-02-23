@@ -27,11 +27,11 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     </ul>
   `;
 
-  angularGrid: AngularGridInstance;
+  angularGrid!: AngularGridInstance;
   dataViewObj: any;
   gridObj: any;
-  gridOptions: GridOption;
-  columnDefinitions: Column[];
+  gridOptions!: GridOption;
+  columnDefinitions!: Column[];
   datasetHierarchical: any[] = [];
   searchString = '';
 

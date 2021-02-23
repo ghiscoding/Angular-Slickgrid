@@ -27,13 +27,13 @@ export class DualInputEditor implements Editor {
   protected _eventHandler: SlickEventHandler;
   protected _isValueSaveCalled = false;
   protected _lastEventType: string | undefined;
-  protected _lastInputKeyEvent: JQuery.Event;
-  protected _leftInput: HTMLInputElement;
-  protected _rightInput: HTMLInputElement;
-  protected _leftFieldName: string;
-  protected _rightFieldName: string;
-  originalLeftValue: string | number;
-  originalRightValue: string | number;
+  protected _lastInputKeyEvent?: JQuery.Event;
+  protected _leftInput!: HTMLInputElement;
+  protected _rightInput!: HTMLInputElement;
+  protected _leftFieldName!: string;
+  protected _rightFieldName!: string;
+  originalLeftValue?: string | number;
+  originalRightValue?: string | number;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -104,13 +104,13 @@ export class DualInputEditor implements Editor {
       containerElm.appendChild(this._rightInput);
     }
 
-    this._leftInput.onkeydown = this.handleKeyDown.bind(this);
-    this._rightInput.onkeydown = this.handleKeyDown.bind(this);
+    this._leftInput.onkeydown = this.handleKeyDown.bind(this) as unknown as EventListener;
+    this._rightInput.onkeydown = this.handleKeyDown.bind(this) as unknown as EventListener;
 
     // the lib does not get the focus out event for some reason, so register it here
     if (this.hasAutoCommitEdit) {
-      this._bindEventService.bind(this._leftInput, 'focusout', (event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'leftInput'));
-      this._bindEventService.bind(this._rightInput, 'focusout', (event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'rightInput'));
+      this._bindEventService.bind(this._leftInput, 'focusout', ((event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'leftInput')) as EventListener);
+      this._bindEventService.bind(this._rightInput, 'focusout', ((event: DOMEvent<HTMLInputElement>) => this.handleFocusOut(event, 'rightInput')) as EventListener);
     }
 
     setTimeout(() => this._leftInput.select(), 50);
@@ -259,8 +259,8 @@ export class DualInputEditor implements Editor {
       this[originalValuePosition] = itemValue;
       if (this.editorParams[position].type === 'float') {
         const decimalPlaces = this.getDecimalPlaces(position);
-        if (decimalPlaces !== null && (this[originalValuePosition] || this[originalValuePosition] === 0) && (+this[originalValuePosition]).toFixed) {
-          this[originalValuePosition] = (+this[originalValuePosition]).toFixed(decimalPlaces);
+        if (decimalPlaces !== null && (this[originalValuePosition] || this[originalValuePosition] === 0) && (+(this as any)[originalValuePosition]).toFixed) {
+          this[originalValuePosition] = (+(this as any)[originalValuePosition]).toFixed(decimalPlaces);
         }
       }
       if (this[inputVarPosition]) {

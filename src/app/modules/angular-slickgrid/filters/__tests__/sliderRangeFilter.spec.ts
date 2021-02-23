@@ -199,7 +199,7 @@ describe('SliderRangeFilter', () => {
     filter.clear();
 
     expect(filter.currentValues).toEqual([0, 100]);
-    expect(spyCallback).toHaveBeenLastCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
   });
 
   it('should trigger a callback with the clear filter but without querying when when calling the "clear" method with False as argument', () => {
@@ -210,7 +210,7 @@ describe('SliderRangeFilter', () => {
     filter.clear(false);
 
     expect(filter.currentValues).toEqual([0, 100]);
-    expect(spyCallback).toHaveBeenLastCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method and expect min/max slider values being with values of "sliderStartValue" and "sliderEndValue" when defined through the filter params', () => {
@@ -226,7 +226,7 @@ describe('SliderRangeFilter', () => {
     filter.clear(false);
 
     expect(filter.currentValues).toEqual([4, 69]);
-    expect(spyCallback).toHaveBeenLastCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
 
   it('should expect the slider values to be rendered when the callback method is triggered', () => {

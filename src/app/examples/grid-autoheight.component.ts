@@ -25,16 +25,16 @@ export class GridAutoHeightComponent implements OnInit {
   </ul>
   `;
 
-  angularGrid: AngularGridInstance;
+  angularGrid!: AngularGridInstance;
   grid: any;
   dataView: any;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  columnDefinitions: Column[] = [];
+  gridOptions!: GridOption;
+  dataset!: any[];
   operatorList: OperatorString[] = ['=', '<', '<=', '>', '>=', '<>', 'StartsWith', 'EndsWith'];
   selectedOperator = '=';
   searchValue = '';
-  selectedColumn: Column;
+  selectedColumn?: Column;
 
   constructor() { }
 
@@ -138,7 +138,7 @@ export class GridAutoHeightComponent implements OnInit {
 
   updateFilter() {
     this.angularGrid.filterService.updateSingleFilter({
-      columnId: `${this.selectedColumn.id || ''}`,
+      columnId: `${this.selectedColumn!.id || ''}`,
       operator: this.selectedOperator as OperatorString,
       searchTerms: [this.searchValue || '']
     });

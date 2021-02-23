@@ -28,31 +28,31 @@ import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode,
 declare const $: any;
 
 export class SelectFilter implements Filter {
-  protected _collectionLength = 0;
   protected _isMultipleSelect = true;
-  protected _locales: Locale;
+  protected _collectionLength = 0;
+  protected _locales!: Locale;
   protected _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
-  elementName: string;
+  elementName!: string;
 
   /** Filter Multiple-Select options */
-  filterElmOptions: MultipleSelectOption;
+  filterElmOptions!: MultipleSelectOption;
 
   /** The JQuery DOM element */
   $filterElm: any;
 
-  grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
-  defaultOptions: MultipleSelectOption;
+  grid!: any;
+  searchTerms: SearchTerm[] | undefined;
+  columnDef!: Column;
+  callback!: FilterCallback;
+  defaultOptions!: MultipleSelectOption;
   isFilled = false;
-  labelName: string;
-  labelPrefixName: string;
-  labelSuffixName: string;
-  optionLabel: string;
-  valueName: string;
+  labelName!: string;
+  labelPrefixName!: string;
+  labelSuffixName!: string;
+  optionLabel!: string;
+  valueName!: string;
   enableTranslateLabel = false;
   subscriptions: Subscription[] = [];
 
@@ -69,16 +69,16 @@ export class SelectFilter implements Filter {
 
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter;
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   /** Getter for the Collection Options */
-  protected get collectionOptions(): CollectionOption {
+  protected get collectionOptions(): CollectionOption | undefined {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
   }
 
   /** Getter for the Custom Structure if exist */
-  protected get customStructure(): CollectionCustomStructure {
+  protected get customStructure(): CollectionCustomStructure | undefined {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
   }
 
@@ -125,7 +125,7 @@ export class SelectFilter implements Filter {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the MultipleSelect/SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
-    this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
+    this.enableTranslateLabel = this.columnFilter.enableTranslateLabel || false;
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
     this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
@@ -196,8 +196,6 @@ export class SelectFilter implements Filter {
       $(`[name=${elementClassName}].ms-drop`).remove();
     }
     this.$filterElm = null;
-    this.callback = null;
-    this.onTriggerEvent = null;
   }
 
   /**
@@ -212,7 +210,7 @@ export class SelectFilter implements Filter {
   }
 
   /** Set value(s) on the DOM element */
-  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
+  setValues(values: SearchTerm | SearchTerm[] | undefined, operator?: OperatorType | OperatorString) {
     if (values && this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
       values = Array.isArray(values) ? values : [values];
       this.$filterElm.multipleSelect('setSelects', values);
@@ -231,7 +229,7 @@ export class SelectFilter implements Filter {
    * @param inputCollection
    * @return outputCollection filtered and/or sorted collection
    */
-  protected filterCollection(inputCollection) {
+  protected filterCollection(inputCollection: any[]): any[] {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
@@ -249,7 +247,7 @@ export class SelectFilter implements Filter {
    * @param inputCollection
    * @return outputCollection filtered and/or sorted collection
    */
-  protected sortCollection(inputCollection) {
+  protected sortCollection(inputCollection: any[]): any[] {
     let outputCollection = inputCollection;
 
     // user might want to sort the collection
@@ -289,10 +287,10 @@ export class SelectFilter implements Filter {
    * When user use a CollectionAsync we will use the returned collection to render the filter DOM element
    * and reinitialize filter collection with this new collection
    */
-  protected renderDomElementFromCollectionAsync(collection) {
+  protected renderDomElementFromCollectionAsync(collection: any[]) {
     if (this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty as string);
     }
     if (!Array.isArray(collection)) {
       throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
@@ -309,7 +307,7 @@ export class SelectFilter implements Filter {
   protected renderDomElement(inputCollection: any[]) {
     if (!Array.isArray(inputCollection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty);
+      inputCollection = getDescendantProperty(inputCollection, collectionInsideObjectProperty as string);
     }
     if (!Array.isArray(inputCollection)) {
       throw new Error('The "collection" passed to the Select Filter is not a valid array.');
@@ -319,7 +317,6 @@ export class SelectFilter implements Filter {
     let collection: any[] = [];
     if (inputCollection.length > 0) {
       collection = [...inputCollection];
-      inputCollection = null;
     }
 
     // user can optionally add a blank entry at the beginning of the collection
@@ -348,7 +345,7 @@ export class SelectFilter implements Filter {
     newCollection = this.sortCollection(newCollection);
 
     // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
+    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms || []);
 
     // step 2, create the DOM Element of the filter & pre-load search terms
     // also subscribe to the onClose event

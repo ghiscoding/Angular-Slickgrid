@@ -32,12 +32,12 @@ const DEFAULT_PAGE_SIZE = 20;
 @Injectable()
 export class GridOdataService implements BackendService {
   private _currentFilters: CurrentFilter[] = [];
-  private _currentPagination: CurrentPagination;
+  private _currentPagination?: CurrentPagination;
   private _currentSorters: CurrentSorter[] = [];
-  private _columnDefinitions: Column[];
+  private _columnDefinitions!: Column[];
   private _grid: any;
   private _odataService: OdataQueryBuilderService;
-  options: Partial<OdataOption>;
+  options!: Partial<OdataOption>;
   pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
     top: DEFAULT_ITEMS_PER_PAGE,
@@ -64,15 +64,15 @@ export class GridOdataService implements BackendService {
     this._odataService = new OdataQueryBuilderService();
   }
 
-  init(serviceOptions: Partial<OdataOption>, pagination?: Pagination, grid?: any): void {
+  init(serviceOptions: Partial<OdataOption> | undefined, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...serviceOptions };
 
     // unless user specifically set "enablePagination" to False, we'll add "top" property for the pagination in every other cases
     if (this._gridOptions && !this._gridOptions.enablePagination) {
       // save current pagination as Page 1 and page size as "top"
-      this._odataService.options = { ...mergedOptions, top: null };
-      this._currentPagination = null;
+      this._odataService.options = { ...mergedOptions, top: undefined };
+      this._currentPagination = undefined;
     } else {
       const topOption = (pagination && pagination.pageSize) ? pagination.pageSize : this.defaultOptions.top;
       this._odataService.options = { ...mergedOptions, top: topOption };
@@ -120,7 +120,7 @@ export class GridOdataService implements BackendService {
   }
 
   /** Get the Pagination that is currently used by the grid */
-  getCurrentPagination(): CurrentPagination {
+  getCurrentPagination(): CurrentPagination | undefined {
     return this._currentPagination;
   }
 
@@ -179,7 +179,7 @@ export class GridOdataService implements BackendService {
   /*
    * FILTERING
    */
-  processOnFilterChanged(event: Event, args: FilterChangedArgs): string {
+  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): string {
     const gridOptions: GridOption = this._gridOptions;
     const backendApi = gridOptions.backendServiceApi;
 
@@ -204,7 +204,7 @@ export class GridOdataService implements BackendService {
   /*
    * PAGINATION
    */
-  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(_event: Event | undefined, args: PaginationChangedArgs) {
     const pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
     this.updatePagination(args.newPage, pageSize);
 
@@ -215,7 +215,7 @@ export class GridOdataService implements BackendService {
   /*
    * SORTING
    */
-  processOnSortChanged(event: Event, args: SortChangedArgs) {
+  processOnSortChanged(_event: Event | undefined, args: SortChangedArgs) {
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
     // loop through all columns to inspect sorters & set the query
@@ -242,7 +242,7 @@ export class GridOdataService implements BackendService {
     // loop through all columns to inspect filters
     for (const columnId in columnFilters) {
       if (columnFilters.hasOwnProperty(columnId)) {
-        const columnFilter = columnFilters[columnId];
+        const columnFilter = (columnFilters as any)[columnId];
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
         let columnDef: Column | undefined;
@@ -518,7 +518,7 @@ export class GridOdataService implements BackendService {
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
+    const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => (columnFilters as any)[key]) : columnFilters;
 
     if (!Array.isArray(filtersArray)) {
       return [];

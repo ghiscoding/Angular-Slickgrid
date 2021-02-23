@@ -7,13 +7,11 @@ import { EmptyWarning, GridOption } from '../models/index';
 
 export class SlickEmptyWarningComponent {
   private _grid: any;
-  private _warningLeftElement: HTMLDivElement | null;
-  private _warningRightElement: HTMLDivElement | null;
+  private _warningLeftElement?: HTMLDivElement;
+  private _warningRightElement?: HTMLDivElement;
   private isPreviouslyShown = false;
-  private defHeightPane: number = null;
-  private defHeightRow: number = null;
-  private defMinHeightPane: string = null;
-  private defMinHeightRow: string = null;
+  private defHeightPane?: number;
+  private defHeightRow?: number;
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
@@ -33,8 +31,8 @@ export class SlickEmptyWarningComponent {
     if (this._warningRightElement && this._warningRightElement.remove) {
       this._warningRightElement.remove();
     }
-    this._warningLeftElement = null;
-    this._warningRightElement = null;
+    this._warningLeftElement = undefined;
+    this._warningRightElement = undefined;
   }
 
   /**
@@ -55,7 +53,7 @@ export class SlickEmptyWarningComponent {
     const defaultMessage = 'No data to display.';
     const mergedOptions: EmptyWarning = { message: defaultMessage, ...this.gridOptions.emptyDataWarning, ...options };
     const emptyDataClassName = mergedOptions && mergedOptions.className || 'slick-empty-data-warning';
-    this._warningLeftElement = document.querySelector<HTMLDivElement>(`.${gridUid} .${emptyDataClassName}`);
+    this._warningLeftElement = document.querySelector<HTMLDivElement>(`.${gridUid} .${emptyDataClassName}`) as HTMLDivElement;
     const gridCanvasLeftElm = document.querySelector<HTMLDivElement>(`.${gridUid} .grid-canvas.grid-canvas-left`);
     const gridCanvasRightElm = document.querySelector<HTMLDivElement>(`.${gridUid} .grid-canvas.grid-canvas-right`);
     const leftElementMarginLeft = mergedOptions.leftViewportMarginLeft || 0;
@@ -72,23 +70,23 @@ export class SlickEmptyWarningComponent {
       const leftPaneElm = document.querySelector<HTMLDivElement>('.slick-pane.slick-pane-top.slick-pane-left');
 
       // get default values
-      this.defMinHeightPane = leftPaneElm.style.minHeight;
-      this.defMinHeightRow = gridCanvasLeftElm.style.minHeight;
-      this.defHeightPane = parseInt(leftPaneElm.style.height, 10); // this field auto calc by row height
+      if (leftPaneElm && gridCanvasLeftElm) {
+        this.defHeightPane = parseInt(leftPaneElm.style.height || '', 10); // this field auto calc by row height
 
-      // get row height of each feature when enabled (rowHeight will always be defined because that is cell height)
-      this.defHeightRow = this.gridOptions.rowHeight;
-      const filterRowHeight = this.gridOptions.enableFiltering ? this.gridOptions.headerRowHeight : 0;
-      const preHeaderRowHeight = this.gridOptions.createPreHeaderPanel ? this.gridOptions.preHeaderPanelHeight : 0;
+        // get row height of each feature when enabled (rowHeight will always be defined because that is cell height)
+        this.defHeightRow = this.gridOptions.rowHeight;
+        const filterRowHeight = (this.gridOptions.enableFiltering ? this.gridOptions.headerRowHeight : 0) as number;
+        const preHeaderRowHeight = (this.gridOptions.createPreHeaderPanel ? this.gridOptions.preHeaderPanelHeight : 0) as number;
 
-      if (isShowing) {
-        // use when height with rows more that 100px
-        // AutoHeight option collapse dataview to 100px when show message without data in huge grid
-        // (default autoHeight for message - 100px you can add as param if needed)
-        let leftPaneMinHeight = (this.defHeightPane !== null && this.defHeightPane < 100) ? this.defHeightPane : 100;
-        leftPaneMinHeight += filterRowHeight + preHeaderRowHeight; // add preHeader & filter height when enabled
-        leftPaneElm.style.minHeight = `${leftPaneMinHeight}px`;
-        gridCanvasLeftElm.style.minHeight = `${this.defHeightRow}px`;
+        if (isShowing) {
+          // use when height with rows more that 100px
+          // AutoHeight option collapse dataview to 100px when show message without data in huge grid
+          // (default autoHeight for message - 100px you can add as param if needed)
+          let leftPaneMinHeight = (this.defHeightPane !== undefined && this.defHeightPane < 100) ? this.defHeightPane : 100;
+          leftPaneMinHeight += filterRowHeight + preHeaderRowHeight; // add preHeader & filter height when enabled
+          leftPaneElm.style.minHeight = `${leftPaneMinHeight}px`;
+          gridCanvasLeftElm.style.minHeight = `${this.defHeightRow}px`;
+        }
       }
     }
 

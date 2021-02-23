@@ -2,7 +2,7 @@ import { FilterCondition, FilterConditionOption, OperatorType, SearchTerm } from
 import { testFilterCondition } from './filterUtilities';
 
 /** Execute filter condition check on each cell */
-export const executeStringFilterCondition: FilterCondition = (options: FilterConditionOption, parsedSearchValue: string | undefined) => {
+export const executeStringFilterCondition: FilterCondition = ((options: FilterConditionOption, parsedSearchValue: string | undefined) => {
   if (parsedSearchValue === undefined && !options.operator) {
     return true;
   }
@@ -24,7 +24,7 @@ export const executeStringFilterCondition: FilterCondition = (options: FilterCon
     return (cellValue.indexOf(parsedSearchValue) > -1);
   }
   return testFilterCondition(options.operator || '==', cellValue, parsedSearchValue);
-};
+}) as FilterCondition;
 
 /**
  * From our search filter value(s), get the parsed value(s).
