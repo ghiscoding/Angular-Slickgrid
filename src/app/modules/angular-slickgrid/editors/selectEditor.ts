@@ -443,10 +443,13 @@ export class SelectEditor implements Editor {
   }
 
   isValueChanged(): boolean {
+    const valueSelection = this.$editorElm.multipleSelect('getSelects');
     if (this.isMultipleSelect) {
-      return !dequal(this.$editorElm.val(), this.originalValue);
+      const isEqual = dequal(valueSelection, this.originalValue);
+      return !isEqual;
     }
-    return this.$editorElm.val() !== this.originalValue;
+    const value = Array.isArray(valueSelection) && valueSelection.length > 0 ? valueSelection[0] : undefined;
+    return value !== this.originalValue;
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
