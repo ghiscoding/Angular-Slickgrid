@@ -28,6 +28,7 @@ import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode,
 declare const $: any;
 
 export class SelectFilter implements Filter {
+  protected _collectionLength = 0;
   protected _isMultipleSelect = true;
   protected _locales: Locale;
   protected _shouldTriggerQuery = true;
@@ -168,7 +169,7 @@ export class SelectFilter implements Filter {
    * Clear the filter values
    */
   clear(shouldTriggerQuery = true) {
-    if (this.$filterElm && this.$filterElm.multipleSelect) {
+    if (this.$filterElm && this.$filterElm.multipleSelect && this._collectionLength > 0) {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       this.$filterElm.multipleSelect('setSelects', []);
       this.$filterElm.removeClass('filled');
@@ -352,6 +353,7 @@ export class SelectFilter implements Filter {
     // step 2, create the DOM Element of the filter & pre-load search terms
     // also subscribe to the onClose event
     this.createDomElement(filterTemplate);
+    this._collectionLength = newCollection.length;
   }
 
   /** Create the HTML template as a string */
