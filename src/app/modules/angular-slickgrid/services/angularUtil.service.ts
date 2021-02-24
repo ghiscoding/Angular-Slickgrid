@@ -26,7 +26,7 @@ export class AngularUtilService {
       domElem = viewRef.rootNodes[0] as HTMLElement;
     }
 
-    return { componentRef, domElement: domElem };
+    return { componentRef, domElement: domElem as HTMLElement };
   }
 
   // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6

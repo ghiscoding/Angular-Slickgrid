@@ -28,12 +28,12 @@ export class GridAddItemComponent implements OnInit {
   </ul>
   `;
 
-  angularGrid: AngularGridInstance;
+  angularGrid!: AngularGridInstance;
   grid: any;
-  gridService: GridService;
+  gridService!: GridService;
   dataView: any;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
+  columnDefinitions: Column[] = [];
+  gridOptions!: GridOption;
   dataset: any[];
   updatedObject: any;
 
@@ -177,7 +177,7 @@ export class GridAddItemComponent implements OnInit {
   createNewItem(incrementIdByHowMany = 1) {
     const dataset = this.angularGrid.dataView.getItems();
     let highestId = 0;
-    dataset.forEach(item => {
+    dataset.forEach((item: any) => {
       if (item.id > highestId) {
         highestId = item.id;
       }

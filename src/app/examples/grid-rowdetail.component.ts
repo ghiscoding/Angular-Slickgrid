@@ -26,12 +26,12 @@ export class GridRowDetailComponent implements OnInit {
     </ul>
   `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   detailViewRowCount = 9;
-  message: string;
+  message = '';
   flashAlertType = 'info';
 
   constructor() { }

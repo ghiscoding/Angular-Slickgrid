@@ -28,11 +28,11 @@ const MIN_LENGTH = 3;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class AutoCompleteEditor implements Editor {
-  protected _autoCompleteOptions: AutocompleteOption;
+  protected _autoCompleteOptions!: AutocompleteOption;
   protected _currentValue: any;
-  protected _defaultTextValue: string;
-  protected _elementCollection: any[] | null;
-  protected _lastInputEvent: JQuery.Event;
+  protected _defaultTextValue = '';
+  protected _elementCollection: any[] | null = null;
+  protected _lastInputEvent!: JQuery.Event;
 
   /** The JQuery DOM element */
   protected _$editorElm: any;
@@ -41,18 +41,18 @@ export class AutoCompleteEditor implements Editor {
   grid: any;
 
   /** The property name for labels in the collection */
-  labelName: string;
+  labelName!: string;
 
   /** The property name for a prefix that can be added to the labels in the collection */
-  labelPrefixName: string;
+  labelPrefixName!: string;
 
   /** The property name for a suffix that can be added to the labels in the collection */
-  labelSuffixName: string;
+  labelSuffixName!: string;
 
   /** The property name for values in the collection */
-  valueName: string;
+  valueName!: string;
 
-  forceUserInput: boolean;
+  forceUserInput!: boolean;
 
   constructor(protected args: EditorArguments) {
     if (!args) {
@@ -97,7 +97,7 @@ export class AutoCompleteEditor implements Editor {
         value: this.columnDef.dataKey,
       };
     }
-    return customStructure;
+    return customStructure as CollectionCustomStructure;
   }
 
   get hasAutoCommitEdit() {
@@ -105,7 +105,7 @@ export class AutoCompleteEditor implements Editor {
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
+  get validator(): EditorValidator | undefined {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 

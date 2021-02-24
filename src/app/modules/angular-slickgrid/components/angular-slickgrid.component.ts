@@ -121,12 +121,12 @@ const slickgridEventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
-  private _dataset: any[] | null;
-  private _columnDefinitions: Column[];
+  private _dataset?: any[] | null;
+  private _columnDefinitions!: Column[];
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
   private _angularGridInstances: AngularGridInstance | undefined;
-  private _fixedHeight: number | null;
-  private _fixedWidth: number | null;
+  private _fixedHeight?: number | null;
+  private _fixedWidth?: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
   private _isDatasetInitialized = false;
@@ -136,18 +136,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private slickEmptyWarning: SlickEmptyWarningComponent;
   dataView: any | null;
   grid: any | null;
-  gridHeightString: string;
-  gridWidthString: string;
+  gridHeightString?: string;
+  gridWidthString?: string;
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
-  backendServiceApi: BackendServiceApi;
-  customFooterOptions: CustomFooterOption;
-  locales: Locale;
-  metrics: Metrics;
+  backendServiceApi?: BackendServiceApi;
+  customFooterOptions?: CustomFooterOption;
+  locales!: Locale;
+  metrics?: Metrics;
   showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
-  paginationData: {
+  paginationData?: {
     gridOptions: GridOption;
   };
   subscriptions: Subscription[] = [];
@@ -165,8 +165,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onGridBeforeExportToExcel = this.excelExportService.onGridBeforeExportToExcel;
   @Output() onGridAfterExportToExcel = this.excelExportService.onGridAfterExportToExcel;
   @Input() customDataView: any;
-  @Input() gridId: string;
-  @Input() gridOptions: GridOption;
+  @Input() gridId: string = '';
+  @Input() gridOptions!: GridOption;
 
   @Input()
   get paginationOptions(): Pagination | undefined {
@@ -212,10 +212,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   @Input()
-  get datasetHierarchical(): any[] | null {
+  get datasetHierarchical(): any[] | undefined {
     return this.sharedService.hierarchicalDataset;
   }
-  set datasetHierarchical(newHierarchicalDataset: any[] | null) {
+  set datasetHierarchical(newHierarchicalDataset: any[] | undefined) {
     this.sharedService.hierarchicalDataset = newHierarchicalDataset;
 
     if (newHierarchicalDataset && this.columnDefinitions && this.filterService && this.filterService.clearFilters) {
@@ -323,15 +323,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (this.backendServiceApi) {
       for (const prop of Object.keys(this.backendServiceApi)) {
-        this.backendServiceApi[prop] = null;
+        this.backendServiceApi[prop as keyof BackendServiceApi] = undefined;
       }
-      this.backendServiceApi = null;
+      this.backendServiceApi = undefined;
     }
     for (const prop of Object.keys(this.columnDefinitions)) {
-      this.columnDefinitions[prop] = null;
+      (this.columnDefinitions as any)[prop] = null;
     }
     for (const prop of Object.keys(this.sharedService)) {
-      this.sharedService[prop] = null;
+      (this.sharedService as any)[prop] = null;
     }
 
     // we could optionally also empty the content of the grid container DOM element
@@ -343,11 +343,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
 
     this._dataset = null;
-    this.datasetHierarchical = null;
+    this.datasetHierarchical = undefined;
     this._columnDefinitions = [];
-    this._angularGridInstances = null;
+    this._angularGridInstances = undefined;
     this.grid = null;
-    this.gridOptions = null;
     this.dataView = null;
   }
 
@@ -399,11 +398,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     const { pageNumber, pageSize } = pagination;
     if (this.sharedService) {
       if (pageSize) {
-        this.sharedService.currentPagination = { pageNumber, pageSize };
+        this.sharedService.currentPagination = { pageNumber: pageNumber as number, pageSize: pageSize as number };
       }
     }
     this.gridStateService.onGridStateChanged.next({
-      change: { newValues: { pageNumber, pageSize }, type: GridStateType.pagination },
+      change: { newValues: { pageNumber: pageNumber as number, pageSize: pageSize as number }, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
     });
   }
@@ -448,12 +447,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.showPagination = (this.gridOptions && (this.gridOptions.enablePagination || (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined))) ? true : false;
 
       if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
-        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
+        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions as Pagination);
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
         const totalRecords = totalCount !== undefined ? totalCount : (this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems);
         if (totalRecords !== this.totalItems) {
-          this.totalItems = totalRecords;
+          this.totalItems = totalRecords as number;
         }
 
         // initialize the Pagination Service with new pagination options (which might have presets)
@@ -490,7 +489,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * We will re-render the grid so that the new header and data shows up correctly.
    * If using i18n, we also need to trigger a re-translate of the column headers
    */
-  updateColumnDefinitionsList(newColumnDefinitions) {
+  updateColumnDefinitionsList(newColumnDefinitions: Column[]) {
     // map/swap the internal library Editor to the SlickGrid Editor factory
     newColumnDefinitions = this.swapInternalEditorToSlickGridFactoryEditor(newColumnDefinitions);
 
@@ -745,7 +744,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // auto-resize grid on browser resize
     if (this._fixedHeight || this._fixedWidth) {
-      this.resizer.init(grid, { height: this._fixedHeight, width: this._fixedWidth });
+      this.resizer.init(grid, { height: this._fixedHeight as number, width: this._fixedWidth as number });
     } else {
       this.resizer.init(grid);
     }
@@ -875,7 +874,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         // with the BackendServiceApi because technically the data in the page changes the DataView on every page change.
         let preservedRowSelectionWithBackend = false;
         if (this.gridOptions.backendServiceApi && this.gridOptions.dataView.hasOwnProperty('syncGridSelectionWithBackendService')) {
-          preservedRowSelectionWithBackend = this.gridOptions.dataView.syncGridSelectionWithBackendService;
+          preservedRowSelectionWithBackend = this.gridOptions.dataView.syncGridSelectionWithBackendService as boolean;
         }
 
         const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
@@ -1046,9 +1045,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           this.totalItems = slickPagingInfo.totalRows;
         }
       }
-      this._paginationOptions.totalItems = this.totalItems;
-      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
-      this.initializePaginationService(paginationOptions);
+      if (this._paginationOptions) {
+        this._paginationOptions.totalItems = this.totalItems;
+        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this._paginationOptions);
+        this.initializePaginationService(paginationOptions);
+      }
     }
   }
 
@@ -1068,7 +1069,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       } else if (Array.isArray(gridRowIndexes) && gridRowIndexes.length > 0) {
         dataContextIds = this.dataView.mapRowsToIds(gridRowIndexes) || [];
       }
-      this.gridStateService.selectedRowDataContextIds = dataContextIds;
+      this.gridStateService.selectedRowDataContextIds = dataContextIds as string[];
 
       // change the selected rows except UNLESS it's a Local Grid with Pagination
       // local Pagination uses the DataView and that also trigger a change/refresh
@@ -1079,7 +1080,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  private mergeGridOptions(gridOptions): GridOption {
+  private mergeGridOptions(gridOptions: GridOption): GridOption {
     gridOptions.gridId = this.gridId;
     gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
 
@@ -1132,7 +1133,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // we will display the custom footer only when there's no Pagination
       if (!this.gridOptions.enablePagination && !this._isPaginationInitialized) {
-        this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false;
+        this.showCustomFooter = (this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false) as boolean;
         this.customFooterOptions = this.gridOptions.customFooterOptions || {};
       }
       this.cd.detectChanges();
@@ -1174,7 +1175,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       for (const propName of Object.keys(customFooterOptions.metricTexts)) {
         if (propName.lastIndexOf('Key') > 0) {
           const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));
-          customFooterOptions.metricTexts[propNameWithoutKey] = this.translate.instant(customFooterOptions.metricTexts[propName] || ' ');
+          (customFooterOptions.metricTexts as any)[propNameWithoutKey] = this.translate.instant((customFooterOptions.metricTexts as any)[propName] || ' ');
         }
       }
     }

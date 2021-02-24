@@ -38,7 +38,7 @@ export class LongTextEditor implements Editor {
   gridOptions: GridOption;
 
   /** The translate library */
-  protected _translate: TranslateService;
+  protected _translate?: TranslateService;
 
   constructor(protected args: EditorArguments) {
     if (!args) {

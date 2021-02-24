@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Column, GridOption } from './../modules/angular-slickgrid';
+import { Component, OnInit } from '@angular/core';
+import { Column, Formatter, GridOption } from './../modules/angular-slickgrid';
 
 // create a custom Formatter to highlight negative values in red
 let columnsWithHighlightingById = {};
-const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
-  if (columnsWithHighlightingById && columnsWithHighlightingById[columnDef.id] && value < 0) {
+const highlightingFormatter: Formatter = (_row, _cell, value, columnDef) => {
+  if (columnsWithHighlightingById && (columnsWithHighlightingById as any)[columnDef.id] && value < 0) {
     return `<div style="color:red; font-weight:bold;">${value}</div>`;
   } else {
     return value;
@@ -14,7 +14,7 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
 @Component({
   templateUrl: './grid-headerbutton.component.html'
 })
-export class GridHeaderButtonComponent implements OnInit, OnDestroy {
+export class GridHeaderButtonComponent implements OnInit {
   title = 'Example 7: Header Button Plugin';
   subTitle = `
     This example demonstrates using the <b>Slick.Plugins.HeaderButtons</b> plugin to easily add buttons to colum headers.
@@ -34,12 +34,12 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
     </ul>
   `;
 
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   gridObj: any;
   dataviewObj: any;
-  visibleColumns: Column[];
+  visibleColumns!: Column[];
 
   ngOnInit(): void {
     this.columnDefinitions = [];
@@ -65,11 +65,11 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
 
           if (command === 'toggle-highlight') {
             if (button.cssClass === 'fa fa-circle red') {
-              delete columnsWithHighlightingById[column.id];
+              delete (columnsWithHighlightingById as any)[column.id];
               button.cssClass = 'fa fa-circle-o red faded';
               button.tooltip = 'Highlight negative numbers.';
             } else {
-              columnsWithHighlightingById[column.id] = true;
+              (columnsWithHighlightingById as any)[column.id] = true;
               button.cssClass = 'fa fa-circle red';
               button.tooltip = 'Remove highlight.';
             }
@@ -81,10 +81,6 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
     };
 
     this.getData();
-  }
-
-  ngOnDestroy() {
-    columnsWithHighlightingById = null;
   }
 
   getData() {
@@ -171,7 +167,7 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
     // mock a dataset
     const mockDataset = [];
     for (let i = 0; i < 100; i++) {
-      const d = (mockDataset[i] = {});
+      const d: any = (mockDataset[i] = {});
       d['id'] = i;
       for (let j = 0; j < this.columnDefinitions.length; j++) {
         d[j] = Math.round(Math.random() * 10) - 5;
@@ -180,10 +176,10 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
     this.dataset = mockDataset;
   }
 
-  gridReady(grid) {
+  gridReady(grid: any) {
     this.gridObj = grid;
   }
-  dataviewReady(dataview) {
+  dataviewReady(dataview: any) {
     this.dataviewObj = dataview;
   }
 }

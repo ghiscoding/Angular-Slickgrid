@@ -3,16 +3,16 @@ import { Subject } from 'rxjs';
 import { Column, CurrentPagination, GridOption } from '../models';
 
 export class SharedService {
-  private _allColumns: Column[];
+  private _allColumns: Column[] = [];
   private _dataView: any;
   private _groupItemMetadataProvider: any;
   private _grid: any;
-  private _gridOptions: GridOption;
-  private _currentPagination: CurrentPagination;
+  private _gridOptions!: GridOption;
+  private _currentPagination: CurrentPagination | undefined;
   private _hideHeaderRowAfterPageLoad = false;
-  private _visibleColumns: Column[];
-  private _hierarchicalDataset: any[] | null;
-  private _frozenVisibleColumnId: string | number;
+  private _visibleColumns: Column[] = [];
+  private _hierarchicalDataset: any[] | undefined;
+  private _frozenVisibleColumnId: string | number | undefined;
   onHeaderMenuHideColumns = new Subject<Column[]>();
 
   // --
@@ -38,7 +38,7 @@ export class SharedService {
   }
 
   /** Setter for the Current Pagination (when Pagination is enabled) */
-  set currentPagination(currentPagination: CurrentPagination) {
+  set currentPagination(currentPagination: CurrentPagination | undefined) {
     this._currentPagination = currentPagination;
   }
 
@@ -52,11 +52,11 @@ export class SharedService {
   }
 
   /** Setter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
-  get frozenVisibleColumnId(): string | number {
+  get frozenVisibleColumnId(): string | number | undefined {
     return this._frozenVisibleColumnId;
   }
   /** Getter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
-  set frozenVisibleColumnId(columnId: string | number) {
+  set frozenVisibleColumnId(columnId: string | number | undefined) {
     this._frozenVisibleColumnId = columnId;
   }
 
@@ -107,12 +107,12 @@ export class SharedService {
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  get hierarchicalDataset(): any[] | null {
+  get hierarchicalDataset(): any[] | undefined {
     return this._hierarchicalDataset;
   }
 
   /** Getter for the Hierarchical Tree Data dataset when the feature is enabled */
-  set hierarchicalDataset(hierarchicalDataset: any[] | null) {
+  set hierarchicalDataset(hierarchicalDataset: any[] | undefined) {
     this._hierarchicalDataset = hierarchicalDataset;
   }
 }

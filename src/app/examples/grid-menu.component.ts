@@ -26,10 +26,10 @@ export class GridMenuComponent implements OnInit, OnDestroy {
   `;
 
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {
@@ -216,14 +216,14 @@ export class GridMenuComponent implements OnInit, OnDestroy {
     );
   }
 
-  toggleGridMenu(e) {
+  toggleGridMenu(e: Event) {
     if (this.angularGrid && this.angularGrid.extensionService) {
       const gridMenuInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.gridMenu);
       gridMenuInstance.showGridMenu(e);
     }
   }
 
-  private isObjectEmpty(obj) {
+  private isObjectEmpty(obj: any) {
     for (const key in obj) {
       if (obj.hasOwnProperty(key) && obj[key] !== '') {
         return false;

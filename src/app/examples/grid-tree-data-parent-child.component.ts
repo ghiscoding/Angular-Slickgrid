@@ -31,12 +31,12 @@ export class GridTreeDataParentChildComponent implements OnInit {
     </ul>
   </ul>`;
 
-  angularGrid: AngularGridInstance;
+  angularGrid!: AngularGridInstance;
   dataViewObj: any;
   gridObj: any;
-  gridOptions: GridOption;
-  columnDefinitions: Column[];
-  dataset: any[];
+  gridOptions!: GridOption;
+  columnDefinitions!: Column[];
+  dataset!: any[];
   datasetHierarchical: any[] = [];
 
   constructor() { }
@@ -177,7 +177,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
     // add setTimeout to wait a full cycle because datasetChanged needs a full cycle
     // force a resort because of the tree data structure
     setTimeout(() => {
-      const titleColumn = this.columnDefinitions.find(col => col.id === 'title');
+      const titleColumn = this.columnDefinitions.find(col => col.id === 'title') as Column;
       this.angularGrid.sortService.onLocalSortChanged(this.gridObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
 
       // scroll into the position, after insertion cycle, where the item was added
@@ -212,7 +212,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
-      const d = (data[i] = {});
+      const d: any = (data[i] = {});
       let parentId;
 
       // for implementing filtering/sorting, don't go over indent of 2

@@ -19,10 +19,10 @@ export class CustomAngularComponentEditor implements Editor {
   private _subscriptions: Subscription[] = [];
 
   /** Angular Component Reference */
-  componentRef: ComponentRef<any>;
+  componentRef!: ComponentRef<any>;
 
   /** default item Id */
-  defaultId: string;
+  defaultId = '';
 
   /** default item object */
   defaultItem: any;
@@ -46,7 +46,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Get the Collection */
   get collection(): any[] {
-    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+    return this.columnDef && this.columnDef.internalColumnEditor!.collection || [];
   }
 
   /** Get Column Definition object */
@@ -69,7 +69,7 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
+  get validator(): EditorValidator | undefined {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 

@@ -1,5 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+// @ts-ignore
 import * as ExcelBuilder from 'excel-builder-webpacker';
 import { Subject } from 'rxjs';
 import * as moment_ from 'moment-mini';
@@ -36,15 +37,15 @@ export class ExcelExportService {
   private _fileFormat = FileType.xlsx;
   private _dataView: any;
   private _grid: any;
-  private _locales: Locale;
-  private _columnHeaders: Array<KeyTitlePair>;
-  private _groupedColumnHeaders: Array<KeyTitlePair>;
+  private _locales!: Locale;
+  private _columnHeaders!: Array<KeyTitlePair>;
+  private _groupedColumnHeaders!: Array<KeyTitlePair>;
   private _hasGroupedItems = false;
-  private _excelExportOptions: ExcelExportOption;
-  private _sheet: ExcelWorksheet;
-  private _stylesheet: ExcelStylesheet;
+  private _excelExportOptions!: ExcelExportOption;
+  private _sheet!: ExcelWorksheet;
+  private _stylesheet!: ExcelStylesheet;
   private _stylesheetFormats: any;
-  private _workbook: ExcelWorkbook;
+  private _workbook!: ExcelWorkbook;
   onGridBeforeExportToExcel = new Subject<boolean>();
   onGridAfterExportToExcel = new Subject<{ blob?: Blob; filename: string; format?: string; }>();
 
@@ -245,7 +246,7 @@ export class ExcelExportService {
     const columns = this._grid && this._grid.getColumns && this._grid.getColumns() || [];
 
     // data variable which will hold all the fields data of a row
-    const outputData = [];
+    const outputData: string[][] | ExcelCellFormat[][] = [];
     const columnHeaderStyle = this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.columnHeaderStyle;
     let columnHeaderStyleId = this._stylesheetFormats.boldFormatter.id;
     if (columnHeaderStyle) {
@@ -256,15 +257,15 @@ export class ExcelExportService {
     if (this._gridOptions.createPreHeaderPanel && this._gridOptions.showPreHeaderPanel && !this._gridOptions.enableDraggableGrouping) {
       // when having Grouped Header Titles (in the pre-header), then make the cell Bold & Aligned Center
       const boldCenterAlign = this._stylesheet.createFormat({ alignment: { horizontal: 'center' }, font: { bold: true } });
-      outputData.push(this.getColumnGroupedHeaderTitlesData(columns, { style: boldCenterAlign && boldCenterAlign.id }));
+      (outputData as ExcelCellFormat[][]).push(this.getColumnGroupedHeaderTitlesData(columns, { style: boldCenterAlign && boldCenterAlign.id }));
     }
 
     // get all Column Header Titles (it might include a "Group by" title at A1 cell)
     // also style the headers, defaults to Bold but user could pass his own style
-    outputData.push(this.getColumnHeaderData(columns, { style: columnHeaderStyleId }));
+    (outputData as ExcelCellFormat[][]).push(this.getColumnHeaderData(columns, { style: columnHeaderStyleId }) as ExcelCellFormat[]);
 
     // Populate the rest of the Grid Data
-    this.pushAllGridRowDataToArray(outputData, columns);
+    this.pushAllGridRowDataToArray(outputData as any, columns);
 
     return outputData;
   }
@@ -376,7 +377,7 @@ export class ExcelExportService {
     const grouping = this._dataView && this._dataView.getGrouping && this._dataView.getGrouping();
     if (Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
-      return groupByColumnHeader;
+      return groupByColumnHeader as string;
     } else {
       this._hasGroupedItems = false;
     }
@@ -393,11 +394,11 @@ export class ExcelExportService {
     if (columns && Array.isArray(columns)) {
       // Populate the Grouped Column Header, pull the columnGroup(Key) defined
       columns.forEach((columnDef: Column) => {
-        let groupedHeaderTitle = '';
+        let groupedHeaderTitle: string = '';
         if (columnDef.columnGroupKey && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
           groupedHeaderTitle = this.translate.instant(columnDef.columnGroupKey);
         } else {
-          groupedHeaderTitle = columnDef.columnGroup;
+          groupedHeaderTitle = columnDef.columnGroup as string;
         }
         const skippedField = columnDef.excludeFromExport || false;
 
@@ -418,14 +419,14 @@ export class ExcelExportService {
    * @param columns of the grid
    */
   private getColumnHeaders(columns: Column[]): Array<KeyTitlePair> {
-    const columnHeaders = [];
+    const columnHeaders: Array<KeyTitlePair> = [];
 
     if (columns && Array.isArray(columns)) {
       // Populate the Column Header, pull the name defined
       columns.forEach((columnDef) => {
         let headerTitle = '';
         if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
-          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
+          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey) || ' ');
         } else {
           headerTitle = columnDef.name || titleCase(columnDef.field);
         }
@@ -446,7 +447,7 @@ export class ExcelExportService {
   /**
    * Get all the grid row data and return that as an output string
    */
-  private pushAllGridRowDataToArray(originalDaraArray: string[][], columns: Column[]): string[][] | ExcelCellFormat[][] {
+  private pushAllGridRowDataToArray(originalDataArray: string[][], columns: Column[]): Array<string[] | ExcelCellFormat[]> {
     const lineCount = this._dataView && this._dataView.getLength && this._dataView.getLength();
 
     // loop through all the grid rows of data
@@ -456,17 +457,17 @@ export class ExcelExportService {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj[this.datasetIdName] !== null && itemObj[this.datasetIdName] !== undefined) {
           // get regular row item data
-          originalDaraArray.push(this.readRegularRowData(columns, rowNumber, itemObj));
+          originalDataArray.push(this.readRegularRowData(columns, rowNumber, itemObj));
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
           // get the group row
-          originalDaraArray.push([this.readGroupedTitleRow(itemObj)]);
+          originalDataArray.push([this.readGroupedTitleRow(itemObj)]);
         } else if (itemObj.__groupTotals) {
           // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-          originalDaraArray.push(this.readGroupedTotalRow(columns, itemObj));
+          originalDataArray.push(this.readGroupedTotalRow(columns, itemObj));
         }
       }
     }
-    return originalDaraArray;
+    return originalDataArray;
   }
 
   /**
@@ -509,7 +510,7 @@ export class ExcelExportService {
       idx++;
     }
 
-    return rowOutputStrings;
+    return rowOutputStrings as string[];
   }
 
   /**

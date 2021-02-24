@@ -56,7 +56,7 @@ export class GroupingAndColspanService {
           this.sharedService.onHeaderMenuHideColumns.subscribe(() => this.delayRenderPreHeaderRowGroupingTitles(0))
         );
 
-        this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
+        this._eventHandler.subscribe(grid.onSetOptions, (_e: Event, args: any) => {
           // when user changes frozen columns dynamically (e.g. from header menu), we need to re-render the pre-header of the grouping titles
           if (args && args.optionsBefore && args.optionsAfter && args.optionsBefore.frozenColumn !== args.optionsAfter.frozenColumn) {
             this.delayRenderPreHeaderRowGroupingTitles(0);

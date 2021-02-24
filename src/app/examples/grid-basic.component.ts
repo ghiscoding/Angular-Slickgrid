@@ -15,12 +15,12 @@ export class GridBasicComponent implements OnInit {
     </ul>
   `;
 
-  columnDefinitions1: Column[];
-  columnDefinitions2: Column[];
-  gridOptions1: GridOption;
-  gridOptions2: GridOption;
-  dataset1: any[];
-  dataset2: any[];
+  columnDefinitions1: Column[] = [];
+  columnDefinitions2: Column[] = [];
+  gridOptions1!: GridOption;
+  gridOptions2!: GridOption;
+  dataset1!: any[];
+  dataset2!: any[];
 
   ngOnInit(): void {
     this.columnDefinitions1 = [

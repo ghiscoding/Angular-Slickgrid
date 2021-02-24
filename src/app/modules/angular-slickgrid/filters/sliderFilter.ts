@@ -18,17 +18,17 @@ const DEFAULT_STEP = 1;
 
 export class SliderFilter implements Filter {
   protected _clearFilterTriggered = false;
-  protected _currentValue: number;
+  protected _currentValue = 0;
   protected _shouldTriggerQuery = true;
-  protected _elementRangeInputId: string;
-  protected _elementRangeOutputId: string;
+  protected _elementRangeInputId!: string;
+  protected _elementRangeOutputId!: string;
   protected $filterElm: any;
   protected $filterInputElm: any;
   protected $filterNumberElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
@@ -47,7 +47,7 @@ export class SliderFilter implements Filter {
 
   /** Getter for the `filter` properties */
   protected get filterProperties(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter;
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   get operator(): OperatorType | OperatorString {
@@ -144,7 +144,6 @@ export class SliderFilter implements Filter {
     }
     this.$filterInputElm = null;
     this.$filterElm = null;
-    this.callback = null;
   }
 
   /**
@@ -213,7 +212,7 @@ export class SliderFilter implements Filter {
    */
   protected createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const columnId = this.columnDef && this.columnDef.id;
-    const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+    const minValue = (this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE) as number;
     const startValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const $headerElm = this.grid.getHeaderRowColumn(columnId);
     $($headerElm).empty();

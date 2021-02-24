@@ -48,7 +48,7 @@ main.onBackendError = function backendError(e: any, backendApi: BackendServiceAp
 main.executeBackendCallback = function exeBackendCallback(backendServiceApi: BackendServiceApi, query: string, args: any, startTime: Date, totalItems: number, emitActionChangedCallback?: (type: EmitterType) => void, httpCancelRequests$?: Subject<void>) {
   if (backendServiceApi) {
     // emit an onFilterChanged event when it's not called by a clear filter
-    if (args && !args.clearFilterTriggered && !args.clearSortTriggered) {
+    if (args && !args.clearFilterTriggered && !args.clearSortTriggered && emitActionChangedCallback) {
       emitActionChangedCallback(EmitterType.remote);
     }
 

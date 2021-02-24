@@ -24,7 +24,7 @@
 
     <label for="selectedFilter" style="margin-left: 10px">Predefined Filters</label>
     <select name="selectedFilter" class="form-control" [(ngModel)]="selectedPredefinedFilter"
-      data-test="select-dynamic-filter" (ngModelChange)="usePredefinedFilter($event)">
+            data-test="select-dynamic-filter" (ngModelChange)="usePredefinedFilter($event)">
       <option [ngValue]="filter.value" *ngFor="let filter of filterList">{{filter.label}}</option>
     </select>
   </form>
@@ -38,8 +38,8 @@
   </div>
 
   <angular-slickgrid gridId="grid25" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
-    [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-    (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState($event)"
-    (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
+                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
+                     (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState()"
+                     (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>

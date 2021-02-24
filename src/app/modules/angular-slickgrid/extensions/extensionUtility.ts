@@ -28,8 +28,8 @@ export class ExtensionUtility {
     // get locales provided by user in forRoot or else use default English locales via the Constants
     const locales = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
 
-    const title = picker && picker[propName];
-    const titleKey = picker && picker[`${propName}Key`];
+    const title = picker && (picker as any)[propName];
+    const titleKey = picker && (picker as any)[`${propName}Key`];
     const gridOptions = this.sharedService.gridOptions;
     const translationPrefix = getTranslationPrefix(gridOptions);
 
@@ -104,8 +104,8 @@ export class ExtensionUtility {
     // sort the custom items by their position in the list
     if (Array.isArray(items)) {
       items.sort((itemA: T, itemB: T) => {
-        if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
-          return itemA[propertyName] - itemB[propertyName];
+        if (itemA && itemB && (itemA as any).hasOwnProperty(propertyName) && (itemB as any).hasOwnProperty(propertyName)) {
+          return (itemA as any)[propertyName] - (itemB as any)[propertyName];
         }
         return 0;
       });
@@ -116,8 +116,8 @@ export class ExtensionUtility {
   translateItems<T = any>(items: T[], inputKey: string, outputKey: string) {
     if (Array.isArray(items)) {
       for (const item of items) {
-        if (item[inputKey]) {
-          item[outputKey] = this.translate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(item[inputKey]);
+        if ((item as any)[inputKey]) {
+          (item as any)[outputKey] = this.translate && this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant((item as any)[inputKey]);
         }
       }
     }
@@ -138,7 +138,7 @@ export class ExtensionUtility {
     if (gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
       text = this.translate.instant(translationKey || ' ');
     } else if (locales && locales.hasOwnProperty(localeKey)) {
-      text = locales[localeKey];
+      text = (locales as any)[localeKey];
     } else {
       text = localeKey;
     }

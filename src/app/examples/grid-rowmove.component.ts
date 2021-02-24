@@ -23,10 +23,10 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
     </ul>
   `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {
@@ -42,9 +42,6 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // nullify the callbacks to avoid mem leaks
-    this.onBeforeMoveRow = null;
-    this.onMoveRows = null;
   }
 
   ngOnInit(): void {
@@ -136,7 +133,7 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
     this.dataset = mockDataset;
   }
 
-  onBeforeMoveRow(e, data) {
+  onBeforeMoveRow(e: Event, data: any) {
     for (let i = 0; i < data.rows.length; i++) {
       // no point in moving before or after itself
       if (data.rows[i] === data.insertBefore || data.rows[i] === data.insertBefore - 1) {
@@ -147,13 +144,13 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  onMoveRows(e, args) {
+  onMoveRows(e: Event, args: any) {
     const extractedRows = [];
     const rows = args.rows;
     const insertBefore = args.insertBefore;
     const left = this.dataset.slice(0, insertBefore);
     const right = this.dataset.slice(insertBefore, this.dataset.length);
-    rows.sort((a, b) => a - b);
+    rows.sort((a: number, b: number) => a - b);
     for (let i = 0; i < rows.length; i++) {
       extractedRows.push(this.dataset[rows[i]]);
     }

@@ -1,7 +1,7 @@
 import { Column, Formatter } from './../models/index';
 import { isNumber } from '../services/utilities';
 
-export const percentCompleteBarFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any): string => {
+export const percentCompleteBarFormatter: Formatter = (row: number, cell: number, value: any): string => {
   if (!isNumber(value)) {
     return '';
   }

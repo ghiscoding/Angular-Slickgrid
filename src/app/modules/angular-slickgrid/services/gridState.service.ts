@@ -33,8 +33,8 @@ export class GridStateService {
   private _dataView: any;
   private _grid: any;
   private _subscriptions: Subscription[] = [];
-  private _selectedRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
-  private _selectedFilteredRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
+  private _selectedRowDataContextIds: Array<number | string> = []; // used with row selection
+  private _selectedFilteredRowDataContextIds: Array<number | string> = []; // used with row selection
   private _wasRecheckedAfterPageChange = true; // used with row selection & pagination
   onGridStateChanged = new Subject<GridStateChange>();
 
@@ -57,12 +57,12 @@ export class GridStateService {
   }
 
   /** Getter of the selected data context object IDs */
-  get selectedRowDataContextIds(): Array<number | string> | undefined {
+  get selectedRowDataContextIds(): Array<number | string> {
     return this._selectedRowDataContextIds;
   }
 
   /** Setter of the selected data context object IDs */
-  set selectedRowDataContextIds(dataContextIds: Array<number | string> | undefined) {
+  set selectedRowDataContextIds(dataContextIds: Array<number | string>) {
     this._selectedRowDataContextIds = dataContextIds;
 
     // since this is coming from a preset, we also need to update the filtered IDs
@@ -189,7 +189,7 @@ export class GridStateService {
 
     if (currentColumns && Array.isArray(currentColumns)) {
       currentColumns.forEach((currentColumn: CurrentColumn, index: number) => {
-        const gridColumn: Column = gridColumns.find((c: Column) => c.id === currentColumn.columnId);
+        const gridColumn = gridColumns.find((c: Column) => c.id === currentColumn.columnId);
         if (gridColumn && gridColumn.id) {
           columns.push({
             ...gridColumn,
@@ -239,7 +239,7 @@ export class GridStateService {
    * Get current Pagination (and its state, pageNumber, pageSize) that are currently applied in the grid
    * @return current pagination state
    */
-  getCurrentPagination(): CurrentPagination | null {
+  getCurrentPagination(): CurrentPagination | undefined {
     if (this._gridOptions.enablePagination) {
       if (this._gridOptions && this._gridOptions.backendServiceApi) {
         const backendService = this._gridOptions.backendServiceApi.service;
@@ -250,7 +250,7 @@ export class GridStateService {
         return this.sharedService.currentPagination;
       }
     }
-    return null;
+    return undefined;
   }
 
   /**
@@ -301,13 +301,13 @@ export class GridStateService {
       if (typeof syncGridSelection === 'boolean') {
         preservedRowSelection = this._gridOptions.dataView.syncGridSelection as boolean;
       } else {
-        preservedRowSelection = syncGridSelection.preserveHidden;
+        preservedRowSelection = syncGridSelection!.preserveHidden;
       }
 
       // if the result is True but the grid is using a Backend Service, we will do an extra flag check the reason is because it might have some unintended behaviors
       // with the BackendServiceApi because technically the data in the page changes the DataView on every page.
       if (preservedRowSelection && this._gridOptions.backendServiceApi && this._gridOptions.dataView.hasOwnProperty('syncGridSelectionWithBackendService')) {
-        preservedRowSelection = this._gridOptions.dataView.syncGridSelectionWithBackendService;
+        preservedRowSelection = (this._gridOptions.dataView.syncGridSelectionWithBackendService) as boolean;
       }
     }
     return preservedRowSelection;
@@ -475,7 +475,7 @@ export class GridStateService {
         });
       });
 
-      this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, (e, args) => {
+      this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, (e: Event, args: any) => {
         if (Array.isArray(args.rows) && Array.isArray(args.previousSelectedRows)) {
           const newSelectedRows = args.rows as number[];
           const prevSelectedRows = args.previousSelectedRows as number[];
@@ -486,18 +486,18 @@ export class GridStateService {
           // deletion might happen when user is changing page, if that is the case then skip the deletion since it's only a visual deletion (current page)
           // if it's not a page change (when the flag is true), then proceed with the deletion in our global array of selected IDs
           if (this._wasRecheckedAfterPageChange && newSelectedDeletions.length > 0) {
-            const toDeleteDataIds: Array<number | string> | undefined = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
+            const toDeleteDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
             toDeleteDataIds.forEach((removeId: number | string) => {
-              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string> | undefined).indexOf(removeId), 1);
+              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string>).indexOf(removeId), 1);
             });
           }
 
           // if we have newly added selected row(s), let's update our global array of selected IDs
           if (newSelectedAdditions.length > 0) {
-            const toAddDataIds: Array<number | string> | undefined = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
+            const toAddDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
             toAddDataIds.forEach((dataId: number | string) => {
-              if ((this._selectedRowDataContextIds as Array<number | string> | undefined).indexOf(dataId) === -1) {
-                (this._selectedRowDataContextIds as Array<number | string> | undefined).push(dataId);
+              if ((this._selectedRowDataContextIds as Array<number | string>).indexOf(dataId) === -1) {
+                (this._selectedRowDataContextIds as Array<number | string>).push(dataId);
               }
             });
           }
@@ -542,8 +542,8 @@ export class GridStateService {
   }
 
   /** When a Filter is triggered or when user request it, we will refresh the filtered selection array and return it */
-  private refreshFilteredRowSelections(): Array<number | string> | undefined {
-    let tmpFilteredArray = [];
+  private refreshFilteredRowSelections(): Array<number | string> {
+    let tmpFilteredArray: Array<number | string> = [];
     const filteredDataset = this._dataView.getFilteredItems() || [];
     if (Array.isArray(this._selectedRowDataContextIds)) {
       const selectedFilteredRowDataContextIds = [...this._selectedRowDataContextIds]; // take a fresh copy of all selections before filtering the row ids

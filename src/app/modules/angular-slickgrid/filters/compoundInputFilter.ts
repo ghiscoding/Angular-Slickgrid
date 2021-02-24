@@ -27,11 +27,11 @@ export class CompoundInputFilter implements Filter {
   protected $filterElm: any;
   protected $filterInputElm: any;
   protected $selectOperatorElm: any;
-  protected _operator: OperatorType | OperatorString;
+  protected _operator: OperatorType | OperatorString | undefined;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor(protected readonly translate: TranslateService) { }
 
@@ -86,7 +86,7 @@ export class CompoundInputFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.operator = args.operator;
+    this.operator = args.operator as OperatorString;
     this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
@@ -112,7 +112,7 @@ export class CompoundInputFilter implements Filter {
       this.searchTerms = [];
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val('');
-      this.onTriggerEvent(null);
+      this.onTriggerEvent(undefined);
     }
   }
 
@@ -126,12 +126,10 @@ export class CompoundInputFilter implements Filter {
     }
     this.$filterElm = null;
     this.$selectOperatorElm = null;
-    this.callback = null;
-    this.onTriggerEvent = null;
   }
 
   /** Set value(s) on the DOM element */
-  setValues(values: SearchTerm[], operator?: OperatorType | OperatorString) {
+  setValues(values: SearchTerm[] | SearchTerm, operator?: OperatorType | OperatorString) {
     if (values) {
       const newValue = Array.isArray(values) ? values[0] : values;
       this.$filterInputElm.val(newValue);
@@ -195,7 +193,7 @@ export class CompoundInputFilter implements Filter {
       const translationPrefix = getTranslationPrefix(this.gridOptions);
       return this.translate.instant(`${translationPrefix}${translationKey}`);
     }
-    return this.locales && this.locales[localeText] || defaultText;
+    return this.locales && this.locales[localeText as keyof Locale] || defaultText;
   }
 
   /**

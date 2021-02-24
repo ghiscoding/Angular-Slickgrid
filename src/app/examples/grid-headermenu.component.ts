@@ -31,10 +31,10 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
   `;
 
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {

@@ -1,6 +1,6 @@
 import { Column, GridOption, Sorter, SortDirectionNumber } from './../models/index';
 
-export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn: Column, gridOptions?: GridOption) => {
+export const objectStringSorter: Sorter = (value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn?: Column, gridOptions?: GridOption) => {
   if (!sortColumn || !sortColumn.dataKey) {
     throw new Error('Sorting a "FieldType.object" requires you to provide the "dataKey" (object property name) of the object so that we can use it to sort correctly');
   }

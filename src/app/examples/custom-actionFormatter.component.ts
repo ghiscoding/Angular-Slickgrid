@@ -21,7 +21,7 @@ import { Component } from '@angular/core';
 })
 export class CustomActionFormatterComponent {
   parent: any; // parent component context
-  row: number;
+  row!: number;
   dataContext: any;
   dropdownId = 'myDrop';
   dropDownToggleId = 'toggleDrop';

@@ -57,18 +57,18 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     </ul>
   `;
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
-  metrics: Metrics;
+  metrics!: Metrics;
   filterList = [
     { value: '', label: '' },
     { value: 'currentYearTasks', label: 'Current Year Completed Tasks' },
     { value: 'nextYearTasks', label: 'Next Year Active Tasks' }
   ];
-  selectedPredefinedFilter: { value: string; label: string; };
+  selectedPredefinedFilter!: { value: string; label: string; };
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -189,7 +189,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     this.angularGrid = angularGrid;
   }
 
-  mockData(itemCount, startingIndex = 0): any[] {
+  mockData(itemCount: number, startingIndex = 0): any[] {
     // mock a dataset
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
@@ -226,11 +226,11 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
-  saveCurrentGridState(grid) {
+  saveCurrentGridState() {
     console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
-  refreshMetrics(e, args) {
+  refreshMetrics(e: Event, args: any) {
     if (args && args.current >= 0) {
       setTimeout(() => {
         this.metrics = {
@@ -262,8 +262,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  usePredefinedFilter(filterValue) {
-    let filters = [];
+  usePredefinedFilter(filterValue: string) {
+    let filters: any[] = [];
     const currentYear = moment().year();
 
     switch (filterValue) {

@@ -19,9 +19,9 @@ export class InputFilter implements Filter {
   protected _inputType = 'text';
   protected $filterElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor() { }
 
@@ -109,11 +109,10 @@ export class InputFilter implements Filter {
       this.$filterElm.off('keyup input').remove();
     }
     this.$filterElm = null;
-    this.callback = null;
   }
 
   /** Set value(s) on the DOM element */
-  setValues(values: SearchTerm, operator?: OperatorType | OperatorString) {
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (values) {
       this.$filterElm.val(values);
     }

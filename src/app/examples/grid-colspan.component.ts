@@ -22,14 +22,14 @@ export class GridColspanComponent implements OnInit {
   </ul>
   `;
 
-  angularGrid2: AngularGridInstance;
+  angularGrid2!: AngularGridInstance;
   gridObj2: any;
-  columnDefinitions1: Column[];
-  columnDefinitions2: Column[];
-  gridOptions1: GridOption;
-  gridOptions2: GridOption;
-  dataset1 = [];
-  dataset2 = [];
+  columnDefinitions1!: Column[];
+  columnDefinitions2!: Column[];
+  gridOptions1!: GridOption;
+  gridOptions2!: GridOption;
+  dataset1: any[] = [];
+  dataset2: any[] = [];
 
   ngOnInit(): void {
     this.prepareGrid1();

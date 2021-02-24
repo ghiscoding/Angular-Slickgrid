@@ -37,14 +37,14 @@ export class GridDraggableGroupingComponent implements OnInit {
       </ul>
     `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  dataset!: any[];
   dataviewObj: any;
   draggableGroupingPlugin: any;
   durationOrderByCount = false;
   gridObj: any;
-  gridOptions: GridOption;
+  gridOptions!: GridOption;
   processing = false;
   selectedGroupingFields: Array<string | GroupingGetterFunction> = ['', '', ''];
 
@@ -288,7 +288,7 @@ export class GridDraggableGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService.exportToExcel({
+    this.angularGrid.excelExportService!.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
     });
@@ -330,7 +330,7 @@ export class GridDraggableGroupingComponent implements OnInit {
     }
   }
 
-  groupByFieldName(fieldName, index) {
+  groupByFieldName(fieldName: string, index: number) {
     this.clearGrouping();
     if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
       // get the field names from Group By select(s) dropdown, but filter out any empty fields
@@ -359,7 +359,7 @@ export class GridDraggableGroupingComponent implements OnInit {
     this.gridObj.setPreHeaderPanelVisibility(true);
   }
 
-  selectTrackByFn(index, item) {
+  selectTrackByFn(index: number, item: any) {
     return index;
   }
 

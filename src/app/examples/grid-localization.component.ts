@@ -58,10 +58,10 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   `;
 
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
   gridObj: any;
@@ -252,7 +252,7 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService.exportToExcel({
+    this.angularGrid.excelExportService!.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
     });

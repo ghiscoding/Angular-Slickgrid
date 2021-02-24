@@ -14,7 +14,7 @@ import {
   unsubscribeAllObservables
 } from './../modules/angular-slickgrid';
 
-function randomBetween(min, max) {
+function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 const DEFAULT_PAGE_SIZE = 25;
@@ -38,10 +38,10 @@ export class GridStateComponent implements OnInit, OnDestroy {
     </ul>
   `;
   private subscriptions: Subscription[] = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {
@@ -212,7 +212,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
-  saveCurrentGridState(grid) {
+  saveCurrentGridState() {
     const gridState: GridState = this.angularGrid.gridStateService.getCurrentGridState();
     console.log('Client sample, last Grid State:: ', gridState);
     localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(gridState);

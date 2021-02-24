@@ -53,11 +53,11 @@ export class GridAngularComponent implements OnInit {
   </ul>
   `;
 
-  private _commandQueue = [];
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  private _commandQueue: any[] = [];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions: Column[] = [];
+  gridOptions!: GridOption;
+  dataset!: any[];
   gridObj: any;
   isAutoEdit = true;
   alertWarning: any;
@@ -270,7 +270,7 @@ export class GridAngularComponent implements OnInit {
     this.dataset = this.mockData(NB_ITEMS);
   }
 
-  mockData(itemCount, startingIndex = 0) {
+  mockData(itemCount: number, startingIndex = 0) {
     // mock a dataset
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
@@ -294,11 +294,11 @@ export class GridAngularComponent implements OnInit {
     return tempDataset;
   }
 
-  onCellChanged(e, args) {
+  onCellChanged(e: Event, args: any) {
     this.updatedObject = args.item;
   }
 
-  onCellClicked(e, args) {
+  onCellClicked(e: Event, args: any) {
     const metadata = this.angularGrid.gridService.getColumnFromEventArguments(args);
     console.log(metadata);
 
@@ -317,7 +317,7 @@ export class GridAngularComponent implements OnInit {
     }
   }
 
-  onCellValidation(e, args) {
+  onCellValidation(e: Event, args: any) {
     alert(args.validationResults.msg);
   }
 
@@ -329,7 +329,7 @@ export class GridAngularComponent implements OnInit {
     return true;
   }
 
-  setAutoEdit(isAutoEdit) {
+  setAutoEdit(isAutoEdit: boolean) {
     this.isAutoEdit = isAutoEdit;
     this.gridObj.setOptions({ autoEdit: isAutoEdit }); // change the grid option dynamically
     return true;

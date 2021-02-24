@@ -45,7 +45,7 @@ export class FilterService {
   protected _columnFilters: ColumnFilters = {};
   protected _grid: any;
   protected _onSearchChange: SlickEvent | null;
-  protected _tmpPreFilteredData: number[];
+  protected _tmpPreFilteredData?: number[];
   protected httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
@@ -107,11 +107,6 @@ export class FilterService {
     }
     this.disposeColumnFilters();
     this._onSearchChange = null;
-    this.addFilterTemplateToHeaderRow = null;
-    this.customLocalFilter = null;
-    this.callbackSearchEvent = null;
-    this.handleBackendOnSearchChange = null;
-    this.handleLocalOnSearchChange = null;
   }
 
   /**
@@ -175,7 +170,7 @@ export class FilterService {
     if (args.column.id === this._firstColumnIdRendered) {
       this._isFilterFirstRender = false;
     }
-    this.addFilterTemplateToHeaderRow(null, args, this._isFilterFirstRender);
+    this.addFilterTemplateToHeaderRow(undefined, args, this._isFilterFirstRender);
     if (this._firstColumnIdRendered === '') {
       this._firstColumnIdRendered = args.column.id;
     }
@@ -512,11 +507,11 @@ export class FilterService {
 
     if (Array.isArray(inputArray)) {
       for (let i = 0; i < inputArray.length; i++) {
-        treeObj[inputArray[i][dataViewIdIdentifier]] = inputArray[i];
+        (treeObj as any)[inputArray[i][dataViewIdIdentifier]] = inputArray[i];
         // as the filtered data is then used again as each subsequent letter
         // we need to delete the .__used property, otherwise the logic below
         // in the while loop (which checks for parents) doesn't work:
-        delete treeObj[inputArray[i][dataViewIdIdentifier]].__used;
+        delete (treeObj as any)[inputArray[i][dataViewIdIdentifier]].__used;
       }
 
       // Step 1. prepare search filter by getting their parsed value(s), for example if it's a date filter then parse it to a Moment object
@@ -564,14 +559,14 @@ export class FilterService {
           const len = filteredChildrenAndParents.length;
           // add child (id):
           filteredChildrenAndParents.splice(len, 0, item[dataViewIdIdentifier]);
-          let parent = treeObj[item[parentPropName]] || false;
+          let parent = (treeObj as any)[item[parentPropName]] || false;
           while (parent) {
             // only add parent (id) if not already added:
             parent.__used || filteredChildrenAndParents.splice(len, 0, parent[dataViewIdIdentifier]);
             // mark each parent as used to not use them again later:
-            treeObj[parent[dataViewIdIdentifier]].__used = true;
+            (treeObj as any)[parent[dataViewIdIdentifier]].__used = true;
             // try to find parent of the current parent, if exists:
-            parent = treeObj[parent[parentPropName]] || false;
+            parent = (treeObj as any)[parent[parentPropName]] || false;
           }
         }
       }
@@ -802,7 +797,7 @@ export class FilterService {
         if (newFilter && uiFilter) {
           const newOperator = newFilter.operator || uiFilter.defaultOperator;
           this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newOperator);
-          uiFilter.setValues(newFilter.searchTerms, newOperator);
+          uiFilter.setValues(newFilter.searchTerms || [], newOperator);
 
           if (triggerOnSearchChangeEvent) {
             this.callbackSearchEvent(null, { columnDef: uiFilter.columnDef, operator: newOperator, searchTerms: newFilter.searchTerms, shouldTriggerQuery: true });
@@ -886,7 +881,7 @@ export class FilterService {
   // -------------------
 
   /** Add all created filters (from their template) to the header row section area */
-  protected addFilterTemplateToHeaderRow(_event: Event, args: { column: Column; grid: any; node: HTMLElement }, isFilterFirstRender = true) {
+  protected addFilterTemplateToHeaderRow(_event: Event | undefined, args: { column: Column; grid: any; node: HTMLElement }, isFilterFirstRender = true) {
     const columnDef = args.column;
     const columnId = columnDef && columnDef.id || '';
 
@@ -1013,7 +1008,7 @@ export class FilterService {
     const columnDefinitions = this._grid.getColumns();
 
     // loop through column definition to hide/show header menu commands
-    columnDefinitions.forEach((col) => {
+    columnDefinitions.forEach((col: Column) => {
       if (col && col.header && col.header.menu) {
         col.header.menu.items.forEach(menuItem => {
           if (menuItem && typeof menuItem !== 'string') {

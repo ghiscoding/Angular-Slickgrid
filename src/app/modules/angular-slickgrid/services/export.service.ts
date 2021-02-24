@@ -26,6 +26,13 @@ const DEFAULT_EXPORT_OPTIONS: ExportOption = {
   useUtf8WithBom: true,
 };
 
+type ExportTextDownloadOption = {
+  filename: string;
+  content: string;
+  format: FileType | string;
+  useUtf8WithBom: boolean;
+};
+
 @Injectable()
 export class ExportService {
   private _delimiter = ',';
@@ -33,12 +40,12 @@ export class ExportService {
   private _lineCarriageReturn = '\n';
   private _dataView: any;
   private _grid: any;
-  private _locales: Locale;
+  private _locales!: Locale;
   private _exportQuoteWrapper = '';
-  private _columnHeaders: KeyTitlePair[];
-  private _groupedColumnHeaders: KeyTitlePair[];
+  private _columnHeaders!: KeyTitlePair[];
+  private _groupedColumnHeaders!: KeyTitlePair[];
   private _hasGroupedItems = false;
-  private _exportOptions: ExportOption;
+  private _exportOptions!: ExportOption;
   onGridBeforeExportToFile = new Subject<boolean>();
   onGridAfterExportToFile = new Subject<{ content?: string; filename: string; format: string; useUtf8WithBom: boolean; }>();
 
@@ -105,8 +112,8 @@ export class ExportService {
           };
 
           // start downloading but add the content property only on the start download not on the event itself
-          this.startDownloadFile({ ...downloadOptions, content: dataOutput }); // add content property
-          this.onGridAfterExportToFile.next(downloadOptions);
+          this.startDownloadFile({ ...downloadOptions, content: dataOutput } as ExportTextDownloadOption); // add content property
+          this.onGridAfterExportToFile.next(downloadOptions as ExportTextDownloadOption);
           resolve(true);
         } catch (error) {
           reject(error);
@@ -121,7 +128,7 @@ export class ExportService {
    * All other browsers will use plain javascript on client side to produce a file download.
    * @param options
    */
-  startDownloadFile(options: { filename: string, content: string, format: FileType | string, useUtf8WithBom: boolean }) {
+  startDownloadFile(options: ExportTextDownloadOption) {
     // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
     if (navigator.appName === 'Microsoft Internet Explorer') {
       throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
@@ -290,14 +297,14 @@ export class ExportService {
    * @param {Array<object>} columns of the grid
    */
   private getColumnHeaders(columns: Column[]): KeyTitlePair[] {
-    const columnHeaders = [];
+    const columnHeaders: any[] = [];
 
     if (columns && Array.isArray(columns)) {
       // Populate the Column Header, pull the name defined
       columns.forEach((columnDef) => {
         let headerTitle = '';
         if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
-          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
+          headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey) || ' ');
         } else {
           headerTitle = columnDef.name || titleCase(columnDef.field);
         }

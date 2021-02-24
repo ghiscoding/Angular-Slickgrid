@@ -27,34 +27,34 @@ declare const $: any;
 
 @Injectable()
 export class AutoCompleteFilter implements Filter {
-  protected _autoCompleteOptions: AutocompleteOption;
+  protected _autoCompleteOptions!: AutocompleteOption;
   protected _clearFilterTriggered = false;
-  protected _collection: any[] | null;
+  protected _collection: any[] | null = [];
   protected _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
-  elementName: string;
+  elementName!: string;
 
   /** The JQuery DOM element */
   $filterElm: any;
 
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
   isFilled = false;
 
   /** The property name for labels in the collection */
-  labelName: string;
+  labelName!: string;
 
   /** The property name for a prefix that can be added to the labels in the collection */
-  labelPrefixName: string;
+  labelPrefixName!: string;
 
   /** The property name for a suffix that can be added to the labels in the collection */
-  labelSuffixName: string;
+  labelSuffixName!: string;
 
   /** The property name for values in the collection */
-  optionLabel: string;
+  optionLabel!: string;
 
   /** The property name for values in the collection */
   valueName = 'label';
@@ -276,11 +276,11 @@ export class AutoCompleteFilter implements Filter {
    * When user use a CollectionAsync we will use the returned collection to render the filter DOM element
    * and reinitialize filter collection with this new collection
    */
-  protected renderDomElementFromCollectionAsync(collection) {
+  protected renderDomElementFromCollectionAsync(collection: any[]) {
     this._collection = collection;
     if (this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty as string);
     }
     if (!Array.isArray(collection)) {
       throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the AutoComplete Filter, the collection is not a valid array.');
@@ -297,7 +297,7 @@ export class AutoCompleteFilter implements Filter {
   protected renderDomElement(collection: any[]) {
     if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
-      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty as string);
     }
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Autocomplete Filter is not a valid array.');

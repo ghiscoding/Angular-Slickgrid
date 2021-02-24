@@ -20,10 +20,10 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     </ul>
   `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   frozenColumnCount = 2;
   frozenRowCount = 3;
   isFrozenBottom = false;
@@ -41,7 +41,6 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // unsubscribe all SlickGrid events
     this.slickEventHandler.unsubscribeAll();
-    this.highlightRow = null;
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
@@ -51,8 +50,8 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     // with frozen (pinned) grid, in order to see the entire row being highlighted when hovering
     // we need to do some extra tricks (that is because frozen grids use 2 separate div containers)
     // the trick is to use row selection to highlight when hovering current row and remove selection once we're not
-    this.slickEventHandler.subscribe(this.gridObj.onMouseEnter, event => this.highlightRow(event, true));
-    this.slickEventHandler.subscribe(this.gridObj.onMouseLeave, event => this.highlightRow(event, false));
+    this.slickEventHandler.subscribe(this.gridObj.onMouseEnter, (event: Event) => this.highlightRow(event, true));
+    this.slickEventHandler.subscribe(this.gridObj.onMouseLeave, (event: Event) => this.highlightRow(event, false));
   }
 
   highlightRow(event: Event, isMouseEnter: boolean) {
@@ -270,7 +269,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     }
   }
 
-  costDurationFormatter(row, cell, value, columnDef, dataContext) {
+  costDurationFormatter(row: number, cell: number, value: any, columnDef: Column, dataContext: any) {
     const costText = this.isNullUndefinedOrEmpty(dataContext.cost) ? 'n/a' : formatNumber(dataContext.cost, 0, 2, false, '$', '', '.', ',');
     let durationText = 'n/a';
     if (!this.isNullUndefinedOrEmpty(dataContext.duration) && dataContext.duration >= 0) {
@@ -283,7 +282,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     return (data === '' || data === null || data === undefined);
   }
 
-  onValidationError(e, args) {
+  onValidationError(e: Event, args: any) {
     alert(args.validationResults.msg);
   }
 

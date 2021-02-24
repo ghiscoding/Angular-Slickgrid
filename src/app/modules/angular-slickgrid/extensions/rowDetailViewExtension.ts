@@ -26,15 +26,15 @@ export interface CreatedView {
 
 @Injectable()
 export class RowDetailViewExtension implements Extension {
-  rowDetailContainer: ViewContainerRef;
+  rowDetailContainer!: ViewContainerRef;
   private _addon: any;
-  private _addonOptions: RowDetailView;
+  private _addonOptions!: RowDetailView | null;
   private _eventHandler: SlickEventHandler;
-  private _preloadComponent: Type<object>;
+  private _preloadComponent: Type<object> | undefined;
   private _views: CreatedView[] = [];
-  private _viewComponent: Type<object>;
+  private _viewComponent!: Type<object>;
   private _subscriptions: Subscription[] = [];
-  private _userProcessFn: (item: any) => Promise<any> | Observable<any> | Subject<any>;
+  private _userProcessFn!: (item: any) => Promise<any> | Observable<any> | Subject<any>;
 
   constructor(
     private angularUtilService: AngularUtilService,
@@ -58,7 +58,7 @@ export class RowDetailViewExtension implements Extension {
     return this.sharedService && this.sharedService.gridOptions || {};
   }
 
-  get rowDetailViewOptions(): RowDetailView {
+  get rowDetailViewOptions(): RowDetailView | undefined {
     return this.gridOptions.rowDetailView;
   }
 
@@ -265,7 +265,7 @@ export class RowDetailViewExtension implements Extension {
   }
 
   /** Render (or re-render) the View Component (Row Detail) */
-  renderViewModel(item: any): CreatedView | null {
+  renderViewModel(item: any): CreatedView | undefined {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
     if (containerElements && containerElements.length > 0) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
@@ -286,7 +286,7 @@ export class RowDetailViewExtension implements Extension {
         return viewObj;
       }
     }
-    return null;
+    return undefined;
   }
 
   // --
@@ -363,8 +363,10 @@ export class RowDetailViewExtension implements Extension {
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item[this.datasetIdPropName]);
       if (foundViewIndex >= 0 && this._views.hasOwnProperty(foundViewIndex)) {
         const compRef = this._views[foundViewIndex].componentRef;
-        this.appRef.detachView(compRef.hostView);
-        compRef.destroy();
+        if (compRef) {
+          this.appRef.detachView(compRef.hostView);
+          compRef.destroy();
+        }
         this._views.splice(foundViewIndex, 1);
       }
     }

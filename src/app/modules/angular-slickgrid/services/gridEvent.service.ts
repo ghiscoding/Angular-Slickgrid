@@ -16,8 +16,6 @@ export class GridEventService {
 
   dispose() {
     this._eventHandler.unsubscribeAll();
-    this.handleOnCellChange = null;
-    this.handleOnCellClick = null;
   }
 
   /* OnCellChange Event */

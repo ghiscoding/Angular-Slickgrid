@@ -28,7 +28,7 @@ declare const Slick: any;
 @Injectable()
 export class ContextMenuExtension implements Extension {
   private _addon: any;
-  private _contextMenuOptions: ContextMenu | null;
+  private _contextMenuOptions!: ContextMenu | null;
   private _eventHandler: SlickEventHandler;
   private _userOriginalContextMenu: ContextMenu | undefined;
 
@@ -109,27 +109,37 @@ export class ContextMenuExtension implements Extension {
         }
         if (this._contextMenuOptions && typeof this._contextMenuOptions.onCommand === 'function') {
           this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
-            this._contextMenuOptions.onCommand(event, args);
+            if (this._contextMenuOptions && this._contextMenuOptions.onCommand) {
+              this._contextMenuOptions.onCommand(event, args);
+            }
           });
         }
         if (this._contextMenuOptions && typeof this._contextMenuOptions.onOptionSelected === 'function') {
           this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
-            this._contextMenuOptions.onOptionSelected(event, args);
+            if (this._contextMenuOptions && this._contextMenuOptions.onOptionSelected) {
+              this._contextMenuOptions.onOptionSelected(event, args);
+            }
           });
         }
         if (this._contextMenuOptions && typeof this._contextMenuOptions.onBeforeMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            this._contextMenuOptions.onBeforeMenuShow(event, args);
+            if (this._contextMenuOptions && this._contextMenuOptions.onBeforeMenuShow) {
+              this._contextMenuOptions.onBeforeMenuShow(event, args);
+            }
           });
         }
         if (this._contextMenuOptions && typeof this._contextMenuOptions.onBeforeMenuClose === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
-            this._contextMenuOptions.onBeforeMenuClose(event, args);
+            if (this._contextMenuOptions && this._contextMenuOptions.onBeforeMenuClose) {
+              this._contextMenuOptions.onBeforeMenuClose(event, args);
+            }
           });
         }
         if (this._contextMenuOptions && typeof this._contextMenuOptions.onAfterMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            this._contextMenuOptions.onAfterMenuShow(event, args);
+            if (this._contextMenuOptions && this._contextMenuOptions.onAfterMenuShow) {
+              this._contextMenuOptions.onAfterMenuShow(event, args);
+            }
           });
         }
       }
@@ -184,7 +194,7 @@ export class ContextMenuExtension implements Extension {
     // show context menu: Copy (cell value)
     if (contextMenu && !contextMenu.hideCopyCellValueCommand) {
       const commandName = 'copy';
-      if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+      if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconCopyCellValueCommand || 'fa fa-clone',
@@ -217,7 +227,7 @@ export class ContextMenuExtension implements Extension {
     // show context menu: Export to file
     if (gridOptions && gridOptions.enableExport && contextMenu && !contextMenu.hideExportCsvCommand) {
       const commandName = 'export-csv';
-      if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+      if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportCsvCommand || 'fa fa-download',
@@ -237,7 +247,7 @@ export class ContextMenuExtension implements Extension {
     // show context menu: Export to Excel
     if (gridOptions && gridOptions.enableExcelExport && contextMenu && !contextMenu.hideExportExcelCommand) {
       const commandName = 'export-excel';
-      if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+      if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportExcelCommand || 'fa fa-file-excel-o text-success',
@@ -254,7 +264,7 @@ export class ContextMenuExtension implements Extension {
     // show context menu: export to text file as tab delimited
     if (gridOptions && gridOptions.enableExport && contextMenu && !contextMenu.hideExportTextDelimitedCommand) {
       const commandName = 'export-text-delimited';
-      if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+      if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportTextDelimitedCommand || 'fa fa-download',
@@ -281,7 +291,7 @@ export class ContextMenuExtension implements Extension {
       // show context menu: Clear Grouping
       if (gridOptions && !gridOptions.enableTreeData && contextMenu && !contextMenu.hideClearAllGrouping) {
         const commandName = 'clear-grouping';
-        if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+        if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
           menuCustomItems.push(
             {
               iconCssClass: contextMenu.iconClearGroupingCommand || 'fa fa-times',
@@ -303,7 +313,7 @@ export class ContextMenuExtension implements Extension {
       // show context menu: Collapse all Groups
       if (gridOptions && contextMenu && !contextMenu.hideCollapseAllGroups) {
         const commandName = 'collapse-all-groups';
-        if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+        if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
           menuCustomItems.push(
             {
               iconCssClass: contextMenu.iconCollapseAllGroupsCommand || 'fa fa-compress',
@@ -334,7 +344,7 @@ export class ContextMenuExtension implements Extension {
       // show context menu: Expand all Groups
       if (gridOptions && contextMenu && !contextMenu.hideExpandAllGroups) {
         const commandName = 'expand-all-groups';
-        if (!originalCustomItems.find((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === commandName)) {
+        if (!originalCustomItems.find(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === commandName)) {
           menuCustomItems.push(
             {
               iconCssClass: contextMenu.iconExpandAllGroupsCommand || 'fa fa-expand',

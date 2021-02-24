@@ -13,7 +13,7 @@
 
       <div class="row col-md-12">
         <button class="btn btn-default btn-sm" data-test="clear-filters-sorting" (click)="clearAllFiltersAndSorts()"
-          title="Clear all Filters & Sorts">
+                title="Clear all Filters & Sorts">
           <i class="fa fa-filter text-danger"></i>
           Clear all Filter & Sorts
         </button>
@@ -60,7 +60,7 @@
 
   <hr />
   <angular-slickgrid gridId="grid6" [gridHeight]="200" [gridWidth]="900" [columnDefinitions]="columnDefinitions"
-    [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-    (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState($event)">
+                     [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
+                     (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState()">
   </angular-slickgrid>
 </div>

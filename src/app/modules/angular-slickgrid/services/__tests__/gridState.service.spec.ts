@@ -301,7 +301,7 @@ describe('GridStateService', () => {
   describe('getCurrentPagination method', () => {
     it('should call "getCurrentPagination" and return null when no BackendService is used', () => {
       const output = service.getCurrentPagination();
-      expect(output).toBeNull();
+      expect(output).toBeUndefined();
     });
 
     it('should call "getCurrentPagination" and return Pagination when using a Local Grid', () => {
@@ -877,18 +877,18 @@ describe('GridStateService', () => {
 
     it(`should call the method with column definitions and expect "onGridStateChanged" to be triggered
       with "newValues" property being the columns and still empty "gridState" property`, () => {
-      const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
-      const currentColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
-      const gridStateMock = { columns: [], filters: [], sorters: [] } as GridState;
-      const stateChangeMock = { change: { newValues: currentColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
-      const onChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
-      const serviceSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+        const currentColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+        const gridStateMock = { columns: [], filters: [], sorters: [] } as GridState;
+        const stateChangeMock = { change: { newValues: currentColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+        const onChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+        const serviceSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
 
-      service.resetColumns(columnsMock);
+        service.resetColumns(columnsMock);
 
-      expect(serviceSpy).toHaveBeenCalled();
-      expect(onChangeSpy).toHaveBeenCalledWith(stateChangeMock);
-    });
+        expect(serviceSpy).toHaveBeenCalled();
+        expect(onChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+      });
   });
 
   describe('resetToOriginalColumns method', () => {

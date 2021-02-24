@@ -2,9 +2,9 @@ import { FilterCondition, FilterConditionOption, SearchTerm } from './../models/
 import { parseBoolean } from '../services/utilities';
 
 /** Execute filter condition check on each cell */
-export const executeBooleanFilterCondition: FilterCondition = (options: FilterConditionOption, parsedSearchValue: boolean | undefined) => {
-  return parseBoolean(options.cellValue) === parseBoolean(parsedSearchValue);
-};
+export const executeBooleanFilterCondition: FilterCondition = ((options: FilterConditionOption, parsedSearchValue?: boolean | string) => {
+  return parseBoolean(options.cellValue) === parseBoolean(parsedSearchValue as string);
+}) as FilterCondition;
 
 /**
  * From our search filter value(s), get the parsed value(s).

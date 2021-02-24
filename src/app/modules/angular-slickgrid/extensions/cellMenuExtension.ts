@@ -23,9 +23,9 @@ declare const Slick: any;
 @Injectable()
 export class CellMenuExtension implements Extension {
   private _addon: any;
-  private _cellMenuOptions: CellMenu | null;
+  private _cellMenuOptions!: CellMenu | null;
   private _eventHandler: SlickEventHandler;
-  private _locales: Locale;
+  private _locales!: Locale;
 
   constructor(
     private readonly extensionUtility: ExtensionUtility,
@@ -92,27 +92,37 @@ export class CellMenuExtension implements Extension {
         }
         if (this._cellMenuOptions && typeof this._cellMenuOptions.onCommand === 'function') {
           this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
-            this._cellMenuOptions.onCommand(event, args);
+            if (this._cellMenuOptions && this._cellMenuOptions.onCommand) {
+              this._cellMenuOptions.onCommand(event, args);
+            }
           });
         }
         if (this._cellMenuOptions && typeof this._cellMenuOptions.onOptionSelected === 'function') {
           this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
-            this._cellMenuOptions.onOptionSelected(event, args);
+            if (this._cellMenuOptions && this._cellMenuOptions.onOptionSelected) {
+              this._cellMenuOptions.onOptionSelected(event, args);
+            }
           });
         }
         if (this._cellMenuOptions && typeof this._cellMenuOptions.onAfterMenuShow === 'function') {
           this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            this._cellMenuOptions.onAfterMenuShow(event, args);
+            if (this._cellMenuOptions && this._cellMenuOptions.onAfterMenuShow) {
+              this._cellMenuOptions.onAfterMenuShow(event, args);
+            }
           });
         }
         if (this._cellMenuOptions && typeof this._cellMenuOptions.onBeforeMenuShow === 'function') {
-          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
-            this._cellMenuOptions.onBeforeMenuShow(event, args);
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
+            if (this._cellMenuOptions && this._cellMenuOptions.onBeforeMenuShow) {
+              this._cellMenuOptions.onBeforeMenuShow(event, args);
+            }
           });
         }
         if (this._cellMenuOptions && typeof this._cellMenuOptions.onBeforeMenuClose === 'function') {
           this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
-            this._cellMenuOptions.onBeforeMenuClose(event, args);
+            if (this._cellMenuOptions && this._cellMenuOptions.onBeforeMenuClose) {
+              this._cellMenuOptions.onBeforeMenuClose(event, args);
+            }
           });
         }
       }

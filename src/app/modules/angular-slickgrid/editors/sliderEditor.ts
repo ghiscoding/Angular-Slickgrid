@@ -11,8 +11,8 @@ const DEFAULT_STEP = 1;
 
 export class SliderEditor implements Editor {
   protected _defaultValue = 0;
-  protected _elementRangeInputId: string;
-  protected _elementRangeOutputId: string;
+  protected _elementRangeInputId!: string;
+  protected _elementRangeOutputId!: string;
   protected _$editorElm: any;
   protected _$input: any;
   $sliderNumber: any;
@@ -54,7 +54,7 @@ export class SliderEditor implements Editor {
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
+  get validator(): EditorValidator | undefined {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 

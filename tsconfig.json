@@ -29,7 +29,8 @@
       "jszip": [
         "node_modules/jszip/dist/jszip.min.js"
       ]
-    }
+    },
+    "strict": true
   },
   "angularCompilerOptions": {
     "preserveWhitespaces": true,

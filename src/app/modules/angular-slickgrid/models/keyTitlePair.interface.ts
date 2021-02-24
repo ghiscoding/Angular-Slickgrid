@@ -1,4 +1,4 @@
 export interface KeyTitlePair {
-  key: string;
+  key: string | number;
   title: string;
 }

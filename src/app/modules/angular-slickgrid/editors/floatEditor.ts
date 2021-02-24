@@ -12,9 +12,9 @@ const defaultDecimalPlaces = 0;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class FloatEditor implements Editor {
-  protected _lastInputEvent: JQuery.Event;
+  protected _lastInputEvent?: JQuery.Event;
   protected _$input: any;
-  originalValue: number | string;
+  originalValue?: number | string;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -47,7 +47,7 @@ export class FloatEditor implements Editor {
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
-  get validator(): EditorValidator {
+  get validator(): EditorValidator | undefined {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 

@@ -21,15 +21,15 @@ export class NativeSelectFilter implements Filter {
   protected _currentValues: any | any[] = [];
   $filterElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor(@Optional() protected readonly translate: TranslateService) { }
 
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter;
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   /** Getter to know what would be the default operator when none is specified */
@@ -126,7 +126,6 @@ export class NativeSelectFilter implements Filter {
       this.$filterElm.off('change').remove();
     }
     this.$filterElm = null;
-    this.callback = null;
   }
 
   /**
@@ -161,8 +160,8 @@ export class NativeSelectFilter implements Filter {
       throw new Error('The "collection" passed to the Native Select Filter is not a valid array.');
     }
     const fieldId = this.columnDef && this.columnDef.id;
-    const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-    const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+    const labelName = (this.columnFilter.customStructure) ? this.columnFilter.customStructure.label : 'label';
+    const valueName = (this.columnFilter.customStructure) ? this.columnFilter.customStructure.value : 'value';
 
     let options = '';
 
@@ -177,7 +176,7 @@ export class NativeSelectFilter implements Filter {
           throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Native Select Filter list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
         }
         const labelKey = option.labelKey || option[labelName];
-        const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && this.translate.currentLang && this.translate.instant) ? this.translate.instant(labelKey || ' ') : labelKey;
+        const textLabel = ((option.labelKey || this.columnFilter.enableTranslateLabel) && this.translate && this.translate.currentLang && this.translate.instant) ? this.translate.instant(labelKey || ' ') : labelKey;
         options += `<option value="${option[valueName]}">${textLabel}</option>`;
       });
     }

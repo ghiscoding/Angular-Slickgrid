@@ -25,19 +25,19 @@ const DEFAULT_STEP = 1;
 
 export class CompoundSliderFilter implements Filter {
   protected _clearFilterTriggered = false;
-  protected _currentValue: number;
+  protected _currentValue: number = 0;
   protected _shouldTriggerQuery = true;
-  protected _elementRangeInputId: string;
-  protected _elementRangeOutputId: string;
-  protected _operator: OperatorType | OperatorString;
+  protected _elementRangeInputId!: string;
+  protected _elementRangeOutputId!: string;
+  protected _operator!: OperatorType | OperatorString;
   protected $containerInputGroupElm: any;
   protected $filterElm: any;
   protected $filterInputElm: any;
   protected $selectOperatorElm: any;
   grid: any;
-  searchTerms: SearchTerm[];
-  columnDef: Column;
-  callback: FilterCallback;
+  searchTerms: SearchTerm[] = [];
+  columnDef!: Column;
+  callback!: FilterCallback;
 
   constructor(protected readonly translate: TranslateService) { }
 
@@ -58,7 +58,7 @@ export class CompoundSliderFilter implements Filter {
 
   /** Getter for the `filter` properties */
   protected get filterProperties(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter;
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -157,8 +157,6 @@ export class CompoundSliderFilter implements Filter {
     this.$filterInputElm = null;
     this.$filterElm = null;
     this.$selectOperatorElm = null;
-    this.callback = null;
-    this.onTriggerEvent = null;
   }
 
   /**
@@ -227,7 +225,7 @@ export class CompoundSliderFilter implements Filter {
       const translationPrefix = getTranslationPrefix(this.gridOptions);
       return this.translate.instant(`${translationPrefix}${translationKey}`);
     }
-    return this.locales && this.locales[localeText] || defaultText;
+    return this.locales && this.locales[localeText as keyof Locale] || defaultText;
   }
 
   /**
@@ -235,7 +233,7 @@ export class CompoundSliderFilter implements Filter {
    */
   protected createDomElement(searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
-    const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+    const minValue = (this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE) as number;
     const startValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();

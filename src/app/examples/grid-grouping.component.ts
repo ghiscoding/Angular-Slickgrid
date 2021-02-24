@@ -31,10 +31,10 @@ export class GridGroupingComponent implements OnInit {
   </ul>
   `;
 
-  angularGrid: AngularGridInstance;
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
+  angularGrid!: AngularGridInstance;
+  columnDefinitions!: Column[];
+  gridOptions!: GridOption;
+  dataset!: any[];
   gridObj: any;
   dataviewObj: any;
   processing = false;
@@ -194,7 +194,7 @@ export class GridGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService.exportToExcel({
+    this.angularGrid.excelExportService!.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
     });
@@ -226,7 +226,7 @@ export class GridGroupingComponent implements OnInit {
     this.gridObj.invalidate(); // invalidate all rows and re-render
   }
 
-  groupByDurationOrderByCount(aggregateCollapsed) {
+  groupByDurationOrderByCount(aggregateCollapsed: boolean) {
     this.angularGrid.filterService.setSortColumnIcons([]);
     this.dataviewObj.setGrouping({
       getter: 'duration',
