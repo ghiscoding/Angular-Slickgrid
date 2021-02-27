@@ -1,4 +1,4 @@
-import { FieldType, FilterConditionOption } from '../../models/index';
+import { FieldType, FilterConditionOption, OperatorType, SearchTerm } from '../../models/index';
 import { executeFilterConditionTest } from '../filterConditionProcesses';
 import { executeNumberFilterCondition, getFilterParsedNumbers } from '../numberFilterCondition';
 
@@ -20,12 +20,12 @@ describe('executeNumberFilterCondition method', () => {
   it('should return True when first searchTerm is undefined provided neither an operator when executing "executeFilterConditionTest" method', () => {
     const searchTerms = [undefined];
     const options = { dataKey: '', cellValue: 0, fieldType: FieldType.number } as FilterConditionOption;
-    const output = executeFilterConditionTest(options, searchTerms);
+    const output = executeFilterConditionTest(options, searchTerms as unknown as SearchTerm[]);
     expect(output).toBe(true);
   });
 
   it('should return False when any cell value is provided without any search terms', () => {
-    const searchTerms = [];
+    const searchTerms: SearchTerm[] = [];
     const options = { dataKey: '', operator: 'EQ', cellValue: 'foo', fieldType: FieldType.number } as FilterConditionOption;
     const output = executeNumberFilterCondition(options, getFilterParsedNumbers(searchTerms));
     expect(output).toBe(false);
@@ -113,6 +113,20 @@ describe('executeNumberFilterCondition method', () => {
     const options = { dataKey: '', operator: 'EQ', cellValue: '3', fieldType: FieldType.number, searchTerms } as FilterConditionOption;
     const output = executeNumberFilterCondition(options, getFilterParsedNumbers(searchTerms));
     expect(output).toBe(true);
+  });
+
+  it('should return True when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeInclusive', () => {
+    const searchTerms = ['1..5'];
+    const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeInclusive, cellValue: '1', fieldType: FieldType.number, searchTerms } as FilterConditionOption;
+    const output = executeNumberFilterCondition(options, getFilterParsedNumbers(searchTerms));
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeExclusive', () => {
+    const searchTerms = ['1..5'];
+    const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeExclusive, cellValue: '1', fieldType: FieldType.number, searchTerms } as FilterConditionOption;
+    const output = executeNumberFilterCondition(options, getFilterParsedNumbers(searchTerms));
+    expect(output).toBe(false);
   });
 
   it('should return False when input value is not in the range of search terms using 2 dots (..) notation', () => {

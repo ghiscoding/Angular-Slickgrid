@@ -12,7 +12,11 @@ export const executeNumberFilterCondition: FilterCondition = ((options: FilterCo
   }
 
   if (searchValue1 !== undefined && searchValue2 !== undefined) {
-    const isInclusive = (options && options.operator) === OperatorType.rangeInclusive;
+    let operator = options && options.operator || options.defaultFilterRangeOperator;
+    if (operator !== OperatorType.rangeInclusive && operator !== OperatorType.rangeExclusive) {
+      operator = options.defaultFilterRangeOperator;
+    }
+    const isInclusive = operator === OperatorType.rangeInclusive;
     const resultCondition1 = testFilterCondition((isInclusive ? '>=' : '>'), cellValue, +searchValue1);
     const resultCondition2 = testFilterCondition((isInclusive ? '<=' : '<'), cellValue, +searchValue2);
     return (resultCondition1 && resultCondition2);
