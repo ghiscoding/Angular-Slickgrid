@@ -1,4 +1,4 @@
-import { FieldType, FilterConditionOption } from '../../models/index';
+import { FieldType, FilterConditionOption, OperatorType, SearchTerm } from '../../models/index';
 import { executeDateFilterCondition, getFilterParsedDates } from '../dateFilterCondition';
 import { executeFilterConditionTest, getParsedSearchTermsByFieldType } from '../filterConditionProcesses';
 
@@ -98,6 +98,20 @@ describe('dateIsoFilterCondition method', () => {
     });
 
     describe('date range', () => {
+      it('should return True when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeInclusive', () => {
+        const searchTerms = ['1993-12-01..1993-12-31'];
+        const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeInclusive, cellValue: '1993-12-01', fieldType: FieldType.dateIso, searchTerms } as FilterConditionOption;
+        const output = executeFilterConditionTest(options, getFilterParsedDates(searchTerms, FieldType.dateIso));
+        expect(output).toBe(true);
+      });
+
+      it('should return False when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeExclusive', () => {
+        const searchTerms = ['1993-12-01..1993-12-31'];
+        const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeExclusive, cellValue: '1993-12-01', fieldType: FieldType.dateIso, searchTerms } as FilterConditionOption;
+        const output = executeFilterConditionTest(options, getFilterParsedDates(searchTerms, FieldType.dateIso));
+        expect(output).toBe(false);
+      });
+
       it('should return True when input value is in the range of search terms', () => {
         const searchTerms = ['1993-12-01..1993-12-31'];
         const options = { dataKey: '', operator: 'EQ', cellValue: '1993-12-25', fieldType: FieldType.dateIso, searchTerms } as FilterConditionOption;
@@ -140,14 +154,14 @@ describe('dateIsoFilterCondition method', () => {
       it('should return False when no cell value is provided, neither search terms', () => {
         const searchTerms = [undefined];
         const options = { dataKey: '', operator: 'EQ', fieldType: FieldType.dateIso, cellValue: '' } as FilterConditionOption;
-        const output = executeDateFilterCondition(options, getParsedSearchTermsByFieldType(searchTerms, FieldType.dateIso) as any[]);
+        const output = executeDateFilterCondition(options, getParsedSearchTermsByFieldType(searchTerms as unknown as SearchTerm[], FieldType.dateIso) as any[]);
         expect(output).toBe(false);
       });
 
       it('should return False when any cell value is provided without any search terms', () => {
         const searchTerms = [undefined];
         const options = { dataKey: '', operator: 'EQ', fieldType: FieldType.dateIso, cellValue: '2000-12-25' } as FilterConditionOption;
-        const output = executeDateFilterCondition(options, getParsedSearchTermsByFieldType(searchTerms, FieldType.dateIso) as any[]);
+        const output = executeDateFilterCondition(options, getParsedSearchTermsByFieldType(searchTerms as unknown as SearchTerm[], FieldType.dateIso) as any[]);
         expect(output).toBe(false);
       });
 

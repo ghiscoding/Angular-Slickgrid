@@ -90,10 +90,9 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
-          const now = new Date();
+          const dateTime = moment().format('YYYY-MM-DD, hh:mm a');
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
-          expect(text).to.eq(`Dernière mise à jour ${dateFormatted} | 1500 de 1500 éléments`);
+          expect(text).to.eq(`Dernière mise à jour ${dateTime} | 1500 de 1500 éléments`);
         });
     });
 
@@ -270,14 +269,14 @@ describe('Example 12: Localization (i18n)', () => {
 
     it('should have some metrics shown in the grid footer', () => {
       const now = new Date();
-      const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
 
       cy.get('#slickGridContainer-grid12')
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
+          const dateTime = moment().format('YYYY-MM-DD, hh:mm a');
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(`Last Update ${dateFormatted} | 447 of 1500 items`);
+          expect(text).to.eq(`Last Update ${dateTime} | 447 of 1500 items`);
         });
     });
 
