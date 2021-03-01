@@ -429,11 +429,6 @@ export class ExtensionService {
       this.recreateExternalAddon(this.gridMenuExtension, ExtensionName.gridMenu);
     }
 
-    // recreate the Header Button when enabled
-    if (this.sharedService.gridOptions.enableHeaderButton) {
-      this.recreateExternalAddon(this.headerButtonExtension, ExtensionName.headerButton);
-    }
-
     // recreate the Header Menu when enabled
     if (this.sharedService.gridOptions.enableHeaderMenu) {
       this.recreateExternalAddon(this.headerMenuExtension, ExtensionName.headerMenu);
