@@ -27,7 +27,11 @@ export function executeDateFilterCondition(options: FilterConditionOption, parse
 
   // having 2 search dates, we assume that it's a date range filtering and we'll compare against both dates
   if (searchDate1 && searchDate2) {
-    const isInclusive = options.operator && options.operator === OperatorType.rangeInclusive;
+    let operator = options && options.operator || options.defaultFilterRangeOperator;
+    if (operator !== OperatorType.rangeInclusive && operator !== OperatorType.rangeExclusive) {
+      operator = options.defaultFilterRangeOperator;
+    }
+    const isInclusive = operator === OperatorType.rangeInclusive;
     const resultCondition1 = testFilterCondition((isInclusive ? '>=' : '>'), dateCellTimestamp, searchDate1.valueOf());
     const resultCondition2 = testFilterCondition((isInclusive ? '<=' : '<'), dateCellTimestamp, searchDate2.valueOf());
     return (resultCondition1 && resultCondition2);

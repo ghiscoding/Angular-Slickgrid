@@ -400,7 +400,8 @@ export class FilterService {
       searchTerms: searchValues || [],
       operator: operator as OperatorString,
       searchInputLastChar: inputLastChar,
-      filterSearchType: columnDef.filterSearchType
+      filterSearchType: columnDef.filterSearchType,
+      defaultFilterRangeOperator: this._gridOptions.defaultFilterRangeOperator,
     } as FilterConditionOption;
   }
 
@@ -489,6 +490,7 @@ export class FilterService {
       operator: operator as OperatorString,
       searchInputLastChar: columnFilter.searchInputLastChar,
       filterSearchType: columnDef.filterSearchType,
+      defaultFilterRangeOperator: this._gridOptions.defaultFilterRangeOperator,
     } as FilterConditionOption;
   }
 

@@ -1,10 +1,14 @@
 import { FieldType } from './fieldType.enum';
 import { OperatorString } from './operatorString';
+import { OperatorType } from './operatorType.enum';
 import { SearchTerm } from './searchTerm.type';
 
 export interface FilterConditionOption {
   /** optional object data key */
   dataKey?: string;
+
+  /** pull the grid option default filter in case the "operator" provided is not a range operator or is simply undefined */
+  defaultFilterRangeOperator: OperatorType | OperatorString;
 
   /** filter operator */
   operator: OperatorString;
