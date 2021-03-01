@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.26.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.26.0...v2.26.1) (2021-03-01)
+
+
+### Bug Fixes
+
+* **build:** enable tsconfig strict mode tsconfig, fixes [#675](https://github.com/ghiscoding/angular-slickgrid/issues/675) ([#702](https://github.com/ghiscoding/angular-slickgrid/issues/702)) ([7219249](https://github.com/ghiscoding/angular-slickgrid/commit/7219249d99f63f839c19ae7d37191945b74d1215))
+* **filters:** make sure Select Editor/Filter collection is filled ([#700](https://github.com/ghiscoding/angular-slickgrid/issues/700)) ([61e6599](https://github.com/ghiscoding/angular-slickgrid/commit/61e65998d0ae1c0a4d957cf923a45f855733aec9))
+* **filters:** use defaultFilterOperator in range when none provided ([#705](https://github.com/ghiscoding/angular-slickgrid/issues/705)) ([a176037](https://github.com/ghiscoding/angular-slickgrid/commit/a17603764dace78e6ed5bffcce5ec0e3b1bf264f))
+* **helpers:** should be able to highlight first row (0) ([#701](https://github.com/ghiscoding/angular-slickgrid/issues/701)) ([269f1e9](https://github.com/ghiscoding/angular-slickgrid/commit/269f1e9f68f89617ab78591baa159e2fc63396c0))
+* **plugins:** do not recreate header button plugin after re-render ([#706](https://github.com/ghiscoding/angular-slickgrid/issues/706)) ([da62a48](https://github.com/ghiscoding/angular-slickgrid/commit/da62a48ce540ccf973f376028c1c47f9296f38b2))
+
 ## [2.26.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.25.1...v2.26.0) (2021-02-16)
 
 
