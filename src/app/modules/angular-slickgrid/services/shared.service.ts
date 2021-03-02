@@ -8,6 +8,7 @@ export class SharedService {
   private _groupItemMetadataProvider: any;
   private _grid: any;
   private _gridOptions!: GridOption;
+  private _hasColumnsReordered = false;
   private _currentPagination: CurrentPagination | undefined;
   private _hideHeaderRowAfterPageLoad = false;
   private _visibleColumns: Column[] = [];
@@ -58,6 +59,15 @@ export class SharedService {
   /** Getter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
   set frozenVisibleColumnId(columnId: string | number | undefined) {
     this._frozenVisibleColumnId = columnId;
+  }
+
+  /** Setter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  get hasColumnsReordered(): boolean {
+    return this._hasColumnsReordered;
+  }
+  /** Getter to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward */
+  set hasColumnsReordered(isColumnReordered: boolean) {
+    this._hasColumnsReordered = isColumnReordered;
   }
 
   /** Getter for SlickGrid Grid object */

@@ -305,7 +305,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     component.gridId = 'grid1';
     component.columnDefinitions = [{ id: 'name', field: 'name' }];
     component.dataset = [];
-    component.gridOptions = { enableExcelExport: false, dataView: null } as GridOption;
+    component.gridOptions = { enableExcelExport: false, dataView: null } as unknown as GridOption;
     component.gridHeight = 600;
     component.gridWidth = 800;
   });
@@ -469,9 +469,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         setTimeout(() => {
           expect(getColSpy).toHaveBeenCalled();
-          expect(component.columnDefinitions[0].editor.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor.model).toEqual(Editors.text);
+          expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
+          expect(component.columnDefinitions[0].internalColumnEditor!.collection).toEqual(mockCollection);
+          expect(component.columnDefinitions[0].internalColumnEditor!.model).toEqual(Editors.text);
           done();
         });
       });
@@ -722,9 +722,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         setTimeout(() => {
-          expect(component.paginationOptions.pageSize).toBe(2);
-          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
-          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
+          expect(component.paginationOptions!.pageSize).toBe(2);
+          expect(component.paginationOptions!.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions!.totalItems).toBe(expectedTotalItems);
           expect(refreshSpy).toHaveBeenCalledWith(mockData);
           done();
         });
@@ -749,9 +749,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         setTimeout(() => {
           expect(getPagingSpy).toHaveBeenCalled();
-          expect(component.paginationOptions.pageSize).toBe(10);
-          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
-          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
+          expect(component.paginationOptions!.pageSize).toBe(10);
+          expect(component.paginationOptions!.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions!.totalItems).toBe(expectedTotalItems);
           expect(refreshSpy).toHaveBeenCalledWith(mockData);
           done();
         });
@@ -781,55 +781,55 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(spy).toHaveBeenCalled();
-        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+        expect(component.gridOptions.backendServiceApi!.internalPostProcess).toEqual(expect.any(Function));
       });
 
       it('should execute the "internalPostProcess" callback method that was created by "createBackendApiInternalPostProcessCallback" with Pagination', () => {
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
+        jest.spyOn(component.gridOptions.backendServiceApi!.service, 'getDatasetName').mockReturnValue('users');
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
+        component.gridOptions.backendServiceApi!.internalPostProcess!({ data: { users: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).toHaveBeenCalled();
-        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+        expect(component.gridOptions.backendServiceApi!.internalPostProcess).toEqual(expect.any(Function));
       });
 
       it('should execute the "internalPostProcess" callback and expect totalItems to be updated in the PaginationService when "refreshGridData" is called on the 2nd time', () => {
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
+        jest.spyOn(component.gridOptions.backendServiceApi!.service, 'getDatasetName').mockReturnValue('users');
         const refreshSpy = jest.spyOn(component, 'refreshGridData');
         const paginationSpy = jest.spyOn(paginationServiceStub, 'totalItems', 'set');
         const mockDataset = [{ firstName: 'John' }, { firstName: 'Jane' }];
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: mockDataset, totalCount: mockDataset.length } } } as GraphqlPaginatedResult);
+        component.gridOptions.backendServiceApi!.internalPostProcess!({ data: { users: { nodes: mockDataset, totalCount: mockDataset.length } } } as GraphqlPaginatedResult);
         component.refreshGridData(mockDataset, 1);
         component.refreshGridData(mockDataset, 1);
 
         expect(refreshSpy).toHaveBeenCalledTimes(3);
         expect(paginationSpy).toHaveBeenCalledWith(2);
-        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+        expect(component.gridOptions.backendServiceApi!.internalPostProcess).toEqual(expect.any(Function));
       });
 
       it('should execute the "internalPostProcess" callback method that was created by "createBackendApiInternalPostProcessCallback" without Pagination (when disabled)', () => {
         component.gridOptions.enablePagination = false;
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
+        jest.spyOn(component.gridOptions.backendServiceApi!.service, 'getDatasetName').mockReturnValue('users');
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: [{ firstName: 'John' }] } });
+        component.gridOptions.backendServiceApi!.internalPostProcess!({ data: { users: [{ firstName: 'John' }] } });
 
         expect(spy).toHaveBeenCalled();
-        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+        expect(component.gridOptions.backendServiceApi!.internalPostProcess).toEqual(expect.any(Function));
       });
 
       xit('should execute the "internalPostProcess" callback method but return an empty dataset when dataset name does not match "getDatasetName"', () => {
         component.gridOptions.enablePagination = true;
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
+        jest.spyOn(component.gridOptions.backendServiceApi!.service, 'getDatasetName').mockReturnValue('users');
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
+        component.gridOptions.backendServiceApi!.internalPostProcess!({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).not.toHaveBeenCalled();
         expect(component.dataset).toEqual([]);
@@ -902,10 +902,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           metrics: { startTime: now, endTime: now, executionTime: 0, totalItemCount: 0 }
         };
         const promise = new Promise((resolve) => setTimeout(() => resolve(processResult), 1));
-        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(promise);
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi, 'process').mockReturnValue(promise);
+        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
-        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        (component.gridOptions as any).backendServiceApi.service.options = { executeProcessCommandOnInit: true };
         component.ngAfterViewInit();
 
         expect(processSpy).toHaveBeenCalled();
@@ -923,10 +923,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           data: { users: { nodes: [] }, pageInfo: { hasNextPage: true }, totalCount: 0 },
           metrics: { startTime: now, endTime: now, executionTime: 0, totalItemCount: 0 }
         };
-        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(of(processResult));
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi, 'process').mockReturnValue(of(processResult));
+        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
-        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        (component.gridOptions as any).backendServiceApi.service.options = { executeProcessCommandOnInit: true };
         component.ngAfterViewInit();
 
         expect(processSpy).toHaveBeenCalled();
@@ -944,10 +944,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           data: { users: [] },
           metrics: { startTime: now, endTime: now, executionTime: 0, totalItemCount: 0 }
         };
-        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(of(processResult));
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi, 'process').mockReturnValue(of(processResult));
+        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
-        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        (component.gridOptions as any).backendServiceApi.service.options = { executeProcessCommandOnInit: true };
         component.ngAfterViewInit();
 
         expect(processSpy).toHaveBeenCalled();
@@ -962,10 +962,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const mockError = { error: '404' };
         const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
         const promise = new Promise((resolve, reject) => setTimeout(() => reject(mockError), 1));
-        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(promise);
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi, 'process').mockReturnValue(promise);
+        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
-        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        (component.gridOptions as any).backendServiceApi.service.options = { executeProcessCommandOnInit: true };
         component.ngAfterViewInit();
 
         expect(processSpy).toHaveBeenCalled();
@@ -979,10 +979,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should throw an error when the process method on initialization when "executeProcessCommandOnInit" is set as a backend service options from an Observable', (done) => {
         const mockError = { error: '404' };
         const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
-        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(throwError(mockError));
-        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi, 'process').mockReturnValue(throwError(mockError));
+        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
-        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        (component.gridOptions as any).backendServiceApi.service.options = { executeProcessCommandOnInit: true };
         component.ngAfterViewInit();
 
         expect(processSpy).toHaveBeenCalled();
@@ -1492,7 +1492,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         component.gridOptions.enableRowSelection = true;
         component.gridOptions.enablePagination = true;
-        component.gridOptions.backendServiceApi = null;
+        (component.gridOptions as any).backendServiceApi = null;
         component.gridOptions.presets = { rowSelection: { dataContextIds: selectedGridRows } };
         component.dataset = mockData;
         component.ngAfterViewInit();
@@ -1511,7 +1511,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
       it('should change "showPagination" flag when "onPaginationVisibilityChanged" from the Pagination Service is triggered', (done) => {
         component.gridOptions.enablePagination = true;
-        component.gridOptions.backendServiceApi = null;
+        (component.gridOptions as any).backendServiceApi = null;
         component.ngAfterViewInit();
         paginationServiceStub.onPaginationVisibilityChanged.next({ visible: false });
         setTimeout(() => {

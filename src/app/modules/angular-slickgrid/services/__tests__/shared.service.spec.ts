@@ -207,6 +207,16 @@ describe('Shared Service', () => {
     expect(service.frozenVisibleColumnId).toEqual('field1');
   });
 
+  it('should call "hasColumnsReordered" GETTER and expect a boolean value to be returned', () => {
+    const flag = service.hasColumnsReordered;
+    expect(flag).toEqual(false);
+  });
+
+  it('should call "hasColumnsReordered" GETTER and SETTER expect same value to be returned', () => {
+    service.hasColumnsReordered = true;
+    expect(service.hasColumnsReordered).toEqual(true);
+  });
+
   it('should call "visibleColumns" GETTER and return all columns', () => {
     const spy = jest.spyOn(service, 'visibleColumns', 'get').mockReturnValue(mockColumns);
 

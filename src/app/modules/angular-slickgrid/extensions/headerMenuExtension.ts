@@ -348,8 +348,8 @@ export class HeaderMenuExtension implements Extension {
           this.sharedService.frozenVisibleColumnId = args.column.id;
 
           // to freeze columns, we need to take only the visible columns and we also need to use setColumns() when some of them are hidden
-          // to make sure that we only use the visible columns, not doing this would show back some of the hidden columns
-          if (Array.isArray(visibleColumns) && Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length) {
+          // to make sure that we only use the visible columns, not doing this will have the undesired effect of showing back some of the hidden columns
+          if (this.sharedService.hasColumnsReordered || (Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length)) {
             this.sharedService.grid.setColumns(visibleColumns);
           }
           break;
