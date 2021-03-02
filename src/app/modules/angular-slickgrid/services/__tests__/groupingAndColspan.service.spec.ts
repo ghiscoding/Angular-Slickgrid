@@ -48,6 +48,7 @@ const gridStub = {
   invalidate: jest.fn(),
   onColumnsResized: new Slick.Event(),
   onColumnsReordered: new Slick.Event(),
+  onRendered: new Slick.Event(),
   onSetOptions: new Slick.Event(),
   onSort: new Slick.Event(),
   render: jest.fn(),
@@ -143,7 +144,7 @@ describe('GroupingAndColspanService', () => {
   });
 
   it('should not call the "renderPreHeaderRowGroupingTitles" when there are no grid options', () => {
-    gridStub.getOptions = undefined;
+    (gridStub as any).getOptions = undefined;
     const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
     service.init(gridStub, dataViewStub);
     expect(spy).not.toHaveBeenCalled();
@@ -166,7 +167,7 @@ describe('GroupingAndColspanService', () => {
 
     it('should call the "renderPreHeaderRowGroupingTitles" on initial load even when there are no column definitions', () => {
       const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
-      gridStub.getColumns = undefined;
+      (gridStub as any).getColumns = undefined;
 
       service.init(gridStub, dataViewStub);
       jest.runAllTimers(); // fast-forward timer
@@ -181,6 +182,18 @@ describe('GroupingAndColspanService', () => {
 
       service.init(gridStub, dataViewStub);
       gridStub.onSort.notify({ impactedColumns: mockColumns }, new Slick.EventData(), gridStub);
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onRendered"', () => {
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+
+      service.init(gridStub, dataViewStub);
+      gridStub.onRendered.notify({ startRow: 0, endRow: 10, grid: gridStub }, new Slick.EventData(), gridStub);
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);

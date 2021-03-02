@@ -194,8 +194,8 @@ describe('App Component', () => {
     component.gridId = 'grid1';
 
     fixture.detectChanges();
-    const gridPaneElm = document.querySelector<HTMLDivElement>('.gridPane');
-    const gridContainerElm = document.querySelector<HTMLDivElement>('.slickgrid-container');
+    const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+    const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
 
     expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
     expect(gridContainerElm.id).toBe('grid1');
@@ -209,8 +209,8 @@ describe('App Component', () => {
     component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file' } } as GridOption;
     component.dataset = mockFlatDataset;
     fixture.detectChanges();
-    const gridPaneElm = document.querySelector<HTMLDivElement>('.gridPane');
-    const gridContainerElm = document.querySelector<HTMLDivElement>('.slickgrid-container');
+    const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+    const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
 
     expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
     expect(gridContainerElm.id).toBe('grid1');
@@ -227,8 +227,8 @@ describe('App Component', () => {
     component.gridWidth = 800;
 
     fixture.detectChanges();
-    const gridPaneElm = document.querySelector<HTMLDivElement>('.gridPane');
-    const gridContainerElm = document.querySelector<HTMLDivElement>('.slickgrid-container');
+    const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+    const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
 
     expect(component.gridHeightString).toBe('600px');
     expect(component.gridWidthString).toBe('800px');
@@ -237,7 +237,7 @@ describe('App Component', () => {
   });
 
   it('should throw an error when the "enableAutoResize" is disabled and no "grid-height" is provided', () => {
-    component.gridHeight = null;
+    (component as any).gridHeight = null;
     component.gridOptions = { enableAutoResize: false };
 
     expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize"');
@@ -267,5 +267,17 @@ describe('App Component', () => {
       expect(dispatchCustomSpy).toHaveBeenCalledWith('sgOnRowsChanged', expect.any(Object));
       done();
     }, 10);
+  });
+
+  it('should update "visibleColumns" in the Shared Service when "onColumnsReordered" event is triggered', () => {
+    const sharedHasColumnsReorderedSpy = jest.spyOn(SharedService.prototype, 'hasColumnsReordered', 'set');
+    const sharedVisibleColumnsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+    const newVisibleColumns = [{ id: 'lastName', field: 'lastName' }, { id: 'fristName', field: 'fristName' }];
+
+    fixture.detectChanges();
+    component.grid.onColumnsReordered.notify({ impactedColumns: newVisibleColumns });
+
+    expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
+    expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
   });
 });

@@ -659,6 +659,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           }
         }
       });
+
+      // when column are reordered, we need to update the visibleColumn array
+      this._eventHandler.subscribe(grid.onColumnsReordered, (e: any, args: { impactedColumns: Column[]; grid: any; }) => {
+        this.sharedService.hasColumnsReordered = true;
+        this.sharedService.visibleColumns = args.impactedColumns;
+      });
     }
 
     // does the user have a colspan callback?
