@@ -29,7 +29,7 @@ describe('CompoundInputFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: CompoundInputFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: jest.SpyInstance;
   let mockColumn: Column;
   let translate: TranslateService;
 
@@ -62,6 +62,7 @@ describe('CompoundInputFilter', () => {
       LESS_THAN_OR_EQUAL_TO: 'Less than or equal to',
       GREATER_THAN: 'Greater than',
       GREATER_THAN_OR_EQUAL_TO: 'Greater than or equal to',
+      NOT_CONTAINS: 'Not contains',
       NOT_EQUAL_TO: 'Not equal to',
     });
     translate.setTranslation('fr', {
@@ -74,6 +75,7 @@ describe('CompoundInputFilter', () => {
       LESS_THAN_OR_EQUAL_TO: 'Plus petit ou égal à',
       GREATER_THAN: 'Plus grand que',
       GREATER_THAN_OR_EQUAL_TO: 'Plus grand ou égal à',
+      NOT_CONTAINS: 'Ne contient pas',
       NOT_EQUAL_TO: 'Non égal à',
     });
     translate.setDefaultLang('en');
@@ -87,7 +89,7 @@ describe('CompoundInputFilter', () => {
   });
 
   it('should throw an error when trying to call init without any arguments', () => {
-    expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    expect(() => filter.init(null as any)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
   it('should initialize the filter', () => {
@@ -101,10 +103,10 @@ describe('CompoundInputFilter', () => {
 
   it('should have a placeholder when defined in its column definition', () => {
     const testValue = 'test placeholder';
-    mockColumn.filter.placeholder = testValue;
+    mockColumn.filter!.placeholder = testValue;
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     expect(filterInputElm.placeholder).toBe(testValue);
   });
@@ -114,7 +116,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(['abc']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -129,7 +131,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(['abc']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     const event = new (window.window as any).Event('keyup', { bubbles: true, cancelable: true });
@@ -146,7 +148,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(['abc']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     const event = new (window.window as any).Event('keyup', { bubbles: true, cancelable: true });
@@ -165,7 +167,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArgs);
     filter.setValues(['9']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -180,7 +182,7 @@ describe('CompoundInputFilter', () => {
     filter.init(filterArguments);
     filter.setValues(['9'], OperatorType.greaterThanOrEqual);
 
-    const filterOperatorElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
+    const filterOperatorElm = divContainer.querySelector('.search-filter.filter-duration select') as HTMLInputElement;
 
     filterOperatorElm.dispatchEvent(new Event('change'));
 
@@ -194,7 +196,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.setValues(['9']);
-    const filterOperatorElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
+    const filterOperatorElm = divContainer.querySelector('.search-filter.filter-duration select') as HTMLInputElement;
 
     filterOperatorElm.value = '<=';
     filterOperatorElm.dispatchEvent(new Event('change'));
@@ -210,7 +212,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArgs);
     filter.setValues(['   987 ']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -220,14 +222,14 @@ describe('CompoundInputFilter', () => {
 
   it('should call "setValues" with extra spaces at the beginning of the searchTerms and trim value when "enableTrimWhiteSpace" is enabled in the column filter', () => {
     gridOptionMock.enableFilterTrimWhiteSpace = false;
-    mockColumn.filter.enableTrimWhiteSpace = true;
+    mockColumn.filter!.enableTrimWhiteSpace = true;
     mockColumn.type = FieldType.number;
     const filterArgs = { ...filterArguments, operator: '>' } as FilterArguments;
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArgs);
     filter.setValues(['   987 ']);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).Event('input', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -239,7 +241,7 @@ describe('CompoundInputFilter', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.value = 'a';
@@ -252,7 +254,7 @@ describe('CompoundInputFilter', () => {
     filterArguments.searchTerms = ['xyz'];
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
 
     expect(filterInputElm.value).toBe('xyz');
   });
@@ -261,7 +263,7 @@ describe('CompoundInputFilter', () => {
     filterArguments.searchTerms = [''];
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.search-filter.filter-duration.filled');
 
     expect(filterInputElm.value).toBe('');
@@ -273,16 +275,16 @@ describe('CompoundInputFilter', () => {
     filterArguments.searchTerms = ['9'];
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
     const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
 
     expect(filterInputElm.value).toBe('9');
-    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Less than');
-    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Less than or equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Greater than');
-    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Greater than or equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Not equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('<= Less than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('> Greater than');
+    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('>= Greater than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent!)).toBe('<> Not equal to');
   });
 
   it('should create the input filter with operator dropdown options related to strings when column definition type is FieldType.string', () => {
@@ -290,14 +292,16 @@ describe('CompoundInputFilter', () => {
     filterArguments.searchTerms = ['xyz'];
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
     const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
 
     expect(filterInputElm.value).toBe('xyz');
-    expect(removeExtraSpaces(filterOperatorElm[0][0].textContent)).toBe(' Contains');
-    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Equals');
-    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('a* Starts With');
-    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('*z Ends With');
+    expect(removeExtraSpaces(filterOperatorElm[0][0].textContent!)).toBe(' Contains');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('<> Not contains');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('= Equals');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('!= Not equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('a* Starts With');
+    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('*z Ends With');
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
@@ -306,7 +310,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.clear();
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.search-filter.filter-duration.filled');
 
 
@@ -321,7 +325,7 @@ describe('CompoundInputFilter', () => {
 
     filter.init(filterArguments);
     filter.clear(false);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.search-filter.filter-duration.filled');
 
 
@@ -341,16 +345,16 @@ describe('CompoundInputFilter', () => {
       filterArguments.searchTerms = ['9'];
 
       filter.init(filterArguments);
-      const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+      const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
       const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
 
       expect(filterInputElm.value).toBe('9');
-      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Plus petit que');
-      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Plus petit ou égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Plus grand que');
-      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Plus grand ou égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Non égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Plus petit que');
+      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('<= Plus petit ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('> Plus grand que');
+      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('>= Plus grand ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent!)).toBe('<> Non égal à');
     });
 
     it('should have French text translated with operator dropdown options related to strings when column definition type is FieldType.string', () => {
@@ -358,14 +362,16 @@ describe('CompoundInputFilter', () => {
       filterArguments.searchTerms = ['xyz'];
 
       filter.init(filterArguments);
-      const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+      const filterInputElm = divContainer.querySelector('.search-filter.filter-duration input') as HTMLInputElement;
       const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
 
       expect(filterInputElm.value).toBe('xyz');
-      expect(removeExtraSpaces(filterOperatorElm[0][0].textContent)).toBe(' Contient');
-      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Égale');
-      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('a* Commence par');
-      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('*z Se termine par');
+      expect(removeExtraSpaces(filterOperatorElm[0][0].textContent!)).toBe(' Contient');
+      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('<> Ne contient pas');
+      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('= Égale');
+      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('!= Non égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('a* Commence par');
+      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('*z Se termine par');
     });
   });
 });

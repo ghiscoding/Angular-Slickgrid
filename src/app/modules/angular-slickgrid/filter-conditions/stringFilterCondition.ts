@@ -22,6 +22,8 @@ export const executeStringFilterCondition: FilterCondition = ((options: FilterCo
     return cellValue.startsWith(parsedSearchValue);
   } else if (options.operator === '' || options.operator === OperatorType.contains) {
     return (cellValue.indexOf(parsedSearchValue) > -1);
+  } else if (options.operator === '<>' || options.operator === OperatorType.notContains) {
+    return (cellValue.indexOf(parsedSearchValue) === -1);
   }
   return testFilterCondition(options.operator || '==', cellValue, parsedSearchValue);
 }) as FilterCondition;

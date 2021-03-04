@@ -166,7 +166,9 @@ export class CompoundInputFilter implements Filter {
       case FieldType.password:
         optionValues = [
           { operator: '' as OperatorString, description: this.getOutputText('CONTAINS', 'TEXT_CONTAINS', 'Contains') },
+          { operator: '<>' as OperatorString, description: this.getOutputText('NOT_CONTAINS', 'TEXT_NOT_CONTAINS', 'Not Contains') },
           { operator: '=' as OperatorString, description: this.getOutputText('EQUALS', 'TEXT_EQUALS', 'Equals') },
+          { operator: '!=' as OperatorString, description: this.getOutputText('NOT_EQUAL_TO', 'TEXT_NOT_EQUAL_TO', 'Not equal to') },
           { operator: 'a*' as OperatorString, description: this.getOutputText('STARTS_WITH', 'TEXT_STARTS_WITH', 'Starts with') },
           { operator: '*z' as OperatorString, description: this.getOutputText('ENDS_WITH', 'TEXT_ENDS_WITH', 'Ends with') },
         ];

@@ -33,6 +33,7 @@
   "LAST_UPDATE": "Dernière mise à jour",
   "LESS_THAN": "Plus petit que",
   "LESS_THAN_OR_EQUAL_TO": "Plus petit ou égal à",
+  "NOT_CONTAINS": "Ne contient pas",
   "NOT_EQUAL_TO": "Non égal à",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche excluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "OF": "de",

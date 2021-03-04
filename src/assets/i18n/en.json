@@ -33,6 +33,7 @@
   "LAST_UPDATE": "Last Update",
   "LESS_THAN": "Less than",
   "LESS_THAN_OR_EQUAL_TO": "Less than or equal to",
+  "NOT_CONTAINS": "Not contains",
   "NOT_EQUAL_TO": "Not equal to",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Search items not in a collection, must be separated by a comma (a,b)",
   "OF": "of",
