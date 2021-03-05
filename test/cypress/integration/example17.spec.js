@@ -16,7 +16,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
   });
 
-  it('should drag opened Row Detail to another position in the grid', () => {
+  it('should drag opened Row Detail to another position in the grid & expect row to be moved to another row index', () => {
     cy.get('[style="top:35px"] > .slick-cell.cell-reorder').as('moveIconTask1');
     cy.get('[style="top:105px"] > .slick-cell.cell-reorder').as('moveIconTask3');
 
@@ -32,9 +32,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
 
     cy.get('input[type="checkbox"]:checked')
       .should('have.length', 0);
-  });
 
-  it('should expect row to be moved to another row index', () => {
     cy.get('.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');
 
