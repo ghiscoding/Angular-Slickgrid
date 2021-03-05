@@ -1,17 +1,17 @@
-import { FieldType, FilterConditionOption, OperatorType } from '../../models/index';
+import { FieldType, FilterConditionOption, OperatorType, SearchTerm } from '../../models/index';
 import { executeFilterConditionTest } from '../filterConditionProcesses';
 import { executeStringFilterCondition, getFilterParsedText } from '../stringFilterCondition';
 
 describe('executeStringFilterCondition method', () => {
   it('should return True when no cell input value is provided which is equal to the default search term, neither search terms', () => {
-    const searchTerms = [];
+    const searchTerms: SearchTerm[] = [];
     const options = { dataKey: '', operator: 'EQ', cellValue: '', fieldType: FieldType.string } as FilterConditionOption;
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(true);
   });
 
   it('should return True when cell input value is null and is equal to the default search term, neither search terms', () => {
-    const searchTerms = [];
+    const searchTerms: SearchTerm[] = [];
     const options = { dataKey: '', operator: 'EQ', cellValue: null, fieldType: FieldType.string } as FilterConditionOption;
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(true);
@@ -25,7 +25,7 @@ describe('executeStringFilterCondition method', () => {
   });
 
   it('should return False when any cell input value is provided without any search terms', () => {
-    const searchTerms = [];
+    const searchTerms: SearchTerm[] = [];
     const options = { dataKey: '', operator: 'EQ', cellValue: 'foo', fieldType: FieldType.string } as FilterConditionOption;
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(false);
@@ -60,7 +60,7 @@ describe('executeStringFilterCondition method', () => {
   });
 
   it('should return False when the cell value is equal to at least 1 of the searchTerms', () => {
-    const searchTerms = [];
+    const searchTerms: SearchTerm[] = [];
     const options = { dataKey: '', operator: 'EQ', cellValue: 'foo', fieldType: FieldType.string, searchTerms: ['bar', 'foo', 'John'] } as FilterConditionOption;
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(false);
@@ -90,6 +90,20 @@ describe('executeStringFilterCondition method', () => {
   it('should return True when search term is a substring of the cell value and the operator is Contains', () => {
     const searchTerms = ['bost'];
     const options = { dataKey: '', operator: 'Contains', cellValue: 'abbostford', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(true);
+  });
+
+  it('should return False when search term is a substring of the cell value and the operator is "<>" (not contains)', () => {
+    const searchTerms = ['bost'];
+    const options = { dataKey: '', operator: '<>', cellValue: 'abbostford', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(false);
+  });
+
+  it('should return True when search term is a substring of the cell value and the operator is "!=" (not contains) because "!=" compares agains the entire string', () => {
+    const searchTerms = ['bost'];
+    const options = { dataKey: '', operator: '!=', cellValue: 'abbostford', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(true);
   });
