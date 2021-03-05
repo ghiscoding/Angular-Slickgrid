@@ -89,6 +89,9 @@ export interface Locale {
   /** Text "Less than or equal to" shown in Compound Editors/Filters as an Operator */
   TEXT_LESS_THAN_OR_EQUAL_TO: string;
 
+  /** Text "Not contains" shown in Compound Editors/Filters as an Operator */
+  TEXT_NOT_CONTAINS: string;
+
   /** Text "Not equal to" shown in Compound Editors/Filters as an Operator */
   TEXT_NOT_EQUAL_TO: string;
 

@@ -34,6 +34,7 @@ export class Constants {
     TEXT_LAST_UPDATE: 'Last Update',
     TEXT_LESS_THAN: 'Less than',
     TEXT_LESS_THAN_OR_EQUAL_TO: 'Less than or equal to',
+    TEXT_NOT_CONTAINS: 'Not contains',
     TEXT_NOT_EQUAL_TO: 'Not equal to',
     TEXT_PAGE: 'Page',
     TEXT_REFRESH_DATASET: 'Refresh Dataset',
