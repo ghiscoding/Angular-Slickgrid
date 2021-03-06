@@ -38,7 +38,7 @@ export const executeFilterConditionTest: FilterCondition = (options: FilterCondi
     case 'text':
     default:
       // the parsedSearchTerms should be single value (result came from getFilterParsedText() method)
-      return executeStringFilterCondition(options, parsedSearchTerms as SearchTerm);
+      return executeStringFilterCondition(options, (parsedSearchTerms || []) as string[]);
   }
 };
 
@@ -67,7 +67,7 @@ export function getParsedSearchTermsByFieldType(inputSearchTerms: SearchTerm[] |
       parsedSearchValues = getFilterParsedObjectResult(inputSearchTerms);
       break;
     case 'text':
-      parsedSearchValues = getFilterParsedText(inputSearchTerms);
+      parsedSearchValues = getFilterParsedText(inputSearchTerms) as SearchTerm[];
       break;
   }
   return parsedSearchValues;

@@ -128,4 +128,46 @@ describe('executeStringFilterCondition method', () => {
     const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
     expect(output).toBe(true);
   });
+
+  it('should return True when input value is in the range of search terms using 2 dots (..) notation', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', operator: 'EQ', cellValue: 'c', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(true);
+  });
+
+  it('should return True when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeInclusive', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeInclusive, cellValue: 'b', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value is on the inclusive limit range of search terms using 2 dots (..) notation AND no operator provided except a defaultFilterRangeOperator is rangeExclusive', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', defaultFilterRangeOperator: OperatorType.rangeExclusive, cellValue: 'b', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(false);
+  });
+
+  it('should return False when input value is not in the range of search terms using 2 dots (..) notation', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', operator: 'EQ', cellValue: 'g', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value equals the search terms min inclusive value and operator is set to "rangeInclusive" using 2 dots (..) notation', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', operator: 'RangeInclusive', cellValue: 'b', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeExclusive" using 2 dots (..) notation', () => {
+    const searchTerms = ['b..e'];
+    const options = { dataKey: '', operator: 'RangeExclusive', cellValue: 'b', fieldType: FieldType.string, searchTerms } as FilterConditionOption;
+    const output = executeStringFilterCondition(options, getFilterParsedText(searchTerms));
+    expect(output).toBe(false);
+  });
 });
