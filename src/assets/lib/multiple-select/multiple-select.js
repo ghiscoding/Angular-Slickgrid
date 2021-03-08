@@ -441,8 +441,12 @@
         if ($items.length === that.$selectItems.length) {
           that[checked ? 'checkAll' : 'uncheckAll']();
         } else { // when the filter option is true
-          that.$selectGroups.prop('checked', checked);
-          $items.prop('checked', checked);
+          if (that.$selectGroups) {
+            that.$selectGroups.prop('checked', checked);
+          }
+          if ($items) {
+            $items.prop('checked', checked);
+          }
           that.options[checked ? 'onCheckAll' : 'onUncheckAll']();
           that.update();
         }
@@ -452,8 +456,9 @@
           $items = that.$selectItems.filter(':visible'),
           $children = $items.filter(sprintf('[data-group="%s"]', group)),
           checked = $children.length !== $children.filter(':checked').length;
-
-        $children.prop('checked', checked);
+        if ($children) {
+          $children.prop('checked', checked);
+        }
         that.updateSelectAll();
         that.update();
         that.options.onOptgroupClick({
@@ -495,6 +500,7 @@
         return;
       }
       this.options.isOpen = true;
+      this.$parent.addClass('ms-parent-open');
       this.$choice.find('>div').addClass('open');
       this.$drop[this.animateMethod('show')]();
 
@@ -573,6 +579,7 @@
 
     close: function () {
       this.options.isOpen = false;
+      this.$parent.removeClass('ms-parent-open');
       this.$choice.find('>div').removeClass('open');
       this.$drop[this.animateMethod('hide')]();
       if (this.options.container) {
@@ -762,8 +769,10 @@
       }
 
       if (this.options.addTitle) {
-        var selectType = (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) ? 'label' : 'text'
-        $span.prop('title', this.getSelects(selectType));
+        var selectType = (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) ? 'label' : 'text';
+        if ($span) {
+          $span.prop('title', this.getSelects(selectType));
+        }
       }
 
       // set selects to select
@@ -787,10 +796,12 @@
       if (!isInit) {
         $items = $items.filter(':visible');
       }
-      this.$selectAll.prop('checked', $items.length &&
-        $items.length === $items.filter(':checked').length);
-      if (!isInit && this.$selectAll.prop('checked')) {
-        this.options.onCheckAll();
+      if (this.$selectAll) {
+        this.$selectAll.prop('checked', $items.length &&
+          $items.length === $items.filter(':checked').length);
+        if (!isInit && this.$selectAll.prop('checked')) {
+          this.options.onCheckAll();
+        }
       }
     },
 
@@ -832,7 +843,7 @@
         values.push($(this).val());
       });
 
-      if (type === 'text' && this.$selectGroups.length) {
+      if (type === 'text' && this.$selectGroups && this.$selectGroups.length) {
         texts = [];
         this.$selectGroups.each(function () {
           var html = [],
@@ -841,13 +852,13 @@
             $children = that.$drop.find(sprintf('[%s][data-group="%s"]', that.selectItemName, group)),
             $selected = $children.filter(':checked');
 
-          if (!$selected.length) {
+          if (!$selected || !$selected.length) {
             return;
           }
 
           html.push('[');
           html.push(text);
-          if ($children.length > $selected.length) {
+          if (($children && $children.length) > ($selected && $selected.length)) {
             var list = [];
             $selected.each(function () {
               list.push($(this).parent().text());
@@ -857,7 +868,7 @@
           html.push(']');
           texts.push(html.join(''));
         });
-      } else if (type === 'label' && this.$selectGroups.length) {
+      } else if (type === 'label' && this.$selectGroups && this.$selectGroups.length) {
         labels = [];
         this.$selectGroups.each(function () {
           var html = [],
@@ -866,13 +877,13 @@
             $children = that.$drop.find(sprintf('[%s][data-group="%s"]', that.selectItemName, group)),
             $selected = $children.filter(':checked');
 
-          if (!$selected.length) {
+          if (!$selected || !$selected.length) {
             return;
           }
 
           html.push('[');
           html.push(label);
-          if ($children.length > $selected.length) {
+          if (($children && $children.length) > ($selected && $selected.length)) {
             var list = [];
             $selected.each(function () {
               list.push($(this).attr('label') || '');
@@ -921,22 +932,31 @@
 
     setSelects: function (values) {
       var that = this;
-      this.$selectItems.prop('checked', false);
-      this.$disableItems.prop('checked', false);
-      $.each(values, function (i, value) {
-        that.$selectItems.filter(sprintf('[value="%s"]', value)).prop('checked', true);
-        that.$disableItems.filter(sprintf('[value="%s"]', value)).prop('checked', true);
-      });
-      this.$selectAll.prop('checked', this.$selectItems.length ===
-        this.$selectItems.filter(':checked').length + this.$disableItems.filter(':checked').length);
+      if (this.$selectItems && this.$disableItems) {
+        this.$selectItems.prop('checked', false);
+        this.$disableItems.prop('checked', false);
+        $.each(values, function (i, value) {
+          var selectedItemElm = that.$selectItems.filter(sprintf('[value="%s"]', value));
+          var disabledItemElm = that.$disableItems.filter(sprintf('[value="%s"]', value));
+          if (selectedItemElm) {
+            selectedItemElm.prop('checked', true);
+          }
+          if (disabledItemElm) {
+            disabledItemElm.prop('checked', true);
+          }
+        });
+        if (this.$selectItems && this.$selectAll) {
+          this.$selectAll.prop('checked', this.$selectItems.length ===
+            this.$selectItems.filter(':checked').length + this.$disableItems.filter(':checked').length);
+        }
 
-      $.each(that.$selectGroups, function (i, val) {
-        var group = $(val).parent().attr('data-group'),
-          $children = that.$selectItems.filter('[data-group="' + group + '"]');
-        $(val).prop('checked', $children.length &&
-          $children.length === $children.filter(':checked').length);
-      });
-
+        $.each(that.$selectGroups, function (i, val) {
+          var group = $(val).parent().attr('data-group'),
+            $children = that.$selectItems.filter('[data-group="' + group + '"]');
+          $(val).prop('checked', $children.length &&
+            $children.length === $children.filter(':checked').length);
+        });
+      }
       this.update(false);
     },
 
@@ -962,28 +982,28 @@
     },
 
     checkAll: function () {
-      this.$selectItems.prop('checked', true);
-      this.$selectGroups.prop('checked', true);
-      this.$selectAll.prop('checked', true);
+      this.$selectItems && this.$selectItems.prop('checked', true);
+      this.$selectGroups && this.$selectGroups.prop('checked', true);
+      this.$selectAll && this.$selectAll.prop('checked', true);
       this.update();
       this.options.onCheckAll();
     },
 
     uncheckAll: function () {
-      this.$selectItems.prop('checked', false);
-      this.$selectGroups.prop('checked', false);
-      this.$selectAll.prop('checked', false);
+      this.$selectItems && this.$selectItems.prop('checked', false);
+      this.$selectGroups && this.$selectGroups.prop('checked', false);
+      this.$selectAll && this.$selectAll.prop('checked', false);
       this.update();
       this.options.onUncheckAll();
     },
 
     focus: function () {
-      this.$choice.focus();
+      this.$choice && this.$choice.focus();
       this.options.onFocus();
     },
 
     blur: function () {
-      this.$choice.blur();
+      this.$choice && this.$choice.blur();
       this.options.onBlur();
     },
 
@@ -996,17 +1016,17 @@
         text = $.trim(this.$searchInput.val()).toLowerCase();
 
       if (text.length === 0) {
-        this.$selectAll.parent().show();
-        this.$selectItems.parent().show();
-        this.$disableItems.parent().show();
-        this.$selectGroups.parent().show();
+        this.$selectAll && this.$selectAll.parent().show();
+        this.$selectItems && this.$selectItems.parent().show();
+        this.$disableItems && this.$disableItems.parent().show();
+        this.$selectGroups && this.$selectGroups.parent().show();
         this.$noResults.hide();
       } else {
         this.$selectItems.each(function () {
           var $parent = $(this).parent();
           $parent[removeDiacritics($parent.text().toLowerCase()).indexOf(removeDiacritics(text)) < 0 ? 'hide' : 'show']();
         });
-        this.$disableItems.parent().hide();
+        this.$disableItems && this.$disableItems.parent().hide();
         this.$selectGroups.each(function () {
           var $parent = $(this).parent();
           var group = $parent.attr('data-group'),
@@ -1015,11 +1035,11 @@
         });
 
         //Check if no matches found
-        if (this.$selectItems.parent().filter(':visible').length) {
+        if (this.$selectItems && this.$selectItems.parent().filter(':visible').length) {
           this.$selectAll.parent().show();
           this.$noResults.hide();
         } else {
-          this.$selectAll.parent().hide();
+          this.$selectAll && this.$selectAll.parent().hide();
           this.$noResults.show();
         }
       }
