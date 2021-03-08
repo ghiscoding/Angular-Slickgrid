@@ -126,6 +126,14 @@ describe('Example 27 - GraphQL Basic API without Pagination', () => {
       .contains('250 of 250 items');
   });
 
+  it('should be able to filter "Country of Origin" with a text range filter "b..e" and expect to see only Canada showing up', () => {
+    cy.get('input.search-filter.filter-countryName').type('b..e');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(1)`).should('contain', 'Bosnia and Herzegovina');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(1)`).should('contain', 'Barbados');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).should('contain', 'Bangladesh');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(1)`).should('contain', 'Belgium');
+  });
+
   it('should filter Language Native with "Aymar" and expect only 1 row in the grid', () => {
     cy.get('div.ms-filter.filter-languageNative')
       .trigger('click');
