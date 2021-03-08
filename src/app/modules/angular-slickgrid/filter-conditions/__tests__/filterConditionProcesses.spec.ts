@@ -45,6 +45,6 @@ describe('getParsedSearchTermsByFieldType method', () => {
     const input = 'world';
     const result = getParsedSearchTermsByFieldType([input], FieldType.string);
 
-    expect(result).toBe(input);
+    expect(result).toEqual([input]);
   });
 });
