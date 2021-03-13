@@ -7,6 +7,14 @@
     <b>Metrics:</b> {{metrics.startTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.itemCount}} of
     {{metrics.totalItemCount}} items
   </span>
+  <div class="btn-group" role="group">
+    <button class="btn btn-sm btn-default" data-test="scroll-top-btn" (click)="scrollGridTop()">
+      <i class="fa fa-arrow-up"></i>
+    </button>
+    <button class="btn btn-sm btn-default" data-test="scroll-bottom-btn" (click)="scrollGridBottom()">
+      <i class="fa fa-arrow-down"></i>
+    </button>
+  </div>
   <button class="btn btn-default btn-sm" data-test="clear-filters" (click)="angularGrid.filterService.clearFilters()">
     Clear Filters
   </button>
