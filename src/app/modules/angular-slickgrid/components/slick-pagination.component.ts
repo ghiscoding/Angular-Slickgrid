@@ -131,7 +131,7 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   }
 
   dispose() {
-    this.paginationService.dispose();
+    this.paginationService?.dispose();
 
     // also unsubscribe all Angular Subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -119,7 +119,7 @@ describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // @ts-ignore
     navigator.__defineGetter__('userAgent', () => 'MSIE 8'); // just to skip resizerService calling grid.resizeCanvas()
 

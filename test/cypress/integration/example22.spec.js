@@ -85,7 +85,7 @@ describe('Example 22 - Use of Angular Components', () => {
         cy.wrap($row).children('.slick-cell:nth(0)').should('contain', tasks[index][0]);
         cy.wrap($row).children('.slick-cell:nth(1)').should('contain', tasks[index][1]);
         if (index === 0) {
-          cy.wrap($row).children('.slick-cell:nth(2)').should('contain', '...');
+          cy.wrap($row).children('.slick-cell:nth(2)').should('contain', '');
         } else {
           cy.wrap($row).children('.slick-cell:nth(2)').should('contain', tasks[index][2]);
         }
