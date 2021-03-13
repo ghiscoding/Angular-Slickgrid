@@ -323,7 +323,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (this.backendServiceApi) {
       for (const prop of Object.keys(this.backendServiceApi)) {
-        this.backendServiceApi[prop as keyof BackendServiceApi] = undefined;
+        delete this.backendServiceApi[prop as keyof BackendServiceApi];
       }
       this.backendServiceApi = undefined;
     }
