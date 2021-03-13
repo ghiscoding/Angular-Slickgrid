@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
@@ -27,7 +27,7 @@ import { BsDropDownService } from '../services/bsDropdown.service';
   entryComponents: [AngularSlickgridComponent]
 })
 export class AngularSlickgridModule {
-  static forRoot(config: GridOption = {}) {
+  static forRoot(config: GridOption = {}): ModuleWithProviders<AngularSlickgridModule> {
     return {
       ngModule: AngularSlickgridModule,
       providers: [

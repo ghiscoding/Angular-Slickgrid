@@ -114,7 +114,7 @@ export class OdataQueryBuilderService {
   updateOptions(options: Partial<OdataOption>) {
     for (const property of Object.keys(options)) {
       if (options.hasOwnProperty(property)) {
-        this._odataOptions[property as keyof OdataOption] = options[property as keyof OdataOption]; // replace of the property
+        (this._odataOptions as any)[property as keyof OdataOption] = options[property as keyof OdataOption]; // replace of the property
       }
 
       // we need to keep the defaultSortBy for references whenever the user removes his Sorting

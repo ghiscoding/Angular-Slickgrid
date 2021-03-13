@@ -1,5 +1,7 @@
-import { GridOption } from './../models/index';
+import { Injectable } from "@angular/core";
 import { Subject } from 'rxjs';
+
+import { GridOption } from './../models/index';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -17,6 +19,7 @@ export interface GridDimension {
   heightWithPagination?: number;
 }
 
+@Injectable()
 export class ResizerService {
   private _fixedHeight: number | undefined;
   private _fixedWidth: number | undefined;

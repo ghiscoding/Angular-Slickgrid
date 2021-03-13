@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { mapOperatorType, mapOperatorByFieldType } from './utilities';
 import {
   BackendService,
@@ -31,6 +33,7 @@ import QueryBuilder from './graphqlQueryBuilder';
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
+@Injectable()
 export class GraphqlService implements BackendService {
   private _currentFilters: ColumnFilters | CurrentFilter[] = [];
   private _currentPagination?: CurrentPagination;
