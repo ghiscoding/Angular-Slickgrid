@@ -181,8 +181,7 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .should('contain', '0');
 
       cy.get('[data-test="scroll-bottom-btn"')
-        .click()
-        .wait(75);
+        .click();
 
       cy.get('.slick-row')
         .last()
