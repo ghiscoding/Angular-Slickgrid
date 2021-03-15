@@ -69,7 +69,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true }), TranslateModule],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' }), TranslateModule],
   exports: [RouterModule, TranslateModule],
 })
 export class AppRoutingRoutingModule { }

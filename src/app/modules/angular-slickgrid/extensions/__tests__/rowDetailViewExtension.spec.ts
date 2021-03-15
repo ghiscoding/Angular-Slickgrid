@@ -1,5 +1,5 @@
 import { ApplicationRef, Component } from '@angular/core';
-import { TestBed, ComponentFixture, async } from '@angular/core/testing';
+import { TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { RowDetailViewExtension } from '../rowDetailViewExtension';
@@ -101,9 +101,9 @@ describe('rowDetailViewExtension', () => {
       onRowOutOfViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => { },
       onRowBackToViewportRange: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => { },
     }
-  } as GridOption;
+  } as unknown as GridOption;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TestPreloadComponent],
       providers: [
@@ -122,7 +122,7 @@ describe('rowDetailViewExtension', () => {
   }));
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {
-    const output = extension.create([] as Column[], null);
+    const output = extension.create([] as Column[], null as any);
     expect(output).toBeNull();
   });
 
@@ -405,8 +405,8 @@ describe('rowDetailViewExtension', () => {
       expect(onBeforeRowSpy).not.toHaveBeenCalled();
       expect(onRowOutViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-        });
+        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+      });
       expect(onRowBackViewSpy).not.toHaveBeenCalled();
     });
 
@@ -440,8 +440,8 @@ describe('rowDetailViewExtension', () => {
       expect(onRowOutViewSpy).not.toHaveBeenCalled();
       expect(onRowBackViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-        });
+        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+      });
     });
 
     it('should call Angular Util "createAngularComponentAppendToDom" when grid "onColumnsReordered" is triggered', (done) => {

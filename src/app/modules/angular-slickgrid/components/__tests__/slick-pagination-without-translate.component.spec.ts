@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
@@ -33,7 +33,7 @@ describe('without ngx-translate', () => {
   let component: SlickPaginationComponent;
   let mockServicePagination: ServicePagination;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         SlickPaginationComponent
@@ -90,7 +90,7 @@ describe('without ngx-translate', () => {
 
     setTimeout(() => {
       fixture.detectChanges();
-      const elm = document.querySelector('.slick-pagination');
+      const elm = document.querySelector('.slick-pagination') as HTMLDivElement;
       const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
       const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 

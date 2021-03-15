@@ -1,7 +1,9 @@
+import { Injectable } from "@angular/core";
 import { Subject } from 'rxjs';
 
 import { Column, CurrentPagination, GridOption } from '../models';
 
+@Injectable()
 export class SharedService {
   private _allColumns: Column[] = [];
   private _dataView: any;

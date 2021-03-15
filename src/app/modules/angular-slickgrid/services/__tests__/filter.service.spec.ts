@@ -1,7 +1,7 @@
 // import 3rd party lib multiple-select for the tests
 import '../../../../../assets/lib/multiple-select/multiple-select';
 
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
@@ -103,7 +103,7 @@ describe('FilterService', () => {
   let slickgridEventHandler: SlickEventHandler;
   const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // define a <div> container to simulate a row detail DOM element
     const div = document.createElement('div');
     div.innerHTML = `<div id="${DOM_ELEMENT_ID}">some text</div>`;

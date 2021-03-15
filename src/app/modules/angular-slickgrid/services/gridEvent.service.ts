@@ -1,8 +1,10 @@
+import { Injectable } from "@angular/core";
 import { CellArgs, Column, GridOption, OnEventArgs, SlickEventHandler } from './../models/index';
 
 // using external non-typed js libraries
 declare const Slick: any;
 
+@Injectable()
 export class GridEventService {
   private _eventHandler: SlickEventHandler;
 

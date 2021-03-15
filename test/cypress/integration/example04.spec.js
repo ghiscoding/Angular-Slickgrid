@@ -180,14 +180,8 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .children('.slick-cell:nth(2)')
         .should('contain', '0');
 
-      // cy.get('.slick-row')
-      //   .first()
-      //   .children('.slick-cell:nth(4)')
-      //   .should('not.contain', '');
-
-      cy.get('.slick-viewport-top.slick-viewport-left')
-        .scrollTo('bottom')
-        .wait(50);
+      cy.get('[data-test="scroll-bottom-btn"')
+        .click();
 
       cy.get('.slick-row')
         .last()

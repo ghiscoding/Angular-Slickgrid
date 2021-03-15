@@ -280,4 +280,12 @@ export class GridClientSideComponent implements OnInit {
       });
     }
   }
+
+  scrollGridBottom() {
+    this.angularGrid.slickGrid.navigateBottom();
+  }
+
+  scrollGridTop() {
+    this.angularGrid.slickGrid.navigateTop();
+  }
 }
