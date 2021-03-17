@@ -1,3 +1,5 @@
+import { Column } from './column.interface';
+
 export type JQueryAjaxFn = (request: any, response: any) => void;
 
 export interface AutoCompleteRenderItemDefinition {
@@ -56,9 +58,21 @@ export interface AutocompleteOption {
   /** Triggered when the input value becomes in focus */
   focus?: (e: Event, ui: { item: any; }) => boolean;
 
+  /**
+   * Triggered when a value is selected from the autocomplete list.
+   * This is the same as the "select" callback and was created so that user don't overwrite exclusive usage of the "select" callback.
+   * Also compare to the "select", it has some extra arguments which are: row, cell, column, dataContext
+   */
+  onSelect?: (e: Event, ui: { item: any; }, row: number, cell: number, columnDef: Column, dataContext: any) => boolean;
+
   /** Triggered when user enters a search value */
   search?: (e: Event, ui: { item: any; }) => boolean;
 
-  /** Triggered when a value is selected from the autocomplete list */
+  /**
+   * Triggered when a value is selected from the autocomplete list.
+   * NOTE: this method should NOT be used since Slickgrid-Universal will use it exclusively
+   * and if you do try to use it, what will happen is that it will override and break Slickgrid-Universal internal code.
+   * Please use the "onSelect" which was added specifically to avoid this problem but still provide exact same result
+   */
   select?: (e: Event, ui: { item: any; }) => boolean;
 }
