@@ -624,9 +624,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (dataView && grid) {
       // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
-      this._eventHandler.subscribe(dataView.onRowsOrCountChanged, (_e: Event, args: any) => {
+      this._eventHandler.subscribe(dataView.onRowCountChanged, (_e: Event, args: any) => {
         grid.invalidate();
-        this.handleOnItemCountChanged(args.currentRowCount || 0);
+        this.handleOnItemCountChanged(args.current || 0, this.dataView.getItemCount());
+      });
+      this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e: Event, args: any) => {
+        grid.invalidate();
+        this.handleOnItemCountChanged(this.dataView.getLength(), args.itemCount);
       });
 
       // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
@@ -772,17 +776,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** When data changes in the DataView, we'll refresh the metrics and/or display a warning if the dataset is empty */
-  private handleOnItemCountChanged(itemCount: number) {
+  private handleOnItemCountChanged(currentPageRowItemCount: number, totalItemCount: number) {
     this.metrics = {
       startTime: new Date(),
       endTime: new Date(),
-      itemCount: itemCount,
-      totalItemCount: this.dataView && this.dataView.getItemCount() || 0
+      itemCount: currentPageRowItemCount,
+      totalItemCount
     };
 
     // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
     if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
-      this.displayEmptyDataWarning(itemCount === 0);
+      this.displayEmptyDataWarning(currentPageRowItemCount === 0);
     }
   }
 

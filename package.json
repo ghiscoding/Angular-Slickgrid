@@ -12,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4300 --open",
+    "start": "ng serve --port 4300",
     "postinstall": "ngcc",
     "prebuild": "npm-run-all delete:dist",
     "build": "npm run packagr",
