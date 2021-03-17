@@ -925,7 +925,7 @@ export class FilterService {
         // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
         // we need to also set again the values in the DOM elements if the values were set by a searchTerm(s)
         if (searchTerms && newFilter.setValues) {
-          newFilter.setValues(searchTerms);
+          newFilter.setValues(searchTerms, operator);
         }
       }
     }

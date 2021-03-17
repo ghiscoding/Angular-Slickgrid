@@ -111,10 +111,17 @@ export class InputFilter implements Filter {
     this.$filterElm = null;
   }
 
+  getValue() {
+    return this.$filterElm.val();
+  }
+
   /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
-    if (values) {
-      this.$filterElm.val(values);
+    const searchValues = Array.isArray(values) ? values : [values];
+    let searchValue: SearchTerm = '';
+    for (const value of searchValues) {
+      searchValue = operator ? this.addOptionalOperatorIntoSearchString(value, operator) : value;
+      this.$filterElm.val(searchValue);
     }
 
     // set the operator when defined
@@ -124,6 +131,47 @@ export class InputFilter implements Filter {
   //
   // protected functions
   // ------------------
+
+  /**
+ * When loading the search string from the outside into the input text field, we should also add the prefix/suffix of the operator.
+ * We do this so that if it was loaded by a Grid Presets then we should also add the operator into the search string
+ * Let's take these 3 examples:
+ * 1. (operator: '>=', searchTerms:[55]) should display as ">=55"
+ * 2. (operator: 'StartsWith', searchTerms:['John']) should display as "John*"
+ * 3. (operator: 'EndsWith', searchTerms:['John']) should display as "*John"
+ * @param operator - operator string
+ */
+  protected addOptionalOperatorIntoSearchString(inputValue: SearchTerm, operator: OperatorType | OperatorString): string {
+    let searchTermPrefix = '';
+    let searchTermSuffix = '';
+    let outputValue = inputValue === undefined || inputValue === null ? '' : `${inputValue}`;
+
+    if (operator && outputValue) {
+      switch (operator) {
+        case '<>':
+        case '!=':
+        case '=':
+        case '==':
+        case '>':
+        case '>=':
+        case '<':
+        case '<=':
+          searchTermPrefix = operator;
+          break;
+        case 'EndsWith':
+        case '*z':
+          searchTermPrefix = '*';
+          break;
+        case 'StartsWith':
+        case 'a*':
+          searchTermSuffix = '*';
+          break;
+      }
+      outputValue = `${searchTermPrefix}${outputValue}${searchTermSuffix}`;
+    }
+
+    return outputValue;
+  }
 
   /**
    * Create the HTML template as a string
