@@ -142,6 +142,9 @@ export interface GridOption {
     syncGridSelectionWithBackendService?: boolean;
   };
 
+  /** Defaults to 500, how long to wait between each characters that the user types before processing the filtering process when using a Backend Service? */
+  defaultBackendServiceFilterTypingDebounce?: number;
+
   /** Defaults to 'id', what is the default column field id to sort when calling clear sorting */
   defaultColumnSortFieldId?: string;
 
@@ -300,6 +303,14 @@ export interface GridOption {
 
   /** Some default options to set for the export service */
   exportOptions?: ExportOption;
+
+  /**
+   * Default to 0, how long to wait between each characters that the user types before processing the filtering process (only applies for local/in-memory grid).
+   * Especially useful when you have a big dataset and you want to limit the amount of search called (by default every keystroke will trigger a search on the dataset and that is sometime slow).
+   * This is only used by and relevant to 2 filters (InputFilter & CompoundInputFilter) which are the only ones triggering a search after each character typed.
+   * NOTE: please note that the BackendServiceApi has its own `filterTypingDebounce` within the `BackendServiceApi` options which is set to 500ms.
+   */
+  filterTypingDebounce?: number;
 
   /** Defaults to 25, which is the grid footer row panel height (must be a number) */
   footerRowHeight?: number;

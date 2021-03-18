@@ -22,6 +22,7 @@ declare const $: any;
 
 export class CompoundInputFilter implements Filter {
   protected _clearFilterTriggered = false;
+  protected _debounceTypingDelay = 0;
   protected _shouldTriggerQuery = true;
   protected _inputType = 'text';
   protected $filterElm: any;
@@ -32,6 +33,7 @@ export class CompoundInputFilter implements Filter {
   searchTerms: SearchTerm[] = [];
   columnDef!: Column;
   callback!: FilterCallback;
+  timer?: any;
 
   constructor(protected readonly translate: TranslateService) { }
 
@@ -92,13 +94,19 @@ export class CompoundInputFilter implements Filter {
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
     const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
+    // analyze if we have any keyboard debounce delay (do we wait for user to finish typing before querying)
+    // it is used by default for a backend service but is optional when using local dataset
+    const backendApi = this.gridOptions?.backendServiceApi;
+    this._debounceTypingDelay = (backendApi ? (backendApi?.filterTypingDebounce ?? this.gridOptions?.defaultBackendServiceFilterTypingDebounce) : this.gridOptions?.filterTypingDebounce) ?? 0;
+
     // step 1, create the DOM Element of the filter which contain the compound Operator+Input
     // and initialize it if searchTerms is filled
     this.$filterElm = this.createDomElement(searchTerm);
 
     // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.on('keyup input', this.onTriggerEvent.bind(this));
+    // we'll use all necessary events to cover the following (keyup, change, mousewheel & spinner)
+    this.$filterInputElm.on('keyup blur change wheel', this.onTriggerEvent.bind(this));
     this.$selectOperatorElm.on('change', this.onTriggerEvent.bind(this));
   }
 
@@ -121,7 +129,7 @@ export class CompoundInputFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm && this.$selectOperatorElm) {
-      this.$filterElm.off('keyup input').remove();
+      this.$filterElm.off('keyup blur change wheel').remove();
       this.$selectOperatorElm.off('change');
     }
     this.$filterElm = null;
@@ -250,26 +258,35 @@ export class CompoundInputFilter implements Filter {
     return $filterContainerElm;
   }
 
-  protected onTriggerEvent(e: KeyboardEvent | undefined) {
-    // we'll use the "input" event for everything (keyup, change, mousewheel & spinner)
-    // with 1 small exception, we need to use the keyup event to handle ENTER key, everything will be processed by the "input" event
-    if (e && e.type === 'keyup' && e.key !== 'Enter') {
-      return;
-    }
+  /**
+   * Event trigger, could be called by the Operator dropdown or the input itself and we will cover the following (keyup, change, mousewheel & spinner)
+   * We will trigger the Filter Service callback from this handler
+   */
+  protected onTriggerEvent(event: KeyboardEvent | undefined) {
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this.callback(event, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this.$filterElm.removeClass('filled');
     } else {
+      const eventType = event?.type ?? '';
       const selectedOperator = this.$selectOperatorElm.find('option:selected').val();
-      let value = this.$filterInputElm.val();
+      let value = this.$filterInputElm.val() as string;
       const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
       if (typeof value === 'string' && enableWhiteSpaceTrim) {
         value = value.trim();
       }
 
       (value !== null && value !== undefined && value !== '') ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
+      const callbackArgs = { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery };
+      const typingDelay = (eventType === 'keyup' && event?.key !== 'Enter') ? this._debounceTypingDelay : 0;
+
+      if (typingDelay > 0) {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this.callback(event, callbackArgs), typingDelay);
+      } else {
+        this.callback(event, callbackArgs);
+      }
     }
+
     // reset both flags for next use
     this._clearFilterTriggered = false;
     this._shouldTriggerQuery = true;

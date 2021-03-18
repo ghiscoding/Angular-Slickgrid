@@ -136,6 +136,8 @@ export class GridGroupingComponent implements OnInit {
       },
       enableExcelExport: true,
       enableFiltering: true,
+      // you could debounce/throttle the input text filter if you have lots of data
+      // filterTypingDebounce: 250,
       enableGrouping: true,
       exportOptions: {
         sanitizeDataExport: true

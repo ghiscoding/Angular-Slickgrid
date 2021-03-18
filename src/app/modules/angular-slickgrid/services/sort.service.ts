@@ -299,11 +299,9 @@ export class SortService {
           });
         }
       });
-    }
 
-    if (sortCols.length > 0) {
       this.onLocalSortChanged(this._grid, sortCols);
-      this._grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
+      this._grid.setSortColumns(sortCols.map(col => ({ columnId: col.columnId, sortAsc: col.sortAsc }))); // use this to add sort icon(s) in UI
     }
 
     return sortCols;

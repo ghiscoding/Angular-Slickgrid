@@ -7,6 +7,7 @@ import { of, throwError } from 'rxjs';
 
 import {
   BackendService,
+  BackendServiceApi,
   Column,
   ColumnFilters,
   CurrentFilter,
@@ -473,7 +474,7 @@ describe('FilterService', () => {
         const spyClear = jest.spyOn(service.getFiltersMetadata()[0], 'clear');
         const spyFilterChange = jest.spyOn(service, 'onBackendFilterChange');
         const spyEmitter = jest.spyOn(service, 'emitFilterChanged');
-        const spyProcess = jest.spyOn(gridOptionMock.backendServiceApi, 'process');
+        const spyProcess = jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'process');
 
         const filterCountBefore = Object.keys(service.getColumnFilters()).length;
         service.clearFilters();
@@ -491,7 +492,7 @@ describe('FilterService', () => {
         const spyClear = jest.spyOn(service.getFiltersMetadata()[0], 'clear');
         const spyFilterChange = jest.spyOn(service, 'onBackendFilterChange');
         const spyEmitter = jest.spyOn(service, 'emitFilterChanged');
-        const spyProcess = jest.spyOn(gridOptionMock.backendServiceApi, 'process');
+        const spyProcess = jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'process');
 
         const filterCountBefore = Object.keys(service.getColumnFilters()).length;
         service.clearFilters();
@@ -513,8 +514,8 @@ describe('FilterService', () => {
         gridOptionMock.backendServiceApi.process = () => Promise.reject(errorExpected);
         gridOptionMock.backendServiceApi.onError = (e) => jest.fn();
         const spyOnCleared = jest.spyOn(service.onFilterCleared, 'next');
-        const spyOnError = jest.spyOn(gridOptionMock.backendServiceApi, 'onError');
-        jest.spyOn(gridOptionMock.backendServiceApi, 'process');
+        const spyOnError = jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'onError');
+        jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'process');
 
         service.clearFilters();
 
@@ -531,8 +532,8 @@ describe('FilterService', () => {
         gridOptionMock.backendServiceApi.process = () => of(spyProcess);
         gridOptionMock.backendServiceApi.onError = (e) => jest.fn();
         const spyOnCleared = jest.spyOn(service.onFilterCleared, 'next');
-        const spyOnError = jest.spyOn(gridOptionMock.backendServiceApi, 'onError');
-        jest.spyOn(gridOptionMock.backendServiceApi, 'process').mockReturnValue(throwError(errorExpected));
+        const spyOnError = jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'onError');
+        jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'process').mockReturnValue(throwError(errorExpected));
 
         service.clearFilters();
 
@@ -583,7 +584,7 @@ describe('FilterService', () => {
   });
 
   describe('customLocalFilter method', () => {
-    let mockItem1;
+    let mockItem1: any;
 
     beforeEach(() => {
       jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(0);
@@ -596,7 +597,7 @@ describe('FilterService', () => {
       jest.spyOn(gridStub, 'getColumns').mockReturnValue([]);
 
       service.init(gridStub);
-      const columnFilters = { firstName: { columnDef: mockColumn1, columnId: 'firstName', operator: 'EQ', searchTerms } };
+      const columnFilters = { firstName: { columnDef: mockColumn1, columnId: 'firstName', operator: 'EQ', searchTerms, type: FieldType.string } } as ColumnFilters;
       const output = service.customLocalFilter(mockItem1, { dataView: dataViewStub, grid: gridStub, columnFilters });
 
       expect(columnFilters.firstName['parsedSearchTerms']).toEqual(['John']);
@@ -906,14 +907,14 @@ describe('FilterService', () => {
     });
 
     it('should throw an error when grid argument is undefined', (done) => {
-      service.onBackendFilterChange(undefined, undefined).catch((error) => {
+      service.onBackendFilterChange(undefined as any, undefined).catch((error) => {
         expect(error.message).toContain(`Something went wrong when trying to bind the "onBackendFilterChange(event, args)" function`);
         done();
       });
     });
 
     it('should throw an error when grid argument is an empty object', (done) => {
-      service.onBackendFilterChange(undefined, {}).catch((error) => {
+      service.onBackendFilterChange(undefined as any, {}).catch((error) => {
         expect(error.message).toContain(`Something went wrong when trying to bind the "onBackendFilterChange(event, args)" function`);
         done();
       });
@@ -922,36 +923,19 @@ describe('FilterService', () => {
     it('should throw an error when backendServiceApi is undefined', (done) => {
       gridOptionMock.backendServiceApi = undefined;
 
-      service.onBackendFilterChange(undefined, { grid: gridStub }).catch((error) => {
+      service.onBackendFilterChange(undefined as any, { grid: gridStub }).catch((error) => {
         expect(error.message).toContain(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         done();
       });
     });
 
     it('should execute "preProcess" method when it is defined', () => {
-      const spy = jest.spyOn(gridOptionMock.backendServiceApi, 'preProcess');
+      const spy = jest.spyOn(gridOptionMock.backendServiceApi as BackendServiceApi, 'preProcess');
 
       service.init(gridStub);
-      service.onBackendFilterChange(undefined, { grid: gridStub });
+      service.onBackendFilterChange(undefined as any, { grid: gridStub });
 
       expect(spy).toHaveBeenCalled();
-    });
-
-    it('should execute "processOnFilterChanged" method when "shouldTriggerQuery" is set to True and "debounceTypingDelay" is bigger than 0', (done) => {
-      gridOptionMock.backendServiceApi.filterTypingDebounce = 1;
-      const spy = jest.spyOn(gridOptionMock.backendServiceApi.service, 'processOnFilterChanged').mockReturnValue('backend query');
-
-      service.init(gridStub);
-      const mockEvent = new Event('input');
-      Object.defineProperty(new Event('input'), 'target', { writable: true, configurable: true, value: { value: 'John' } });
-
-      // @ts-ignore
-      service.onBackendFilterChange(mockEvent, { grid: gridStub, shouldTriggerQuery: true });
-
-      setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
-        done();
-      }, 1);
     });
   });
 
@@ -969,7 +953,7 @@ describe('FilterService', () => {
       gridStub.getColumns = undefined;
 
       service.init(gridStub);
-      const output = service.populateColumnFilterSearchTermPresets(undefined);
+      const output = service.populateColumnFilterSearchTermPresets(undefined as any);
 
       expect(output).toEqual([]);
     });

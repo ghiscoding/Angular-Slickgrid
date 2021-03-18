@@ -73,6 +73,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   datasetIdPropertyName: 'id',
   defaultColumnSortFieldId: 'id',
   defaultFilter: Filters.input,
+  defaultBackendServiceFilterTypingDebounce: 500,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
   defaultFilterPlaceholder: '&#128269;',
   defaultFilterRangeOperator: OperatorType.rangeInclusive,
@@ -124,6 +125,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     sanitizeDataExport: false,
     useUtf8WithBom: true
   },
+  filterTypingDebounce: 0,
   forceFitColumns: false,
   frozenHeaderWidthCalcDifferential: 0,
   gridMenu: {
