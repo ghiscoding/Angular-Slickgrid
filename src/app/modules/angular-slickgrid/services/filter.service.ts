@@ -32,10 +32,6 @@ import { SharedService } from './shared.service';
 declare const Slick: any;
 declare const $: any;
 
-// timer for keeping track of user typing waits
-let timer: any;
-const DEFAULT_FILTER_TYPING_DEBOUNCE = 500;
-
 @Injectable()
 export class FilterService {
   protected _eventHandler: SlickEventHandler;
@@ -642,32 +638,11 @@ export class FilterService {
       backendApi.preProcess();
     }
 
-    // only add a delay when user is typing, on select dropdown filter (or "Clear Filter") it will execute right away
-    let debounceTypingDelay = 0;
-    const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
-
-    const eventType = event && event.type;
-    const eventKeyCode = event && event.keyCode;
-    if (!isTriggeredByClearFilter && eventKeyCode !== KeyCode.ENTER && (eventType === 'input' || eventType === 'keyup' || eventType === 'keydown')) {
-      debounceTypingDelay = backendApi.hasOwnProperty('filterTypingDebounce') ? backendApi.filterTypingDebounce as number : DEFAULT_FILTER_TYPING_DEBOUNCE;
-    }
-
     // query backend, except when it's called by a ClearFilters then we won't
-    if (args && args.shouldTriggerQuery) {
-      // call the service to get a query back
-      // @deprecated TODO: remove async/await on next major change, refer to processOnFilterChanged in BackendService interface (with @deprecated)
-      clearTimeout(timer);
-      if (debounceTypingDelay > 0) {
-        timer = setTimeout(async () => {
-          const query = await backendApi.service.processOnFilterChanged(event, args);
-          const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
-          executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this), this.httpCancelRequests$);
-        }, debounceTypingDelay);
-      } else {
-        const query = await backendApi.service.processOnFilterChanged(event, args);
-        const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
-        executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this), this.httpCancelRequests$);
-      }
+    if (args?.shouldTriggerQuery) {
+      const query = await backendApi.service.processOnFilterChanged(event, args);
+      const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems || 0;
+      executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this));
     }
   }
 
@@ -678,7 +653,7 @@ export class FilterService {
    * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
    */
   populateColumnFilterSearchTermPresets(filters: CurrentFilter[]) {
-    if (Array.isArray(filters) && filters.length > 0) {
+    if (Array.isArray(filters)) {
       this._columnDefinitions.forEach((columnDef: Column) => {
         // clear any columnDef searchTerms before applying Presets
         if (columnDef.filter && columnDef.filter.searchTerms) {

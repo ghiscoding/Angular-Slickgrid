@@ -215,6 +215,8 @@ export class GridDraggableGroupingComponent implements OnInit {
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 40,
       enableFiltering: true,
+      // you could debounce/throttle the input text filter if you have lots of data
+      // filterTypingDebounce: 250,
       enableSorting: true,
       exportOptions: {
         sanitizeDataExport: true

@@ -23,7 +23,7 @@ describe('InputPasswordFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: InputPasswordFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: any;
   let mockColumn: Column;
 
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe('InputPasswordFilter', () => {
   });
 
   it('should throw an error when trying to call init without any arguments', () => {
-    expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    expect(() => filter.init(null as any)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
   it('should initialize the filter and expect an input of type password', () => {

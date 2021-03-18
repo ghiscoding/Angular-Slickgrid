@@ -51,7 +51,7 @@ export class InputMaskFilter extends InputFilter {
     // step 3, subscribe to the input change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
 
-    this.$filterElm.on('keyup input', (e: any) => {
+    this.$filterElm.on('keyup blur change', (e: any) => {
       let value = '';
       if (e && e.target && e.target.value) {
         let targetValue = e.target.value;

@@ -769,7 +769,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any) {
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
-      if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
+      if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters)) {
         this.sortService.loadGridSorters(gridOptions.presets.sorters);
       }
     }
@@ -1018,7 +1018,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private loadPresetsWhenDatasetInitialized() {
     if (this.gridOptions && !this.customDataView) {
       // if user entered some Filter "presets", we need to reflect them all in the DOM
-      if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.filters) && this.gridOptions.presets.filters.length > 0) {
+      if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.filters)) {
         this.filterService.populateColumnFilterSearchTermPresets(this.gridOptions.presets.filters);
       }
 
