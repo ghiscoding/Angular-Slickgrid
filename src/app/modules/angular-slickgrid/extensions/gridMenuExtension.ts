@@ -386,7 +386,10 @@ export class GridMenuExtension implements Extension {
         case 'clear-frozen-columns':
           const visibleColumns = [...this.sharedService.visibleColumns];
           this.sharedService.grid.setOptions({ frozenColumn: -1, enableMouseWheelScrollHandler: false });
-          if (Array.isArray(visibleColumns) && Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length) {
+
+          // SlickGrid seems to be somehow resetting the columns to their original positions,
+          // so let's re-fix them to the position we kept as reference
+          if (Array.isArray(visibleColumns)) {
             this.sharedService.grid.setColumns(visibleColumns);
           }
           break;
