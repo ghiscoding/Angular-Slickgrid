@@ -217,5 +217,50 @@ describe('filterUtilities', () => {
       const output = testFilterCondition('NOT_IN_CONTAINS', 'Task2,Task3', 'Task2');
       expect(output).toBeFalsy();
     });
+
+    it('should return True when some of value1 is "IN_COLLECTION" of value2 collection', () => {
+      const output = testFilterCondition('IN_COLLECTION', ['Task2', 'Task3'], ['Task2']);
+      expect(output).toBeTruthy();
+    });
+
+    it('should return True when both of value1 is "IN_COLLECTION" of value2 collection', () => {
+      const output = testFilterCondition('IN_COLLECTION', ['Task2', 'Task3'], ['Task2', 'Task3']);
+      expect(output).toBeTruthy();
+    });
+
+    it('should return False when none of value1 is "IN_COLLECTION" of value2 collection', () => {
+      const output = testFilterCondition('IN_COLLECTION', ['Task11', 'Task4'], ['Task 1', 'Task2', 'Task3']);
+      expect(output).toBeFalsy();
+    });
+
+    it('should return False when is value1 not a collection', () => {
+      const output = testFilterCondition('IN_COLLECTION', 'Task1,Task4', ['Task2']);
+      expect(output).toBeFalsy();
+    });
+
+    it('should return False when value2 is not a collection', () => {
+      const output = testFilterCondition('IN_COLLECTION', ['Task2', 'Task3'], 'Task2');
+      expect(output).toBeFalsy();
+    });
+
+    it('should return True when none of value1 is "NOT_IN_COLLECTION" of value2 collection', () => {
+      const output1 = testFilterCondition('NOT_IN_COLLECTION', ['Task11', 'Task4'], ['Task1', 'Task2', 'Task3']);
+      expect(output1).toBeTruthy();
+    });
+
+    it('should return False when value1 is not "NOT_IN_COLLECTION" value2 collection', () => {
+      const output1 = testFilterCondition('NOT_IN_COLLECTION', ['Task2', 'Task3'], ['Task2', 'Task3']);
+      expect(output1).toBeFalsy();
+    });
+
+    it('should return False when value1 is not a collection', () => {
+      const output = testFilterCondition('NOT_IN_COLLECTION', 'Task2, Task3', ['Task2']);
+      expect(output).toBeFalsy();
+    });
+
+    it('should return False when value2 is not a collection', () => {
+      const output = testFilterCondition('NOT_IN_COLLECTION', ['Task2', 'Task3'], 'Task2');
+      expect(output).toBeFalsy();
+    });
   });
 });
