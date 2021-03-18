@@ -59,4 +59,10 @@ export enum OperatorType {
 
   /** Inversed (Not In) of substring contained inside a collection */
   notInContains = 'NOT_IN_CONTAINS',
+
+  /** Find a value from within a collection inside another collection */
+  inCollection = 'IN_COLLECTION',
+
+  /** Inversed (Not In) of looking for a value from a collection inside another collection */
+  notInCollection = 'NOT_IN_COLLECTION',
 }

@@ -37,6 +37,8 @@ export function isCollectionOperator(operator: OperatorString): boolean {
     case 'IN_CONTAINS':
     case 'NIN_CONTAINS':
     case 'NOT_IN_CONTAINS':
+    case 'IN_COLLECTION':
+    case 'NOT_IN_COLLECTION':
       return true;
     default:
       return false;
@@ -80,6 +82,16 @@ export const testFilterCondition = (operator: OperatorString, value1: any, value
     case 'NOT_IN_CONTAINS':
       if (value2 && Array.isArray(value2) && typeof value1 === 'string') {
         return !value2.some(item => value1.split(/[\s,]+/).includes(item));
+      }
+      return false;
+    case 'IN_COLLECTION':
+      if (value1 && value2 && Array.isArray(value1) && Array.isArray(value2)) {
+        return value2.some(item => value1.includes(item));
+      }
+      return false;
+    case 'NOT_IN_COLLECTION':
+      if (value1 && value2 && Array.isArray(value1) && Array.isArray(value2)) {
+        return !value2.some(item => value1.includes(item));
       }
       return false;
   }
