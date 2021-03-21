@@ -382,7 +382,7 @@ export class SelectFilter implements Filter {
             throw new Error(`[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
           }
           const labelKey = (option.labelKey || option[this.labelName]) as string;
-          const selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
+          const selected = (searchTerms.findIndex((term) => `${term}` === `${option[this.valueName]}`) >= 0) ? 'selected' : '';
           const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey && isEnableTranslate) ? this.translate && this.translate.currentLang && this.translate.instant(labelKey || ' ') : labelKey;
           let prefixText = option[this.labelPrefixName] || '';
           let suffixText = option[this.labelSuffixName] || '';
