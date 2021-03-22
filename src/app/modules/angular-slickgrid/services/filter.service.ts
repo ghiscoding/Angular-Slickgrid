@@ -255,11 +255,13 @@ export class FilterService {
     this.resetColumnFilters();
 
     // also remove any search terms directly on each column definitions
-    this._columnDefinitions.forEach((columnDef: Column) => {
-      if (columnDef.filter?.searchTerms) {
-        columnDef.filter.searchTerms = [];
-      }
-    });
+    if (Array.isArray(this._columnDefinitions)) {
+      this._columnDefinitions.forEach((columnDef: Column) => {
+        if (columnDef.filter?.searchTerms) {
+          delete columnDef.filter.searchTerms;
+        }
+      });
+    }
 
     // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
     if (this._dataView && this._grid) {
