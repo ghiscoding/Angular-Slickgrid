@@ -488,14 +488,6 @@ describe('Example 6 - GraphQL Grid', () => {
         .each(($child, index) => expect($child.text()).to.eq(expectedGroupTitles[index]));
     });
 
-    it('should have French Text inside some of the Filters', () => {
-      cy.get('.search-filter.filter-gender .ms-choice > span')
-        .contains('Masculin');
-
-      cy.get('.flatpickr-input')
-        .should('contain.value', 'au'); // date range will contains (y to z) or in French (y au z)
-    });
-
     it('should display Pagination in French', () => {
       cy.get('.slick-pagination-settings > span')
         .contains('éléments par page');
@@ -577,6 +569,66 @@ describe('Example 6 - GraphQL Grid', () => {
 
       cy.get('.slick-gridmenu [data-dismiss=slick-gridmenu] > span.close')
         .click({ force: true });
+    });
+
+    it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
+      cy.get('[data-test=set-dynamic-filter]')
+        .click();
+
+      cy.get('.search-filter.filter-name select')
+        .should('have.value', 'a*')
+
+      cy.get('.search-filter.filter-name')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq('Jane'));
+
+      cy.get('.search-filter.filter-gender .ms-choice > span')
+        .contains('Féminin');
+
+      cy.get('.search-filter.filter-company .ms-choice > span')
+        .contains('Acme');
+
+      cy.get('.search-filter.filter-billingAddressZip select')
+        .should('have.value', '>=')
+
+      cy.get('.search-filter.filter-billingAddressZip')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq('11'));
+
+      cy.get('.search-filter.filter-finish')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq(`${presetLowestDay} au ${presetHighestDay}`));
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=graphql-query-result]')
+        .should(($span) => {
+          const text = removeSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+            filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
+            {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
+            {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"fr",userId:123)
+            {totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
+        });
+    });
+
+    it('should have French Text inside some of the Filters', () => {
+      cy.get('div.ms-filter.filter-gender')
+        .trigger('click');
+
+      cy.get('.ms-drop')
+        .contains('Masculin') // use regexp to avoid finding first Task 3 which is in fact Task 399
+        .click();
+
+      cy.get('.search-filter.filter-gender .ms-choice > span')
+        .contains('Masculin');
+
+      cy.get('.flatpickr-input')
+        .should('contain.value', 'au'); // date range will contains (y to z) or in French (y au z)
     });
   });
 });
