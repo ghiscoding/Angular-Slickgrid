@@ -469,6 +469,15 @@ describe('FilterService', () => {
     });
 
     describe('clearFilters method', () => {
+      beforeEach(() => {
+        const mockColumns = [
+          { id: 'field1', field: 'field1', width: 100, filter: { searchTerms: ['John'] } },
+          { id: 'field2', field: 'field2', width: 100 }
+        ];
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+        jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(mockColumns);
+      });
+
       it('should clear all the Filters when the query response is a string', () => {
         gridOptionMock.backendServiceApi.service.processOnFilterChanged = () => 'filter query string';
         const spyClear = jest.spyOn(service.getFiltersMetadata()[0], 'clear');
@@ -485,6 +494,7 @@ describe('FilterService', () => {
         expect(service.getColumnFilters()).toEqual({});
         expect(spyFilterChange).not.toHaveBeenCalled();
         expect(spyEmitter).not.toHaveBeenCalled();
+        expect(sharedService.columnDefinitions[0].filter.searchTerms).toBeUndefined();
       });
 
       it('should clear all the Filters when the query response is a Promise (will be deprecated in future)', (done) => {
@@ -1273,7 +1283,7 @@ describe('FilterService', () => {
       const setHeaderSpy = jest.spyOn(gridStub, 'setHeaderRowVisibility');
       const setColsSpy = jest.spyOn(gridStub, 'setColumns');
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(mockColumns)
+      jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(mockColumns);
 
       service.init(gridStub);
       service.disableFilterFunctionality();

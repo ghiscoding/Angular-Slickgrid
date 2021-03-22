@@ -15,7 +15,11 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
     const presetDurationValues = [98, 10];
     const presetUsDateShort = '04/20/25';
 
-    it('should have "Duration" fields within the inclusive range of the preset filters', () => {
+    it('should have "Duration" fields within the inclusive range of the preset filters and be displayed in the Filter itself', () => {
+      cy.get('.ms-filter.search-filter.filter-duration.filled')
+        .find('.ms-choice')
+        .contains('98, 10');
+
       cy.get('#grid4')
         .find('.slick-row')
         .each(($row) => {
@@ -49,6 +53,16 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         });
     });
 
+    it('should have some metrics shown in the grid footer well below 1500 items', () => {
+      cy.get('#slickGridContainer-grid4')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).not.to.eq('1500 of 1500 items');
+        });
+    });
+
     it('should expect the grid to be sorted by "Duration" descending and "% Complete" ascending', () => {
       cy.get('#grid4')
         .get('.slick-header-column:nth(2)')
@@ -69,9 +83,8 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .children('.slick-cell:nth(2)')
         .should('contain', '98');
 
-      // cy.get('.slick-viewport-top.slick-viewport-left')
-      //   .scrollTo('bottom')
-      //   .wait(50);
+      cy.get('[data-test="scroll-bottom-btn"')
+        .click();
 
       cy.get('.slick-row')
         .last()
@@ -156,8 +169,7 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .should($span => {
           const text = removeExtraSpaces($span.text()); // remove all white spaces
           expect(text).to.eq('1500 of 1500 items');
-        })
-      // .contains('1500 of 1500 items')
+        });
     });
 
     it('should expect the grid to be sorted by "Duration" ascending and "Start" descending', () => {
