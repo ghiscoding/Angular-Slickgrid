@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.27.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.26.1...v2.27.0) (2021-03-23)
+
+
+### Features
+
+* **editors:** add `onSelect` callback to Autocomplete Editor ([#718](https://github.com/ghiscoding/angular-slickgrid/issues/718)) ([392304c](https://github.com/ghiscoding/angular-slickgrid/commit/392304c37556e5426d41cc088fa24e57118cd8ed))
+* **filters:** add IN_COLLECTION operator to search cell value as Array ([#722](https://github.com/ghiscoding/angular-slickgrid/issues/722)) ([cd494ce](https://github.com/ghiscoding/angular-slickgrid/commit/cd494ced5be447a3c6f19ab30b84d06f0743a039))
+* **filters:** add optional `filterTypingDebounce` for filters w/keyup ([#720](https://github.com/ghiscoding/angular-slickgrid/issues/720)) ([b4deea9](https://github.com/ghiscoding/angular-slickgrid/commit/b4deea95e67694a3e35f5978635e6cd982d60c37))
+* **filters:** add possibility to filter by text range like "a..e" ([#711](https://github.com/ghiscoding/angular-slickgrid/issues/711)) ([aa4fa03](https://github.com/ghiscoding/angular-slickgrid/commit/aa4fa0313523da8b1754d8d63dabc134f54501e9))
+* **filters:** display operator into input text filter from Grid Presets ([#719](https://github.com/ghiscoding/angular-slickgrid/issues/719)) ([cf6593a](https://github.com/ghiscoding/angular-slickgrid/commit/cf6593aa40fbca900b2ac2c0ac1cde377e3d270d))
+* **state:** add Pinning (frozen) to Grid State & Presets ([b47f2a0](https://github.com/ghiscoding/angular-slickgrid/commit/b47f2a019c2bb20bc38118b974596a9b7f62138f))
+
+
+### Bug Fixes
+
+* **filters:** add more variable checking in multiple-select external lib ([#710](https://github.com/ghiscoding/angular-slickgrid/issues/710)) ([ced4a1e](https://github.com/ghiscoding/angular-slickgrid/commit/ced4a1e186fef682acab590e9b47bd457db51a73))
+* **filters:** SearchTerms shouldn't come back after calling clearFilters ([b986cb9](https://github.com/ghiscoding/angular-slickgrid/commit/b986cb9d81b5ea9f6f93e72d04ca5877531eab67))
+* **filters:** string <> should be Not Contains instead of Not Equal ([#709](https://github.com/ghiscoding/angular-slickgrid/issues/709)) ([e50a060](https://github.com/ghiscoding/angular-slickgrid/commit/e50a060103cd7a48d03e257ffebae37fe311e3d7))
+* **metrics:** use `onRowCountChanged` event to refresh metrics fix [#715](https://github.com/ghiscoding/angular-slickgrid/issues/715) ([#716](https://github.com/ghiscoding/angular-slickgrid/issues/716)) ([f123854](https://github.com/ghiscoding/angular-slickgrid/commit/f1238540bb3ff2d1ac02ad17998ab2852fdcc44b))
+* **pinning:** reordering cols position freezing cols shouldn't affect ([#708](https://github.com/ghiscoding/angular-slickgrid/issues/708)) ([e24c6de](https://github.com/ghiscoding/angular-slickgrid/commit/e24c6de0947644f1561188410f3c39d59318de7e))
+* **plugin:** Grid Menu Clear Frozen Cols shouldn't change cols positions ([#721](https://github.com/ghiscoding/angular-slickgrid/issues/721)) ([ee07d79](https://github.com/ghiscoding/angular-slickgrid/commit/ee07d790fb0ab6141c1f6406b1c3b16f7db0f40f))
+* **presets:** Multiple Select Filter Grid Presets values should be shown ([6f06d1d](https://github.com/ghiscoding/angular-slickgrid/commit/6f06d1d46b2c9bba29ab55ddfd80fd71fbbe44ef))
+
 ### [2.26.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.26.0...v2.26.1) (2021-03-01)
 
 
