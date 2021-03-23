@@ -178,7 +178,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(2)')
+      .children('.slick-header-menuitem:nth-child(4)')
       .children('.slick-header-menucontent')
       .should('contain', 'Sort Descending')
       .click();
@@ -405,7 +405,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(6)')
+      .children('.slick-header-menuitem:nth-child(8)')
       .children('.slick-header-menucontent')
       .should('contain', 'Cacher la colonne')
       .click();
@@ -414,6 +414,23 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .find('.slick-header-columns')
       .children()
       .each(($child, index) => expect($child.find('.slick-column-name').text()).to.eq(expectedTitles[index]));
+  });
+
+  it('should be able to freeze "Description" column', () => {
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(1)')
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .should('be.hidden')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(1)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Geler les colonnes')
+      .click();
   });
 
   it('should reload the page', () => {
@@ -478,5 +495,11 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         console.log($child)
         expect($child.attr('class')).to.contain('selected');
       });
+  });
+
+  it('should have a persisted frozen column after "Description" and a grid with 4 containers on page load with 2 columns on the left and 3 columns on the right', () => {
+    cy.get('[style="top:0px"]').should('have.length', 2);
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 2);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 3);
   });
 });

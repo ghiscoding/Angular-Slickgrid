@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { GridService, ExtensionService, FilterService, GridStateService, SortService, SharedService } from '..';
+import { GridService, FilterService, GridStateService, SortService, SharedService } from '..';
 import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare const Slick: any;
@@ -14,10 +14,6 @@ const mockSelectionModelImplementation = jest.fn().mockImplementation(() => mock
 
 jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModelImplementation);
 Slick.RowSelectionModel = mockSelectionModelImplementation;
-
-const extensionServiceStub = {
-  getAllColumns: jest.fn(),
-} as unknown as ExtensionService;
 
 const filterServiceStub = {
   clearFilters: jest.fn(),
@@ -65,6 +61,7 @@ const gridStub = {
   navigateTop: jest.fn(),
   render: jest.fn(),
   setColumns: jest.fn(),
+  setOptions: jest.fn(),
   setSelectedRows: jest.fn(),
   scrollRowIntoView: jest.fn(),
   updateRow: jest.fn(),
@@ -80,7 +77,6 @@ describe('Grid Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: FilterService, useValue: filterServiceStub },
         { provide: GridStateService, useValue: gridStateServiceStub },
         { provide: SharedService, useValue: sharedService },
@@ -310,7 +306,7 @@ describe('Grid Service', () => {
 
     it('should throw an error when calling "upsertItemById" without a valid "id"', () => {
       const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
-      expect(() => service.upsertItemById(undefined, mockItem)).toThrowError('Calling Upsert of an item requires the item to include a valid and unique "id" property');
+      expect(() => service.upsertItemById(undefined as any, mockItem)).toThrowError('Calling Upsert of an item requires the item to include a valid and unique "id" property');
     });
 
     it('should call the "upsertItemById" method and expect it to call the "addItem" with default boolean flags', () => {
@@ -492,7 +488,7 @@ describe('Grid Service', () => {
 
     it('should throw an error when calling "updateItemById" without a valid "id"', () => {
       const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
-      expect(() => service.updateItemById(undefined, mockItem)).toThrowError('Cannot update a row without a valid "id"');
+      expect(() => service.updateItemById(undefined as any, mockItem)).toThrowError('Cannot update a row without a valid "id"');
     });
 
     it('should throw an error when calling "updateItemById" and not finding the item in the grid', () => {
@@ -755,8 +751,8 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when calling "deleteItemById" without a valid "id" as argument', () => {
-      expect(() => service.deleteItemById(null)).toThrowError('Cannot delete a row without a valid "id"');
-      expect(() => service.deleteItemById(undefined)).toThrowError('Cannot delete a row without a valid "id"');
+      expect(() => service.deleteItemById(null as any)).toThrowError('Cannot delete a row without a valid "id"');
+      expect(() => service.deleteItemById(undefined as any)).toThrowError('Cannot delete a row without a valid "id"');
     });
 
     it('should expect the service to call "deleteItemById" method when calling "deleteItem" with an item', () => {
@@ -950,9 +946,54 @@ describe('Grid Service', () => {
     });
   });
 
+  describe('Pinning methods', () => {
+    const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
+
+    it('should call "clearPinning" and expect SlickGrid "setOptions" and "setColumns" to be called with frozen options being reset', () => {
+      const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+      const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+      jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
+      jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(columnsMock.slice(0, 1));
+
+      service.clearPinning();
+
+      expect(setColumnsSpy).toHaveBeenCalled();
+      expect(setOptionsSpy).toHaveBeenCalledWith({ frozenBottom: false, frozenColumn: -1, frozenRow: -1, enableMouseWheelScrollHandler: false });
+    });
+
+    it('should call "setPinning" and expect SlickGrid "setOptions" be called with new frozen options and "autosizeColumns" also be called', () => {
+      const mockPinning = { frozenBottom: true, frozenColumn: 1, frozenRow: 2 };
+      jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+      const autosizeColumnsSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const gridOptionSetterSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'set');
+
+      service.setPinning(mockPinning);
+
+      expect(setOptionsSpy).toHaveBeenCalledWith(mockPinning);
+      expect(gridOptionSetterSpy).toHaveBeenCalledWith(mockPinning);
+      expect(autosizeColumnsSpy).toHaveBeenCalled();
+    });
+
+    it('should call "setPinning" and expect SlickGrid "setOptions" be called with new frozen options and "autosizeColumns" not being called when passing False as 2nd argument', () => {
+      const mockPinning = { frozenBottom: true, frozenColumn: 1, frozenRow: 2 };
+      jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+      const autosizeColumnsSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const gridOptionSetterSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'set');
+
+      service.setPinning(mockPinning, false);
+
+      expect(setOptionsSpy).toHaveBeenCalledWith(mockPinning);
+      expect(gridOptionSetterSpy).toHaveBeenCalledWith(mockPinning);
+      expect(autosizeColumnsSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getColumnFromEventArguments method', () => {
     it('should throw an error when slickgrid getColumns method is not available', () => {
-      gridStub.getColumns = undefined;
+      gridStub.getColumns = undefined as any;
       expect(() => service.getColumnFromEventArguments({} as CellArgs))
         .toThrowError('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
 
@@ -960,7 +1001,7 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when slickgrid getDataItem method is not available', () => {
-      gridStub.getDataItem = undefined;
+      gridStub.getDataItem = undefined as any;
       expect(() => service.getColumnFromEventArguments({} as CellArgs))
         .toThrowError('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
 
@@ -983,7 +1024,7 @@ describe('Grid Service', () => {
 
   describe('getDataItemByRowNumber method', () => {
     it('should throw an error when slickgrid "getDataItem" method is not available', () => {
-      gridStub.getDataItem = undefined;
+      gridStub.getDataItem = undefined as any;
       expect(() => service.getDataItemByRowNumber(0)).toThrowError(`We could not find SlickGrid Grid object or it's "getDataItem" method`);
       gridStub.getDataItem = jest.fn(); // put it back as a valid mock for later tests
     });
@@ -1068,16 +1109,16 @@ describe('Grid Service', () => {
 
     it(`should return an Item Metadata object with filled "cssClasses" property including a row number in the string
     when the column definition has a "rowClass" property and when callback provided already returns a "cssClasses" property`, () => {
-        const rowNumber = 1;
-        const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+      const rowNumber = 1;
+      const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
 
-        const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
-        const output = callback(rowNumber); // execute callback with a row number
+      const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+      const output = callback(rowNumber); // execute callback with a row number
 
-        expect(dataviewSpy).toHaveBeenCalled();
-        expect(typeof callback === 'function').toBe(true);
-        expect(output).toEqual({ cssClasses: ' red row1' });
-      });
+      expect(dataviewSpy).toHaveBeenCalled();
+      expect(typeof callback === 'function').toBe(true);
+      expect(output).toEqual({ cssClasses: ' red row1' });
+    });
   });
 
   describe('highlightRowByMetadata method', () => {
@@ -1105,7 +1146,7 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when the grid "getDataItem" method is not available', () => {
-      gridStub.getDataItem = undefined;
+      gridStub.getDataItem = undefined as any;
       expect(() => service.getDataItemByRowIndex(0))
         .toThrowError('We could not find SlickGrid Grid object and/or "getDataItem" method');
     });
@@ -1127,7 +1168,7 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when the grid "getDataItem" method is not available', () => {
-      gridStub.getDataItem = undefined;
+      gridStub.getDataItem = undefined as any;
       expect(() => service.getDataItemByRowIndexes([0]))
         .toThrowError('We could not find SlickGrid Grid object and/or "getDataItem" method');
     });
@@ -1149,7 +1190,7 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when the grid "getSelectedRows" method is not available', () => {
-      gridStub.getSelectedRows = undefined;
+      gridStub.getSelectedRows = undefined as any;
       expect(() => service.getSelectedRows())
         .toThrowError('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
     });
@@ -1169,7 +1210,7 @@ describe('Grid Service', () => {
     });
 
     it('should throw an error when the grid "getSelectedRows" method is not available', () => {
-      gridStub.getSelectedRows = undefined;
+      gridStub.getSelectedRows = undefined as any;
       expect(() => service.getSelectedRowsDataItem())
         .toThrowError('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
     });
@@ -1462,32 +1503,34 @@ describe('Grid Service', () => {
     it('should call a reset and expect a few grid methods to be called', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableAutoSizeColumns: true } as GridOption);
-      const extensionSpy = jest.spyOn(extensionServiceStub, 'getAllColumns').mockReturnValue(mockColumns);
+      const allColumnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
       const setColSpy = jest.spyOn(gridStub, 'setColumns');
       const autosizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
       const gridStateSpy = jest.spyOn(gridStateServiceStub, 'resetColumns');
       const filterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
       const sortSpy = jest.spyOn(sortServiceStub, 'clearSorting');
+      const clearPinningSpy = jest.spyOn(service, 'clearPinning');
 
       service.resetGrid();
 
-      expect(extensionSpy).toHaveBeenCalled();
+      expect(allColumnSpy).toHaveBeenCalled();
       expect(setColSpy).toHaveBeenCalled();
       expect(autosizeSpy).toHaveBeenCalled();
       expect(gridStateSpy).toHaveBeenCalled();
       expect(filterSpy).toHaveBeenCalled();
       expect(sortSpy).toHaveBeenCalled();
+      expect(clearPinningSpy).toHaveBeenCalled();
     });
 
     it('should call a reset and expect the grid "resetColumns" method to be called with the column definitions provided to the method', () => {
       const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
       jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableAutoSizeColumns: true } as GridOption);
-      const extensionSpy = jest.spyOn(extensionServiceStub, 'getAllColumns').mockReturnValue(mockColumns);
+      const allColumnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
       const gridStateSpy = jest.spyOn(gridStateServiceStub, 'resetColumns');
 
       service.resetGrid(mockColumns);
 
-      expect(extensionSpy).toHaveBeenCalled();
+      expect(allColumnSpy).toHaveBeenCalled();
       expect(gridStateSpy).toHaveBeenCalledWith(mockColumns);
     });
   });
@@ -1498,7 +1541,7 @@ describe('Grid Service', () => {
     });
 
     it('should be able to highlight first row at zero index', () => {
-      const mockRowMetadata = (rowNumber) => ({ cssClasses: `row-${rowNumber}` });
+      const mockRowMetadata = (rowNumber: number) => ({ cssClasses: `row-${rowNumber}` });
       const mockItem = { id: 0, firstName: 'John', lastName: 'Doe' };
       jest.spyOn(service, 'getItemRowMetadataToHighlight').mockReturnValue(mockRowMetadata);
       jest.spyOn(dataviewStub, 'getItem').mockReturnValue(mockItem);

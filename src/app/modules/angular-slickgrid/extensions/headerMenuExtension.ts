@@ -344,13 +344,21 @@ export class HeaderMenuExtension implements Extension {
         case 'freeze-columns':
           const visibleColumns = [...this.sharedService.visibleColumns];
           const columnPosition = visibleColumns.findIndex((col) => col.id === args.column.id);
-          this.sharedService.grid.setOptions({ frozenColumn: columnPosition, enableMouseWheelScrollHandler: true } as GridOption);
+          const newGridOptions = { frozenColumn: columnPosition, enableMouseWheelScrollHandler: true };
+          this.sharedService.grid.setOptions(newGridOptions);
+          this.sharedService.gridOptions.frozenColumn = newGridOptions.frozenColumn;
+          this.sharedService.gridOptions.enableMouseWheelScrollHandler = newGridOptions.enableMouseWheelScrollHandler;
           this.sharedService.frozenVisibleColumnId = args.column.id;
 
           // to freeze columns, we need to take only the visible columns and we also need to use setColumns() when some of them are hidden
           // to make sure that we only use the visible columns, not doing this will have the undesired effect of showing back some of the hidden columns
           if (this.sharedService.hasColumnsReordered || (Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length)) {
             this.sharedService.grid.setColumns(visibleColumns);
+          }
+
+          // we also need to autosize columns if the option is enabled
+          if (this.sharedService.gridOptions.enableAutoSizeColumns) {
+            this.sharedService.grid.autosizeColumns();
           }
           break;
         case 'sort-asc':

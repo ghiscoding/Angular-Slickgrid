@@ -157,7 +157,11 @@ export class GridStateComponent implements OnInit, OnDestroy {
         hideForceFitButton: true
       },
       gridMenu: {
-        hideForceFitButton: true
+        hideForceFitButton: true,
+        hideClearFrozenColumnsCommand: false,
+      },
+      headerMenu: {
+        hideFreezeColumnsCommand: false,
       },
       enablePagination: true,
       pagination: {

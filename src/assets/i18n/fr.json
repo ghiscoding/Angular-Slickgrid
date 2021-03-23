@@ -4,7 +4,7 @@
   "CLEAR_ALL_FILTERS": "Supprimer tous les filtres",
   "CLEAR_ALL_GROUPING": "Supprimer tous les groupes",
   "CLEAR_ALL_SORTING": "Supprimer tous les tris",
-  "CLEAR_FROZEN_COLUMNS": "Libérer les colonnes gelées",
+  "CLEAR_PINNING": "Dégeler les colonnes/rangées",
   "COLLAPSE_ALL_GROUPS": "Réduire tous les groupes",
   "COLUMNS": "Colonnes",
   "COMMANDS": "Commandes",

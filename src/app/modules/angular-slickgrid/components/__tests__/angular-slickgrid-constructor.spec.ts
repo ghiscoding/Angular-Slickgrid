@@ -21,7 +21,7 @@ import {
   SortService,
   TreeDataService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
+import { Column, CurrentFilter, CurrentPinning, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
@@ -845,6 +845,15 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions.presets = undefined;
 
         expect(backendSpy).toHaveBeenCalledWith(mockColumnFilter, false);
+      });
+
+      it('should override frozen grid options when "pinning" is defined in the "presets" property', () => {
+        const pinningMock = { frozenBottom: false, frozenColumn: -1, frozenRow: -1 } as CurrentPinning;
+
+        component.gridOptions.presets = { pinning: pinningMock };
+        component.ngAfterViewInit();
+
+        expect(component.gridOptions).toEqual({ ...component.gridOptions, ...pinningMock });
       });
 
       it('should call the "updateFilters" method when filters are defined in the "presets" property', () => {

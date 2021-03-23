@@ -4,7 +4,7 @@
   "CLEAR_ALL_FILTERS": "Clear all Filters",
   "CLEAR_ALL_GROUPING": "Clear all Grouping",
   "CLEAR_ALL_SORTING": "Clear all Sorting",
-  "CLEAR_FROZEN_COLUMNS": "Clear Frozen Columns",
+  "CLEAR_PINNING": "Unfreeze Columns/Rows",
   "COLLAPSE_ALL_GROUPS": "Collapse all Groups",
   "COLUMNS": "Columns",
   "COMMANDS": "Commands",

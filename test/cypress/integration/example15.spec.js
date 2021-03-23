@@ -5,7 +5,7 @@ function removeExtraSpaces(textS) {
 }
 
 describe('Example 15 - Column Span & Header Grouping', () => {
-  // NOTE:  everywhere there's a * 2 is because we have a top+bottom (frozen rows) containers even after clear frozen columns
+  // NOTE:  everywhere there's a * 2 is because we have a top+bottom (frozen rows) containers even after Unfreeze Columns/Rows
   const fullPreTitles = ['', 'Common Factor', 'Period', 'Analysis'];
   const fullTitles = ['#', 'Title', 'Duration', 'Start', 'Finish', '% Complete', 'Effort Driven'];
 
@@ -105,12 +105,12 @@ describe('Example 15 - Column Span & Header Grouping', () => {
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
   });
 
-  it('should click on the Grid Menu command "Clear Frozen Columns" to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
+  it('should click on the Grid Menu command "Unfreeze Columns/Rows" to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
     cy.get('#grid2')
       .find('button.slick-gridmenu-button')
       .click({ force: true });
 
-    cy.contains('Clear Frozen Columns')
+    cy.contains('Unfreeze Columns/Rows')
       .click({ force: true });
 
     cy.get('#grid2').find('[style="top:0px"]').should('have.length', 1);
