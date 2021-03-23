@@ -37,7 +37,7 @@ export interface GridMenu {
   /** Defaults to false, which will hide the "Clear all Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
   hideClearAllSortingCommand?: boolean;
 
-  /** Defaults to true, which will hide the "Clear Frozen Columns" command in the Grid Menu */
+  /** Defaults to true, which will hide the "Unfreeze Columns/Rows" command in the Grid Menu */
   hideClearFrozenColumnsCommand?: boolean;
 
   /** Defaults to false, which will hide the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
@@ -73,7 +73,7 @@ export interface GridMenu {
   /** icon for the "Clear all Sorting" command */
   iconClearAllSortingCommand?: string;
 
-  /** icon for the "Clear Frozen Columns" command */
+  /** icon for the "Unfreeze Columns/Rows" command */
   iconClearFrozenColumnsCommand?: string;
 
   /** icon for the "Export to CSV" command */

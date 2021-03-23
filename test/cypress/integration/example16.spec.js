@@ -178,7 +178,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(2)')
+      .children('.slick-header-menuitem:nth-child(4)')
       .children('.slick-header-menucontent')
       .should('contain', 'Sort Descending')
       .click();
@@ -405,7 +405,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(6)')
+      .children('.slick-header-menuitem:nth-child(8)')
       .children('.slick-header-menucontent')
       .should('contain', 'Cacher la colonne')
       .click();

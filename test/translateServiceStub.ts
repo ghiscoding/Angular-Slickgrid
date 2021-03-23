@@ -16,7 +16,7 @@ export class TranslateServiceStub {
       case 'CLEAR_ALL_GROUPING': output = this.currentLang === 'en' ? 'Clear all Grouping' : 'Supprimer tous les groupes'; break;
       case 'CLEAR_ALL_FILTERS': output = this.currentLang === 'en' ? 'Clear all Filters' : 'Supprimer tous les filtres'; break;
       case 'CLEAR_ALL_SORTING': output = this.currentLang === 'en' ? 'Clear all Sorting' : 'Supprimer tous les tris'; break;
-      case 'CLEAR_FROZEN_COLUMNS': output = this.currentLang === 'en' ? 'Clear Frozen Columns' : 'Libérer les colonnes gelées'; break;
+      case 'CLEAR_PINNING': output = this.currentLang === 'en' ? 'Unfreeze Columns/Rows' : 'Dégeler les colonnes/rangées'; break;
       case 'COLUMNS': output = this.currentLang === 'en' ? 'Columns' : 'Colonnes'; break;
       case 'COMMANDS': output = this.currentLang === 'en' ? 'Commands' : 'Commandes'; break;
       case 'COLLAPSE_ALL_GROUPS': output = this.currentLang === 'en' ? 'Collapse all Groups' : 'Réduire tous les groupes'; break;

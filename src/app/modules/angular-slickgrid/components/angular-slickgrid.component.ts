@@ -849,6 +849,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.visibleColumns = this._columnDefinitions;
     this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
+    // if user entered some Pinning/Frozen "presets", we need to apply them in the grid options
+    if (this.gridOptions.presets?.pinning) {
+      this.gridOptions = { ...this.gridOptions, ...this.gridOptions.presets.pinning };
+    }
+
     // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
     this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
 
