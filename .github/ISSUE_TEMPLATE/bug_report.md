@@ -10,10 +10,10 @@ assignees: ''
 <!-- YOU MUST FILL IN THIS ISSUE TEMPLATE OR ELSE IT WILL BE AUTO-CLOSE BY THE BOT -->
 
 <!---
-Thanks for filing a Feature Request! However, before you submit, please read the following:
+Thanks for filing a Bug Report! However, before you submit, please read the following:
 1. Search open/closed issues before submitting a new one.
 2. If your issue is more of question... did you read all Wikis? Or haved you considered asking on Stack Overflow?
-3. Also note that we ask you to fill in ALL sections defined as REQUIRED else it will be automatically closed by our bot.
+3. Also note that we ask you to fill in ALL sections defined as REQUIRED or else it will be automatically closed by our bot.
 -->
 
 ## I'm submitting a Bug report
