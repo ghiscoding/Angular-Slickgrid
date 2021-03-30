@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import { isObservable, Subject } from 'rxjs';
 
 import {

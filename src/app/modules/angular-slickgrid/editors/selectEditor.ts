@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import { Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
