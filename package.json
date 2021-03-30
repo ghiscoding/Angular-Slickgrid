@@ -89,6 +89,7 @@
       "umdModuleIds": {
         "@ngx-translate/core": "ngx-translate-core",
         "@ngx-translate/core/index": "ngx-translate-core",
+        "dequal": "dequal",
         "dompurify": "dompurify",
         "excel-builder-webpacker": "excelBuilderWebpacker",
         "flatpickr": "flatpickr",

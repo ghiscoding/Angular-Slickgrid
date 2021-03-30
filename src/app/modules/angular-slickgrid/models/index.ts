@@ -102,6 +102,7 @@ export * from './headerButtonOnCommandArgs.interface';
 export * from './headerMenu.interface';
 export * from './hideColumnOption.interface';
 export * from './htmlElementPosition.interface';
+export * from './itemMetadata.interface';
 export * from './jQueryUiSliderOption.interface';
 export * from './jQueryUiSliderResponse.interface';
 export * from './keyCode.enum';

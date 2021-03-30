@@ -1,11 +1,12 @@
 import { Grouping } from './grouping.interface';
+import { ItemMetadata } from './itemMetadata.interface';
 import { PagingInfo } from './pagingInfo.interface';
 import { SlickEvent } from './slickEvent.interface';
 import { SlickGrid } from './slickGrid.interface';
 
 export interface SlickDataView {
   // --
-  // Available Methods
+  // Slick DataView Available Methods
 
   /** Add an item to the DataView */
   addItem(item: any): void;
@@ -96,7 +97,7 @@ export interface SlickDataView {
   getItemCount(): number;
 
   /** Get item metadata at specific index */
-  getItemMetadata(index: number): any;
+  getItemMetadata(index: number): ItemMetadata | null;
 
   /** Get DataView length */
   getLength(): number;
@@ -134,7 +135,7 @@ export interface SlickDataView {
   /** Set some Grouping */
   setGrouping(groupingInfo: Grouping | Grouping[]): void;
 
-  /** Set a Filter that:  will be used by the DataView */
+  /** Set a Filter that will be used by the DataView */
   // eslint-disable-next-line @typescript-eslint/ban-types
   setFilter(filterFn: Function): void;
 
@@ -144,6 +145,7 @@ export interface SlickDataView {
   /** Set Paging Options */
   setPagingOptions(args: PagingInfo): void;
 
+  /** Set Refresh Hints */
   setRefreshHints(hints: any): void;
 
   /** Set extra Filter arguments which will be used by the Filter method */
