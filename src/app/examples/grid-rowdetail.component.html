@@ -1,5 +1,14 @@
 <div class="container-fluid">
-  <h2>{{title}}</h2>
+  <h2>
+    {{title}}
+    <span class="float-right">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowdetail.component.ts">
+        <span class="fa fa-link"></span> code
+      </a>
+    </span>
+  </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-6">
@@ -18,6 +27,6 @@
   <hr />
 
   <angular-slickgrid gridId="grid21" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
-    [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
+                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>
