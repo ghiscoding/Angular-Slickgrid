@@ -1,35 +1,31 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <hr />
 
   <div class="row col-sm-12">
-    <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language-button">
+    <button class="btn btn-outline-secondary btn-sm" (click)="switchLanguage()" data-test="language-button">
       <i class="fa fa-language"></i>
       Switch Language
     </button>
     <b>Locale:</b>
-    <span style="font-style: italic" data-test="selected-locale">
-      {{selectedLanguage + '.json'}}
-    </span>
+    <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
     <span style="margin-left: 20px">
-      <button class="btn btn-default btn-sm" (click)="exportToFile('csv')">
+      <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('csv')">
         <i class="fa fa-download"></i>
         Download to CSV
       </button>
-      <button class="btn btn-default btn-sm" (click)="exportToFile('txt')">
+      <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('txt')">
         <i class="fa fa-download"></i>
         Download to Text
       </button>
-      <button class="btn btn-default btn-sm" (click)="exportToExcel()">
+      <button class="btn btn-outline-secondary btn-sm" (click)="exportToExcel()">
         <i class="fa fa-file-excel-o text-success"></i>
         Download to Excel
       </button>
-    </span>
-    <span style="margin-left: 10px">
-      <button class="btn btn-default btn-sm" (click)="dynamicallyAddTitleHeader()">
+      <button class="btn btn-outline-secondary btn-sm" (click)="dynamicallyAddTitleHeader()">
         <i class="fa fa-plus"></i>
         Dynamically Duplicate Title Column
       </button>
@@ -37,9 +33,12 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid12" [dataset]="dataset" [gridOptions]="gridOptions"
-      [columnDefinitions]="columnDefinitions" (onAngularGridCreated)="angularGridReady($event)"
-      (onGridStateChanged)="gridStateChanged($event)">
+    <angular-slickgrid gridId="grid12"
+                       [dataset]="dataset"
+                       [gridOptions]="gridOptions"
+                       [columnDefinitions]="columnDefinitions"
+                       (onAngularGridCreated)="angularGridReady($event)"
+                       (onGridStateChanged)="gridStateChanged($event)">
     </angular-slickgrid>
   </div>
 </div>

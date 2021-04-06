@@ -1,4 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+
+.btn-group-xs > .btn, .btn-xs {
+  padding  : 1px 5px;
+  font-size  : 12px;
+  line-height  : 1.5;
+  border-radius : 3px;
+  margin: 0 2px;
+  font-size: 12px;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.side-menu {
+  margin-left: 15px;
+
+  .links {
+    background-color: #f9f9f9;
+    border-right: 1px solid #d0d0d0;
+    overflow-y: auto;
+    padding: 10px;
+
+    /* the height is 100% minus the 2 navbars */
+    height: calc(100vh - 56px);
+    li {
+      width: 100%;
+    }
+  }
+}
+
 .italic {
   font-style: italic;
 }
@@ -32,6 +61,6 @@
 
 .github-button-container {
   position: relative;
-  top: 14px;
+  top: 6px;
   margin-left: 5px;
 }

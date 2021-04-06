@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
@@ -8,29 +8,32 @@
     {{metrics.totalItemCount}} items
   </span>
   <div class="btn-group" role="group">
-    <button class="btn btn-sm btn-default" data-test="scroll-top-btn" (click)="scrollGridTop()">
+    <button class="btn btn-sm btn-outline-secondary" data-test="scroll-top-btn" (click)="scrollGridTop()">
       <i class="fa fa-arrow-up"></i>
     </button>
-    <button class="btn btn-sm btn-default" data-test="scroll-bottom-btn" (click)="scrollGridBottom()">
+    <button class="btn btn-sm btn-outline-secondary" data-test="scroll-bottom-btn" (click)="scrollGridBottom()">
       <i class="fa fa-arrow-down"></i>
     </button>
   </div>
-  <button class="btn btn-default btn-sm" data-test="clear-filters" (click)="angularGrid.filterService.clearFilters()">
+  <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters"
+          (click)="angularGrid.filterService.clearFilters()">
     Clear Filters
   </button>
-  <button class="btn btn-default btn-sm" data-test="clear-sorting" (click)="angularGrid.sortService.clearSorting()">
+  <button class="btn btn-outline-secondary btn-sm" data-test="clear-sorting"
+          (click)="angularGrid.sortService.clearSorting()">
     Clear Sorting
   </button>
-  <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+  <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
     Set Filters Dynamically
   </button>
-  <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+  <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
     Set Sorting Dynamically
   </button>
 
   <angular-slickgrid gridId="grid4" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
                      [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState()"
+                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onBeforeGridDestroy)="saveCurrentGridState()"
                      (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>

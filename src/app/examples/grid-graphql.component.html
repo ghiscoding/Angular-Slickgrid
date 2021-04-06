@@ -1,6 +1,6 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
-  <div class="subtitle row" [innerHTML]="subTitle"></div>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="row">
     <div class="col-sm-5">
@@ -12,20 +12,22 @@
       </div>
 
       <div class="row col-md-12">
-        <button class="btn btn-default btn-sm" data-test="clear-filters-sorting" (click)="clearAllFiltersAndSorts()"
-                title="Clear all Filters & Sorts">
+        <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-sorting"
+                (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
           <i class="fa fa-filter text-danger"></i>
           Clear all Filter & Sorts
         </button>
-        <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+                (click)="setFiltersDynamically()">
           Set Filters Dynamically
         </button>
-        <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+                (click)="setSortingDynamically()">
           Set Sorting Dynamically
         </button>
       </div>
       <div class="row col-md-12">
-        <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language-button">
+        <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
           <i class="fa fa-language"></i>
           Switch Language
         </button>
@@ -41,10 +43,10 @@
       </div>
       <div class="row col-md-12" style="margin-bottom: 5px">
         <label>Programmatically go to first/last page:</label>
-        <button class="btn btn-default btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
+        <button class="btn btn-outline-secondary btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
           <i class="fa fa-caret-left fa-lg"></i>
         </button>
-        <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
+        <button class="btn btn-outline-secondary btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
           <i class="fa fa-caret-right fa-lg"></i>
         </button>
       </div>
@@ -59,8 +61,14 @@
   </div>
 
   <hr />
-  <angular-slickgrid gridId="grid6" [gridHeight]="200" [gridWidth]="900" [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState()">
+  <angular-slickgrid gridId="grid6"
+                     [gridHeight]="200"
+                     [gridWidth]="900"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event)"
+                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onBeforeGridDestroy)="saveCurrentGridState()">
   </angular-slickgrid>
 </div>

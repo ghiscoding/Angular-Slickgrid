@@ -2,34 +2,36 @@
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <form class="form-inline">
-    <div class="form-group">
-      <label>Single Search: </label>
-      <select class="form-control" data-test="search-column-list" name="selectedColumn" [(ngModel)]="selectedColumn"
-              (ngModelChange)="updateFilter()">
-        <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-      </select>
+  <div class="form-inline">
+    <label class="my-1 mr-2" for="columnSelect">Single Search:</label>
+    <select class="form-control" class="form-control mb-2 mr-sm-2" data-test="search-column-list" name="selectedColumn"
+            [(ngModel)]="selectedColumn" (ngModelChange)="updateFilter()">
+      <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
+    </select>
 
-      <select class="form-control" data-test="search-operator-list" name="selectedOperator"
-              [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
-        <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
-      </select>
+    <select class="form-control mb-2 mr-sm-2" data-test="search-operator-list" name="selectedOperator"
+            [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
+      <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
+    </select>
 
-      <div class="input-group">
-        <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
-               placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
-        <div class="input-group-btn">
-          <button class="btn btn-default" data-test="clear-search-value" (click)="cleargridSearchInput()">
-            <span class="icon fa fa-times"></span>
-          </button>
-        </div>
+    <div class="input-group mb-2 mr-sm-2">
+      <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
+             placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary d-flex align-items-center pl-2 pr-2" data-test="clear-search-value"
+                (click)="cleargridSearchInput()">
+          <span class="icon fa fa-times"></span>
+        </button>
       </div>
     </div>
-  </form>
+  </div>
 
   <hr />
 
-  <angular-slickgrid gridId="grid23" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
-                     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
+  <angular-slickgrid gridId="grid23"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>

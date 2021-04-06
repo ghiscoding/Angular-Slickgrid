@@ -1,24 +1,24 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" menu-collapse>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="https://github.com/ghiscoding/Angular-Slickgrid">
-      <i class="fa fa-github"></i>
-      <span>{{title}}</span>
-    </a>
-    <span class="github-button-container">
-      <a href="https://github.com/ghiscoding/angular-slickgrid">
-        <img src="https://img.shields.io/github/stars/ghiscoding/angular-slickgrid?style=social">
-      </a>
-    </span>
-  </div>
-  <div class="navbar-collapse collapse">
-    <ul class="nav navbar-nav">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="https://github.com/ghiscoding/Angular-Slickgrid">
+    <i class="fa fa-github"></i>
+    <span>{{title}}</span>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+          aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="navbar-collapse collapse" id="navbarContent">
+    <ul class="navbar-nav mr-auto">
       <li>
-        <a [routerLink]="['/home']">
+        <span class="github-button-container">
+          <a href="https://github.com/ghiscoding/angular-slickgrid">
+            <img src="https://img.shields.io/github/stars/ghiscoding/angular-slickgrid?style=social">
+          </a>
+        </span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/home']">
           <i class="fa fa-lg fa-home"></i> Home
         </a>
       </li>
@@ -29,93 +29,104 @@
 <div class="container-fluid">
   <div class="panel-wm">
     <section id="panel-left" class="panel-wm-left">
-      <ul class="nav nav-pills nav-stacked">
-        <li routerLinkActive="active">
-          <a [routerLink]="['/basic']">1- Basic Grid / 2 Grids</a>
+      <ul class="well nav nav-pills nav-stacked">
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/basic']">1- Basic Grid / 2 Grids</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/formatter']">2- Formatters</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/formatter']">2- Formatters</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/editor']">3- Editors</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/editor']">3- Editors</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/clientside']">4- Client Side Sort/Filter</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/clientside']">4- Client Side Sort/Filter</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/odata']">5- Backend Server with OData</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/odata']">5- Backend Server with OData</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/gridgraphql']">6- Backend Server with GraphQL</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/gridgraphql']">6- Backend Server with
+            GraphQL</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/headerbutton']">7- Header Button Plugin</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/headerbutton']">7- Header Button Plugin</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/headermenu']">8- Header Menu Plugin</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/headermenu']">8- Header Menu Plugin</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/gridmenu']">9- Grid Menu (hamburger menu)</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/gridmenu']">9- Grid Menu (hamburger menu)</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/selection']">10- Row Selection / 2 Grids</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/selection']">10- Row Selection / 2 Grids</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/additem']">11- Add/Update Grid Item</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/additem']">11- Add/Update/Highlight Datagrid
+            Item</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/localization']">12- Localization (i18n)</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/localization']">12- Localization (i18n)</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/swt']">13- Backend Server Custom Paging</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/swt']">13- Backend Server Custom Paging</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/grouping']">14- Grouping &amp; Aggregator</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/grouping']">14- Grouping &amp; Aggregator</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/colspan']">15- Column Span</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/colspan']">15- Column Span</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/gridstate']">16- Grid State &amp; Local Storage</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/gridstate']">16- Grid State &amp; Local
+            Storage</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/rowmove']">17- Row Move</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/rowmove']">17- Row Move</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/remote']">18- Remote Model</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/remote']">18- Remote Model</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/draggrouping']">19- Draggable Grouping</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/draggrouping']">19- Draggable Grouping</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/frozen']">20- Pinned Columns/Rows</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/frozen']">20- Frozen Columns/Rows</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/rowdetail']">21- Row Detail View</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/rowdetail']">21- Row Detail View</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/angular-components']">22- Use of Angular Components</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/angular-components']">22- Use of Angular
+            Components</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/autoheight']">23- Grid AutoHeight (full height)</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/autoheight']">23- Grid AutoHeight (full
+            height)</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/gridtabs']">24- within Bootstrap Tabs</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/gridtabs']">24- within Bootstrap Tabs</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/range']">25- Filter by Range of Values</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/range']">25- Filter by Range of Values</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/context']">26- Cell & Context Menu</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/context']">26- Cell & Context Menu</a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/graphql-nopage']">27- GraphQL without Pagination</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/graphql-nopage']">
+            27- GraphQL without Pagination
+          </a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/tree-data-parent-child']">28- Tree Data (Parent/Child)</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/tree-data-parent-child']">
+            28- Tree Data (Parent/Child)
+          </a>
         </li>
-        <li routerLinkActive="active">
-          <a [routerLink]="['/tree-data-hierarchical']">29- Tree Data (Hierarchical)</a>
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active" [routerLink]="['/tree-data-hierarchical']">
+            29- Tree Data (Hierarchical)
+          </a>
         </li>
       </ul>
     </section>

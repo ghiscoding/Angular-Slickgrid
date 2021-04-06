@@ -24,8 +24,16 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:
 
 ### Like my work?
-If you like my work, you can also support me with caffeine :coffee:
-[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
+If you like my work, you can also support me with caffeine 
+<br/>
+<a href='https://ko-fi.com/N4N679OT'
+     target='_blank'>
+    <img height='25'
+         style='border:0px;height:30px;'
+         src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0'
+         border='0'
+         alt='Buy Me a Coffee at ko-fi.com' />
+  </a>
 
 I certainly drank many coffees to build and keep adding features for this great library.
 
@@ -37,9 +45,6 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
    - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` package. 
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
-
-### Note on RxJS
-Please note that RxJS is fixed at version `6.3.3` and will certainly not work with version `7.0.0`. Why you might ask? Because they made structurale changes in version `6.4.0` which would impact anyone using Angular-Slickgrid that haven't upgraded and for that reason the version used by the lib is fixed at `6.3.3`. Also note that I will not release a major version of Angular-Slickgrid just to support RxJS 7 (which is still in Beta), a major version of Angular-Slickgrid is many months away.
 
 ### ngx-translate Compatibility
 

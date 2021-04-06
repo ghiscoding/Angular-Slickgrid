@@ -1,16 +1,19 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+  <button class="btn btn-outline-secondary btn-sm" (click)="switchLanguage()">
     <i class="fa fa-language"></i>
     Switch Language
   </button>
   <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid8" (onAngularGridCreated)="angularGridReady($event)"
-      [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+    <angular-slickgrid gridId="grid8"
+                       (onAngularGridCreated)="angularGridReady($event)"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset">
     </angular-slickgrid>
   </div>
 </div>
