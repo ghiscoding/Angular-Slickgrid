@@ -109,7 +109,7 @@
     "jquery": "~3.5.1",
     "jquery-ui-dist": "^1.12.1",
     "moment-mini": "^2.24.0",
-    "rxjs": "^6.3.3",
+    "rxjs": "^6.6.7",
     "slickgrid": "^2.4.33",
     "text-encoding-utf-8": "^1.0.2"
   },
@@ -119,7 +119,7 @@
   },
   "devDependencies": {
     "@angular-builders/jest": "^7.4.4",
-    "@angular-devkit/build-angular": "~0.1102.5",
+    "@angular-devkit/build-angular": "~0.1102.7",
     "@angular/animations": "^11.2.8",
     "@angular/cli": "^11.2.7",
     "@angular/common": "^11.2.8",
