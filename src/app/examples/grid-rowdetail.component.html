@@ -3,13 +3,13 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-6">
-    <button class="btn btn-default btn-sm" (click)="closeAllRowDetail()" data-test="close-all-btn">
+    <button class="btn btn-outline-secondary btn-sm" (click)="closeAllRowDetail()" data-test="close-all-btn">
       Close All Row Details
     </button>
     &nbsp;&nbsp;
     <label for="">Detail View Rows Shown: </label>
     <input type="number" [(ngModel)]="detailViewRowCount">
-    <button class="btn btn-default btn-xs" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
+    <button class="btn btn-outline-secondary btn-xs" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
       Set
     </button>
   </div>

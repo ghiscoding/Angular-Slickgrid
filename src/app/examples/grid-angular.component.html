@@ -1,28 +1,34 @@
-<div class="container-fluid">
+<div id="demo-container"
+     class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
-  <br>
 
   <div class="col-sm-6">
     <label>autoEdit setting: </label>
     <span id="radioAutoEdit">
       <label class="radio-inline control-label" for="radioTrue">
         <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit"
-               (change)="setAutoEdit(true)"> ON (single-click)
+               (change)="setAutoEdit(true)">
+        ON (single-click)
       </label>
       <label class="radio-inline control-label" for="radioFalse">
         <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit"
-               (change)="setAutoEdit(false)"> OFF (double-click)
+               (change)="setAutoEdit(false)">
+        OFF (double-click)
       </label>
     </span>
     <div class="row col-sm-12">
       <span>
-        <button class="btn btn-default btn-sm" (click)="undo()">
+        <button class="btn btn-outline-secondary btn-sm" (click)="undo()">
           <i class="fa fa-undo"></i>
           Undo last edit(s)
         </button>
-        <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
-        <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
+          Clear Filters
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
+          Clear Sorting
+        </button>
         <label class="checkbox-inline control-label" for="autoCommitEdit">
           <input type="checkbox" id="autoCommitEdit" data-test="auto-commit" [checked]="gridOptions.autoCommitEdit"
                  (click)="changeAutoCommit()">
@@ -43,11 +49,14 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid22" (onAngularGridCreated)="angularGridReady($event)"
+    <angular-slickgrid gridId="grid22"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset"
+                       (onAngularGridCreated)="angularGridReady($event)"
                        (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
                        (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
-                       (sgOnValidationError)="onCellValidation($event.detail.eventData, $event.detail.args)"
-                       [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+                       (sgOnValidationError)="onCellValidationError($event.detail.eventData, $event.detail.args)">
     </angular-slickgrid>
   </div>
 </div>

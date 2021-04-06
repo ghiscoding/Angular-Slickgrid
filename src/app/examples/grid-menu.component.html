@@ -1,22 +1,20 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
-  <div class="subtitle"
-       [innerHTML]="subTitle"></div>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <button class="btn btn-default btn-sm"
-          (click)="toggleGridMenu($event)"
-          data-test="external-gridmenu">
+  <button class="btn btn-outline-secondary btn-sm" data-test="external-gridmenu" (click)="toggleGridMenu($event)">
     <i class="fa fa-bars"></i>
     Grid Menu
   </button>
-  <button class="btn btn-default btn-sm"
-          (click)="switchLanguage()"
-          data-test="language">
+  <button class="btn btn-outline-secondary btn-sm" data-test="language" (click)="switchLanguage()">
     <i class="fa fa-language"></i>
     Switch Language
   </button>
-  <b>Locale:</b> <span style="font-style: italic"
-        data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+
+  <b>Locale:</b>
+  <span style="font-style: italic"
+        data-test="selected-locale">{{selectedLanguage + '.json'}}
+  </span>
 
   <div class="col-sm-12">
     <angular-slickgrid gridId="grid9"

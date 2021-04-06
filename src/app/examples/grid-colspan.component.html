@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div id="demo-container" class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
@@ -15,10 +15,11 @@
 
   <h3>Grid 2 <small>(with Header Grouping &amp; Frozen/Pinned Columns)</small></h3>
   <div class="col-sm 12">
-    <button class="btn btn-default btn-sm" (click)="setFrozenColumns2(-1)" data-test="remove-frozen-column-button">
+    <button class="btn btn-outline-secondary btn-sm" (click)="setFrozenColumns2(-1)"
+            data-test="remove-frozen-column-button">
       <i class="fa fa-times fa-lg"></i> Remove Frozen Columns
     </button>
-    <button class="btn btn-default btn-sm" (click)="setFrozenColumns2(2)" data-test="set-3frozen-columns">
+    <button class="btn btn-outline-secondary btn-sm" (click)="setFrozenColumns2(2)" data-test="set-3frozen-columns">
       <i class="fa fa-thumb-tack fa-lg"></i> Set 3 Frozen Columns
     </button>
   </div>

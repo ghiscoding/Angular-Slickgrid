@@ -1,6 +1,9 @@
-$navbar-height: 50px;
+$navbar-height: 56px;
 $side-menu-width: 250px;
 
+.body-content {
+  margin-top: $navbar-height;
+}
 .lightblue {
   color: lightblue;
 }
@@ -13,14 +16,15 @@ $side-menu-width: 250px;
 .faded:hover {
     opacity: 0.5;
 }
-.btn:focus, .btn:active:focus, .btn.active:focus {
-  outline: 0 none;
+
+section {
+  margin: 0;
 }
 
 /** Sidebar (left) and Content (right) */
 @media (min-width: 1200px) {
   .panel-wm-content .container {
-    width: calc(1170px - #{$side-menu-width});
+      width: calc(1170px - #{$side-menu-width});
   }
 }
 
@@ -29,6 +33,10 @@ $side-menu-width: 250px;
 
   .nav-stacked {
     padding-bottom: 30px;
+
+    .nav-item {
+      width: 100%;
+    }
   }
 
   .nav > li > a {

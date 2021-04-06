@@ -1,15 +1,18 @@
-<div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+<div id="demo-container"
+  class="container-fluid">
+  <h2>{{title}}</h2>
+  <div class="subtitle"
+    [innerHTML]="subTitle"></div>
 
-    <button class="btn btn-default btn-sm" (click)="togglePauseResizer()">
-      Pause auto-resize: <b>{{resizerPaused}}</b>
-    </button>
+  <button class="btn btn-outline-secondary btn-sm"
+    (click)="togglePauseResizer()">
+    Pause auto-resize: <b>{{resizerPaused}}</b>
+  </button>
 
-    <angular-slickgrid gridId="grid2"
-              [columnDefinitions]="columnDefinitions"
-              [gridOptions]="gridOptions"
-              [dataset]="dataset"
-              (onAngularGridCreated)="angularGridReady($event)" >
-    </angular-slickgrid>
-  </div>
+  <angular-slickgrid gridId="grid2"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event)">
+  </angular-slickgrid>
+</div>
