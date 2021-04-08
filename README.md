@@ -24,18 +24,16 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:
 
 ### Like my work?
-If you like my work, you can also support me with caffeine 
-<br/>
+If you like my work, you can also support me with caffeine. I certainly drank many coffees to build and keep adding features for this great library.
+
 <a href='https://ko-fi.com/N4N679OT'
      target='_blank'>
-    <img height='25'
-         style='border:0px;height:30px;'
+    <img height='30'
+         style='border:0px;height:32px;'
          src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0'
          border='0'
          alt='Buy Me a Coffee at ko-fi.com' />
   </a>
-
-I certainly drank many coffees to build and keep adding features for this great library.
 
 ## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
