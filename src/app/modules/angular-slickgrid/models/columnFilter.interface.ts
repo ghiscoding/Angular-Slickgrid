@@ -111,6 +111,17 @@ export interface ColumnFilter {
    */
   queryField?: string;
 
+  /**
+   * Defaults to true, should an empty search term have the effect of returning all results?
+   * Typically that would be True except for a dropdown Select Filter,
+   * we might really want to filter an empty string and/or `undefined` and for these special cases we can set this flag to `false`.
+   *
+   * NOTE: for a dropdown Select Filter, we will assume that on a multipleSelect Filter it should default to `false`
+   * however for a singleSelect Filter (and any other type of Filters) it should default to `true`.
+   * In any case, the user can overrides it this flag.
+   */
+  emptySearchTermReturnAllValues?: boolean;
+
   /** What is the Field Type that can be used by the Filter (as precedence over the "type" set the column definition) */
   type?: FieldType;
 
