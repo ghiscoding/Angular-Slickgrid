@@ -7,7 +7,6 @@ import { Column, FilterArguments, GridOption } from '../../models';
 import { CollectionService } from '../../services/collection.service';
 import { Filters } from '..';
 import { MultipleSelectFilter } from '../multipleSelectFilter';
-import { of, Subject } from 'rxjs';
 
 const containerId = 'demo-container';
 
@@ -30,7 +29,7 @@ describe('MultipleSelectFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: MultipleSelectFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: any;
   let mockColumn: Column;
   let collectionService: CollectionService;
   let translate: TranslateService;
@@ -67,13 +66,14 @@ describe('MultipleSelectFilter', () => {
   });
 
   it('should be a multiple-select filter', () => {
-    mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+    mockColumn.filter!.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
     filter = new MultipleSelectFilter(translate, collectionService);
-    filter.init(filterArguments, true);
+    filter.init(filterArguments);
     const filterCount = divContainer.querySelectorAll('select.ms-filter.search-filter.filter-gender').length;
 
     expect(spyGetHeaderRow).toHaveBeenCalled();
     expect(filterCount).toBe(1);
     expect(filter.isMultipleSelect).toBe(true);
+    expect(filter.columnDef.filter!.emptySearchTermReturnAllValues).toBeFalse();
   });
 });

@@ -149,6 +149,13 @@ export class SelectFilter implements Filter {
     }
     this.defaultOptions.placeholder = placeholder || '';
 
+    // when we're using a multiple-select filter and we have an empty select option,
+    // we probably want this value to be a valid filter option that will ONLY return value that are empty (not everything like its default behavior)
+    // user can still override it by defining it
+    if (this._isMultipleSelect && this.columnDef?.filter) {
+      this.columnDef.filter.emptySearchTermReturnAllValues = this.columnDef.filter?.emptySearchTermReturnAllValues ?? false;
+    }
+
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
     const newCollection = this.columnFilter.collection || [];
