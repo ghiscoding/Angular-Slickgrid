@@ -13,17 +13,18 @@ import { ExportService } from '../export.service';
 import { Formatters } from './../../formatters/index';
 import { Sorters } from './../../sorters/index';
 import { GroupTotalFormatters } from '../..';
+import { ExportOption } from '../../../../../../dist/public_api';
 
-function removeMultipleSpaces(textS) {
-  return `${textS}`.replace(/  +/g, '');
+function removeMultipleSpaces(inputText: string) {
+  return `${inputText}`.replace(/  +/g, '');
 }
 
 // URL object is not supported in JSDOM, we can simply mock it
 (global as any).URL.createObjectURL = jest.fn();
 
-const myBoldHtmlFormatter: Formatter = (row, cell, value, columnDef, dataContext) => value !== null ? { text: `<b>${value}</b>` } : null;
-const myUppercaseFormatter: Formatter = (row, cell, value, columnDef, dataContext) => value ? { text: value.toUpperCase() } : null;
-const myCustomObjectFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+const myBoldHtmlFormatter: Formatter = (row, cell, value) => value !== null ? { text: `<b>${value}</b>` } : '';
+const myUppercaseFormatter: Formatter = (row, cell, value) => value ? { text: value.toUpperCase() } : '';
+const myCustomObjectFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
   let textValue = value && value.hasOwnProperty('text') ? value.text : value;
   const toolTip = value && value.hasOwnProperty('toolTip') ? value.toolTip : '';
   const cssClasses = value && value.hasOwnProperty('addClasses') ? [value.addClasses] : [''];
@@ -37,6 +38,7 @@ const myCustomObjectFormatter: Formatter = (row: number, cell: number, value: an
 const dataViewStub = {
   getGrouping: jest.fn(),
   getItem: jest.fn(),
+  getItemMetadata: jest.fn(),
   getLength: jest.fn(),
   setGrouping: jest.fn(),
 };
@@ -50,6 +52,7 @@ const gridStub = {
   getColumnIndex: jest.fn(),
   getOptions: () => mockGridOptions,
   getColumns: jest.fn(),
+  getData: () => dataViewStub,
   getGrouping: jest.fn(),
 };
 
@@ -57,8 +60,8 @@ describe('ExportService', () => {
   let mockColumns: Column[];
   let service: ExportService;
   let translate: TranslateService;
-  let mockExportCsvOptions;
-  let mockExportTxtOptions;
+  let mockExportCsvOptions: ExportOption;
+  let mockExportTxtOptions: ExportOption;
   let mockCsvBlob: Blob;
   let mockTxtBlob: Blob;
 
@@ -66,7 +69,7 @@ describe('ExportService', () => {
     beforeEach(() => {
       // @ts-ignore
       navigator.__defineGetter__('appName', () => 'Netscape');
-      navigator.msSaveOrOpenBlob = undefined;
+      navigator.msSaveOrOpenBlob = undefined as any;
       mockCsvBlob = new Blob(['', ''], { type: `text/csv;charset=utf-8;` });
       mockTxtBlob = new Blob(['\uFEFF', ''], { type: `text/plain;charset=utf-8;` });
 
@@ -322,28 +325,28 @@ describe('ExportService', () => {
 
       it(`should have the UserId escape with equal sign showing as prefix, to avoid Excel casting the value 1E06 to 1 exponential 6,
             when "exportCsvForceToKeepAsString" is enable in its column definition`, (done) => {
-          mockCollection = [{ id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 }];
-          jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
-          jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]);
-          const spyOnAfter = jest.spyOn(service.onGridAfterExportToFile, 'next');
-          const spyUrlCreate = jest.spyOn(URL, 'createObjectURL');
-          const spyDownload = jest.spyOn(service, 'startDownloadFile');
+        mockCollection = [{ id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 }];
+        jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
+        jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]);
+        const spyOnAfter = jest.spyOn(service.onGridAfterExportToFile, 'next');
+        const spyUrlCreate = jest.spyOn(URL, 'createObjectURL');
+        const spyDownload = jest.spyOn(service, 'startDownloadFile');
 
-          const optionExpectation = { filename: 'export.csv', format: 'csv', useUtf8WithBom: false };
-          const contentExpectation =
-            `"User Id","FirstName","LastName","Position","Order"
+        const optionExpectation = { filename: 'export.csv', format: 'csv', useUtf8WithBom: false };
+        const contentExpectation =
+          `"User Id","FirstName","LastName","Position","Order"
               ="1E06","John","Z","SALES_REP","<b>10</b>"`;
 
-          service.init(gridStub, dataViewStub);
-          service.exportToFile(mockExportCsvOptions);
+        service.init(gridStub, dataViewStub);
+        service.exportToFile(mockExportCsvOptions);
 
-          setTimeout(() => {
-            expect(spyOnAfter).toHaveBeenCalledWith(optionExpectation);
-            expect(spyUrlCreate).toHaveBeenCalledWith(mockCsvBlob);
-            expect(spyDownload).toHaveBeenCalledWith({ ...optionExpectation, content: removeMultipleSpaces(contentExpectation) });
-            done();
-          });
+        setTimeout(() => {
+          expect(spyOnAfter).toHaveBeenCalledWith(optionExpectation);
+          expect(spyUrlCreate).toHaveBeenCalledWith(mockCsvBlob);
+          expect(spyDownload).toHaveBeenCalledWith({ ...optionExpectation, content: removeMultipleSpaces(contentExpectation) });
+          done();
         });
+      });
 
       it(`should have the LastName in uppercase when "formatter" is defined but also has "exportCustomFormatter" which will be used`, (done) => {
         mockCollection = [{ id: 1, userId: '2B02', firstName: 'Jane', lastName: 'Doe', position: 'FINANCE_MANAGER', order: 1 }];
@@ -606,10 +609,10 @@ describe('ExportService', () => {
           aggregateEmpty: false,
           aggregators: [{ _count: 2, _field: 'order', _nonNullCount: 2, _sum: 4, }],
           collapsed: false,
-          comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+          comparer: (a: any, b: any) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
           compiledAccumulators: [jest.fn(), jest.fn()],
           displayTotalsRow: true,
-          formatter: (g) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g: any) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
           getter: 'order',
           getterIsAFn: false,
           lazyTotalsCalculation: true,
@@ -718,10 +721,10 @@ describe('ExportService', () => {
           aggregateEmpty: false,
           aggregators: [{ _count: 2, _field: 'order', _nonNullCount: 2, _sum: 4, }],
           collapsed: false,
-          comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+          comparer: (a: any, b: any) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
           compiledAccumulators: [jest.fn(), jest.fn()],
           displayTotalsRow: true,
-          formatter: (g) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g: any) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
           getter: 'order',
           getterIsAFn: false,
           lazyTotalsCalculation: true,
@@ -833,10 +836,10 @@ describe('ExportService', () => {
           aggregateEmpty: false,
           aggregators: [{ _count: 2, _field: 'order', _nonNullCount: 2, _sum: 4, }],
           collapsed: false,
-          comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+          comparer: (a: any, b: any) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
           compiledAccumulators: [jest.fn(), jest.fn()],
           displayTotalsRow: true,
-          formatter: (g) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g: any) => `Order:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
           getter: 'order',
           getterIsAFn: false,
           lazyTotalsCalculation: true,
@@ -849,10 +852,10 @@ describe('ExportService', () => {
           aggregateEmpty: false,
           aggregators: [{ _count: 1, _field: 'lastName', _nonNullCount: 2, _sum: 4, }],
           collapsed: false,
-          comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+          comparer: (a: any, b: any) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
           compiledAccumulators: [jest.fn(), jest.fn()],
           displayTotalsRow: true,
-          formatter: (g) => `Last Name:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g: any) => `Last Name:  ${g.value} <span style="color:green">(${g.count} items)</span>`,
           getter: 'lastName',
           getterIsAFn: false,
           lazyTotalsCalculation: true,
@@ -1022,7 +1025,7 @@ describe('ExportService', () => {
         });
 
         it(`should have the LastName header title translated when defined as a "headerKey" and "i18n" is set in grid option`, (done) => {
-          mockGridOptions.exportOptions.sanitizeDataExport = false;
+          mockGridOptions.exportOptions!.sanitizeDataExport = false;
           mockCollection2 = [{ id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 }];
           jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection2.length);
           jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection2[0]);
