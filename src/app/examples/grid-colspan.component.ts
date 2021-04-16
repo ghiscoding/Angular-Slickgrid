@@ -54,6 +54,7 @@ export class GridColspanComponent implements OnInit {
     this.gridOptions1 = {
       enableAutoResize: false,
       enableCellNavigation: true,
+      enableExport: true,
       enableSorting: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
@@ -127,14 +128,13 @@ export class GridColspanComponent implements OnInit {
           }
         }
       };
-    } else {
-      return {
-        columns: {
-          0: {
-            colspan: '*' // starting at column index 0, we will span accross all column (*)
-          }
-        }
-      };
     }
+    return {
+      columns: {
+        0: {
+          colspan: '*' // starting at column index 0, we will span accross all column (*)
+        }
+      }
+    };
   }
 }

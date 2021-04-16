@@ -14,9 +14,6 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
     isEvaluatingFormatter = !!columnDef.exportWithFormatter;
   }
 
-  // did the user provide a Custom Formatter for the export
-  const exportCustomFormatter: Formatter | undefined = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-
   // does the field have the dot (.) notation and is a complex object? if so pull the first property name
   const fieldId = columnDef.field || columnDef.id || '';
   let fieldProperty = fieldId;
@@ -27,17 +24,17 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
 
   const cellValue = dataContext.hasOwnProperty(fieldProperty) ? dataContext[fieldProperty] : null;
 
-  if (dataContext && exportCustomFormatter !== undefined) {
-    const formattedData = exportCustomFormatter(row, col, cellValue, columnDef, dataContext, grid);
-    output = formattedData as string;
-    if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
-      output = formattedData.text;
-    }
-    if (output === null || output === undefined) {
-      output = '';
-    }
+  let formatter: Formatter | undefined;
+  if (dataContext && columnDef.exportCustomFormatter) {
+    // did the user provide a Custom Formatter for the export
+    formatter = columnDef.exportCustomFormatter;
   } else if (isEvaluatingFormatter && columnDef.formatter) {
-    const formattedData = columnDef.formatter(row, col, cellValue, columnDef, dataContext, grid);
+    // or else do we have a column Formatter AND are we evaluating it?
+    formatter = columnDef.formatter;
+  }
+
+  if (typeof formatter === 'function') {
+    const formattedData = formatter(row, col, cellValue, columnDef, dataContext, grid);
     output = formattedData as string;
     if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
       output = formattedData.text;

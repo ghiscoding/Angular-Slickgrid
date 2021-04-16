@@ -89,7 +89,7 @@ export class ExportService {
    */
   exportToFile(options?: ExportOption): Promise<boolean> {
     if (!this._grid || !this._dataView) {
-      throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
+      throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExport"?');
     }
 
     return new Promise((resolve, reject) => {
@@ -332,6 +332,8 @@ export class ExportService {
     let idx = 0;
     const rowOutputStrings = [];
     const exportQuoteWrapper = this._exportQuoteWrapper;
+    let prevColspan: number | '*' = 1;
+    const itemMetadata = this._dataView.getItemMetadata(row);
 
     for (let col = 0, ln = columns.length; col < ln; col++) {
       const columnDef = columns[col];
@@ -347,24 +349,46 @@ export class ExportService {
         rowOutputStrings.push(emptyValue);
       }
 
-      // get the output by analyzing if we'll pull the value from the cell or from a formatter
-      let itemData = exportWithFormatterWhenDefined(row, col, itemObj, columnDef, this._grid, this._exportOptions);
-
-      // does the user want to sanitize the output data (remove HTML tags)?
-      if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-        itemData = sanitizeHtmlToText(itemData);
+      let colspanColumnId;
+      if (itemMetadata?.columns) {
+        const metadata = itemMetadata?.columns;
+        const columnData = metadata[columnDef.id] || metadata[col];
+        if (!(prevColspan > 1 || (prevColspan === '*' && col > 0))) {
+          prevColspan = columnData?.colspan ?? 1;
+        }
+        if (prevColspan !== '*') {
+          if (columnDef.id in metadata) {
+            colspanColumnId = columnDef.id;
+          }
+        }
       }
 
-      // when CSV we also need to escape double quotes twice, so " becomes ""
-      if (this._fileFormat === FileType.csv && itemData) {
-        itemData = itemData.toString().replace(/"/gi, `""`);
+      if ((prevColspan === '*' && col > 0) || (prevColspan > 1 && columnDef.id !== colspanColumnId)) {
+        rowOutputStrings.push('');
+        if (prevColspan > 1) {
+          (prevColspan as number)--;
+        }
+      } else {
+        // get the output by analyzing if we'll pull the value from the cell or from a formatter
+        let itemData = exportWithFormatterWhenDefined(row, col, itemObj, columnDef, this._grid, this._exportOptions);
+
+        // does the user want to sanitize the output data (remove HTML tags)?
+        if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+          itemData = sanitizeHtmlToText(itemData);
+        }
+
+        // when CSV we also need to escape double quotes twice, so " becomes ""
+        if (this._fileFormat === FileType.csv && itemData) {
+          itemData = itemData.toString().replace(/"/gi, `""`);
+        }
+
+        // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
+        // to cancel that effect we can had = in front, ex: ="1E06"
+        const keepAsStringWrapper = columnDef?.exportCsvForceToKeepAsString ? '=' : '';
+
+        rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
       }
 
-      // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-      // to cancel that effect we can had = in front, ex: ="1E06"
-      const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-
-      rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
       idx++;
     }
 
