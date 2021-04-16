@@ -4,13 +4,14 @@ import * as moment from 'moment-mini';
 
 import {
   Column,
+  ExcelExportOption,
+  FieldType,
   FileType,
   Formatter,
   GridOption,
-  FieldType,
   GroupTotalsFormatter,
+  ItemMetadata,
   SortDirectionNumber,
-  ExcelExportOption,
 } from '../../models';
 import { ExcelExportService } from '../excelExport.service';
 import { Formatters } from '../../formatters/index';
@@ -536,7 +537,6 @@ describe('ExcelExportService', () => {
 
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
       });
-
 
       it(`should expect Date exported correctly when Field Type is provided and we use "exportWithFormatter" set to True & False`, async () => {
         mockCollection = [
@@ -1403,6 +1403,83 @@ describe('ExcelExportService', () => {
               ['<b>John</b>', 'Z', '1E06', 'Sales Rep.', '<b>10</b>'],
             ]
           });
+        });
+      });
+    });
+
+    describe('grid with colspan', () => {
+      let mockCollection;
+      let oddMetatadata = { columns: { lastName: { colspan: 2 } } } as ItemMetadata;
+      let evenMetatadata = { columns: { 0: { colspan: '*' } } } as ItemMetadata;
+
+      beforeEach(() => {
+        mockGridOptions.enableTranslate = true;
+        mockGridOptions.i18n = translate;
+        mockGridOptions.excelExportOptions = {};
+        mockGridOptions.createPreHeaderPanel = false;
+        mockGridOptions.showPreHeaderPanel = false;
+        mockGridOptions.colspanCallback = (item: any) => (item.id % 2 === 1) ? evenMetatadata : oddMetatadata;
+
+        mockColumns = [
+          { id: 'userId', field: 'userId', name: 'User Id', width: 100 },
+          { id: 'firstName', nameKey: 'FIRST_NAME', width: 100, formatter: myBoldHtmlFormatter },
+          { id: 'lastName', field: 'lastName', nameKey: 'LAST_NAME', width: 100, formatter: myBoldHtmlFormatter, exportCustomFormatter: myUppercaseFormatter, sanitizeDataExport: true, exportWithFormatter: true },
+          { id: 'position', field: 'position', name: 'Position', width: 100, formatter: Formatters.translate, exportWithFormatter: true },
+          { id: 'order', field: 'order', width: 100, },
+        ] as Column[];
+
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return associated Excel column name when calling "getExcelColumnNameByIndex" method with a column index', () => {
+        const excelColumnA = service.getExcelColumnNameByIndex(1);
+        const excelColumnZ = service.getExcelColumnNameByIndex(26);
+        const excelColumnAA = service.getExcelColumnNameByIndex(27);
+        const excelColumnCA = service.getExcelColumnNameByIndex(79);
+
+        expect(excelColumnA).toBe('A');
+        expect(excelColumnZ).toBe('Z');
+        expect(excelColumnAA).toBe('AA');
+        expect(excelColumnCA).toBe('CA');
+      });
+
+      it(`should export same colspan in the export excel as defined in the grid`, async () => {
+        mockCollection = [
+          { id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 },
+          { id: 1, userId: '1E09', firstName: 'Jane', lastName: 'Doe', position: 'DEVELOPER', order: 15 },
+          { id: 2, userId: '2ABC', firstName: 'Sponge', lastName: 'Bob', position: 'IT_ADMIN', order: 33 },
+        ];
+        jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
+        jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]).mockReturnValueOnce(mockCollection[1]).mockReturnValueOnce(mockCollection[2]);
+        jest.spyOn(dataViewStub, 'getItemMetadata').mockReturnValue(oddMetatadata).mockReturnValueOnce(evenMetatadata).mockReturnValueOnce(oddMetatadata).mockReturnValueOnce(evenMetatadata);
+        const spyOnAfter = jest.spyOn(service.onGridAfterExportToExcel, 'next');
+        const spyUrlCreate = jest.spyOn(URL, 'createObjectURL');
+        const spyDownload = jest.spyOn(service, 'startDownloadFile');
+
+        const optionExpectation = { filename: 'export.xlsx', format: FileType.xlsx };
+
+        service.init(gridStub, dataViewStub);
+        await service.exportToExcel(mockExportExcelOptions);
+
+        expect(spyOnAfter).toHaveBeenCalledWith(optionExpectation);
+        expect(spyUrlCreate).toHaveBeenCalledWith(mockExcelBlob);
+        expect(spyDownload).toHaveBeenCalledWith({
+          ...optionExpectation, blob: new Blob(), data: [
+            [
+              { metadata: { style: 1, }, value: 'User Id', },
+              { metadata: { style: 1, }, value: 'First Name', },
+              { metadata: { style: 1, }, value: 'Last Name', },
+              { metadata: { style: 1, }, value: 'Position', },
+              { metadata: { style: 1, }, value: 'Order', },
+            ],
+            ['1E06', '', '', ''],
+            ['1E09', 'Jane', 'DOE', '', 15],
+            ['2ABC', '', '', ''],
+          ]
         });
       });
     });

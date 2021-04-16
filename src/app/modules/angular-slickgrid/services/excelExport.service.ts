@@ -536,11 +536,13 @@ export class ExcelExportService {
           const leftExcelColumnChar = this.getExcelColumnNameByIndex(colspanStartIndex + 1);
           const rightExcelColumnChar = this.getExcelColumnNameByIndex(col + 1);
           this._sheet.mergeCells(`${leftExcelColumnChar}${excelRowNumber}`, `${rightExcelColumnChar}${excelRowNumber}`);
-          col = colspanStartIndex; // reset col index since the merge has no impact on the column index for the next cell data
+          rowOutputStrings.push(''); // clear cell that won't be shown by a cell merge
         } else if (prevColspan === '*' && colspan === 1) {
           // full column span (from A1 until the last column)
           const rightExcelColumnChar = this.getExcelColumnNameByIndex(col + 1);
           this._sheet.mergeCells(`A${excelRowNumber}`, `${rightExcelColumnChar}${excelRowNumber}`);
+        } else {
+          rowOutputStrings.push(''); // clear cell that won't be shown by a cell merge
         }
 
         // decrement colspan until we reach colspan of 1 then proceed with cell merge OR full row merge when colspan is (*)

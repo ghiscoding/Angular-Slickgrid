@@ -7,6 +7,7 @@ import {
   FileType,
   Formatter,
   GridOption,
+  ItemMetadata,
   SortDirectionNumber,
 } from '../../models';
 import { ExportService } from '../export.service';
@@ -165,12 +166,12 @@ describe('ExportService', () => {
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
       });
 
-      it('should throw an error when trying call exportToExcel" without a grid and/or dataview object initialized', (done) => {
+      it('should throw an error when trying call exportToFile" without a grid and/or dataview object initialized', (done) => {
         try {
           service.init(null, null);
           service.exportToFile(mockExportTxtOptions);
         } catch (e) {
-          expect(e.toString()).toContain('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
+          expect(e.toString()).toContain('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExport"?');
           done();
         }
       });
@@ -1049,6 +1050,63 @@ describe('ExportService', () => {
             done();
           });
         });
+      });
+    });
+
+    describe('grid with colspan', () => {
+      let mockCollection;
+      let oddMetatadata = { columns: { lastName: { colspan: 2 } } } as ItemMetadata;
+      let evenMetatadata = { columns: { 0: { colspan: '*' } } } as ItemMetadata;
+
+      beforeEach(() => {
+        mockGridOptions.enableTranslate = true;
+        mockGridOptions.i18n = translate;
+        mockGridOptions.exportOptions = {};
+        mockGridOptions.createPreHeaderPanel = false;
+        mockGridOptions.showPreHeaderPanel = false;
+        mockGridOptions.colspanCallback = (item: any) => (item.id % 2 === 1) ? evenMetatadata : oddMetatadata;
+
+        mockColumns = [
+          { id: 'userId', field: 'userId', name: 'User Id', width: 100, exportCsvForceToKeepAsString: true },
+          { id: 'firstName', nameKey: 'FIRST_NAME', width: 100, formatter: myBoldHtmlFormatter },
+          { id: 'lastName', field: 'lastName', nameKey: 'LAST_NAME', width: 100, formatter: myBoldHtmlFormatter, exportCustomFormatter: myUppercaseFormatter, sanitizeDataExport: true, exportWithFormatter: true },
+          { id: 'position', field: 'position', name: 'Position', width: 100, formatter: Formatters.translate, exportWithFormatter: true },
+          { id: 'order', field: 'order', width: 100, },
+        ] as Column[];
+
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it(`should export same colspan in the csv export as defined in the grid`, async () => {
+        mockCollection = [
+          { id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 },
+          { id: 1, userId: '1E09', firstName: 'Jane', lastName: 'Doe', position: 'DEVELOPER', order: 15 },
+          { id: 2, userId: '2ABC', firstName: 'Sponge', lastName: 'Bob', position: 'IT_ADMIN', order: 33 },
+        ];
+        jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
+        jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]).mockReturnValueOnce(mockCollection[1]).mockReturnValueOnce(mockCollection[2]);
+        jest.spyOn(dataViewStub, 'getItemMetadata').mockReturnValue(oddMetatadata).mockReturnValueOnce(evenMetatadata).mockReturnValueOnce(oddMetatadata).mockReturnValueOnce(evenMetatadata);
+        const spyOnAfter = jest.spyOn(service.onGridAfterExportToFile, 'next');
+        const spyUrlCreate = jest.spyOn(URL, 'createObjectURL');
+        const spyDownload = jest.spyOn(service, 'startDownloadFile');
+
+        const optionExpectation = { filename: 'export.csv', format: 'csv', useUtf8WithBom: false };
+        const contentExpectation =
+          `"User Id","First Name","Last Name","Position","Order"
+              ="1E06",,,,
+              ="1E09","Jane","DOE",,"15"
+              ="2ABC",,,,`;
+
+        service.init(gridStub, dataViewStub);
+        await service.exportToFile(mockExportCsvOptions);
+
+        expect(spyOnAfter).toHaveBeenCalledWith(optionExpectation);
+        expect(spyUrlCreate).toHaveBeenCalledWith(mockCsvBlob);
+        expect(spyDownload).toHaveBeenCalledWith({ ...optionExpectation, content: removeMultipleSpaces(contentExpectation) });
       });
     });
   });

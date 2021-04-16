@@ -89,7 +89,7 @@ export class ExportService {
    */
   exportToFile(options?: ExportOption): Promise<boolean> {
     if (!this._grid || !this._dataView) {
-      throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
+      throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExport"?');
     }
 
     return new Promise((resolve, reject) => {
@@ -388,7 +388,7 @@ export class ExportService {
 
         // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
         // to cancel that effect we can had = in front, ex: ="1E06"
-        const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+        const keepAsStringWrapper = columnDef?.exportCsvForceToKeepAsString ? '=' : '';
 
         rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
       }
