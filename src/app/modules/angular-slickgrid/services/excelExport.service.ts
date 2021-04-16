@@ -252,7 +252,7 @@ export class ExcelExportService {
         }
         break;
       case FieldType.number:
-        const val = isNaN(+data) ? null : data;
+        const val = isNaN(+data) ? null : +data;
         outputData = { value: val, metadata: { style: this._stylesheetFormats.numberFormatter.id } };
         break;
       default:
