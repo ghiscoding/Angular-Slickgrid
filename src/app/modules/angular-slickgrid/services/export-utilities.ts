@@ -30,7 +30,7 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
     formatter = columnDef.exportCustomFormatter;
   } else if (isEvaluatingFormatter && columnDef.formatter) {
     // or else do we have a column Formatter AND are we evaluating it?
-    formatter = columnDef.formatter
+    formatter = columnDef.formatter;
   }
 
   if (typeof formatter === 'function') {

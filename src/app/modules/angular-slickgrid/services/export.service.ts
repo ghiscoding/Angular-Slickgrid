@@ -349,18 +349,14 @@ export class ExportService {
         rowOutputStrings.push(emptyValue);
       }
 
-      let colspan = 1;
       let colspanColumnId;
-      if (itemMetadata) {
+      if (itemMetadata?.columns) {
         const metadata = itemMetadata?.columns;
         const columnData = metadata[columnDef.id] || metadata[col];
         if (!(prevColspan > 1 || (prevColspan === '*' && col > 0))) {
           prevColspan = columnData?.colspan ?? 1;
         }
-        if (prevColspan === '*') {
-          colspan = columns.length - col;
-        } else {
-          colspan = prevColspan;
+        if (prevColspan !== '*') {
           if (columnDef.id in metadata) {
             colspanColumnId = columnDef.id;
           }
@@ -370,7 +366,7 @@ export class ExportService {
       if ((prevColspan === '*' && col > 0) || (prevColspan > 1 && columnDef.id !== colspanColumnId)) {
         rowOutputStrings.push('');
         if (prevColspan > 1) {
-          colspan = (prevColspan as number)--;
+          (prevColspan as number)--;
         }
       } else {
         // get the output by analyzing if we'll pull the value from the cell or from a formatter

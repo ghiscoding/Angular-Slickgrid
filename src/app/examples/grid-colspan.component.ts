@@ -54,6 +54,7 @@ export class GridColspanComponent implements OnInit {
     this.gridOptions1 = {
       enableAutoResize: false,
       enableCellNavigation: true,
+      enableExport: true,
       enableSorting: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,

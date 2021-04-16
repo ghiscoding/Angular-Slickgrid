@@ -508,7 +508,7 @@ export class ExcelExportService {
 
       let colspan = 1;
       let colspanColumnId;
-      if (itemMetadata) {
+      if (itemMetadata?.columns) {
         const metadata = itemMetadata?.columns;
         const columnData = metadata[columnDef.id] || metadata[col];
         if (!(prevColspan > 1 || (prevColspan === '*' && col > 0))) {
