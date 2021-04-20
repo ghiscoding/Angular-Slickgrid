@@ -303,6 +303,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should call internal event handler subscribe and expect the "onMenuClose" option to be called when addon notify is called', () => {
+        jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu as GridMenu, 'onColumnsChanged');
         const onAfterSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu as GridMenu, 'onAfterMenuShow');
@@ -349,6 +350,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should call "autosizeColumns" method when the "onMenuClose" event was triggered and the columns are different', () => {
+        jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu as GridMenu, 'onColumnsChanged');
         const onCloseSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu as GridMenu, 'onMenuClose');
@@ -607,6 +609,10 @@ describe('gridMenuExtension', () => {
     });
 
     describe('executeGridMenuInternalCustomCommands method', () => {
+      beforeEach(() => {
+        jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
+      });
+
       afterEach(() => {
         jest.clearAllMocks();
         extension.eventHandler.unsubscribeAll();

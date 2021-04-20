@@ -1,4 +1,6 @@
-import { Column, Editors, Formatter, Formatters } from '@slickgrid-universal/common';
+import { Editors } from '../../editors/editors.index';
+import { Formatters } from '../../formatters/formatters.index';
+import { Column, FieldType, Formatter } from '../../models/index';
 import { autoAddEditorFormatterToColumnsWithEditor } from '../slick-vanilla-utilities';
 
 
@@ -15,9 +17,9 @@ describe('Slick-Vanilla-Grid-Bundle / Utilies', () => {
       columnDefinitions = [
         { id: 'firstName', field: 'firstName', editor: { model: Editors.text } },
         { id: 'lastName', field: 'lastName', editor: { model: Editors.text }, formatter: Formatters.multiple, params: { formatters: [Formatters.italic, Formatters.bold] } },
-        { id: 'age', field: 'age', type: 'number', formatter: Formatters.multiple },
+        { id: 'age', field: 'age', type: FieldType.number, formatter: Formatters.multiple },
         { id: 'address', field: 'address.street', editor: { model: Editors.longText }, formatter: Formatters.complexObject },
-        { id: 'zip', field: 'address.zip', type: 'number', formatter: Formatters.complexObject },
+        { id: 'zip', field: 'address.zip', type: FieldType.number, formatter: Formatters.complexObject },
       ];
     });
 
@@ -27,9 +29,9 @@ describe('Slick-Vanilla-Grid-Bundle / Utilies', () => {
       expect(columnDefinitions).toEqual([
         { id: 'firstName', field: 'firstName', editor: { model: Editors.text }, formatter: customEditableInputFormatter },
         { id: 'lastName', field: 'lastName', editor: { model: Editors.text }, formatter: Formatters.multiple, params: { formatters: [Formatters.italic, Formatters.bold, customEditableInputFormatter] } },
-        { id: 'age', field: 'age', type: 'number', formatter: Formatters.multiple },
+        { id: 'age', field: 'age', type: FieldType.number, formatter: Formatters.multiple },
         { id: 'address', field: 'address.street', editor: { model: Editors.longText }, formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, customEditableInputFormatter] } },
-        { id: 'zip', field: 'address.zip', type: 'number', formatter: Formatters.complexObject },
+        { id: 'zip', field: 'address.zip', type: FieldType.number, formatter: Formatters.complexObject },
       ]);
     });
   });
