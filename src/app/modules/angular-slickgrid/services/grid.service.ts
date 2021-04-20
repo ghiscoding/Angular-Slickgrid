@@ -86,11 +86,13 @@ export class GridService {
 
   /**
    * Set pinning (frozen) grid options
-   * @param pinningOptions - which pinning/frozen options to modify
-   * @param shouldAutosizeColumns - defaults to True, should we call an autosizeColumns after the pinning is done?
+   * @param  {Object} pinningOptions - which pinning/frozen options to modify
+   * @param {Boolean} shouldAutosizeColumns - defaults to True, should we call an autosizeColumns after the pinning is done?
+   * @param {Boolean} suppressRender - do we want to supress the grid re-rendering? (defaults to false)
+   * @param {Boolean} suppressColumnSet - do we want to supress the columns set, via "setColumns()" method? (defaults to false)
    */
-  setPinning(pinningOptions: CurrentPinning, shouldAutosizeColumns = true) {
-    this.sharedService.grid.setOptions(pinningOptions);
+  setPinning(pinningOptions: CurrentPinning, shouldAutosizeColumns = true, suppressRender = false, suppressColumnSet = true) {
+    this.sharedService.grid.setOptions(pinningOptions, suppressRender, suppressColumnSet);
     this.sharedService.gridOptions = { ...this.sharedService.gridOptions, ...pinningOptions };
 
     if (shouldAutosizeColumns) {

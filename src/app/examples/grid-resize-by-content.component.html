@@ -1,0 +1,56 @@
+<div class="container-fluid">
+  <h2>
+    {{title}}
+    <span class="float-right">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-resize-by-content.component.ts">
+        <span class="fa fa-link"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <div class="row">
+    <h4 class="ml-3">Container Width (950px)</h4>
+
+    <div class="ml-2 mb-2 mr-2">
+      <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
+        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+                (click)="handleDefaultResizeColumns()">
+          <i class="fa fa-expand"></i> (default resize) by "autosizeColumns"
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+                (click)="handleNewResizeColumns()">
+          <i class="fa fa-expand"></i> Resize by Cell Content
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
+        <button type="button" class="btn btn-outline-secondary" data-test="toggle-readonly-btn"
+                (click)="toggleGridEditReadonly()">
+          <i class="fa fa-table"></i> Toggle Edit/Readonly Grid
+        </button>
+        <button type="button" class="btn btn-outline-secondary" data-test="undo-last-edit-btn"
+                (click)="undoLastEdit()">
+          <i class="fa fa-undo"></i> Undo Last Edit
+        </button>
+        <button type="button" class="btn btn-outline-secondary" data-test="save-all-btn"
+                (click)="saveAll()">
+          <i class="fa fa-save"></i> Save All
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="smaller-container" style="width: 950px">
+    <angular-slickgrid gridId="grid30"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset"
+                       (onAngularGridCreated)="angularGridReady($event)">
+    </angular-slickgrid>
+  </div>
+</div>

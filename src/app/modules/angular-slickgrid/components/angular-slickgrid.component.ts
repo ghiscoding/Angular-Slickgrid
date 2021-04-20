@@ -38,6 +38,7 @@ import {
   TreeDataOption,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
+import { autoAddEditorFormatterToColumnsWithEditor } from './slick-vanilla-utilities';
 import { SlickgridConfig } from '../slickgrid-config';
 import { SlickEmptyWarningComponent } from './slick-empty-warning.component';
 
@@ -196,6 +197,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._columnDefinitions = columnDefinitions;
     if (this._isGridInitialized) {
       this.updateColumnDefinitionsList(columnDefinitions);
+    }
+    if (columnDefinitions.length > 0) {
+      this.copyColumnWidthsReference(columnDefinitions);
     }
   }
   get columnDefinitions(): Column[] {
@@ -499,8 +503,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.extensionService.renderColumnHeaders(newColumnDefinitions, true);
     }
 
-    if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
+    if (this.gridOptions?.enableAutoSizeColumns) {
       this.grid.autosizeColumns();
+    } else if (this.gridOptions?.enableAutoResizeColumnsByCellContent && this.resizer?.resizeColumnsByCellContent) {
+      this.resizer.resizeColumnsByCellContent();
     }
   }
 
@@ -519,6 +525,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   //
   // private functions
   // ------------------
+
+  /**
+   * Loop through all column definitions and copy the original optional `width` properties optionally provided by the user.
+   * We will use this when doing a resize by cell content, if user provided a `width` it won't override it.
+   */
+  private copyColumnWidthsReference(columnDefinitions: Column[]) {
+    columnDefinitions.forEach(col => col.originalWidth = col.width);
+  }
 
   private displayEmptyDataWarning(showWarning = true) {
     this.slickEmptyWarning.grid = this.grid;
@@ -631,6 +645,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e: Event, args: any) => {
         grid.invalidate();
         this.handleOnItemCountChanged(this.dataView.getLength(), args.itemCount);
+
+        // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
+        if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
+          // add a delay so that if column positions changes by changeColumnsArrangement() when using custom Grid Views
+          // or presets.columns won't have any impact on the list of visible columns and their positions
+          setTimeout(() => this.resizer.resizeColumnsByCellContent(true), 10);
+        }
       });
 
       // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
@@ -747,6 +768,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private bindResizeHook(grid: any, options: GridOption) {
+    if ((options.autoFitColumnsOnFirstLoad && options.autosizeColumnsByCellContentOnFirstLoad) || (options.enableAutoSizeColumns && options.enableAutoResizeColumnsByCellContent)) {
+      throw new Error(`You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use. You can enable these 2 options ("autoFitColumnsOnFirstLoad" and "enableAutoSizeColumns") OR these other 2 options ("autosizeColumnsByCellContentOnFirstLoad" and "enableAutoResizeColumnsByCellContent").`);
+    }
+
     // expand/autofit columns on first page load
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
@@ -843,6 +868,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
     this._columnDefinitions = this.swapInternalEditorToSlickGridFactoryEditor(this._columnDefinitions);
+
+    // if the user wants to automatically add a Custom Editor Formatter, we need to call the auto add function again
+    if (this.gridOptions.autoAddCustomEditorFormatter) {
+      autoAddEditorFormatterToColumnsWithEditor(this._columnDefinitions, this.gridOptions.autoAddCustomEditorFormatter);
+    }
+
 
     // save reference for all columns before they optionally become hidden/visible
     this.sharedService.allColumns = this._columnDefinitions;
@@ -1038,6 +1069,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
               gridColumns.unshift(checkboxColumn);
             }
           }
+
+          // keep copy the original optional `width` properties optionally provided by the user.
+          // We will use this when doing a resize by cell content, if user provided a `width` it won't override it.
+          gridColumns.forEach(col => col.originalWidth = col.width);
 
           // finally set the new presets columns (including checkbox selector if need be)
           this.grid.setColumns(gridColumns);

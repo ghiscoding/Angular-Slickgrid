@@ -34,20 +34,21 @@ export class CheckboxSelectorExtension implements Extension {
       if (!this._addon) {
         this._addon = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
       }
-      const iconColumn: Column = this._addon.getColumnDefinition();
-      if (typeof iconColumn === 'object') {
-        iconColumn.excludeFromExport = true;
-        iconColumn.excludeFromColumnPicker = true;
-        iconColumn.excludeFromGridMenu = true;
-        iconColumn.excludeFromQuery = true;
-        iconColumn.excludeFromHeaderMenu = true;
+      const selectionColumn: Column = this._addon.getColumnDefinition();
+      if (typeof selectionColumn === 'object') {
+        selectionColumn.excludeFromExport = true;
+        selectionColumn.excludeFromColumnPicker = true;
+        selectionColumn.excludeFromGridMenu = true;
+        selectionColumn.excludeFromQuery = true;
+        selectionColumn.excludeFromHeaderMenu = true;
+        selectionColumn.maxWidth = selectionColumn.width || 30;
 
         // column index position in the grid
         const columnPosition = gridOptions && gridOptions.checkboxSelector && gridOptions.checkboxSelector.columnIndexPosition || 0;
         if (columnPosition > 0) {
-          columnDefinitions.splice(columnPosition, 0, iconColumn);
+          columnDefinitions.splice(columnPosition, 0, selectionColumn);
         } else {
-          columnDefinitions.unshift(iconColumn);
+          columnDefinitions.unshift(selectionColumn);
         }
       }
       return this._addon;
