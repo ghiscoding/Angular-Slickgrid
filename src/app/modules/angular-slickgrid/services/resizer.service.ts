@@ -237,12 +237,10 @@ export class ResizerService {
         if (this._gridUid && $(`.${this._gridUid}`).length > 0) {
           this._grid.autosizeColumns();
         }
-      } else if (this._gridOptions.enableAutoResizeColumnsByCellContent && this._lastDimensions?.width && newWidth !== this._lastDimensions?.width) {
+      } else if (this._gridOptions.enableAutoResizeColumnsByCellContent && (!this._lastDimensions?.width || newWidth !== this._lastDimensions?.width)) {
         // we can call our resize by content here (when enabled)
         // since the core Slick.Resizer plugin only supports the "autosizeColumns"
-        if (this._gridOptions.enableAutoResizeColumnsByCellContent && this._lastDimensions?.width && newWidth !== this._lastDimensions?.width) {
-          this.resizeColumnsByCellContent();
-        }
+        this.resizeColumnsByCellContent();
       }
 
       // keep last resized dimensions & resolve them to the Promise
@@ -278,17 +276,17 @@ export class ResizerService {
     }
 
     // read a few optional resize by content grid options
-    const resizeCellCharWidthInPx = this._gridOptions.resizeCellCharWidthInPx || 7; // width in pixels of a string character, this can vary depending on which font family/size is used & cell padding
-    const resizeCellPaddingWidthInPx = this._gridOptions.resizeCellPaddingWidthInPx || 6;
-    const resizeFormatterPaddingWidthInPx = this._gridOptions.resizeFormatterPaddingWidthInPx || 6;
-    const resizeMaxItemToInspectCellContentWidth = this._gridOptions.resizeMaxItemToInspectCellContentWidth || 1000; // how many items do we want to analyze cell content with widest width
+    const resizeCellCharWidthInPx = this._gridOptions.resizeCellCharWidthInPx ?? 7; // width in pixels of a string character, this can vary depending on which font family/size is used & cell padding
+    const resizeCellPaddingWidthInPx = this._gridOptions.resizeCellPaddingWidthInPx ?? 6;
+    const resizeFormatterPaddingWidthInPx = this._gridOptions.resizeFormatterPaddingWidthInPx ?? 6;
+    const resizeMaxItemToInspectCellContentWidth = this._gridOptions.resizeMaxItemToInspectCellContentWidth ?? 1000; // how many items do we want to analyze cell content with widest width
 
     // calculate total width necessary by each cell content
     // we won't re-evaluate if we already had calculated the total
     if (this._totalColumnsWidthByContent === 0 || recalculateColumnsTotalWidth) {
       // loop through all columns to get their minWidth or width for later usage
       for (const columnDef of columnDefinitions) {
-        columnWidths[columnDef.id] = columnDef.originalWidth || columnDef.minWidth || 0;
+        columnWidths[columnDef.id] = columnDef.originalWidth ?? columnDef.minWidth ?? 0;
       }
 
       // loop through the entire dataset (limit to first 1000 rows), and evaluate the width by its content

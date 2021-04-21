@@ -21,18 +21,22 @@ import {
   SortService,
   TreeDataService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentPinning, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
+import { Column, CurrentFilter, CurrentPinning, CurrentSorter, Formatter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
+import * as slickVanillaUtilities from '../slick-vanilla-utilities';
 import * as utilities from '../../services/backend-utilities';
 
 
+const mockAutoAddCustomEditorFormatter = jest.fn();
 const mockExecuteBackendProcess = jest.fn();
 const mockRefreshBackendDataset = jest.fn();
 // @ts-ignore
 utilities.executeBackendProcessesCallback = mockExecuteBackendProcess;
 // @ts-ignore
 utilities.refreshBackendDataset = mockRefreshBackendDataset;
+(slickVanillaUtilities.autoAddEditorFormatterToColumnsWithEditor as any) = mockAutoAddCustomEditorFormatter;
+
 
 const mockBackendError = jest.fn();
 // @ts-ignore
@@ -137,6 +141,7 @@ const resizerServiceStub = {
   dispose: jest.fn(),
   bindAutoResizeDataGrid: jest.fn(),
   resizeGrid: jest.fn(),
+  resizeColumnsByCellContent: jest.fn(),
 } as unknown as ResizerService;
 
 const sortServiceStub = {
@@ -179,8 +184,8 @@ const mockDataView = {
   getPagingInfo: jest.fn(),
   mapIdsToRows: jest.fn(),
   mapRowsToIds: jest.fn(),
-  onRowsChanged: new Slick.Event(),
   onRowsOrCountChanged: jest.fn(),
+  onSetItemsCalled: new Slick.Event(),
   reSort: jest.fn(),
   setItems: jest.fn(),
   syncGridSelection: jest.fn(),
@@ -353,6 +358,24 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   });
 
   describe('initialization method', () => {
+    const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef) => {
+      const isEditableLine = !!columnDef.editor;
+      value = (value === null || value === undefined) ? '' : value;
+      return isEditableLine ? `<div class="editing-field">${value}</div>` : value;
+    };
+
+    describe('autoAddCustomEditorFormatter grid option', () => {
+      it('should initialize the grid and automatically add custom Editor Formatter when provided in the grid options', () => {
+        const autoAddFormatterSpy = jest.spyOn(slickVanillaUtilities, 'autoAddEditorFormatterToColumnsWithEditor');
+
+        component.gridOptions.autoAddCustomEditorFormatter = customEditableInputFormatter;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+
+        expect(autoAddFormatterSpy).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
+      });
+    });
+
     describe('columns definitions changed', () => {
       it('should expect "translateColumnHeaders" being called when "enableTranslate" is set', () => {
         const translateSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
@@ -420,20 +443,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(refreshSpy).toHaveBeenCalledWith(mockData);
       });
 
-      // it('should expect "autosizeColumns" NOT being called when "autoFitColumnsOnFirstLoad" is set but we are not on first page load', () => {
-      //   const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
-      //   const refreshSpy = jest.spyOn(component, 'refreshGridData');
-      //   const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
-
-      //   component.gridOptions.autoFitColumnsOnFirstLoad = true;
-      //   component.ngAfterViewInit();
-      //   component.dataset = mockData;
-      //   // component.datasetChanged(mockData, [{ firstName: 'Jamie' }]);
-
-      //   expect(autosizeSpy).toHaveBeenCalledTimes(2); // 0x by datasetChanged and 2x by bindResizeHook
-      //   expect(refreshSpy).toHaveBeenCalledWith(mockData);
-      // });
-
       it('should expect "autosizeColumns" NOT being called when "autoFitColumnsOnFirstLoad" is not set and we are on first page load', () => {
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const refreshSpy = jest.spyOn(component, 'refreshGridData');
@@ -445,6 +454,60 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(autosizeSpy).not.toHaveBeenCalled();
         expect(refreshSpy).toHaveBeenCalledWith(mockData);
+      });
+
+      it('should expect "resizeColumnsByCellContent" being called when "enableAutoResizeColumnsByCellContent" is set and we changing column definitions via its SETTER', () => {
+        const resizeContentSpy = jest.spyOn(resizerServiceStub, 'resizeColumnsByCellContent');
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const mockColDefs = [{ id: 'gender', field: 'gender', editor: { model: Editors.text, collection: ['male', 'female'] } }] as Column[];
+        jest.spyOn(mockDataView, 'getLength').mockReturnValueOnce(0).mockReturnValueOnce(0).mockReturnValueOnce(mockData.length);
+
+        component.columnDefinitions = mockColDefs;
+        component.gridOptions.autoFitColumnsOnFirstLoad = false;
+        component.gridOptions.enableAutoSizeColumns = false;
+        component.gridOptions.autosizeColumnsByCellContentOnFirstLoad = true;
+        component.gridOptions.enableAutoResizeColumnsByCellContent = true;
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+        component.columnDefinitions = mockColDefs;
+
+        expect(resizeContentSpy).toHaveBeenCalledTimes(1);
+        expect(refreshSpy).toHaveBeenCalledWith(mockData);
+      });
+
+      it('should throw an error if we try to enable both auto resize type at same time with "autoFitColumnsOnFirstLoad" and "autosizeColumnsByCellContentOnFirstLoad"', (done) => {
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        jest.spyOn(mockDataView, 'getLength').mockReturnValueOnce(0).mockReturnValueOnce(0).mockReturnValueOnce(mockData.length);
+
+        component.gridOptions.autoFitColumnsOnFirstLoad = true;
+        component.gridOptions.autosizeColumnsByCellContentOnFirstLoad = true;
+
+        try {
+          component.ngAfterViewInit();
+          component.dataset = mockData;
+        } catch (e) {
+          expect(e.toString()).toContain('[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use.');
+          component.destroy();
+          done();
+        }
+      });
+
+      it('should throw an error if we try to enable both auto resize type at same time with "enableAutoSizeColumns" and "enableAutoResizeColumnsByCellContent"', (done) => {
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        jest.spyOn(mockDataView, 'getLength').mockReturnValueOnce(0).mockReturnValueOnce(0).mockReturnValueOnce(mockData.length);
+
+        component.gridOptions.enableAutoSizeColumns = true;
+        component.gridOptions.enableAutoResizeColumnsByCellContent = true;
+
+        try {
+          component.ngAfterViewInit();
+          component.dataset = mockData;
+        } catch (e) {
+          expect(e.toString()).toContain('[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use.');
+          component.destroy();
+          done();
+        }
       });
     });
 

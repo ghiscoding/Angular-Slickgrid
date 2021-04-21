@@ -99,6 +99,14 @@ const filterServiceStub = {
   onFilterChanged: new Subject<CurrentFilter[]>(),
 } as unknown as FilterService;
 
+const resizerServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  bindAutoResizeDataGrid: jest.fn(),
+  resizeGrid: jest.fn(),
+  resizeColumnsByCellContent: jest.fn(),
+} as unknown as ResizerService;
+
 const sortServiceStub = {
   bindBackendOnSort: jest.fn(),
   bindLocalOnSort: jest.fn(),
@@ -136,7 +144,6 @@ describe('App Component', () => {
         GridEventService,
         GridStateService,
         PaginationService,
-        ResizerService,
         SharedService,
         TranslateService,
         AutoTooltipExtension,
@@ -161,6 +168,7 @@ describe('App Component', () => {
         { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: ExtensionUtility, useValue: extensionUtilityStub },
         { provide: GroupingAndColspanService, useValue: groupingAndColspanServiceStub },
+        { provide: ResizerService, useValue: resizerServiceStub },
         { provide: SortService, useValue: sortServiceStub },
         { provide: TreeDataService, useValue: treeDataServiceStub },
       ],
@@ -279,5 +287,23 @@ describe('App Component', () => {
 
     expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
     expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
+  });
+
+  describe('resizeColumnsByCellContent method', () => {
+    it('should call "resizeColumnsByCellContent" when the DataView "onSetItemsCalled" event is triggered and "enableAutoResizeColumnsByCellContent" is set', (done) => {
+      const resizeContentSpy = jest.spyOn(resizerServiceStub, 'resizeColumnsByCellContent');
+      const mockDataset = [{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }];
+
+      component.gridId = 'grid1';
+      component.gridOptions = { enablePagination: false, showCustomFooter: true, autoFitColumnsOnFirstLoad: false, enableAutoSizeColumns: false, enableAutoResizeColumnsByCellContent: true } as GridOption;
+      component.dataset = mockDataset;
+      fixture.detectChanges();
+      component.dataView.onSetItemsCalled.notify({ idProperty: 'id', itemCount: 1 });
+
+      setTimeout(() => {
+        expect(resizeContentSpy).toHaveBeenCalledWith(true);
+        done();
+      }, 10);
+    });
   });
 });

@@ -1,3 +1,5 @@
+import { Editors } from '../../editors/editors.index';
+import { Column, FieldType } from '../../models';
 import { GridOption } from '../../models/gridOption.interface';
 import { ResizerService } from '../resizer.service';
 
@@ -22,13 +24,25 @@ const gridOptionMock = {
   enableAutoResize: true
 } as GridOption;
 
+const mockDataView = {
+  constructor: jest.fn(),
+  init: jest.fn(),
+  destroy: jest.fn(),
+  getItemMetadata: jest.fn(),
+  getItems: jest.fn(),
+};
+
 const gridStub = {
   autosizeColumns: jest.fn(),
+  getColumns: jest.fn(),
   getContainerNode: jest.fn(),
   getScrollbarDimensions: jest.fn(),
   resizeCanvas: jest.fn(),
+  getData: () => mockDataView,
   getOptions: () => gridOptionMock,
   getUID: () => gridUid,
+  reRenderColumns: jest.fn(),
+  setColumns: jest.fn(),
 };
 
 // define a <div> container to simulate the grid container
@@ -47,12 +61,25 @@ const template =
 describe('Resizer Service', () => {
   let service: ResizerService;
   let div;
+  let mockGridOptions: GridOption;
 
   beforeEach(() => {
     div = document.createElement('div');
     div.innerHTML = template;
     document.body.appendChild(div);
 
+    mockGridOptions = {
+      enableAutoResize: true,
+      autoResize: {
+        container: '.grid1'
+      },
+      enableFiltering: true,
+      headerRowHeight: 30,
+      createPreHeaderPanel: true,
+      showPreHeaderPanel: true,
+      preHeaderPanelHeight: 20,
+    } as GridOption;
+    jest.spyOn(gridStub, 'getOptions').mockReturnValue(mockGridOptions);
     jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(div.querySelector(`#${gridId}`));
     service = new ResizerService();
     service.init(gridStub);
@@ -211,7 +238,7 @@ describe('Resizer Service', () => {
       service.calculateGridNewDimensions(gridOptionMock);
 
       // same comment as previous test, the height dimension will work because calculateGridNewDimensions() uses "window.innerHeight"
-      expect(serviceCalculateSpy).toReturnWith({ height: gridOptionMock.autoResize.maxHeight, width: fixedWidth });
+      expect(serviceCalculateSpy).toReturnWith({ height: gridOptionMock.autoResize!.maxHeight, width: fixedWidth });
     });
 
     it('should use maxWidth when new dimensions are higher than maximum defined', () => {
@@ -225,7 +252,7 @@ describe('Resizer Service', () => {
       service.calculateGridNewDimensions(gridOptionMock);
 
       // same comment as previous test, the height dimension will work because calculateGridNewDimensions() uses "window.innerHeight"
-      expect(serviceCalculateSpy).toReturnWith({ height: fixedHeight, width: gridOptionMock.autoResize.maxWidth });
+      expect(serviceCalculateSpy).toReturnWith({ height: fixedHeight, width: gridOptionMock.autoResize!.maxWidth });
     });
 
     it('should use minWidth constant when new dimensions are lower than minimum defined', () => {
@@ -253,7 +280,7 @@ describe('Resizer Service', () => {
       service.calculateGridNewDimensions(gridOptionMock);
 
       // same comment as previous test, the height dimension will work because calculateGridNewDimensions() uses "window.innerHeight"
-      expect(serviceCalculateSpy).toReturnWith({ height: fixedHeight, width: newWidth - gridOptionMock.autoResize.sidePadding });
+      expect(serviceCalculateSpy).toReturnWith({ height: fixedHeight, width: newWidth - gridOptionMock.autoResize!.sidePadding! });
     });
 
     it('should calculate new dimensions minus a padding when "bottomPadding" is defined in "autoResize" and calculateGridNewDimensions is called', () => {
@@ -333,6 +360,24 @@ describe('Resizer Service', () => {
       expect(gridAutosizeSpy).toHaveBeenCalled();
     });
 
+    it('should call "onGridAfterResize" event and expect "resizeColumnsByCellContent" to be called when "enableAutoResizeColumnsByCellContent" is set', () => {
+      const newHeight = 500;
+      const resizeContentSpy = jest.spyOn(service, 'resizeColumnsByCellContent');
+      const newOptions = { ...gridOptionMock, enableAutoResizeColumnsByCellContent: true };
+      const newGridStub = { ...gridStub, getOptions: () => newOptions };
+
+      service.init(newGridStub);
+
+      service.bindAutoResizeDataGrid();
+      Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: newHeight });
+      window.dispatchEvent(new Event('resize'));
+      // service.resizeGrid();
+      // const instance = service.getAddonInstance();
+      // instance.onGridAfterResize.notify({ grid: gridStub, dimensions: { height: 200, width: 800 } }, new Slick.EventData(), gridStub);
+
+      expect(resizeContentSpy).toHaveBeenCalled();
+    });
+
     it('should stop resizing when user called "pauseResizer" with true', () => {
       service.bindAutoResizeDataGrid();
       Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 450 });
@@ -361,6 +406,84 @@ describe('Resizer Service', () => {
       // with JSDOM the height is always 0 so we can assume that the height will be the minimum height (without the padding)
       expect(serviceCalculateSpy).toHaveBeenCalled();
       expect(resizeCanvasSpy).toHaveBeenCalled();
+    });
+
+
+    describe('resizeColumnsByCellContent method', () => {
+      let mockColDefs: Column[];
+      let mockData: any[];
+
+      beforeEach(() => {
+        mockGridOptions.resizeCellCharWidthInPx = 7;
+        mockGridOptions.resizeCellPaddingWidthInPx = 6;
+        mockGridOptions.resizeFormatterPaddingWidthInPx = 5;
+        mockGridOptions.resizeDefaultRatioForStringType = 0.88;
+        mockGridOptions.resizeAlwaysRecalculateColumnWidth = false;
+        mockGridOptions.resizeMaxItemToInspectCellContentWidth = 4;
+        mockColDefs = [
+          // typically the `originalWidth` is set by the columnDefinitiosn setter in vanilla grid bundle but we can mock it for our test
+          { id: 'userId', field: 'userId', width: 30, originalWidth: 30 },
+          { id: 'firstName', field: 'firstName', editor: { model: Editors.text }, minWidth: 50 },
+          { id: 'lastName', field: 'lastName', editor: { model: Editors.text }, minWidth: 50 },
+          { id: 'gender', field: 'gender', resizeCalcWidthRatio: 1.2 },
+          { id: 'age', field: 'age', type: FieldType.number, resizeExtraWidthPadding: 2 },
+          { id: 'street', field: 'street', maxWidth: 15 },
+          { id: 'country', field: 'country', maxWidth: 15, resizeMaxWidthThreshold: 14, rerenderOnResize: true },
+        ] as Column[];
+        mockData = [
+          { userId: 1, firstName: 'John', lastName: 'Doe', gender: 'male', age: 20, street: '478 Kunze Land', country: 'United States of America' },
+          { userId: 2, firstName: 'Destinee', lastName: 'Shanahan', gender: 'female', age: 25, street: '20519 Watson Lodge', country: 'Australia' },
+          { userId: 3, firstName: 'Sarai', lastName: 'Altenwerth', gender: 'female', age: 30, street: '184 Preston Pine', country: 'United States of America' },
+          { userId: 4, firstName: 'Tyshawn', lastName: 'Hyatt', gender: 'male', age: 35, street: '541 Senger Drives', country: 'Canada' },
+          { userId: 5, firstName: 'Alvina', lastName: 'Franecki', gender: 'female', age: 100, street: '20229 Tia Turnpike', country: 'United States of America' },
+          { userId: 6, firstName: 'Therese', lastName: 'Brakus', gender: 'female', age: 99, street: '34767 Lindgren Dam', country: 'Bosnia' },
+        ];
+
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColDefs);
+        jest.spyOn(mockDataView, 'getItems').mockReturnValue(mockData);
+      });
+
+      it('should call the resize and expect first column have a fixed width while other will have a calculated width when resizing by their content', () => {
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const reRenderColumnsSpy = jest.spyOn(gridStub, 'reRenderColumns');
+
+        service.init(gridStub);
+        service.resizeColumnsByCellContent(true);
+
+        expect(setColumnsSpy).toHaveBeenCalledWith(
+          expect.arrayContaining([
+            expect.objectContaining({ id: 'userId', width: 30 }),
+            expect.objectContaining({ id: 'firstName', width: 56 }), // longest word "Destinee" (length 8 * charWidth(7) * ratio(0.88)) + cellPadding(6) = 55.28 ceil to => 56
+            expect.objectContaining({ id: 'lastName', width: 68 }), // longest word "Altenwerth" (length 10 * charWidth(7) * ratio(0.88)) + cellPadding(6) = 67.6 ceil to => 68
+            expect.objectContaining({ id: 'gender', width: 57 }), // longest word "female" (length 6 * charWidth(7) * customRatio(1.2)) + cellPadding(6) = 56.4 ceil to 57
+            expect.objectContaining({ id: 'age', width: 29 }), // longest number 100 (length 3 * charWidth(7) * ratio(1)) + cellPadding(6) + extraPadding(2) = 44.96 ceil to 45
+            expect.objectContaining({ id: 'street', width: 15 }), // longest number "20229 Tia Turnpike" goes over maxWidth so we fallback to it
+            expect.objectContaining({ id: 'country', width: 14 }), // longest number "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+          ]));
+        expect(reRenderColumnsSpy).toHaveBeenCalledWith(true);
+      });
+
+      it('should call the resize and expect first column have a fixed width while other will have a calculated width when resizing by their content and grid is editable', () => {
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const reRenderColumnsSpy = jest.spyOn(gridStub, 'reRenderColumns');
+
+        mockGridOptions.editable = true;
+        service.init(gridStub);
+        service.resizeColumnsByCellContent(true);
+
+        // same as previous except firstName/lastName have editors with padding of 5px
+        expect(setColumnsSpy).toHaveBeenCalledWith(
+          expect.arrayContaining([
+            expect.objectContaining({ id: 'userId', width: 30 }),
+            expect.objectContaining({ id: 'firstName', width: 61 }), // longest word "Destinee" (length 8 * charWidth(7) * ratio(0.88)) + cellPadding(6) + editorPadding(5) = 60.28 ceil to => 61
+            expect.objectContaining({ id: 'lastName', width: 73 }), // longest word "Altenwerth" (length 10 * charWidth(7) * ratio(0.88)) + cellPadding(6) + editorPadding(5) = 72.6 ceil to => 73
+            expect.objectContaining({ id: 'gender', width: 57 }), // longest word "female" (length 6 * charWidth(7) * customRatio(1.2)) + cellPadding(6) = 56.4 ceil to 57
+            expect.objectContaining({ id: 'age', width: 29 }), // longest number 100 (length 3 * charWidth(7) * ratio(1)) + cellPadding(6) + extraPadding(2) = 44.96 ceil to 45
+            expect.objectContaining({ id: 'street', width: 15 }), // longest number "20229 Tia Turnpike" goes over maxWidth so we fallback to it
+            expect.objectContaining({ id: 'country', width: 14 }), // longest number "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+          ]));
+        expect(reRenderColumnsSpy).toHaveBeenCalledWith(true);
+      });
     });
   });
 
