@@ -291,9 +291,9 @@ export class ResizerService {
 
       // loop through the entire dataset (limit to first 1000 rows), and evaluate the width by its content
       // if we have a Formatter, we will also potentially add padding
-      for (const [rowIdx, item] of dataset.entries()) {
+      dataset.every((item: any, rowIdx: number) => {
         if (rowIdx > resizeMaxItemToInspectCellContentWidth) {
-          break;
+          return false;
         }
         columnDefinitions.forEach((columnDef, colIdx) => {
           if (!columnDef.originalWidth) {
@@ -310,7 +310,8 @@ export class ResizerService {
             }
           }
         });
-      }
+        return true;
+      });
 
       // finally loop through all column definitions one last time to apply new calculated `width` on each elligible column
       let totalColsWidth = 0;
