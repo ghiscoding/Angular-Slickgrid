@@ -1,0 +1,19 @@
+$button-border-color: #ababab !default;
+
+.editable-field {
+  background-color: rgba(227, 240, 251, 0.569) !important;
+}
+.unsaved-editable-field {
+  background-color: #fbfdd1 !important;
+}
+.button-style {
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #{$button-border-color};
+  border-radius: 2px;
+  justify-content: center;
+  text-align: center;
+  &:hover {
+    border-color: darken($button-border-color, 10%);
+  }
+}

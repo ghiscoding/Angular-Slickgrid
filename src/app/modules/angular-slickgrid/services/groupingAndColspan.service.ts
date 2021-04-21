@@ -49,6 +49,7 @@ export class GroupingAndColspanService {
         // on all following events, call the
         this._eventHandler.subscribe(grid.onSort, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(grid.onRendered, () => this.renderPreHeaderRowGroupingTitles());
+        this._eventHandler.subscribe(grid.onAutosizeColumns, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(grid.onColumnsResized, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(grid.onColumnsReordered, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());

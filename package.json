@@ -110,7 +110,7 @@
     "jquery-ui-dist": "^1.12.1",
     "moment-mini": "^2.24.0",
     "rxjs": "^6.6.7",
-    "slickgrid": "^2.4.33",
+    "slickgrid": "^2.4.34",
     "text-encoding-utf-8": "^1.0.2"
   },
   "peerDependencies": {

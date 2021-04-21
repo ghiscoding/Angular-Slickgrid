@@ -357,7 +357,8 @@ export class HeaderMenuExtension implements Extension {
           }
 
           // we also need to autosize columns if the option is enabled
-          if (this.sharedService.gridOptions.enableAutoSizeColumns) {
+          const gridOptions = this.sharedService.grid.getOptions();
+          if (gridOptions.enableAutoSizeColumns) {
             this.sharedService.grid.autosizeColumns();
           }
           break;

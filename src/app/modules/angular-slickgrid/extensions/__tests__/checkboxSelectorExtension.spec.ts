@@ -46,7 +46,7 @@ describe('checkboxSelectorExtension', () => {
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {
-    const output = extension.create([] as Column[], null);
+    const output = extension.create([] as Column[], null as any);
     expect(output).toBeNull();
   });
 
@@ -115,7 +115,7 @@ describe('checkboxSelectorExtension', () => {
     it('should provide addon options and expect them to be called in the addon constructor', () => {
       const optionMock = { selectActiveRow: true };
       const selectionModelOptions = { ...gridOptionsMock, rowSelectionOptions: optionMock };
-      const selectionColumn = { ...columnSelectionMock, excludeFromExport: true, excludeFromColumnPicker: true, excludeFromGridMenu: true, excludeFromQuery: true, excludeFromHeaderMenu: true };
+      const selectionColumn = { ...columnSelectionMock, excludeFromExport: true, excludeFromColumnPicker: true, excludeFromGridMenu: true, excludeFromQuery: true, excludeFromHeaderMenu: true, maxWidth: 30 };
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(selectionModelOptions);
 
       // we can only spy after 1st "create" call, we'll only get a valid selectionColumn on 2nd "create" call
@@ -130,7 +130,7 @@ describe('checkboxSelectorExtension', () => {
       expect(mockSelectionModel).toHaveBeenCalledWith(optionMock);
       expect(columnsMock[0]).toEqual(selectionColumn);
       expect(columnsMock).toEqual([
-        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, field: 'sel', id: '_checkbox_selector', },
+        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, maxWidth: 30, field: 'sel', id: '_checkbox_selector', },
         { cssClass: 'red', field: 'field1', id: 'field1', width: 100, },
         { field: 'field2', id: 'field2', width: 50, }
       ]);
@@ -140,7 +140,7 @@ describe('checkboxSelectorExtension', () => {
       const rowSelectionOptionMock = { selectActiveRow: true };
       gridOptionsMock.checkboxSelector = { columnIndexPosition: 2, };
       const selectionModelOptions = { ...gridOptionsMock, rowSelectionOptions: rowSelectionOptionMock };
-      const selectionColumn = { ...columnSelectionMock, excludeFromExport: true, excludeFromColumnPicker: true, excludeFromGridMenu: true, excludeFromQuery: true, excludeFromHeaderMenu: true };
+      const selectionColumn = { ...columnSelectionMock, excludeFromExport: true, excludeFromColumnPicker: true, excludeFromGridMenu: true, excludeFromQuery: true, excludeFromHeaderMenu: true, maxWidth: 30 };
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(selectionModelOptions);
 
       // we can only spy after 1st "create" call, we'll only get a valid selectionColumn on 2nd "create" call
@@ -157,7 +157,7 @@ describe('checkboxSelectorExtension', () => {
       expect(columnsMock).toEqual([
         { cssClass: 'red', field: 'field1', id: 'field1', width: 100, },
         { field: 'field2', id: 'field2', width: 50, },
-        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, field: 'sel', id: '_checkbox_selector', },
+        { excludeFromColumnPicker: true, excludeFromExport: true, excludeFromGridMenu: true, excludeFromHeaderMenu: true, excludeFromQuery: true, maxWidth: 30, field: 'sel', id: '_checkbox_selector', },
       ]);
     });
 
