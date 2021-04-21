@@ -355,6 +355,25 @@ describe('CompoundInputFilter', () => {
     expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
 
+  it('should have custom compound operator list showing up in the operator select dropdown options list', () => {
+    mockColumn.outputType = null as any;
+    filterArguments.searchTerms = ['xyz'];
+    mockColumn.filter!.compoundOperatorList = [
+      { operator: '', description: '' },
+      { operator: '=', description: 'Equal to' },
+      { operator: '<', description: 'Less than' },
+      { operator: '>', description: 'Greater than' },
+    ];
+
+    filter.init(filterArguments);
+    const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
+
+    expect(filterOperatorElm[0][0].title).toBe('');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('> Greater than');
+  });
+
   describe('with French I18N translations', () => {
     beforeEach(() => {
       gridOptionMock.enableTranslate = true;

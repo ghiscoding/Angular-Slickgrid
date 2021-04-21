@@ -8,6 +8,7 @@ import {
   FilterCallback,
   GridOption,
   Locale,
+  OperatorDetail,
   OperatorString,
   OperatorType,
   SearchTerm,
@@ -206,17 +207,21 @@ export class CompoundSliderFilter implements Filter {
     return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text ${this._elementRangeOutputId}">${defaultValue}</span></div>`;
   }
 
-  /** Get the available operator option values */
-  protected getOptionValues(): { operator: OperatorString, description: string }[] {
-    return [
-      { operator: '', description: '' },
-      { operator: '=', description: this.getOutputText('EQUAL_TO', 'TEXT_EQUAL_TO', 'Equal to') },
-      { operator: '<', description: this.getOutputText('LESS_THAN', 'TEXT_LESS_THAN', 'Less than') },
-      { operator: '<=', description: this.getOutputText('LESS_THAN_OR_EQUAL_TO', 'TEXT_LESS_THAN_OR_EQUAL_TO', 'Less than or equal to') },
-      { operator: '>', description: this.getOutputText('GREATER_THAN', 'TEXT_GREATER_THAN', 'Greater than') },
-      { operator: '>=', description: this.getOutputText('GREATER_THAN_OR_EQUAL_TO', 'TEXT_GREATER_THAN_OR_EQUAL_TO', 'Greater than or equal to') },
-      { operator: '<>', description: this.getOutputText('NOT_EQUAL_TO', 'TEXT_NOT_EQUAL_TO', 'Not equal to') }
-    ];
+  /** Get the available operator option values to populate the operator select dropdown list */
+  protected getOperatorOptionValues(): OperatorDetail[] {
+    if (this.columnFilter?.compoundOperatorList) {
+      return this.columnFilter.compoundOperatorList;
+    } else {
+      return [
+        { operator: '', description: '' },
+        { operator: '=', description: this.getOutputText('EQUAL_TO', 'TEXT_EQUAL_TO', 'Equal to') },
+        { operator: '<', description: this.getOutputText('LESS_THAN', 'TEXT_LESS_THAN', 'Less than') },
+        { operator: '<=', description: this.getOutputText('LESS_THAN_OR_EQUAL_TO', 'TEXT_LESS_THAN_OR_EQUAL_TO', 'Less than or equal to') },
+        { operator: '>', description: this.getOutputText('GREATER_THAN', 'TEXT_GREATER_THAN', 'Greater than') },
+        { operator: '>=', description: this.getOutputText('GREATER_THAN_OR_EQUAL_TO', 'TEXT_GREATER_THAN_OR_EQUAL_TO', 'Greater than or equal to') },
+        { operator: '<>', description: this.getOutputText('NOT_EQUAL_TO', 'TEXT_NOT_EQUAL_TO', 'Not equal to') }
+      ];
+    }
   }
 
   /** Get Locale, Translated or a Default Text if first two aren't detected */
@@ -248,7 +253,7 @@ export class CompoundSliderFilter implements Filter {
     this._currentValue = +searchTermInput;
 
     // create the DOM Select dropdown for the Operator
-    const selectOperatorHtmlString = buildSelectOperatorHtmlString(this.getOptionValues());
+    const selectOperatorHtmlString = buildSelectOperatorHtmlString(this.getOperatorOptionValues());
     this.$selectOperatorElm = $(selectOperatorHtmlString);
     this.$filterInputElm = $(this.buildTemplateHtmlString());
     const $filterContainerElm = $(`<div class="form-group slider-container search-filter filter-${fieldId}"></div>`);
