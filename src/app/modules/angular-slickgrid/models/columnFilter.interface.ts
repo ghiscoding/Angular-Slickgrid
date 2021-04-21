@@ -9,6 +9,7 @@ import {
   FieldType,
   Filter,
   MultipleSelectOption,
+  OperatorDetail,
   OperatorString,
   OperatorType,
   SearchTerm,
@@ -32,6 +33,9 @@ export interface ColumnFilter {
 
   /** Column Definition */
   columnDef?: Column;
+
+  /** Optional operator list to override the full list of Compound Operator select dropdown list. */
+  compoundOperatorList?: OperatorDetail[];
 
   /** Custom Filter */
   customFilter?: Filter;

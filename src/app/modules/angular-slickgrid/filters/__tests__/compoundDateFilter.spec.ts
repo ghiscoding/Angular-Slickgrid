@@ -30,7 +30,7 @@ describe('CompoundDateFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: CompoundDateFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: any;
   let mockColumn: Column;
   let translate: TranslateService;
 
@@ -88,7 +88,7 @@ describe('CompoundDateFilter', () => {
   });
 
   it('should throw an error when trying to call init without any arguments', () => {
-    expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    expect(() => filter.init(null as any)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
   it('should initialize the filter', () => {
@@ -101,10 +101,10 @@ describe('CompoundDateFilter', () => {
 
   it('should have a placeholder when defined in its column definition', () => {
     const testValue = 'test placeholder';
-    mockColumn.filter.placeholder = testValue;
+    mockColumn.filter!.placeholder = testValue;
 
     filter.init(filterArguments);
-    const filterElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
 
     expect(filterElm.placeholder).toBe(testValue);
   });
@@ -165,19 +165,19 @@ describe('CompoundDateFilter', () => {
     filter.init(filterArguments);
     filter.setValues([mockDate], OperatorType.greaterThanOrEqual);
 
-    const filterOperatorElm = divContainer.querySelector<HTMLInputElement>('.input-group-prepend.operator select');
+    const filterOperatorElm = divContainer.querySelector('.input-group-prepend.operator select') as HTMLInputElement;
 
     expect(filter.currentDate).toEqual(mockDate);
     expect(filterOperatorElm.value).toBe('>=');
   });
 
   it('should trigger input change event and expect the callback to be called with the date provided in the input', () => {
-    mockColumn.filter.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
-    mockColumn.filter.operator = '>';
+    mockColumn.filter!.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
+    mockColumn.filter!.operator = '>';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
     filterInputElm.value = '2001-01-02T16:02:02.239Z';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
@@ -189,12 +189,12 @@ describe('CompoundDateFilter', () => {
   });
 
   it('should pass a different operator then trigger an input change event and expect the callback to be called with the date provided in the input', () => {
-    mockColumn.filter.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
-    mockColumn.filter.operator = '>';
+    mockColumn.filter!.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
+    mockColumn.filter!.operator = '>';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
     filterInputElm.value = '2001-01-02T16:02:02.239Z';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
@@ -205,11 +205,11 @@ describe('CompoundDateFilter', () => {
 
   it('should create the input filter with a default search term when passed as a filter argument', () => {
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
-    mockColumn.filter.operator = '<=';
+    mockColumn.filter!.operator = '<=';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -223,11 +223,11 @@ describe('CompoundDateFilter', () => {
 
   it('should trigger an operator change event and expect the callback to be called with the searchTerms and operator defined', () => {
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
-    mockColumn.filter.operator = '>';
+    mockColumn.filter!.operator = '>';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterSelectElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish select');
+    const filterSelectElm = divContainer.querySelector('.search-filter.filter-finish select') as HTMLInputElement;
 
     filterSelectElm.value = '<=';
     filterSelectElm.dispatchEvent(new Event('change'));
@@ -242,12 +242,12 @@ describe('CompoundDateFilter', () => {
 
     translate.use('fr');
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
-    mockColumn.filter.operator = '<=';
+    mockColumn.filter!.operator = '<=';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
-    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
+    const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
     const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>('.flatpickr-monthDropdown-months option');
 
     filter.show();
@@ -270,11 +270,11 @@ describe('CompoundDateFilter', () => {
 
     translate.use('zz-yy'); // will be trimmed to 2 chars "zz"
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
-    mockColumn.filter.operator = '<=';
+    mockColumn.filter!.operator = '<=';
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
-    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
+    const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
     const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>(' .flatpickr-monthDropdown-months option');
 
     filter.show();
@@ -296,7 +296,7 @@ describe('CompoundDateFilter', () => {
 
     filter.init(filterArguments);
     filter.clear();
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
 
     expect(filterInputElm.value).toBe('');
@@ -310,7 +310,7 @@ describe('CompoundDateFilter', () => {
 
     filter.init(filterArguments);
     filter.clear(false);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
 
     expect(filterInputElm.value).toBe('');
@@ -319,13 +319,13 @@ describe('CompoundDateFilter', () => {
   });
 
   it('should have a value with date & time in the picker when "enableTime" option is set and we trigger a change', () => {
-    mockColumn.filter.filterOptions = { enableTime: true, allowInput: true }; // change to allow input value only for testing purposes
+    mockColumn.filter!.filterOptions = { enableTime: true, allowInput: true }; // change to allow input value only for testing purposes
     mockColumn.outputType = FieldType.dateTimeIsoAmPm;
-    mockColumn.filter.operator = '>';
+    mockColumn.filter!.operator = '>';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
     filterInputElm.value = '2001-01-02T16:02:02.000+05:00';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
@@ -339,13 +339,13 @@ describe('CompoundDateFilter', () => {
   });
 
   it('should have a value with date & time in the picker when using no "outputType" which will default to UTC date', () => {
-    mockColumn.outputType = null;
+    mockColumn.outputType = null as any;
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
-    mockColumn.filter.operator = '<=';
+    mockColumn.filter!.operator = '<=';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.input');
+    const filterInputElm = divContainer.querySelector('.search-filter.filter-finish .flatpickr input.input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -358,19 +358,38 @@ describe('CompoundDateFilter', () => {
   });
 
   it('should have default English text with operator dropdown options related to dates', () => {
-    mockColumn.outputType = null;
+    mockColumn.outputType = null as any;
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
 
     filter.init(filterArguments);
     const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.input-group-prepend.operator select');
 
     expect(filterOperatorElm[0][0].title).toBe('');
-    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Less than');
-    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Less than or equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Greater than');
-    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Greater than or equal to');
-    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Not equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('<= Less than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('> Greater than');
+    expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('>= Greater than or equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][6].textContent!)).toBe('<> Not equal to');
+  });
+
+  it('should have custom compound operator list showing up in the operator select dropdown options list', () => {
+    mockColumn.outputType = null as any;
+    filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
+    mockColumn.filter!.compoundOperatorList = [
+      { operator: '', description: '' },
+      { operator: '=', description: 'Equal to' },
+      { operator: '<', description: 'Less than' },
+      { operator: '>', description: 'Greater than' },
+    ];
+
+    filter.init(filterArguments);
+    const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.input-group-prepend.operator select');
+
+    expect(filterOperatorElm[0][0].title).toBe('');
+    expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Equal to');
+    expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Less than');
+    expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('> Greater than');
   });
 
   describe('with French I18N translations', () => {
@@ -380,19 +399,19 @@ describe('CompoundDateFilter', () => {
     });
 
     it('should have French text translated with operator dropdown options related to dates', () => {
-      mockColumn.outputType = null;
+      mockColumn.outputType = null as any;
       filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z'];
 
       filter.init(filterArguments);
       const filterOperatorElm = divContainer.querySelectorAll<HTMLSelectElement>('.input-group-prepend.operator select');
 
       expect(filterOperatorElm[0][0].title).toBe('');
-      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent)).toBe('= Égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent)).toBe('< Plus petit que');
-      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent)).toBe('<= Plus petit ou égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent)).toBe('> Plus grand que');
-      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent)).toBe('>= Plus grand ou égal à');
-      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent)).toBe('<> Non égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][1].textContent!)).toBe('= Égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][2].textContent!)).toBe('< Plus petit que');
+      expect(removeExtraSpaces(filterOperatorElm[0][3].textContent!)).toBe('<= Plus petit ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][4].textContent!)).toBe('> Plus grand que');
+      expect(removeExtraSpaces(filterOperatorElm[0][5].textContent!)).toBe('>= Plus grand ou égal à');
+      expect(removeExtraSpaces(filterOperatorElm[0][6].textContent!)).toBe('<> Non égal à');
     });
   });
 });

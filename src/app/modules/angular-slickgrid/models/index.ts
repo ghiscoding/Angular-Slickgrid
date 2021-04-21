@@ -122,6 +122,7 @@ export * from './odataOption.interface';
 export * from './odataServiceApi.interface';
 export * from './odataSortingOption.interface';
 export * from './onEventArgs.interface';
+export * from './operatorDetail.interface';
 export * from './operatorString';
 export * from './operatorType.enum';
 export * from './pagination.interface';
