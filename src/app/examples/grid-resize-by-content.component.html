@@ -11,16 +11,16 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
+  <h4 class="ml-3">Container Width (950px)</h4>
   <div class="row">
-    <h4 class="ml-3">Container Width (950px)</h4>
 
     <div class="ml-2 mb-2 mr-2">
       <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
-        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+        <button class="btn btn-outline-secondary btn-sm" data-text="autosize-columns-btn"
                 (click)="handleDefaultResizeColumns()">
           <i class="fa fa-expand"></i> (default resize) by "autosizeColumns"
         </button>
-        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+        <button class="btn btn-outline-secondary btn-sm" data-text="resize-by-content-btn"
                 (click)="handleNewResizeColumns()">
           <i class="fa fa-expand"></i> Resize by Cell Content
         </button>
