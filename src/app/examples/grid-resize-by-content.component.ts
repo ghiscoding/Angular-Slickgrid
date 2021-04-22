@@ -62,6 +62,7 @@ export class GridResizeByContentComponent implements OnInit {
   dataset: any[] = [];
   editQueue: any[] = [];
   editedItems: any = {};
+  isUsingDefaultResize = false;
   isGridEditable = true;
   isCompositeDisabled = false;
   isMassSelectionDisabled = true;
@@ -463,10 +464,12 @@ export class GridResizeByContentComponent implements OnInit {
     columns.forEach(col => col.width = col.originalWidth);
     this.angularGrid.slickGrid.setColumns(columns);
     this.angularGrid.slickGrid.autosizeColumns();
+    this.isUsingDefaultResize = true;
   }
 
   handleNewResizeColumns() {
     this.angularGrid.resizerService.resizeColumnsByCellContent(true);
+    this.isUsingDefaultResize = false;
   }
 
   toggleGridEditReadonly() {
