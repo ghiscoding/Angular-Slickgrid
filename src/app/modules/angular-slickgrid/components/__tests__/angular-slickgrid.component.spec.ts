@@ -45,6 +45,12 @@ import {
 } from '../../extensions';
 import * as utilities from '../../services/utilities';
 
+declare const Slick: any;
+
+function removeExtraSpaces(text: string) {
+  return `${text}`.replace(/\s{2,}/g, '');
+}
+
 const mockConvertParentChildArray = jest.fn();
 // @ts-ignore
 utilities.convertParentChildArrayToHierarchicalView = mockConvertParentChildArray;
@@ -304,6 +310,74 @@ describe('App Component', () => {
         expect(resizeContentSpy).toHaveBeenCalledWith(true);
         done();
       }, 10);
+    });
+  });
+
+  describe('Custom Footer', () => {
+    it('should display 1 items selected on the left side footer section after triggering "onSelectedRowsChanged" event', () => {
+      const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+      component.gridId = 'grid1';
+      component.gridOptions = {
+        enablePagination: false,
+        showCustomFooter: true,
+        enableCheckboxSelector: true,
+        customFooterOptions: {
+          hideRowSelectionCount: false
+        }
+      } as GridOption;
+      fixture.detectChanges();
+      component.columnDefinitions = mockColDefs;
+      component.grid.setSelectionModel(new Slick.CellSelectionModel());
+      component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+      fixture.detectChanges();
+
+      const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
+      const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+      const footerContainerElm = document.querySelector('div.slick-custom-footer') as HTMLDivElement;
+      const leftFooterElm = document.querySelector('div.slick-custom-footer > div.left-footer') as HTMLSpanElement;
+      const rightFooterElm = document.querySelector('div.slick-custom-footer > div.metrics') as HTMLSpanElement;
+
+      expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
+      expect(gridContainerElm.id).toBe('grid1');
+      expect(footerContainerElm).toBeTruthy();
+      expect(rightFooterElm).toBeTruthy();
+      expect(leftFooterElm).toBeTruthy();
+      expect(component.gridOptions.customFooterOptions!.leftFooterText).toBe('1 items selected');
+      expect(leftFooterElm.innerHTML).toContain('1 items selected');
+    });
+
+    it('should not not display row selection count after triggering "onSelectedRowsChanged" event when "hideRowSelectionCount" is set to True', () => {
+      const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+      component.gridId = 'grid1';
+      component.gridOptions = {
+        enablePagination: false,
+        showCustomFooter: true,
+        enableCheckboxSelector: true,
+        customFooterOptions: {
+          hideRowSelectionCount: true
+        }
+      } as GridOption;
+      fixture.detectChanges();
+      component.columnDefinitions = mockColDefs;
+      component.grid.setSelectionModel(new Slick.CellSelectionModel());
+      component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+      fixture.detectChanges();
+
+      const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
+      const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+      const footerContainerElm = document.querySelector('div.slick-custom-footer') as HTMLDivElement;
+      const leftFooterElm = document.querySelector('div.slick-custom-footer > div.left-footer') as HTMLSpanElement;
+      const rightFooterElm = document.querySelector('div.slick-custom-footer > div.metrics') as HTMLSpanElement;
+
+      expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
+      expect(gridContainerElm.id).toBe('grid1');
+      expect(footerContainerElm).toBeTruthy();
+      expect(rightFooterElm).toBeTruthy();
+      expect(leftFooterElm).toBeTruthy();
+      expect(component.gridOptions.customFooterOptions!.leftFooterText).toBeFalsy();
+      expect(leftFooterElm.innerHTML).toBeFalsy();
     });
   });
 });

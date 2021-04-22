@@ -229,7 +229,7 @@ const mockGrid = {
   setSelectedRows: jest.fn(),
   onRendered: jest.fn(),
   onScroll: jest.fn(),
-  onDataviewCreated: new Slick.Event(),
+  onSelectedRowsChanged: new Slick.Event(),
 };
 
 const mockSlickCoreImplementation = jest.fn().mockImplementation(() => (mockSlickCore));
@@ -1441,6 +1441,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.showCustomFooter).toBeTrue();
           expect(component.customFooterOptions).toEqual({
             dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
+            hideRowSelectionCount: false,
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
             footerHeight: 20,
@@ -1449,6 +1450,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             metricTexts: {
               items: 'items',
               itemsKey: 'ITEMS',
+              itemsSelected: 'items selected',
+              itemsSelectedKey: 'ITEMS_SELECTED',
               of: 'of',
               ofKey: 'OF',
             },
@@ -1479,6 +1482,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.showCustomFooter).toBeTrue();
           expect(component.customFooterOptions).toEqual({
             dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
+            hideRowSelectionCount: false,
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
             footerHeight: 20,
@@ -1487,6 +1491,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             metricTexts: {
               items: 'some items',
               itemsKey: 'ITEMS',
+              itemsSelected: 'items selected',
+              itemsSelectedKey: 'ITEMS_SELECTED',
               lastUpdate: 'some last update',
               of: 'some of',
               ofKey: 'OF',

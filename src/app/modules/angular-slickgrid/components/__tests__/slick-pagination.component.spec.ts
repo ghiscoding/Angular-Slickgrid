@@ -57,6 +57,7 @@ describe('App Component', () => {
     translate.setTranslation('fr', {
       ITEMS: 'éléments',
       ITEMS_PER_PAGE: 'éléments par page',
+      ITEMS_SELECTED: 'éléments sélectionnés',
       OF: 'de',
       PAGE: 'Page',
       PAGE_X_OF_Y: 'page {{x}} de {{y}}',
@@ -64,6 +65,7 @@ describe('App Component', () => {
     translate.setTranslation('en', {
       ITEMS: 'items',
       ITEMS_PER_PAGE: 'items per page',
+      ITEMS_SELECTED: 'items selected',
       OF: 'of',
       PAGE: 'Page',
       PAGE_X_OF_Y: 'page {{x}} of {{y}}',
@@ -114,7 +116,7 @@ describe('App Component', () => {
       component.gridOptions = { enableTranslate: true } as GridOption;
       fixture.detectChanges();
 
-      const elm = document.querySelector('.slick-pagination');
+      const elm = document.querySelector('.slick-pagination') as HTMLDivElement;
       const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
       const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 
@@ -132,7 +134,7 @@ describe('App Component', () => {
 
       expect(selectElement.value).toBe('10');
       expect(selectElement.selectedIndex).toBe(1);
-      const optionElement = selectElement.selectedOptions.item(0);
+      const optionElement = selectElement.selectedOptions.item(0) as HTMLOptionElement;
       expect(optionElement.value).toBe('10');
     });
 
@@ -140,7 +142,7 @@ describe('App Component', () => {
       translate.use('en');
       fixture.detectChanges();
 
-      const elm = document.querySelector('.slick-pagination');
+      const elm = document.querySelector('.slick-pagination') as HTMLDivElement;
       const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
       const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 

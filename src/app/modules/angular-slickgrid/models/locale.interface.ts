@@ -80,6 +80,9 @@ export interface Locale {
   /** Text "items per page" displayed in the Pagination (when enabled) */
   TEXT_ITEMS_PER_PAGE?: string;
 
+  /** Text "Records Selected" displayed in the Custom Footer */
+  TEXT_ITEMS_SELECTED?: string;
+
   /** Text "Last Update" displayed in the Footer (when enabled) */
   TEXT_LAST_UPDATE?: string;
 

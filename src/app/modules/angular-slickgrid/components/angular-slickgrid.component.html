@@ -9,9 +9,7 @@
   <!-- Custom Footer section under the grid -->
   <div *ngIf="showCustomFooter && customFooterOptions" class="slick-custom-footer" style="width: 100%;"
        [style.height]="customFooterOptions?.footerHeight || 20">
-    <div class="left-footer" [ngClass]="customFooterOptions.leftContainerClass">
-      {{customFooterOptions.leftFooterText}}
-    </div>
+    <div class="left-footer" [ngClass]="customFooterOptions.leftContainerClass">{{customFooterOptions.leftFooterText}}</div>
 
     <div class="right-footer metrics" [ngClass]="customFooterOptions.rightContainerClass"
          *ngIf="metrics && !customFooterOptions.hideMetrics">

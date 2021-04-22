@@ -29,6 +29,7 @@ export class Constants {
     TEXT_HIDE_COLUMN: 'Hide Column',
     TEXT_ITEMS: 'items',
     TEXT_ITEMS_PER_PAGE: 'items per page',
+    TEXT_ITEMS_SELECTED: 'items selected',
     TEXT_OF: 'of',
     TEXT_OK: 'OK',
     TEXT_LAST_UPDATE: 'Last Update',

@@ -116,6 +116,7 @@ export * from './menuItem.interface';
 export * from './menuOptionItem.interface';
 export * from './menuOptionItemCallbackArgs.interface';
 export * from './metrics.interface';
+export * from './metricTexts.interface';
 export * from './multiColumnSort.interface';
 export * from './multipleSelectOption.interface';
 export * from './odataOption.interface';
