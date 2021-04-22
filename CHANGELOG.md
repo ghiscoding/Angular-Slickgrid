@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.28.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.27.0...v2.28.0) (2021-04-22)
+
+
+### Features
+
+* **filters:** add option to filter empty values for select filter ([7c9ce5a](https://github.com/ghiscoding/angular-slickgrid/commit/7c9ce5a2c0b6835514ac71f431185d1e996513d6))
+* **filters:** option to add custom compound operator list, fix [#733](https://github.com/ghiscoding/angular-slickgrid/issues/733) ([a86d3c5](https://github.com/ghiscoding/angular-slickgrid/commit/a86d3c579690f336c5a76d6796e8c3cceac4f276))
+* **footer:** add row selection count to the footer component ([5604669](https://github.com/ghiscoding/angular-slickgrid/commit/56046691f6eeaddf6d5a166f73c093123dba11a7))
+* **resize:** add column resize by cell content ([c198686](https://github.com/ghiscoding/angular-slickgrid/commit/c1986867334675209da20d6dac89d67e3cb25a7c))
+* **typing:** add missing item metadata interface ([c3eefd0](https://github.com/ghiscoding/angular-slickgrid/commit/c3eefd0851c6350604f0ccc594ac33974fcd2712))
+
+
+### Bug Fixes
+
+* **exports:** grid with colspan should be export accordingly ([00989ab](https://github.com/ghiscoding/angular-slickgrid/commit/00989ab0076b2a4e143b01b449b9ca36a795de30))
+
 ## [2.27.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.26.1...v2.27.0) (2021-03-23)
 
 
