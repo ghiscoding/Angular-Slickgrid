@@ -30,6 +30,7 @@
   "IN_COLLECTION_SEPERATED_BY_COMMA": "Search items in a collection, must be separated by a comma (a,b)",
   "ITEMS": "items",
   "ITEMS_PER_PAGE": "items per page",
+  "ITEMS_SELECTED": "items selected",
   "LAST_UPDATE": "Last Update",
   "LESS_THAN": "Less than",
   "LESS_THAN_OR_EQUAL_TO": "Less than or equal to",

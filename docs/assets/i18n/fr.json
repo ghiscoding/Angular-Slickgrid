@@ -30,6 +30,7 @@
   "INVALID_FLOAT": "Le nombre doit être valide et avoir un maximum de {{maxDecimal}} décimales.",
   "ITEMS": "éléments",
   "ITEMS_PER_PAGE": "éléments par page",
+  "ITEMS_SELECTED": "éléments sélectionnés",
   "LAST_UPDATE": "Dernière mise à jour",
   "LESS_THAN": "Plus petit que",
   "LESS_THAN_OR_EQUAL_TO": "Plus petit ou égal à",
