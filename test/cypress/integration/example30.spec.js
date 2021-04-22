@@ -39,7 +39,7 @@ describe('Example 30 - Columns Resize by Content', () => {
   });
 
   it('should click on (default resize "autosizeColumns") and expect column to be much thinner and fit all its column within the grid container', () => {
-    cy.get('[data-text="autosize-columns-btn"]').click();
+    cy.get('[data-test="autosize-columns-btn"]').click();
 
     cy.get('.slick-row').find('.slick-cell:nth(1)').invoke('width').should('be.lt', 75);
     cy.get('.slick-row').find('.slick-cell:nth(2)').invoke('width').should('be.lt', 95);
