@@ -115,7 +115,7 @@ export class ResizerService {
 
     // optionally show a custom footer with the data metrics (dataset length and last updated timestamp)
     if (bottomPadding && gridOptions.showCustomFooter) {
-      bottomPadding += gridOptions.customFooterOptions && gridOptions.customFooterOptions.footerHeight || DATAGRID_FOOTER_HEIGHT;
+      bottomPadding += gridOptions?.customFooterOptions?.footerHeight ?? DATAGRID_FOOTER_HEIGHT;
     }
 
     let gridHeight = 0;

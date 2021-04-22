@@ -53,6 +53,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   },
   customFooterOptions: {
     dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
+    hideRowSelectionCount: false,
     hideTotalItemCount: false,
     hideLastUpdateTimestamp: true,
     footerHeight: 20,
@@ -61,9 +62,11 @@ export const GlobalGridOptions: Partial<GridOption> = {
     metricSeparator: '|',
     metricTexts: {
       items: 'items',
-      of: 'of',
       itemsKey: 'ITEMS',
+      of: 'of',
       ofKey: 'OF',
+      itemsSelected: 'items selected',
+      itemsSelectedKey: 'ITEMS_SELECTED'
     }
   },
   dataView: {

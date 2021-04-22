@@ -1178,8 +1178,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
         customFooterOptions.metricTexts.lastUpdate = customFooterOptions.metricTexts.lastUpdate || this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
         customFooterOptions.metricTexts.items = customFooterOptions.metricTexts.items || this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
+        customFooterOptions.metricTexts.itemsSelected = customFooterOptions.metricTexts.itemsSelected || this.locales && this.locales.TEXT_ITEMS_SELECTED || 'TEXT_ITEMS_SELECTED';
         customFooterOptions.metricTexts.of = customFooterOptions.metricTexts.of || this.locales && this.locales.TEXT_OF || 'TEXT_OF';
       }
+      this.registerOnSelectedRowsChangedWhenEnabled(this.gridOptions.customFooterOptions);
 
       // we will display the custom footer only when there's no Pagination
       if (!this.gridOptions.enablePagination && !this._isPaginationInitialized) {
@@ -1187,6 +1189,23 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.customFooterOptions = this.gridOptions.customFooterOptions || {};
       }
       this.cd.detectChanges();
+    }
+  }
+
+  /**
+   * When user has row selections enabled and does not have any custom text shown on the left side footer,
+   * we will show the row selection count on the bottom left side of the footer (by subscribing to the SlickGrid `onSelectedRowsChanged` event).
+   * @param customFooterOptions
+   */
+  private registerOnSelectedRowsChangedWhenEnabled(customFooterOptions?: CustomFooterOption) {
+    const isRowSelectionEnabled = this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection;
+    if (isRowSelectionEnabled && customFooterOptions && (!customFooterOptions.hideRowSelectionCount && !customFooterOptions.leftFooterText)) {
+      const selectedCountText = customFooterOptions.metricTexts?.itemsSelected ?? this.locales?.TEXT_ITEMS_SELECTED ?? 'TEXT_ITEMS_SELECTED';
+      customFooterOptions.leftFooterText = `0 ${selectedCountText}`;
+
+      this._eventHandler.subscribe(this.grid.onSelectedRowsChanged, (_e: any, args: { rows: number[]; previousSelectedRows: number[]; }) => {
+        customFooterOptions.leftFooterText = `${args.rows.length || 0} ${selectedCountText}`;
+      });
     }
   }
 
