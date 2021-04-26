@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.28.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.28.1...v2.28.2) (2021-04-26)
+
+
+### Bug Fixes
+
+* **footer:** add correct implementation of locale usage in custom footer ([5dcac2f](https://github.com/ghiscoding/angular-slickgrid/commit/5dcac2ff2c64b03c66fcb5f0f06c3aed1cb0cbac))
+* **observables:** http cancellable Subject should be unsubscribed ([c439324](https://github.com/ghiscoding/angular-slickgrid/commit/c439324fc0dff4298a5a7cda0d33c6cc1ed6c849))
+* **selection:** full row selection should be selected w/show hidden row ([131ada5](https://github.com/ghiscoding/angular-slickgrid/commit/131ada51cb6d52522990e6974ce0d779467bbae9)), closes [#739](https://github.com/ghiscoding/angular-slickgrid/issues/739)
+
 ### [2.28.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.28.0...v2.28.1) (2021-04-22)
 
 ## [2.28.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.27.0...v2.28.0) (2021-04-22)
