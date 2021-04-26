@@ -132,6 +132,7 @@ const treeDataServiceStub = {
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
+  let translate: TranslateService;
 
   beforeEach(waitForAsync(() => {
     // @ts-ignore
@@ -191,6 +192,24 @@ describe('App Component', () => {
     // create the component
     fixture = TestBed.createComponent(AngularSlickgridComponent);
     component = fixture.debugElement.componentInstance;
+    translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('fr', {
+      ITEMS: 'éléments',
+      ITEMS_PER_PAGE: 'éléments par page',
+      ITEMS_SELECTED: 'éléments sélectionnés',
+      OF: 'de',
+      PAGE: 'Page',
+      PAGE_X_OF_Y: 'page {{x}} de {{y}}',
+    });
+    translate.setTranslation('en', {
+      ITEMS: 'items',
+      ITEMS_PER_PAGE: 'items per page',
+      ITEMS_SELECTED: 'items selected',
+      OF: 'of',
+      PAGE: 'Page',
+      PAGE_X_OF_Y: 'page {{x}} of {{y}}',
+    });
 
     // setup bindable properties
     component.gridId = 'grid1';
@@ -345,6 +364,44 @@ describe('App Component', () => {
       expect(leftFooterElm).toBeTruthy();
       expect(component.gridOptions.customFooterOptions!.leftFooterText).toBe('1 items selected');
       expect(leftFooterElm.innerHTML).toContain('1 items selected');
+    });
+
+    it('should display row selection count in French on the left side footer section after triggering "onSelectedRowsChanged" event when using "fr" as locale', () => {
+      const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+      translate.use('fr');
+      component.gridOptions = {
+        enablePagination: false,
+        enableTranslate: true,
+        showCustomFooter: true,
+        enableCheckboxSelector: true,
+      } as GridOption;
+      fixture.detectChanges();
+      component.columnDefinitions = mockColDefs;
+      component.grid.setSelectionModel(new Slick.CellSelectionModel());
+      component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+      fixture.detectChanges();
+
+      const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
+      const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;
+      const footerContainerElm = document.querySelector('div.slick-custom-footer') as HTMLDivElement;
+      let leftFooterElm = document.querySelector('div.slick-custom-footer > div.left-footer') as HTMLSpanElement;
+      const rightFooterElm = document.querySelector('div.slick-custom-footer > div.metrics') as HTMLSpanElement;
+
+      expect(gridPaneElm.id).toBe('slickGridContainer-grid1');
+      expect(gridContainerElm.id).toBe('grid1');
+      expect(footerContainerElm).toBeTruthy();
+      expect(rightFooterElm).toBeTruthy();
+      expect(leftFooterElm).toBeTruthy();
+      expect(component.gridOptions.customFooterOptions!.leftFooterText).toBe('1 éléments sélectionnés');
+      expect(leftFooterElm.innerHTML).toContain('1 éléments sélectionnés');
+
+      component.grid.onSelectedRowsChanged.notify({ rows: [1, 2, 3, 4, 5], previousSelectedRows: [] });
+      fixture.detectChanges();
+      leftFooterElm = document.querySelector('div.slick-custom-footer > div.left-footer') as HTMLSpanElement;
+
+      expect(component.gridOptions.customFooterOptions!.leftFooterText).toBe('5 éléments sélectionnés');
+      expect(leftFooterElm.innerHTML).toContain('5 éléments sélectionnés');
     });
 
     it('should not not display row selection count after triggering "onSelectedRowsChanged" event when "hideRowSelectionCount" is set to True', () => {

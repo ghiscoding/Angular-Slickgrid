@@ -63,10 +63,10 @@ export const GlobalGridOptions: Partial<GridOption> = {
     metricTexts: {
       items: 'items',
       itemsKey: 'ITEMS',
+      itemsSelected: 'items selected',
+      itemsSelectedKey: 'ITEMS_SELECTED',
       of: 'of',
       ofKey: 'OF',
-      itemsSelected: 'items selected',
-      itemsSelectedKey: 'ITEMS_SELECTED'
     }
   },
   dataView: {

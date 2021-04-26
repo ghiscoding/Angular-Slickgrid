@@ -15,7 +15,6 @@
          *ngIf="metrics && !customFooterOptions.hideMetrics">
       <span *ngIf="!customFooterOptions.hideLastUpdateTimestamp">
         <span>{{customFooterOptions.metricTexts?.lastUpdate}}</span>
-
         {{metrics.endTime | date: customFooterOptions.dateFormat}}
         <span class="separator">{{customFooterOptions.metricSeparator}}</span>
       </span>
@@ -28,3 +27,4 @@
     </div>
   </div>
 </div>
+

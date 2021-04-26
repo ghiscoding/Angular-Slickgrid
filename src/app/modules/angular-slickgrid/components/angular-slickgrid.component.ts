@@ -131,9 +131,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
   private _isDatasetInitialized = false;
+  private _isLeftFooterOriginallyEmpty = false;
+  private _isLeftFooterDisplayingSelectionRowCount = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
   private _paginationOptions: Pagination | undefined;
+  private _selectedRowCount = 0;
   private slickEmptyWarning: SlickEmptyWarningComponent;
   dataView: any | null;
   grid: any | null;
@@ -846,10 +849,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this._paginationOptions = this.gridOptions.pagination;
-    this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
-    this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
+    this.locales = this.gridOptions?.locales ?? Constants.locales;
+    this.backendServiceApi = this.gridOptions?.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
     this._isLocalGrid = !this.backendServiceApi; // considered a local grid if it doesn't have a backend service set
+    this._isLeftFooterOriginallyEmpty = !(this.gridOptions.customFooterOptions?.leftFooterText);
 
     if (!this.customDataView) {
       const dataviewInlineFilters = this.gridOptions.dataView && this.gridOptions.dataView.inlineFilters || false;
@@ -1171,10 +1175,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   private optionallyShowCustomFooterWithMetrics() {
     if (this.gridOptions) {
+      const customFooterOptions = this.gridOptions.customFooterOptions;
+      this.registerOnSelectedRowsChangedWhenEnabled(customFooterOptions);
+
       if (this.gridOptions.enableTranslate) {
         this.translateCustomFooterTexts();
-      } else if (this.gridOptions.customFooterOptions) {
-        const customFooterOptions = this.gridOptions.customFooterOptions;
+      } else if (customFooterOptions) {
         customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
         customFooterOptions.metricTexts.lastUpdate = customFooterOptions.metricTexts.lastUpdate || this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
         customFooterOptions.metricTexts.items = customFooterOptions.metricTexts.items || this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
@@ -1199,12 +1205,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   private registerOnSelectedRowsChangedWhenEnabled(customFooterOptions?: CustomFooterOption) {
     const isRowSelectionEnabled = this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection;
-    if (isRowSelectionEnabled && customFooterOptions && (!customFooterOptions.hideRowSelectionCount && !customFooterOptions.leftFooterText)) {
+    if (isRowSelectionEnabled && customFooterOptions && (!customFooterOptions.hideRowSelectionCount && this._isLeftFooterOriginallyEmpty)) {
+      this._isLeftFooterDisplayingSelectionRowCount = true;
       const selectedCountText = customFooterOptions.metricTexts?.itemsSelected ?? this.locales?.TEXT_ITEMS_SELECTED ?? 'TEXT_ITEMS_SELECTED';
       customFooterOptions.leftFooterText = `0 ${selectedCountText}`;
 
       this._eventHandler.subscribe(this.grid.onSelectedRowsChanged, (_e: any, args: { rows: number[]; previousSelectedRows: number[]; }) => {
-        customFooterOptions.leftFooterText = `${args.rows.length || 0} ${selectedCountText}`;
+        this._selectedRowCount = args.rows.length;
+        const selectedCountText2 = customFooterOptions.metricTexts?.itemsSelected ?? this.locales?.TEXT_ITEMS_SELECTED ?? 'TEXT_ITEMS_SELECTED';
+        customFooterOptions.leftFooterText = `${this._selectedRowCount} ${selectedCountText2}`;
       });
     }
   }
@@ -1246,6 +1255,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));
           (customFooterOptions.metricTexts as any)[propNameWithoutKey] = this.translate.instant((customFooterOptions.metricTexts as any)[propName] || ' ');
         }
+      }
+
+      // when we're display row selection count on left footer, we also need to translate that text with its count
+      if (this._isLeftFooterDisplayingSelectionRowCount) {
+        customFooterOptions.leftFooterText = `${this._selectedRowCount} ${customFooterOptions.metricTexts!.itemsSelected}`;
       }
     }
   }
