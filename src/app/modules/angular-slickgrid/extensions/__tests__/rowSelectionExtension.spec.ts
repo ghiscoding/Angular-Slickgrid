@@ -30,7 +30,7 @@ describe('rowSelectionExtension', () => {
       providers: [RowSelectionExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(RowSelectionExtension);
+    extension = TestBed.inject(RowSelectionExtension);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

@@ -87,8 +87,8 @@ describe('ExcelExportService', () => {
         providers: [ExcelExportService],
         imports: [TranslateModule.forRoot()]
       });
-      service = TestBed.get(ExcelExportService);
-      translate = TestBed.get(TranslateService);
+      service = TestBed.inject(ExcelExportService);
+      translate = TestBed.inject(TranslateService);
 
       translate.setTranslation('en', {
         FIRST_NAME: 'First Name',
@@ -1491,7 +1491,7 @@ describe('ExcelExportService', () => {
         providers: [ExcelExportService],
         imports: []
       });
-      service = TestBed.get(ExcelExportService);
+      service = TestBed.inject(ExcelExportService);
     });
 
     it('should throw an error if "enableTranslate" is set but the Translate Service is null', () => {

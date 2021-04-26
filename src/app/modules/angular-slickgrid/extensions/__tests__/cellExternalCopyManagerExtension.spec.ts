@@ -59,8 +59,8 @@ describe('cellExternalCopyManagerExtension', () => {
       providers: [CellExternalCopyManagerExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(CellExternalCopyManagerExtension);
-    translate = TestBed.get(TranslateService);
+    extension = TestBed.inject(CellExternalCopyManagerExtension);
+    translate = TestBed.inject(TranslateService);
   });
 
   afterEach(() => {

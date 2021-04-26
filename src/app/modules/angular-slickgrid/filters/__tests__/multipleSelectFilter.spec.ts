@@ -56,8 +56,8 @@ describe('MultipleSelectFilter', () => {
       providers: [CollectionService],
       imports: [TranslateModule.forRoot()]
     });
-    collectionService = TestBed.get(CollectionService);
-    translate = TestBed.get(TranslateService);
+    collectionService = TestBed.inject(CollectionService);
+    translate = TestBed.inject(TranslateService);
     filter = new MultipleSelectFilter(translate, collectionService);
   });
 

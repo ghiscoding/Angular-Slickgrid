@@ -85,8 +85,8 @@ describe('Grid Service', () => {
       ],
       imports: [TranslateModule.forRoot()]
     });
-    translate = TestBed.get(TranslateService);
-    service = TestBed.get(GridService);
+    translate = TestBed.inject(TranslateService);
+    service = TestBed.inject(GridService);
     service.init(gridStub, dataviewStub);
   });
 

@@ -53,7 +53,7 @@ describe('SelectEditor', () => {
       providers: [],
       imports: [TranslateModule.forRoot()]
     });
-    translate = TestBed.get(TranslateService);
+    translate = TestBed.inject(TranslateService);
 
     translate.setTranslation('en', {
       CANCEL: 'Cancel',

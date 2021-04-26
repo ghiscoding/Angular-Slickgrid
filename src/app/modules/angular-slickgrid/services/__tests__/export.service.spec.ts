@@ -91,8 +91,8 @@ describe('ExportService', () => {
         providers: [ExportService],
         imports: [TranslateModule.forRoot()]
       });
-      service = TestBed.get(ExportService);
-      translate = TestBed.get(TranslateService);
+      service = TestBed.inject(ExportService);
+      translate = TestBed.inject(TranslateService);
 
       translate.setTranslation('en', {
         FIRST_NAME: 'First Name',
@@ -1117,7 +1117,7 @@ describe('ExportService', () => {
         providers: [ExportService],
         imports: []
       });
-      service = TestBed.get(ExportService);
+      service = TestBed.inject(ExportService);
     });
 
     it('should throw an error if "enableTranslate" is set but the Translate Service is null', () => {

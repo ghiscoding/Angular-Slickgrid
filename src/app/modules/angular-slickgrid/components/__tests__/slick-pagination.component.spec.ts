@@ -52,7 +52,7 @@ describe('App Component', () => {
     // create the component
     fixture = TestBed.createComponent(SlickPaginationComponent);
     component = fixture.debugElement.componentInstance;
-    translate = TestBed.get(TranslateService);
+    translate = TestBed.inject(TranslateService);
 
     translate.setTranslation('fr', {
       ITEMS: 'éléments',

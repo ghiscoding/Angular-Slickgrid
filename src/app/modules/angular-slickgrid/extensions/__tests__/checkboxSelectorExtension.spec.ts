@@ -42,7 +42,7 @@ describe('checkboxSelectorExtension', () => {
       providers: [CheckboxSelectorExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(CheckboxSelectorExtension);
+    extension = TestBed.inject(CheckboxSelectorExtension);
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {

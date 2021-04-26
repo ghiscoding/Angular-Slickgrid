@@ -15,7 +15,7 @@ describe('the Translate Formatter', () => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()]
     });
-    translate = TestBed.get(TranslateService);
+    translate = TestBed.inject(TranslateService);
     translate.setTranslation('fr', { TRUE: 'Vrai', FALSE: 'Faux' });
     translate.use('fr');
   });

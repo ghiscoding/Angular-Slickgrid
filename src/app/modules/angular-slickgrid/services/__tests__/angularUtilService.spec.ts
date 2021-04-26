@@ -44,7 +44,7 @@ describe('AngularUtilService', () => {
     });
     fixture = TestBed.createComponent(TestPreloadComponent);
     component = fixture.componentInstance;
-    service = TestBed.get(AngularUtilService);
+    service = TestBed.inject(AngularUtilService);
   });
 
   afterEach(() => {
