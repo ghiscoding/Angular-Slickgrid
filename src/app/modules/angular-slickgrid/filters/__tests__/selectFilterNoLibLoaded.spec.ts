@@ -60,7 +60,7 @@ describe('SelectFilter', () => {
       providers: [{ provide: CollectionService, useValue: collectionServiceStub }],
       imports: [TranslateModule.forRoot()]
     });
-    translate = TestBed.get(TranslateService);
+    translate = TestBed.inject(TranslateService);
     translate.setDefaultLang('en');
     translate.use('en');
 

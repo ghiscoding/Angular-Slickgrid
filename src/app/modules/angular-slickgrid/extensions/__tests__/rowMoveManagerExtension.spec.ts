@@ -51,7 +51,7 @@ describe('rowMoveManagerExtension', () => {
       providers: [RowMoveManagerExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(RowMoveManagerExtension);
+    extension = TestBed.inject(RowMoveManagerExtension);
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {

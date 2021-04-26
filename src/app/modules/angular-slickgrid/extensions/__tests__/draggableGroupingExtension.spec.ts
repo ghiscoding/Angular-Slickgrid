@@ -40,7 +40,7 @@ describe('draggableGroupingExtension', () => {
       providers: [DraggableGroupingExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(DraggableGroupingExtension);
+    extension = TestBed.inject(DraggableGroupingExtension);
   });
 
   it('should return null after calling "create" method when the grid options is missing', () => {

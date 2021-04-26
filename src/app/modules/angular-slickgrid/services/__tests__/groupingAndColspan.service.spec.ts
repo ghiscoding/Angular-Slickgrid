@@ -104,8 +104,8 @@ describe('GroupingAndColspanService', () => {
       ],
       imports: [TranslateModule.forRoot()]
     });
-    service = TestBed.get(GroupingAndColspanService);
-    translate = TestBed.get(TranslateService);
+    service = TestBed.inject(GroupingAndColspanService);
+    translate = TestBed.inject(TranslateService);
     slickgridEventHandler = service.eventHandler;
 
     translate.setTranslation('en', {

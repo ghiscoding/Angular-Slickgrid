@@ -66,8 +66,8 @@ describe('ExtensionUtility', () => {
         providers: [ExtensionUtility, SharedService],
         imports: [TranslateModule.forRoot()]
       });
-      utility = TestBed.get(ExtensionUtility);
-      translate = TestBed.get(TranslateService);
+      utility = TestBed.inject(ExtensionUtility);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
         COMMANDS: 'Commandes',
@@ -216,7 +216,7 @@ describe('ExtensionUtility', () => {
         providers: [ExtensionUtility, SharedService],
         imports: []
       });
-      utility = TestBed.get(ExtensionUtility);
+      utility = TestBed.inject(ExtensionUtility);
     });
 
     it('should throw an error if "enableTranslate" is set but the Translate Service is null', () => {

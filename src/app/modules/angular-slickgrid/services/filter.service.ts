@@ -100,6 +100,7 @@ export class FilterService {
     }
     if (isObservable(this.httpCancelRequests$)) {
       this.httpCancelRequests$.next(); // this cancels any pending http requests
+      this.httpCancelRequests$.complete();
     }
     this.disposeColumnFilters();
     this._onSearchChange = null;

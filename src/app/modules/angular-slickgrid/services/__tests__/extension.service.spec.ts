@@ -104,9 +104,9 @@ describe('ExtensionService', () => {
         ],
         imports: [TranslateModule.forRoot()]
       });
-      service = TestBed.get(ExtensionService);
-      sharedService = TestBed.get(SharedService);
-      translate = TestBed.get(TranslateService);
+      service = TestBed.inject(ExtensionService);
+      sharedService = TestBed.inject(SharedService);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', { HELLO: 'Bonjour', WORLD: 'Monde' });
       translate.setTranslation('en', { HELLO: 'Hello', WORLD: 'World' });
       translate.use('fr');
@@ -636,18 +636,18 @@ describe('ExtensionService', () => {
 
       it(`should call "setColumns" with the collection provided as argument but NOT override "allColumns" on the Shared Service
     when collection provided is smaller than "allColumns" that already exists`, () => {
-          const columnsMock = [
-            { id: 'field1', field: 'field1', nameKey: 'HELLO' }
-          ] as Column[];
-          jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
-          const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
-          const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const columnsMock = [
+          { id: 'field1', field: 'field1', nameKey: 'HELLO' }
+        ] as Column[];
+        jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+        const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
 
-          service.renderColumnHeaders(columnsMock);
+        service.renderColumnHeaders(columnsMock);
 
-          expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
-          expect(spyAllCols).not.toHaveBeenCalled();
-        });
+        expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
+        expect(spyAllCols).not.toHaveBeenCalled();
+      });
 
       it('should re-register the Column Picker when enable and method is called with new column definition collection provided as argument', () => {
         const instanceMock = { onColumnsChanged: jest.fn() };

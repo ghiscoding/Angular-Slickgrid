@@ -53,7 +53,7 @@ describe('bsdropdown-service', () => {
     });
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
-    service = TestBed.get(BsDropDownService);
+    service = TestBed.inject(BsDropDownService);
   });
 
   describe('BsDropDownService', () => {

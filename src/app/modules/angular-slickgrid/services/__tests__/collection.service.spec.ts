@@ -22,8 +22,8 @@ describe('CollectionService', () => {
         providers: [CollectionService],
         imports: [TranslateModule.forRoot()]
       });
-      service = TestBed.get(CollectionService);
-      translate = TestBed.get(TranslateService);
+      service = TestBed.inject(CollectionService);
+      translate = TestBed.inject(TranslateService);
 
       translate.setTranslation('en', {
         SALES_REP: 'Sales Rep.',
@@ -346,7 +346,7 @@ describe('CollectionService', () => {
         providers: [CollectionService],
         imports: []
       });
-      service = TestBed.get(CollectionService);
+      service = TestBed.inject(CollectionService);
     });
 
     it('should throw an error if "enableTranslate" is set but the Translate Service is null', () => {

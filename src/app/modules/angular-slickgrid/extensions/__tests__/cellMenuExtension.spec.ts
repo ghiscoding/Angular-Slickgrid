@@ -95,9 +95,9 @@ describe('CellMenuExtension', () => {
         ],
         imports: [TranslateModule.forRoot()]
       });
-      extension = TestBed.get(CellMenuExtension);
-      extensionUtility = TestBed.get(ExtensionUtility);
-      translate = TestBed.get(TranslateService);
+      extension = TestBed.inject(CellMenuExtension);
+      extensionUtility = TestBed.inject(ExtensionUtility);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
         COMMANDS: 'Commandes',

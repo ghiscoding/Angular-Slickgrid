@@ -102,8 +102,8 @@ describe('headerMenuExtension', () => {
         ],
         imports: [TranslateModule.forRoot()]
       });
-      extension = TestBed.get(HeaderMenuExtension);
-      translate = TestBed.get(TranslateService);
+      extension = TestBed.inject(HeaderMenuExtension);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
         COMMANDS: 'Commandes',

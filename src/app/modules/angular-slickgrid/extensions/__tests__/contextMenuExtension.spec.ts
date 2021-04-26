@@ -131,8 +131,8 @@ describe('contextMenuExtension', () => {
         ],
         imports: [TranslateModule.forRoot()]
       });
-      extension = TestBed.get(ContextMenuExtension);
-      translate = TestBed.get(TranslateService);
+      extension = TestBed.inject(ContextMenuExtension);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
         COMMANDS: 'Commandes',

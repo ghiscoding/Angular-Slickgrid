@@ -50,7 +50,7 @@ describe('headerButtonExtension', () => {
       providers: [HeaderButtonExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(HeaderButtonExtension);
+    extension = TestBed.inject(HeaderButtonExtension);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

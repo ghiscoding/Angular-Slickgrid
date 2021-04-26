@@ -57,8 +57,8 @@ describe('SelectFilter', () => {
       providers: [CollectionService],
       imports: [TranslateModule.forRoot()]
     });
-    collectionService = TestBed.get(CollectionService);
-    translate = TestBed.get(TranslateService);
+    collectionService = TestBed.inject(CollectionService);
+    translate = TestBed.inject(TranslateService);
 
     translate.setTranslation('en', {
       ALL_SELECTED: 'All Selected',

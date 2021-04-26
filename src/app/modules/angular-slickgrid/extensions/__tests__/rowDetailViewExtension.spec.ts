@@ -118,7 +118,7 @@ describe('rowDetailViewExtension', () => {
       imports: [TranslateModule.forRoot()]
     });
     fixture = TestBed.createComponent(TestPreloadComponent);
-    extension = TestBed.get(RowDetailViewExtension);
+    extension = TestBed.inject(RowDetailViewExtension);
   }));
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {

@@ -29,8 +29,8 @@ describe('autoTooltipExtension', () => {
       providers: [AutoTooltipExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });
-    extension = TestBed.get(AutoTooltipExtension);
-    translate = TestBed.get(TranslateService);
+    extension = TestBed.inject(AutoTooltipExtension);
+    translate = TestBed.inject(TranslateService);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

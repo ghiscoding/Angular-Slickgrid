@@ -122,8 +122,8 @@ describe('FilterService', () => {
         TranslateModule.forRoot()
       ]
     });
-    service = TestBed.get(FilterService);
-    sharedService = TestBed.get(SharedService);
+    service = TestBed.inject(FilterService);
+    sharedService = TestBed.inject(SharedService);
     slickgridEventHandler = service.eventHandler;
   }));
 

@@ -276,7 +276,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()]
     });
-    translate = TestBed.get(TranslateService);
+    translate = TestBed.inject(TranslateService);
 
     mockChangeDetectorRef = {
       detectChanges: jest.fn()

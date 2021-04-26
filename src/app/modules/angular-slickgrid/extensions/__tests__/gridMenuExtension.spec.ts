@@ -131,9 +131,9 @@ describe('gridMenuExtension', () => {
         ],
         imports: [TranslateModule.forRoot()]
       });
-      extension = TestBed.get(GridMenuExtension);
-      extensionUtility = TestBed.get(ExtensionUtility);
-      translate = TestBed.get(TranslateService);
+      extension = TestBed.inject(GridMenuExtension);
+      extensionUtility = TestBed.inject(ExtensionUtility);
+      translate = TestBed.inject(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
         CLEAR_ALL_FILTERS: 'Supprimer tous les filtres',
