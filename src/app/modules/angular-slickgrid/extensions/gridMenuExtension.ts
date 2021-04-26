@@ -121,9 +121,21 @@ export class GridMenuExtension implements Extension {
           if (this._gridMenuOptions && typeof this._gridMenuOptions.onColumnsChanged === 'function') {
             this._gridMenuOptions.onColumnsChanged(e, args);
           }
+
+          // keep reference to the updated visible columns list
           if (args && Array.isArray(args.columns) && args.columns.length > this.sharedService.visibleColumns.length) {
             this.sharedService.visibleColumns = args.columns;
           }
+
+          // when using row selection, SlickGrid will only apply the "selected" CSS class on the visible columns only
+          // and if the row selection was done prior to the column being shown then that column that was previously hidden (at the time of the row selection)
+          // will not have the "selected" CSS class because it wasn't visible at the time.
+          // To bypass this problem we can simply recall the row selection with the same selection and that will trigger a re-apply of the CSS class
+          // on all columns including the column we just made visible
+          if (this.sharedService.gridOptions.enableRowSelection && args.showing) {
+            args.grid.setSelectedRows(args.grid.getSelectedRows());
+          }
+
           // if we're using frozen columns, we need to readjust pinning when the new hidden column becomes visible again on the left pinning container
           // we need to readjust frozenColumn index because SlickGrid freezes by index and has no knowledge of the columns themselves
           const frozenColumnIndex = this.sharedService.gridOptions.frozenColumn !== undefined ? this.sharedService.gridOptions.frozenColumn : -1;
