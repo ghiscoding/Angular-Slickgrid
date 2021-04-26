@@ -506,7 +506,7 @@ export class GridEditorComponent implements OnInit {
 
         if (Array.isArray(editorCollection)) {
           // add the new row to the grid
-          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
+          this.angularGrid.gridService.addItem(newRows[0]);
 
           // then refresh the Editor "collection", we have 2 ways of doing it
 
