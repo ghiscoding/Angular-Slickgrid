@@ -36,6 +36,28 @@ describe('Example 12: Localization (i18n)', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
     });
 
+    it('should have 0 row selection count shown in the grid left footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('div.left-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(`0 items selected`);
+        });
+    });
+
+    it('should have some metrics shown in the grid right footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          const now = new Date();
+          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+          expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
+        });
+    });
+
     it('should filter certain tasks with the word "ask 1" and expect filter to use contain/include text', () => {
       const tasks = ['Task 1', 'Task 10', 'Task 11', 'Task 12'];
 
@@ -62,7 +84,7 @@ describe('Example 12: Localization (i18n)', () => {
     it('should reset filters and switch locale to French', () => {
       cy.get('#grid12')
         .find('button.slick-gridmenu-button')
-        .trigger('click');
+        .click();
 
       cy.get(`.slick-gridmenu:visible`)
         .find('.slick-gridmenu-item')
@@ -85,14 +107,25 @@ describe('Example 12: Localization (i18n)', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullFrenchTitles[index]));
     });
 
-    it('should have some metrics shown in the grid footer', () => {
+    it('should have 0 row selection count shown in the grid left footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('div.left-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(`0 éléments sélectionnés`);
+        });
+    });
+
+    it('should have some metrics shown in the grid right footer', () => {
       cy.get('#slickGridContainer-grid12')
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
-          const dateTime = moment().format('YYYY-MM-DD, hh:mm a');
+          const now = new Date();
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(`Dernière mise à jour ${dateTime} | 1500 de 1500 éléments`);
+          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+          expect(text).to.eq(`Dernière mise à jour ${dateFormatted} | 1500 de 1500 éléments`);
         });
     });
 
@@ -120,7 +153,7 @@ describe('Example 12: Localization (i18n)', () => {
     it('should reset filters before filtering duration', () => {
       cy.get('#grid12')
         .find('button.slick-gridmenu-button')
-        .trigger('click');
+        .click();
 
       cy.get(`.slick-gridmenu:visible`)
         .find('.slick-gridmenu-item')
@@ -175,7 +208,7 @@ describe('Example 12: Localization (i18n)', () => {
 
       cy.get('#grid12')
         .find('button.slick-gridmenu-button')
-        .trigger('click');
+        .click();
 
       cy.get(`.slick-gridmenu:visible`)
         .find('.slick-gridmenu-item')
@@ -267,19 +300,6 @@ describe('Example 12: Localization (i18n)', () => {
         .contains('Task 4');
     });
 
-    it('should have some metrics shown in the grid footer', () => {
-      const now = new Date();
-
-      cy.get('#slickGridContainer-grid12')
-        .find('.slick-custom-footer')
-        .find('.right-footer')
-        .should($span => {
-          const dateTime = moment().format('YYYY-MM-DD, hh:mm a');
-          const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(`Last Update ${dateTime} | 447 of 1500 items`);
-        });
-    });
-
     it('should scroll back to the top and expect to see "Task 1497" still selected', () => {
       cy.get('#slickGridContainer-grid12').as('grid12');
 
@@ -290,7 +310,7 @@ describe('Example 12: Localization (i18n)', () => {
       cy.get('@grid12')
         .find('.slick-viewport-top.slick-viewport-left')
         .scrollTo('top')
-        .wait(25);
+        .wait(10);
 
       cy.get('@grid12')
         .find('.slick-row')
@@ -303,6 +323,16 @@ describe('Example 12: Localization (i18n)', () => {
         .children()
         .filter('.slick-cell.selected.true:nth(1)')
         .contains('Task 1497');
+    });
+
+    it('should have 2 row selection count shown in the grid left footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('div.left-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(`2 items selected`);
+        });
     });
   });
 });
