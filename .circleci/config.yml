@@ -29,10 +29,6 @@ jobs:
       - run:
           name: Website Prod Build (GitHub demo site)
           command: yarn run build:demo
-      # - run:
-      #     name: Run Web Server
-      #     command: yarn run serve:demo
-      #     background: true
       - run:
           name: Start Dev WebServer
           command: yarn start
