@@ -75,7 +75,6 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       enableExport: true,
       enableFiltering: true,
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
-      multiColumnSort: false,
       treeDataOptions: {
         columnId: 'file',
         childrenPropName: 'files',
@@ -85,6 +84,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         //   direction: 'DESC'
         // }
       },
+      multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       // change header/cell row height for salesforce theme
       headerRowHeight: 35,
       rowHeight: 33,

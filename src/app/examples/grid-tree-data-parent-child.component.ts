@@ -101,6 +101,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
         levelPropName: 'indent',
         parentPropName: 'parentId'
       },
+      multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       // change header/cell row height for material design theme
       headerRowHeight: 45,
       rowHeight: 40,
