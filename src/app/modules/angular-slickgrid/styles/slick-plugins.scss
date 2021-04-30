@@ -60,7 +60,8 @@
 
   .slick-cell-menu-item {
     cursor: pointer;
-    display: block;
+    display: flex;
+    align-items: center;
     border: $cell-menu-item-border;
     border-radius: $cell-menu-item-border-radius;
     font-size: $cell-menu-item-font-size;
@@ -69,7 +70,6 @@
     margin: 0;
     width: $cell-menu-item-width;
     height: $cell-menu-item-height;
-    vertical-align: middle;
 
     &:hover {
       border: $cell-menu-item-hover-border;
@@ -280,33 +280,33 @@
 }
 
 .slick-header-button {
- /**
-  * This makes all "float:right" elements after it that spill over to the next line
-  * display way below the lower boundary of the column thus hiding them.
-  */
-  float: right;
-  vertical-align: top;
-  margin: 1px;
-  margin-bottom: 100px;
-  height: 15px;
-  width: 15px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  cursor: pointer;
-}
+  /**
+   * This makes all "float:right" elements after it that spill over to the next line
+   * display way below the lower boundary of the column thus hiding them.
+   */
+   float: right;
+   vertical-align: top;
+   margin: 1px;
+   margin-bottom: 100px;
+   height: 15px;
+   width: 15px;
+   background-repeat: no-repeat;
+   background-position: center center;
+   cursor: pointer;
+ }
 
-.slick-header-button-hidden {
-  width: 0;
-  margin-right: -8px;
+ .slick-header-button-hidden {
+   width: 0;
+   margin-right: -8px;
 
-  -webkit-transition: 0.2s width;
-  -ms-transition: 0.2s width;
-  transition: 0.2s width;
-}
+   -webkit-transition: 0.2s width;
+   -ms-transition: 0.2s width;
+   transition: 0.2s width;
+ }
 
-.slick-header-column:hover > .slick-header-button {
-  width: 15px;
-}
+ .slick-header-column:hover > .slick-header-button {
+   width: 15px;
+ }
 
 // ----------------------------------------------
 // Header Menu Plugin - Excel-like header
@@ -537,6 +537,7 @@
     border-radius: $checkbox-selector-icon-border-radius;
   }
 }
+
 .slick-group {
   .slick-cell-checkboxsel {
     text-align: left;
@@ -576,6 +577,7 @@
   .placeholder {
     font-family: $multiselect-placeholder-font-family;
     font-size: $header-font-size;
+    color: $editor-placeholder-color !important;
   }
 }
 .ms-filter.search-filter {
@@ -742,10 +744,27 @@ input.search-filter {
     &.compound-input {
       border-radius: $compound-filter-border-radius !important;
       border-left: none;
+      &::placeholder {
+        color: $editor-placeholder-color;
+      }
     }
   }
   input.compound-slider {
     border-left: none !important;
+  }
+}
+.slickgrid-container {
+  .slick-headerrow {
+    .slick-headerrow-columns {
+      .slick-headerrow-column {
+        .input-group-prepend + .flatpickr {
+          input.compound-input {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -756,6 +775,9 @@ input.search-filter {
 .search-filter .flatpickr {
   input.form-control {
     border-left: none;
+    &::placeholder {
+      color: $editor-placeholder-color;
+    }
   }
 }
 .search-filter.flatpickr,
@@ -790,21 +812,6 @@ input.flatpickr.form-control {
     background-color: $flatpickr-bgcolor;
   }
 }
-.slickgrid-container {
-  .slick-headerrow {
-    .slick-headerrow-columns {
-      .slick-headerrow-column {
-        .input-group-prepend + .flatpickr {
-          input {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-          }
-        }
-      }
-    }
-  }
-}
-
 
 // ----------------------------------------------
 // Draggable Grouping Plugin
@@ -998,6 +1005,10 @@ input.slider-filter-input[type=range] {
 }
 .search-filter {
   height: $header-input-height;
+
+  &::placeholder {
+    color: $editor-placeholder-color;
+  }
 
   .slider-value {
     padding: 0;
