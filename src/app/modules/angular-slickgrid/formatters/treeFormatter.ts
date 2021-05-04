@@ -1,17 +1,18 @@
 import { Column, Formatter, GridOption } from './../models/index';
 import { getDescendantProperty, htmlEncode } from '../services/utilities';
 
-export const treeFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
-  const dataView = grid && grid.getData();
-  const gridOptions = grid && grid.getOptions() as GridOption;
-  const treeDataOptions = gridOptions && gridOptions.treeDataOptions;
-  const treeLevelPropName = treeDataOptions && treeDataOptions.levelPropName || '__treeLevel';
-  const indentMarginLeft = treeDataOptions && treeDataOptions.indentMarginLeft || 15;
+/** Formatter that must be use with a Tree Data column */
+export const treeFormatter: Formatter = (_row, _cell, value, columnDef, dataContext, grid) => {
+  const dataView = grid?.getData();
+  const gridOptions = grid?.getOptions();
+  const treeDataOptions = gridOptions?.treeDataOptions;
+  const treeLevelPropName = treeDataOptions?.levelPropName ?? '__treeLevel';
+  const indentMarginLeft = treeDataOptions?.indentMarginLeft ?? 15;
   let outputValue = value;
 
   if (typeof columnDef.queryFieldNameGetterFn === 'function') {
     const fieldName = columnDef.queryFieldNameGetterFn(dataContext);
-    if (fieldName && fieldName.indexOf('.') >= 0) {
+    if (fieldName?.indexOf('.') >= 0) {
       outputValue = getDescendantProperty(dataContext, fieldName);
     } else {
       outputValue = dataContext.hasOwnProperty(fieldName) ? dataContext[fieldName] : value;
@@ -25,16 +26,17 @@ export const treeFormatter: Formatter = (row: number, cell: number, value: any, 
     throw new Error('You must provide valid "treeDataOptions" in your Grid Options and it seems that there are no tree level found in this row');
   }
 
-  if (dataView && dataView.getIdxById && dataView.getItemByIdx) {
+  if (dataView?.getItemByIdx) {
     if (typeof outputValue === 'string') {
       outputValue = htmlEncode(outputValue);
     }
     const identifierPropName = dataView.getIdPropertyName() || 'id';
-    const spacer = `<span style="display:inline-block; width:${indentMarginLeft * dataContext[treeLevelPropName]}px;"></span>`;
+    const treeLevel = dataContext[treeLevelPropName] || 0;
+    const spacer = `<span style="display:inline-block; width:${indentMarginLeft * treeLevel}px;"></span>`;
     const idx = dataView.getIdxById(dataContext[identifierPropName]);
-    const nextItemRow = dataView.getItemByIdx(idx + 1);
+    const nextItemRow = dataView.getItemByIdx((idx || 0) + 1);
 
-    if (nextItemRow && nextItemRow[treeLevelPropName] > dataContext[treeLevelPropName]) {
+    if (nextItemRow?.[treeLevelPropName] > treeLevel) {
       if (dataContext.__collapsed) {
         return `${spacer}<span class="slick-group-toggle collapsed"></span>&nbsp;${outputValue}`;
       } else {

@@ -70,8 +70,8 @@ export interface AutocompleteOption {
 
   /**
    * Triggered when a value is selected from the autocomplete list.
-   * NOTE: this method should NOT be used since Slickgrid-Universal will use it exclusively
-   * and if you do try to use it, what will happen is that it will override and break Slickgrid-Universal internal code.
+   * NOTE: this method should NOT be used since Angular-Slickgrid will use it exclusively
+   * and if you do try to use it, what will happen is that it will override and break Angular-Slickgrid internal code.
    * Please use the "onSelect" which was added specifically to avoid this problem but still provide exact same result
    */
   select?: (e: Event, ui: { item: any; }) => boolean;

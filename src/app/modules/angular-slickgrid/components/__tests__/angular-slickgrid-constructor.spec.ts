@@ -97,6 +97,7 @@ const filterServiceStub = {
   bindLocalOnSort: jest.fn(),
   bindBackendOnSort: jest.fn(),
   populateColumnFilterSearchTermPresets: jest.fn(),
+  refreshTreeDataFilters: jest.fn(),
   getColumnFilters: jest.fn(),
 } as unknown as FilterService;
 
@@ -150,10 +151,13 @@ const sortServiceStub = {
   dispose: jest.fn(),
   loadGridSorters: jest.fn(),
   processTreeDataInitialSort: jest.fn(),
+  sortHierarchicalDataset: jest.fn(),
 } as unknown as SortService;
 
 const treeDataServiceStub = {
+  convertFlatDatasetConvertToHierarhicalView: jest.fn(),
   init: jest.fn(),
+  initializeHierarchicalDataset: jest.fn(),
   dispose: jest.fn(),
   handleOnCellClick: jest.fn(),
   toggleTreeDataCollapse: jest.fn(),
@@ -1633,16 +1637,22 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         }
       });
 
-      it('should change flat dataset and expect  being called with other methods', () => {
+      it('should change flat dataset and expect being called with other methods', (done) => {
         const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
         const mockHierarchical = [{ id: 0, file: 'documents', files: [{ id: 1, file: 'vacation.txt' }] }];
         const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
+        jest.spyOn(treeDataServiceStub, 'initializeHierarchicalDataset').mockReturnValue({ hierarchical: mockHierarchical, flat: mockFlatDataset });
+        const refreshTreeSpy = jest.spyOn(filterServiceStub, 'refreshTreeDataFilters');
 
         component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file', parentPropName: 'parentId', childrenPropName: 'files' } } as GridOption;
         component.ngAfterViewInit();
         component.dataset = mockFlatDataset;
 
-        expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);
+        setTimeout(() => {
+          expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);
+          expect(refreshTreeSpy).not.toHaveBeenCalled();
+          done();
+        })
       });
 
       it('should change hierarchical dataset and expect processTreeDataInitialSort being called with other methods', (done) => {
@@ -1664,6 +1674,22 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(setItemsSpy).toHaveBeenCalledWith([], 'id');
           done();
         }, 2);
+      });
+
+      it('should expect "refreshTreeDataFilters" method to be called when our flat dataset was already set and it just got changed a 2nd time', () => {
+        const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
+        const mockHierarchical = [{ id: 0, file: 'documents', files: [{ id: 1, file: 'vacation.txt' }] }];
+        const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
+        jest.spyOn(treeDataServiceStub, 'initializeHierarchicalDataset').mockReturnValue({ hierarchical: mockHierarchical, flat: mockFlatDataset });
+        const refreshTreeSpy = jest.spyOn(filterServiceStub, 'refreshTreeDataFilters');
+
+        component.dataset = [{ id: 0, file: 'documents' }];
+        component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file', parentPropName: 'parentId', childrenPropName: 'files' } } as GridOption;
+        component.ngAfterViewInit();
+        component.dataset = mockFlatDataset;
+
+        expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);
+        expect(refreshTreeSpy).toHaveBeenCalled();
       });
     });
   });

@@ -1,10 +1,12 @@
 import { GridOption, SlickEventHandler, Column } from '../../models/index';
 import { SharedService } from '../shared.service';
+import { SortService } from '../sort.service';
 import { TreeDataService } from '../treeData.service';
 
 declare const Slick: any;
 
 const gridOptionsMock = {
+  multiColumnSort: false,
   enableTreeData: true,
   treeDataOptions: {
     columnId: 'file'
@@ -35,13 +37,19 @@ const gridStub = {
   setSortColumns: jest.fn(),
 };
 
+const sortServiceStub = {
+  clearSorting: jest.fn(),
+  sortHierarchicalDataset: jest.fn(),
+} as unknown as SortService;
+
 describe('SortService', () => {
   let service: TreeDataService;
   let slickgridEventHandler: SlickEventHandler;
   const sharedService = new SharedService();
 
   beforeEach(() => {
-    service = new TreeDataService(sharedService);
+    gridOptionsMock.multiColumnSort = false;
+    service = new TreeDataService(sharedService, sortServiceStub);
     slickgridEventHandler = service.eventHandler;
     jest.spyOn(gridStub, 'getData').mockReturnValue(dataViewStub);
   });
@@ -53,6 +61,16 @@ describe('SortService', () => {
 
   it('should create the service', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should throw an error when used with multi-column sorting', (done) => {
+    try {
+      gridOptionsMock.multiColumnSort = true;
+      service.init(gridStub);
+    } catch (e) {
+      expect(e.toString()).toContain('[Angular-Slickgrid] Tree Data does not currently support multi-column sorting');
+      done();
+    }
   });
 
   it('should dispose of the event handler', () => {
@@ -79,9 +97,9 @@ describe('SortService', () => {
   });
 
   describe('handleOnCellClick method', () => {
-    let div;
-    let mockColumn;
-    let mockRowData;
+    let div: HTMLDivElement;
+    let mockColumn: Column;
+    let mockRowData: any;
 
     beforeEach(() => {
       div = document.createElement('div');
@@ -139,7 +157,7 @@ describe('SortService', () => {
 
     it('should toggle the collapsed custom class name to False when that custom class name was found to be True prior', () => {
       mockRowData.customCollapsed = true;
-      gridOptionsMock.treeDataOptions.collapsedPropName = 'customCollapsed';
+      gridOptionsMock.treeDataOptions!.collapsedPropName = 'customCollapsed';
       const spyGetItem = jest.spyOn(dataViewStub, 'getItem').mockReturnValue(mockRowData);
       const spyUptItem = jest.spyOn(dataViewStub, 'updateItem');
       const spyInvalidate = jest.spyOn(gridStub, 'invalidate');
@@ -156,13 +174,11 @@ describe('SortService', () => {
     });
 
     describe('toggleTreeDataCollapse method', () => {
-      let itemsMock;
+      let itemsMock: any;
 
       beforeEach(() => {
         itemsMock = [{ file: 'myFile.txt', size: 0.5 }, { file: 'myMusic.txt', size: 5.3 }];
-        gridOptionsMock.treeDataOptions = {
-          columnId: 'file'
-        };
+        gridOptionsMock.treeDataOptions = { columnId: 'file' };
         jest.clearAllMocks();
       });
 
@@ -181,7 +197,7 @@ describe('SortService', () => {
       });
 
       it('should collapse all items with a custom collapsed property when calling the method with collapsing True', () => {
-        gridOptionsMock.treeDataOptions.collapsedPropName = 'customCollapsed';
+        gridOptionsMock.treeDataOptions!.collapsedPropName = 'customCollapsed';
         const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(itemsMock);
         const dataSetItemsSpy = jest.spyOn(dataViewStub, 'setItems');
 
@@ -207,6 +223,64 @@ describe('SortService', () => {
           { __collapsed: false, file: 'myFile.txt', size: 0.5, },
           { __collapsed: false, file: 'myMusic.txt', size: 5.3, },
         ]);
+      });
+    });
+
+    describe('initializeHierarchicalDataset method', () => {
+      let mockColumns: Column[];
+      let mockFlatDataset: any;
+
+      beforeEach(() => {
+        mockColumns = [{ id: 'file', field: 'file', }, { id: 'size', field: 'size', }] as Column[];
+        mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', size: 1.2, parentId: 0 }, { id: 2, file: 'todo.txt', size: 2.3, parentId: 0 }];
+        gridOptionsMock.treeDataOptions = { columnId: 'file', parentPropName: 'parentId' };
+        jest.clearAllMocks();
+      });
+
+      it('should sort by the Tree column when there is no initial sort provided', () => {
+        const mockHierarchical = [{
+          id: 0,
+          file: 'documents',
+          files: [{ id: 2, file: 'todo.txt', size: 2.3, }, { id: 1, file: 'vacation.txt', size: 1.2, }]
+        }];
+        const setSortSpy = jest.spyOn(gridStub, 'setSortColumns');
+        jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(0);
+        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+
+        service.init(gridStub);
+        const result = service.initializeHierarchicalDataset(mockFlatDataset, [mockColumn]);
+
+        expect(setSortSpy).toHaveBeenCalledWith([{
+          columnId: 'file',
+          sortAsc: true,
+          sortCol: mockColumn
+        }]);
+        expect(result).toEqual({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+      });
+
+      it('should sort by the Tree column by the "initialSort" provided', () => {
+        gridOptionsMock.treeDataOptions!.initialSort = {
+          columnId: 'size',
+          direction: 'desc'
+        };
+        const mockHierarchical = [{
+          id: 0,
+          file: 'documents',
+          files: [{ id: 1, file: 'vacation.txt', size: 1.2, }, { id: 2, file: 'todo.txt', size: 2.3, }]
+        }];
+        const setSortSpy = jest.spyOn(gridStub, 'setSortColumns');
+        jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(0);
+        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+
+        service.init(gridStub);
+        const result = service.initializeHierarchicalDataset(mockFlatDataset, [mockColumn]);
+
+        expect(setSortSpy).toHaveBeenCalledWith([{
+          columnId: 'size',
+          sortAsc: false,
+          sortCol: mockColumn
+        }]);
+        expect(result).toEqual({ flat: mockFlatDataset, hierarchical: mockHierarchical });
       });
     });
   });

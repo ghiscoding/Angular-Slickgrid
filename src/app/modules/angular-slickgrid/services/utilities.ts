@@ -56,29 +56,29 @@ export function arrayRemoveItemByIndex<T>(array: T[], index: number): T[] {
  * @param options you can provide the following options:: "parentPropName" (defaults to "parent"), "childrenPropName" (defaults to "children") and "identifierPropName" (defaults to "id")
  * @return roots - hierarchical data view array
  */
-export function convertParentChildArrayToHierarchicalView<T = any>(flatArray: T[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; }): T[] {
-  const childrenPropName = options && options.childrenPropName || 'children';
-  const parentPropName = options && options.parentPropName || '__parentId';
-  const identifierPropName = options && options.identifierPropName || 'id';
+export function convertParentChildArrayToHierarchicalView<T = any>(flatArray: T[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; levelPropName?: string; }): T[] {
+  const childrenPropName = options?.childrenPropName ?? 'children';
+  const parentPropName = options?.parentPropName ?? '__parentId';
+  const identifierPropName = options?.identifierPropName ?? 'id';
   const hasChildrenFlagPropName = '__hasChildren';
-  const treeLevelPropName = '__treeLevel';
-  const inputArray: T[] = $.extend(true, [], flatArray);
+  const treeLevelPropName = options?.levelPropName ?? '__treeLevel';
+  const inputArray: T[] = deepCopy(flatArray || []);
 
   const roots: T[] = []; // things without parent
 
   // make them accessible by guid on this map
-  const all = {};
+  const all: any = {};
 
-  inputArray.forEach((item) => (all as any)[(item as any)[identifierPropName]] = item);
+  inputArray.forEach((item: any) => all[item[identifierPropName]] = item);
 
   // connect childrens to its parent, and split roots apart
   Object.keys(all).forEach((id) => {
-    const item = (all as any)[id];
-    if (item[parentPropName] === null || !item.hasOwnProperty(parentPropName)) {
+    const item = all[id];
+    if (!(parentPropName in item) || item[parentPropName] === null || item[parentPropName] === undefined || item[parentPropName] === '') {
       delete item[parentPropName];
       roots.push(item);
     } else if (item[parentPropName] in all) {
-      const p = (all as any)[item[parentPropName]];
+      const p = all[item[parentPropName]];
       if (!(childrenPropName in p)) {
         p[childrenPropName] = [];
       }
@@ -116,17 +116,17 @@ export function convertHierarchicalViewToParentChildArray<T = any>(hierarchicalA
  * @param treeLevel - tree level number
  * @param parentId - parent ID
  */
-export function convertHierarchicalViewToParentChildArrayByReference<T = any>(hierarchicalArray: T[], outputArrayRef: T[], options?: { childrenPropName?: string; parentPropName?: string; hasChildrenFlagPropName?: string; treeLevelPropName?: string; identifierPropName?: string; }, treeLevel = 0, parentId?: string) {
-  const childrenPropName = options && options.childrenPropName || 'children';
-  const identifierPropName = options && options.identifierPropName || 'id';
-  const hasChildrenFlagPropName = options && options.hasChildrenFlagPropName || '__hasChildren';
-  const treeLevelPropName = options && options.treeLevelPropName || '__treeLevel';
-  const parentPropName = options && options.parentPropName || '__parentId';
+export function convertHierarchicalViewToParentChildArrayByReference<T = any>(hierarchicalArray: T[], outputArrayRef: T[], options?: { childrenPropName?: string; parentPropName?: string; hasChildrenFlagPropName?: string; levelPropName?: string; identifierPropName?: string; }, treeLevel = 0, parentId?: string) {
+  const childrenPropName = options?.childrenPropName ?? 'children';
+  const identifierPropName = options?.identifierPropName ?? 'id';
+  const hasChildrenFlagPropName = options?.hasChildrenFlagPropName ?? '__hasChildren';
+  const treeLevelPropName = options?.levelPropName ?? '__treeLevel';
+  const parentPropName = options?.parentPropName ?? '__parentId';
 
   if (Array.isArray(hierarchicalArray)) {
     for (const item of hierarchicalArray) {
       if (item) {
-        const itemExist = outputArrayRef.find((itm: T) => (itm as any)[identifierPropName] === (item as any)[identifierPropName]);
+        const itemExist = outputArrayRef.some((itm: T) => (itm as any)[identifierPropName] === (item as any)[identifierPropName]);
         if (!itemExist) {
           (item as any)[treeLevelPropName] = treeLevel; // save tree level ref
           (item as any)[parentPropName] = parentId || null;
@@ -143,7 +143,6 @@ export function convertHierarchicalViewToParentChildArrayByReference<T = any>(hi
     }
   }
 }
-
 
 /**
  * Create an immutable clone of an array or object
