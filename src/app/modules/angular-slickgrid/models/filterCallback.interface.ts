@@ -14,6 +14,12 @@ export interface FilterCallbackArg {
   searchTerms?: SearchTerm[] | undefined | null;
 
   /**
+   * Defaults to undefined, do we want to force the onSearchChange event to trigger?
+   * This is used at least with `updateFilters()` from the Filter Service.
+   */
+  forceOnSearchChangeEvent?: boolean;
+
+  /**
    * Defaults to true, should we trigger a query?
    * Change to false when calling a clearFilters to avoid multiple backend queries.
    */

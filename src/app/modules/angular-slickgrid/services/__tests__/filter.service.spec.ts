@@ -1083,6 +1083,7 @@ describe('FilterService', () => {
 
     beforeEach(() => {
       gridOptionMock.enableFiltering = true;
+      gridOptionMock.enableTreeData = false;
       gridOptionMock.backendServiceApi = undefined;
       mockColumn1 = { id: 'firstName', name: 'firstName', field: 'firstName', filterable: true, filter: { model: Filters.compoundInputText } };
       mockColumn2 = { id: 'isActive', name: 'isActive', field: 'isActive', type: FieldType.boolean, filterable: true, filter: { model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }], } };
@@ -1198,6 +1199,66 @@ describe('FilterService', () => {
       });
       expect(clearSpy).toHaveBeenCalledWith(false);
     });
+
+    it('should expect filters to be set in ColumnFilters and also expect onSearchChange to be called when last argument is set to True', () => {
+      const clearSpy = jest.spyOn(service, 'clearFilters');
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const spySearchChange = jest.spyOn(service.onSearchChange as any, 'notify');
+
+      gridOptionMock.enableTreeData = true;
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1 as any, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2 as any, new Slick.EventData(), gridStub);
+      service.updateFilters(mockNewFilters.slice(0, 1), true, false, true);
+
+      expect(emitSpy).toHaveBeenCalledWith('local');
+      expect(clearSpy).toHaveBeenCalledWith(false);
+      expect(service.getColumnFilters()).toEqual({
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', parsedSearchTerms: ['Jane'], type: FieldType.string },
+      });
+      expect(spySearchChange).toHaveBeenCalledWith({
+        clearFilterTriggered: undefined,
+        shouldTriggerQuery: true,
+        columnId: 'firstName',
+        columnDef: mockColumn1,
+        columnFilters: { firstName: { columnDef: mockColumn1, columnId: 'firstName', operator: 'StartsWith', searchTerms: ['Jane'], parsedSearchTerms: ['Jane'], type: FieldType.string } },
+        operator: 'StartsWith',
+        searchTerms: ['Jane'],
+        parsedSearchTerms: ['Jane'],
+        grid: gridStub
+      }, undefined);
+    });
+
+    it('should expect filters to be set in ColumnFilters and also expect onSearchChange to be called when "enableTreeData" is set', () => {
+      const clearSpy = jest.spyOn(service, 'clearFilters');
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const spySearchChange = jest.spyOn(service.onSearchChange as any, 'notify');
+
+      gridOptionMock.enableTreeData = true;
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1 as any, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2 as any, new Slick.EventData(), gridStub);
+      service.updateFilters(mockNewFilters.slice(0, 1));
+
+      expect(emitSpy).toHaveBeenCalledWith('local');
+      expect(clearSpy).toHaveBeenCalledWith(false);
+      expect(service.getColumnFilters()).toEqual({
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith', parsedSearchTerms: ['Jane'], type: FieldType.string },
+      });
+      expect(spySearchChange).toHaveBeenCalledWith({
+        clearFilterTriggered: undefined,
+        shouldTriggerQuery: true,
+        columnId: 'firstName',
+        columnDef: mockColumn1,
+        columnFilters: { firstName: { columnDef: mockColumn1, columnId: 'firstName', operator: 'StartsWith', searchTerms: ['Jane'], parsedSearchTerms: ['Jane'], type: FieldType.string } },
+        operator: 'StartsWith',
+        searchTerms: ['Jane'],
+        parsedSearchTerms: ['Jane'],
+        grid: gridStub
+      }, undefined);
+    });
   });
 
   describe('updateSingleFilter method', () => {
@@ -1208,6 +1269,7 @@ describe('FilterService', () => {
 
     beforeEach(() => {
       gridOptionMock.enableFiltering = true;
+      gridOptionMock.enableTreeData = false;
       gridOptionMock.backendServiceApi = undefined;
       mockColumn1 = { id: 'firstName', name: 'firstName', field: 'firstName', };
       mockColumn2 = { id: 'isActive', name: 'isActive', field: 'isActive', type: FieldType.boolean, };

@@ -219,11 +219,11 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   }
 
   logHierarchicalStructure() {
-    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
+    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical);
   }
 
   logFlatStructure() {
-    console.log('flat array', this.angularGrid.treeDataService.dataset /* , JSON.stringify(outputFlatArray, null, 2) */);
+    console.log('flat array', this.angularGrid.treeDataService.dataset);
   }
 
   mockDataset() {
