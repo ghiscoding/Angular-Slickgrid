@@ -129,7 +129,7 @@ export function convertHierarchicalViewToParentChildArrayByReference<T = any>(hi
         const itemExist = outputArrayRef.some((itm: T) => (itm as any)[identifierPropName] === (item as any)[identifierPropName]);
         if (!itemExist) {
           (item as any)[treeLevelPropName] = treeLevel; // save tree level ref
-          (item as any)[parentPropName] = parentId || null;
+          (item as any)[parentPropName] = parentId ?? null;
           outputArrayRef.push(item);
         }
         if (Array.isArray((item as any)[childrenPropName])) {

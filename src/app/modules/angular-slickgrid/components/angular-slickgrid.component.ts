@@ -131,6 +131,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
   private _isDatasetInitialized = false;
+  private _isDatasetHierarchicalInitialized = false;
   private _isLeftFooterOriginallyEmpty = false;
   private _isLeftFooterDisplayingSelectionRowCount = false;
   private _isPaginationInitialized = false;
@@ -219,15 +220,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataset = data;
 
     // when Tree Data is enabled and we don't yet have the hierarchical dataset filled, we can force a convert & sort of the array
-    if (this.gridOptions?.enableTreeData && Array.isArray(newDataset) && (newDataset.length > 0 || newDataset.length !== prevDatasetLn)) {
-      const sortedDatasetResult = this.treeDataService.initializeHierarchicalDataset(data, this._columnDefinitions);
-      this.sharedService.hierarchicalDataset = sortedDatasetResult.hierarchical;
-      data = sortedDatasetResult.flat;
-
-      // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
-      if (newDataset.length > 0 && prevDatasetLn > 0 && newDataset.length !== prevDatasetLn) {
-        this.filterService.refreshTreeDataFilters();
-      }
+    if (this.grid && this.gridOptions?.enableTreeData && Array.isArray(newDataset) && (newDataset.length > 0 || newDataset.length !== prevDatasetLn)) {
+      this._isDatasetHierarchicalInitialized = false;
+      data = this.sortTreeDataset(newDataset);
     }
     this.refreshGridData(data || []);
     this._currentDatasetLength = newDataset.length;
@@ -245,12 +240,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
-    setTimeout(() => {
-      if (newHierarchicalDataset && this.dataView && this.sortService?.processTreeDataInitialSort && this.gridOptions?.enableTreeData) {
-        this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
-        this.sortService.processTreeDataInitialSort();
-      }
-    }, 1);
+    if (newHierarchicalDataset && this.grid && this.sortService?.processTreeDataInitialSort) {
+      this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
+      this.sortService.processTreeDataInitialSort();
+    }
+
+    this._isDatasetHierarchicalInitialized = true;
   }
 
   get elementRef(): ElementRef {
@@ -667,16 +662,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       });
 
-      // Tree Data with Pagiantion is not supported, throw an error when user tries to do that
-      if (this.gridOptions && this.gridOptions.enableTreeData && this.gridOptions.enablePagination) {
-        throw new Error('[Angular-Slickgrid] It looks like you are trying to use Tree Data with Pagination but unfortunately that is simply not supported because of its complexity.');
-      }
-
-      // when dealing with Tree Data View, make sure we have necessary tree data options
-      if (this.gridOptions && this.gridOptions.enableTreeData && (!this.gridOptions.treeDataOptions || !this.gridOptions.treeDataOptions.columnId)) {
-        throw new Error('[Angular-Slickgrid] When enabling tree data, you must also provide the "treeDataOption" property in your Grid Options with "childrenPropName" or "parentPropName" (depending if your array is hierarchical or flat) for the Tree Data to work properly');
-      }
-
       this._eventHandler.subscribe(dataView.onRowsChanged, (_e: Event, args: any) => {
         // filtering data with local dataset will not always show correctly unless we call this updateRow/render
         // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
@@ -912,10 +897,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // initialize the SlickGrid grid
     this.grid.init();
 
+    // when using Tree Data View
+    if (this.gridOptions.enableTreeData) {
+      this.treeDataService.init(this.grid);
+    }
+
     if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
+      const initialDataset = this.gridOptions?.enableTreeData ? this.sortTreeDataset(this._dataset) : this._dataset;
       this.onDataviewCreated.emit(this.dataView);
       this.dataView.beginUpdate();
-      this.dataView.setItems(this._dataset || [], this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems(initialDataset || [], this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
@@ -986,11 +977,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if Excel Export is enabled, initialize the service with the necessary grid and other objects
     if (this.gridOptions.enableExcelExport && this.sharedService) {
       this.excelExportService.init(this.grid, this.dataView);
-    }
-
-    // when using Tree Data View
-    if (this.gridOptions.enableTreeData) {
-      this.treeDataService.init(this.grid);
     }
 
     // once all hooks are in placed and the grid is initialized, we can emit an event
@@ -1218,6 +1204,27 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         customFooterOptions.leftFooterText = `${this._selectedRowCount} ${selectedCountText2}`;
       });
     }
+  }
+
+  /** Takes a flat dataset with parent/child relationship */
+  private sortTreeDataset(flatDataset: any[]) {
+    const prevDatasetLn = this._currentDatasetLength;
+    let sortedDatasetResult;
+
+    // if the hierarchical dataset was already initialized then no need to re-convert it, we can use it directly from the shared service ref
+    if (this._isDatasetHierarchicalInitialized && this.sharedService.hierarchicalDataset) {
+      sortedDatasetResult = this.treeDataService.sortHierarchicalDataset(this.sharedService.hierarchicalDataset);
+    } else {
+      // else we need to first convert the flat dataset to a hierarchical dataset and then sort
+      sortedDatasetResult = this.treeDataService.convertToHierarchicalDatasetAndSort(flatDataset, this._columnDefinitions, this.gridOptions);
+      this.sharedService.hierarchicalDataset = sortedDatasetResult.hierarchical;
+    }
+
+    // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
+    if (flatDataset.length > 0 && prevDatasetLn > 0 && flatDataset.length !== prevDatasetLn) {
+      this.filterService.refreshTreeDataFilters();
+    }
+    return sortedDatasetResult.flat;
   }
 
   /**

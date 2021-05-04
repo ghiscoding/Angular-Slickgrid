@@ -88,6 +88,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       // change header/cell row height for salesforce theme
       headerRowHeight: 35,
       rowHeight: 33,
+      showCustomFooter: true,
 
       // use Material Design SVG icons
       contextMenu: {
