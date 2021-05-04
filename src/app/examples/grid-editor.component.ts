@@ -192,7 +192,7 @@ export class GridEditorComponent implements OnInit {
         },
         filter: {
           model: CustomInputFilter,
-          placeholder: '&#128269; custom',
+          placeholder: '🔎︎ custom',
         },
       }, {
         id: 'duration',
@@ -316,7 +316,7 @@ export class GridEditorComponent implements OnInit {
         minWidth: 100,
         editor: {
           model: Editors.autoComplete,
-          placeholder: '&#128269; search city',
+          placeholder: '🔎︎ search city',
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // use your own autocomplete options, instead of $.ajax, use http
@@ -342,7 +342,7 @@ export class GridEditorComponent implements OnInit {
         },
         filter: {
           model: Filters.autoComplete,
-          // placeholder: '&#128269; search city',
+          // placeholder: '🔎︎ search city',
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),

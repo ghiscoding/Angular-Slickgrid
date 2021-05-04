@@ -228,7 +228,7 @@ export class GridResizeByContentComponent implements OnInit {
         },
         filter: {
           model: Filters.inputText,
-          // placeholder: '&#128269; search city',
+          // placeholder: '🔎︎ search city',
           type: FieldType.string,
           queryField: 'product.itemName',
         }

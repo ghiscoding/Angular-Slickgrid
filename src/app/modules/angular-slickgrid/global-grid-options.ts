@@ -78,7 +78,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   defaultFilter: Filters.input,
   defaultBackendServiceFilterTypingDebounce: 500,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
-  defaultFilterPlaceholder: '&#128269;',
+  defaultFilterPlaceholder: '🔎︎',
   defaultFilterRangeOperator: OperatorType.rangeInclusive,
   editable: false,
   enableAutoResize: true,
