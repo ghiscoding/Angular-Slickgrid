@@ -1,4 +1,4 @@
-import { Column, DelimiterType, FileType, GridOption, OperatorType } from './models/index';
+import { Column, DelimiterType, FileType, GridOption, OperatorType, TreeDataOption } from './models/index';
 import { Filters } from './filters/filters.index';
 
 /** Global Grid Options Defaults */
@@ -113,8 +113,8 @@ export const GlobalGridOptions: Partial<GridOption> = {
     filename: 'export',
     format: FileType.xlsx,
     groupingColumnHeaderTitle: 'Group By',
-    groupCollapsedSymbol: '\u25B9',
-    groupExpandedSymbol: '\u25BF',
+    groupCollapsedSymbol: '⮞',
+    groupExpandedSymbol: '⮟',
     groupingAggregatorRowText: '',
     sanitizeDataExport: false,
   },
@@ -204,6 +204,10 @@ export const GlobalGridOptions: Partial<GridOption> = {
   resizeFormatterPaddingWidthInPx: 0,
   resizeDefaultRatioForStringType: 0.88,
   resizeMaxItemToInspectCellContentWidth: 1000,
+  treeDataOptions: {
+    exportIndentMarginLeft: 4,
+    exportIndentationLeadingChar: '.',
+  } as unknown as TreeDataOption
 };
 
 /**

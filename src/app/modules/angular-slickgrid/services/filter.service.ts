@@ -788,8 +788,8 @@ export class FilterService {
           this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newOperator);
           uiFilter.setValues(newFilter.searchTerms || [], newOperator);
 
-          if (triggerOnSearchChangeEvent) {
-            this.callbackSearchEvent(null, { columnDef: uiFilter.columnDef, operator: newOperator, searchTerms: newFilter.searchTerms, shouldTriggerQuery: true });
+          if (triggerOnSearchChangeEvent || this._gridOptions?.enableTreeData) {
+            this.callbackSearchEvent(undefined, { columnDef: uiFilter.columnDef, operator: newOperator, searchTerms: newFilter.searchTerms, shouldTriggerQuery: true, forceOnSearchChangeEvent: true });
           }
         }
       });
@@ -817,13 +817,16 @@ export class FilterService {
   }
 
   /**
+   * **NOTE**: This should only ever be used when having a global external search and hidding the grid inline filters (with `enableFiltering: true` and `showHeaderRow: false`).
+   * For inline filters, please use `updateFilters()` instead.
+   *
    * Update a Single Filter dynamically just by providing (columnId, operator and searchTerms)
    * You can also choose emit (default) a Filter Changed event that will be picked by the Grid State Service.
-   *
    * Also for backend service only, you can choose to trigger a backend query (default) or not if you wish to do it later,
    * this could be useful when using updateFilters & updateSorting and you wish to only send the backend query once.
    * @param filters array
    * @param triggerEvent defaults to True, do we want to emit a filter changed event?
+   * @param triggerBackendQuery defaults to True, which will query the backend.
    */
   updateSingleFilter(filter: CurrentFilter, emitChangedEvent = true, triggerBackendQuery = true) {
     const columnDef = this.sharedService.allColumns.find(col => col.id === filter.columnId);
@@ -857,6 +860,10 @@ export class FilterService {
           columnFilters: this._columnFilters,
           grid: this._grid
         });
+
+        // when using Tree Data, we also need to refresh the filters because of the tree structure with recursion
+        this.refreshTreeDataFilters();
+
         this._dataView.refresh();
       }
 
@@ -973,7 +980,7 @@ export class FilterService {
       // trigger an event only if Filters changed or if ENTER key was pressed
       const eventKey = event && event.key;
       const eventKeyCode = event && event.keyCode;
-      if (this._onSearchChange && (eventKey === 'Enter' || eventKeyCode === KeyCode.ENTER || !dequal(oldColumnFilters, this._columnFilters))) {
+      if (this._onSearchChange && (args.forceOnSearchChangeEvent || eventKey === 'Enter' || eventKeyCode === KeyCode.ENTER || !dequal(oldColumnFilters, this._columnFilters))) {
         this._onSearchChange.notify({
           clearFilterTriggered: args.clearFilterTriggered,
           shouldTriggerQuery: args.shouldTriggerQuery,

@@ -1,13 +1,15 @@
 import { Formatter } from './../models/index';
-import { getDescendantProperty, htmlEncode } from '../services/utilities';
+import { addWhiteSpaces, getDescendantProperty } from '../services/utilities';
 
 /** Formatter that must be use with a Tree Data column */
-export const treeFormatter: Formatter = (_row, _cell, value, columnDef, dataContext, grid) => {
+export const treeExportFormatter: Formatter = (_row, _cell, value, columnDef, dataContext, grid) => {
   const dataView = grid?.getData();
   const gridOptions = grid?.getOptions();
   const treeDataOptions = gridOptions?.treeDataOptions;
   const treeLevelPropName = treeDataOptions?.levelPropName ?? '__treeLevel';
-  const indentMarginLeft = treeDataOptions?.indentMarginLeft ?? 15;
+  const indentMarginLeft = treeDataOptions?.exportIndentMarginLeft ?? 4;
+  const groupCollapsedSymbol = gridOptions?.excelExportOptions?.groupCollapsedSymbol ?? '⮞';
+  const groupExpandedSymbol = gridOptions?.excelExportOptions?.groupExpandedSymbol ?? '⮟';
   let outputValue = value;
 
   if (typeof columnDef.queryFieldNameGetterFn === 'function') {
@@ -27,23 +29,20 @@ export const treeFormatter: Formatter = (_row, _cell, value, columnDef, dataCont
   }
 
   if (dataView?.getItemByIdx) {
-    if (typeof outputValue === 'string') {
-      outputValue = htmlEncode(outputValue);
-    }
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const treeLevel = dataContext[treeLevelPropName] || 0;
-    const spacer = `<span style="display:inline-block; width:${indentMarginLeft * treeLevel}px;"></span>`;
+    const spacer = addWhiteSpaces(indentMarginLeft * treeLevel);
     const idx = dataView.getIdxById(dataContext[identifierPropName]);
     const nextItemRow = dataView.getItemByIdx((idx || 0) + 1);
 
     if (nextItemRow?.[treeLevelPropName] > treeLevel) {
       if (dataContext.__collapsed) {
-        return `${spacer}<span class="slick-group-toggle collapsed"></span>&nbsp;${outputValue}`;
+        return `${groupCollapsedSymbol} ${spacer} ${outputValue}`;
       } else {
-        return `${spacer}<span class="slick-group-toggle expanded"></span>&nbsp;${outputValue}`;
+        return `${groupExpandedSymbol} ${spacer} ${outputValue}`;
       }
     }
-    return `${spacer}<span class="slick-group-toggle"></span>&nbsp;${outputValue}`;
+    return treeLevel === 0 ? outputValue : `.${spacer} ${outputValue}`;
   }
   return '';
 };

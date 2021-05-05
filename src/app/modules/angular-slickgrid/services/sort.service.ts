@@ -311,16 +311,16 @@ export class SortService {
   /** Process the initial sort, typically it will sort ascending by the column that has the Tree Data unless user specifies a different initialSort */
   processTreeDataInitialSort() {
     // when a Tree Data view is defined, we must sort the data so that the UI works correctly
-    if (this._gridOptions && this._gridOptions.enableTreeData && this._gridOptions.treeDataOptions) {
+    if (this._gridOptions?.enableTreeData && this._gridOptions.treeDataOptions) {
       // first presort it once by tree level
       const treeDataOptions = this._gridOptions.treeDataOptions;
-      const columnWithTreeData = this._columnDefinitions.find((col: Column) => col && col.id === treeDataOptions.columnId);
+      const columnWithTreeData = this._columnDefinitions.find((col: Column) => col.id === treeDataOptions.columnId);
       if (columnWithTreeData) {
         let sortDirection = SortDirection.ASC;
         let sortTreeLevelColumn: ColumnSort = { columnId: treeDataOptions.columnId, sortCol: columnWithTreeData, sortAsc: true };
 
         // user could provide a custom sort field id, if so get that column and sort by it
-        if (treeDataOptions && treeDataOptions.initialSort && treeDataOptions.initialSort.columnId) {
+        if (treeDataOptions?.initialSort?.columnId) {
           const initialSortColumnId = treeDataOptions.initialSort.columnId;
           const initialSortColumn = this._columnDefinitions.find((col: Column) => col.id === initialSortColumnId);
           sortDirection = (treeDataOptions.initialSort.direction || SortDirection.ASC).toUpperCase() as SortDirection;
@@ -328,7 +328,7 @@ export class SortService {
         }
 
         // when we have a valid column with Tree Data, we can sort by that column
-        if (sortTreeLevelColumn && sortTreeLevelColumn.columnId) {
+        if (sortTreeLevelColumn?.columnId && this.sharedService?.hierarchicalDataset) {
           this.updateSorting([{ columnId: sortTreeLevelColumn.columnId || '', direction: sortDirection }]);
         }
       }
@@ -371,12 +371,8 @@ export class SortService {
 
       if (isTreeDataEnabled && this.sharedService && Array.isArray(this.sharedService.hierarchicalDataset)) {
         const hierarchicalDataset = this.sharedService.hierarchicalDataset;
-        this.sortTreeData(hierarchicalDataset, sortColumns);
-        const dataViewIdIdentifier = this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
-        const treeDataOpt: TreeDataOption = this._gridOptions && this._gridOptions.treeDataOptions || { columnId: '' };
-        const treeDataOptions = { ...treeDataOpt, identifierPropName: treeDataOpt.identifierPropName || dataViewIdIdentifier };
-        const sortedFlatArray = convertHierarchicalViewToParentChildArray(hierarchicalDataset, treeDataOptions);
-        dataView.setItems(sortedFlatArray, this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id');
+        const datasetSortResult = this.sortHierarchicalDataset(hierarchicalDataset, sortColumns);
+        this._dataView.setItems(datasetSortResult.flat, this._gridOptions?.datasetIdPropertyName ?? 'id');
       } else {
         dataView.sort(this.sortComparers.bind(this, sortColumns));
       }
@@ -393,6 +389,17 @@ export class SortService {
         }));
       }
     }
+  }
+
+  /** Takes a hierarchical dataset and sort it recursively,  */
+  sortHierarchicalDataset(hierarchicalDataset: any[], sortColumns: Array<ColumnSort & { clearSortTriggered?: boolean; }>): { hierarchical: any[]; flat: any[]; } {
+    this.sortTreeData(hierarchicalDataset, sortColumns);
+    const dataViewIdIdentifier = this._gridOptions?.datasetIdPropertyName ?? 'id';
+    const treeDataOpt: TreeDataOption = this._gridOptions?.treeDataOptions ?? { columnId: '' };
+    const treeDataOptions = { ...treeDataOpt, identifierPropName: treeDataOpt.identifierPropName ?? dataViewIdIdentifier };
+    const sortedFlatArray = convertHierarchicalViewToParentChildArray(hierarchicalDataset, treeDataOptions);
+
+    return { hierarchical: hierarchicalDataset, flat: sortedFlatArray };
   }
 
   /** Call a local grid sort by its default sort field id (user can customize default field by configuring "defaultColumnSortFieldId" in the grid options, defaults to "id") */
@@ -499,11 +506,11 @@ export class SortService {
     }
 
     if (Array.isArray(sorters)) {
-      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+      const backendApi = this._gridOptions?.backendServiceApi;
 
       if (backendApi) {
-        const backendApiService = backendApi && backendApi.service;
-        if (backendApiService && backendApiService.updateSorters) {
+        const backendApiService = backendApi?.service;
+        if (backendApiService?.updateSorters) {
           backendApiService.updateSorters(undefined, sorters);
           if (triggerBackendQuery) {
             refreshBackendDataset(this._gridOptions);

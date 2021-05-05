@@ -990,6 +990,7 @@ describe('SortService', () => {
         { sortAsc: false, sortCol: { id: 'file', field: 'file', width: 75 } }
       ];
 
+      sharedService.hierarchicalDataset = [];
       service.bindLocalOnSort(gridStub);
       gridStub.onSort.notify({ multiColumnSort: true, sortCols: mockSortedCols, grid: gridStub }, new Slick.EventData(), gridStub);
 
@@ -1015,6 +1016,7 @@ describe('SortService', () => {
         { sortAsc: false, sortCol: { id: 'file', field: 'file', width: 75 } }
       ];
 
+      sharedService.hierarchicalDataset = [];
       service.bindLocalOnSort(gridStub);
       gridStub.onSort.notify({ multiColumnSort: true, sortCols: mockSortedCols, grid: gridStub }, new Slick.EventData(), gridStub);
 

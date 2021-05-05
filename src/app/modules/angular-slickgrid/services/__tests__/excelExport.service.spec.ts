@@ -751,7 +751,7 @@ describe('ExcelExportService', () => {
               { metadata: { style: 1, }, value: 'Position', },
               { metadata: { style: 1, }, value: 'Order', },
             ],
-            ['▿ Order: 20 (2 items)'],
+            ['⮟ Order: 20 (2 items)'],
             ['', '1E06', 'John', 'Z', 'SALES_REP', '10'],
             ['', '2B02', 'Jane', 'DOE', 'FINANCE_MANAGER', '10'],
             ['', '', '', '', '', 'Custom: 20'],
@@ -845,7 +845,7 @@ describe('ExcelExportService', () => {
               { metadata: { style: 1, }, value: 'Position', },
               { metadata: { style: 1, }, value: 'Order', },
             ],
-            ['▿ Order: 20 (2 items)'],
+            ['⮟ Order: 20 (2 items)'],
             ['', '1E06', 'John', 'Z', 'Sales Rep.', '10'],
             ['', '2B02', 'Jane', 'DOE', 'Finance Manager', '10'],
             ['', '', '', '', '', '20'],
@@ -985,12 +985,12 @@ describe('ExcelExportService', () => {
               { metadata: { style: 1, }, value: 'Position', },
               { metadata: { style: 1, }, value: 'Order', },
             ],
-            ['▿ Order: 20 (2 items)'],
-            ['▿      Last Name: Z (1 items)'], // expanded
+            ['⮟ Order: 20 (2 items)'],
+            ['⮟      Last Name: Z (1 items)'], // expanded
             ['', '1E06', 'John', 'Z', 'Sales Rep.', '10'],
-            ['▿      Last Name: Doe (1 items)'], // expanded
+            ['⮟      Last Name: Doe (1 items)'], // expanded
             ['', '2B02', 'Jane', 'DOE', 'Finance Manager', '10'],
-            ['▹      Last Name: null (0 items)'], // collapsed
+            ['⮞      Last Name: null (0 items)'], // collapsed
             ['', '', '', '', '', '20'],
             ['', '', '', '', '', '10'],
           ]
@@ -1409,8 +1409,8 @@ describe('ExcelExportService', () => {
 
     describe('grid with colspan', () => {
       let mockCollection;
-      let oddMetatadata = { columns: { lastName: { colspan: 2 } } } as ItemMetadata;
-      let evenMetatadata = { columns: { 0: { colspan: '*' } } } as ItemMetadata;
+      const oddMetatadata = { columns: { lastName: { colspan: 2 } } } as ItemMetadata;
+      const evenMetatadata = { columns: { 0: { colspan: '*' } } } as ItemMetadata;
 
       beforeEach(() => {
         mockGridOptions.enableTranslate = true;

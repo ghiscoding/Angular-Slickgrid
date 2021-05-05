@@ -53,13 +53,15 @@ export class GridTreeDataParentChildComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'title', width: 220, cssClass: 'cell-title',
-        filterable: true, sortable: true,
+        filterable: true, sortable: true, exportWithFormatter: false,
         queryFieldSorter: 'id', type: FieldType.string,
-        formatter: Formatters.tree,
+        formatter: Formatters.tree, exportCustomFormatter: Formatters.treeExport
+
       },
       { id: 'duration', name: 'Duration', field: 'duration', minWidth: 90, filterable: true },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', minWidth: 120, maxWidth: 200,
+        id: 'percentComplete', name: '% Complete', field: 'percentComplete',
+        minWidth: 120, maxWidth: 200, exportWithFormatter: false,
         sortable: true, filterable: true, filter: { model: Filters.compoundSlider, operator: '>=' },
         formatter: Formatters.percentCompleteBar, type: FieldType.number,
       },
@@ -77,6 +79,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       },
       {
         id: 'effortDriven', name: 'Effort Driven', width: 80, minWidth: 20, maxWidth: 80, cssClass: 'cell-effort-driven', field: 'effortDriven',
+        exportWithFormatter: false,
         formatter: Formatters.checkmark, cannotTriggerInsert: true,
         filterable: true,
         filter: {
@@ -95,12 +98,21 @@ export class GridTreeDataParentChildComponent implements OnInit {
       enableAutoResize: true,
       enableExport: true,
       enableFiltering: true,
+      exportOptions: { exportWithFormatter: true },
+      excelExportOptions: { exportWithFormatter: true },
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
       treeDataOptions: {
         columnId: 'title',
-        levelPropName: 'indent',
-        parentPropName: 'parentId'
+        // levelPropName: 'indent', // this is optional, you can define the tree level property name that will be used for the sorting/indentation, internally it will use "__treeLevel"
+        parentPropName: 'parentId',
+
+        // you can optionally sort by a different column and/or sort direction
+        initialSort: {
+          columnId: 'title',
+          direction: 'ASC'
+        }
       },
+      showCustomFooter: true,
       multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       // change header/cell row height for material design theme
       headerRowHeight: 45,
@@ -147,44 +159,35 @@ export class GridTreeDataParentChildComponent implements OnInit {
   }
 
   /**
-   * A simple method to add a new item inside the first group that we find.
+   * A simple method to add a new item inside the first group that we find (it's random and is only for demo purposes).
    * After adding the item, it will sort by parent/child recursively
    */
   addNewRow() {
-    const newId = this.dataset.length;
+    const newId = this.dataViewObj.getItemCount();
     const parentPropName = 'parentId';
-    const treeLevelPropName = 'indent';
+    const treeLevelPropName = '__treeLevel'; // if undefined in your options, the default prop name is "__treeLevel"
     const newTreeLevel = 1;
 
     // find first parent object and add the new item as a child
-    const childItemFound = this.dataset.find((item) => item[treeLevelPropName] === newTreeLevel);
+    const childItemFound = this.dataViewObj.getItems().find((item: any) => item[treeLevelPropName] === newTreeLevel);
     const parentItemFound = this.dataViewObj.getItemByIdx(childItemFound[parentPropName]);
 
-    const newItem = {
-      id: newId,
-      indent: newTreeLevel,
-      parentId: parentItemFound.id,
-      title: `Task ${newId}`,
-      duration: '1 day',
-      percentComplete: Math.round(Math.random() * 100),
-      start: new Date(),
-      finish: new Date(),
-      effortDriven: false
-    };
-    this.dataViewObj.addItem(newItem);
-    const dataset = this.dataViewObj.getItems();
-    this.dataset = [...dataset]; // make a copy to trigger a dataset refresh
+    if (childItemFound && parentItemFound) {
+      const newItem = {
+        id: newId,
+        parentId: parentItemFound.id,
+        title: `Task ${newId}`,
+        duration: '1 day',
+        percentComplete: 99,
+        start: new Date(),
+        finish: new Date(),
+        effortDriven: false
+      };
 
-    // add setTimeout to wait a full cycle because datasetChanged needs a full cycle
-    // force a resort because of the tree data structure
-    setTimeout(() => {
-      const titleColumn = this.columnDefinitions.find(col => col.id === 'title') as Column;
-      this.angularGrid.sortService.onLocalSortChanged(this.gridObj, [{ columnId: 'title', sortCol: titleColumn, sortAsc: true }]);
-
-      // scroll into the position, after insertion cycle, where the item was added
-      const rowIndex = this.dataViewObj.getRowById(newItem.id);
-      this.gridObj.scrollRowIntoView(rowIndex + 3);
-    }, 0);
+      // use the Grid Service to insert the item,
+      // it will also internally take care of updating & resorting the hierarchical dataset
+      this.angularGrid.gridService.addItem(newItem);
+    }
   }
 
   collapseAll() {
@@ -195,12 +198,17 @@ export class GridTreeDataParentChildComponent implements OnInit {
     this.angularGrid.treeDataService.toggleTreeDataCollapse(false);
   }
 
-  logExpandedStructure() {
-    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical /* , JSON.stringify(explodedArray, null, 2) */);
+  dynamicallyChangeFilter() {
+    // const randomPercentage = Math.floor((Math.random() * 99));
+    this.angularGrid.filterService.updateFilters([{ columnId: 'percentComplete', operator: '<', searchTerms: [40] }]);
+  }
+
+  logHierarchicalStructure() {
+    console.log('exploded array', this.angularGrid.treeDataService.datasetHierarchical);
   }
 
   logFlatStructure() {
-    console.log('flat array', this.angularGrid.treeDataService.dataset /* , JSON.stringify(outputFlatArray, null, 2) */);
+    console.log('flat array', this.angularGrid.treeDataService.dataset);
   }
 
   mockData(count: number) {
@@ -232,7 +240,6 @@ export class GridTreeDataParentChildComponent implements OnInit {
       }
 
       d['id'] = i;
-      d['indent'] = indent;
       d['parentId'] = parentId;
       d['title'] = 'Task ' + i;
       d['duration'] = '5 days';

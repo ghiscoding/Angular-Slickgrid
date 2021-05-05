@@ -54,7 +54,7 @@ const myCustomTitleValidator = (value: any, args: any) => {
 @Injectable()
 export class GridResizeByContentComponent implements OnInit {
   title = 'Example 30: Columns Resize by Content';
-  subTitle = `The grid below uses the optional resize by cell content (with a fixed 950px for demo purposes), you can click on the 2 buttons to see the difference. The "autosizeColumns" is really the default option used by SlickGrid-Universal, the resize by cell content is optional because it requires to read the first thousand rows and do extra width calculation.`;
+  subTitle = `The grid below uses the optional resize by cell content (with a fixed 950px for demo purposes), you can click on the 2 buttons to see the difference. The "autosizeColumns" is really the default option used by Angular-SlickGrid, the resize by cell content is optional because it requires to read the first thousand rows and do extra width calculation.`;
 
   angularGrid!: AngularGridInstance;
   gridOptions!: GridOption;

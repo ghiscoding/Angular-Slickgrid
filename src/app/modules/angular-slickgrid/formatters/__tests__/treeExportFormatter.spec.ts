@@ -1,5 +1,5 @@
 import { Column, GridOption } from '../../models/index';
-import { treeFormatter } from '../treeFormatter';
+import { treeExportFormatter } from '../treeExportFormatter';
 
 const dataViewStub = {
   getIdxById: jest.fn(),
@@ -12,7 +12,7 @@ const gridStub = {
   getOptions: jest.fn(),
 };
 
-describe('Tree Formatter', () => {
+describe('Tree Export Formatter', () => {
   let dataset: any[];
   let mockGridOptions: GridOption;
 
@@ -31,27 +31,27 @@ describe('Tree Formatter', () => {
   });
 
   it('should throw an error when oarams are mmissing', () => {
-    expect(() => treeFormatter(1, 1, 'blah', {} as Column, {}, gridStub))
+    expect(() => treeExportFormatter(1, 1, 'blah', {} as Column, {}, gridStub))
       .toThrowError('You must provide valid "treeDataOptions" in your Grid Options and it seems that there are no tree level found in this row');
   });
 
   it('should return empty string when DataView is not correctly formed', () => {
-    const output = treeFormatter(1, 1, '', {} as Column, dataset[1], gridStub);
+    const output = treeExportFormatter(1, 1, '', {} as Column, dataset[1], gridStub);
     expect(output).toBe('');
   });
 
   it('should return empty string when value is null', () => {
-    const output = treeFormatter(1, 1, null, {} as Column, dataset[1], gridStub);
+    const output = treeExportFormatter(1, 1, null, {} as Column, dataset[1], gridStub);
     expect(output).toBe('');
   });
 
   it('should return empty string when value is undefined', () => {
-    const output = treeFormatter(1, 1, undefined, {} as Column, dataset[1], gridStub);
+    const output = treeExportFormatter(1, 1, undefined, {} as Column, dataset[1], gridStub);
     expect(output).toBe('');
   });
 
   it('should return empty string when item is undefined', () => {
-    const output = treeFormatter(1, 1, 'blah', {} as Column, undefined, gridStub);
+    const output = treeExportFormatter(1, 1, 'blah', {} as Column, undefined, gridStub);
     expect(output).toBe('');
   });
 
@@ -60,8 +60,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(1);
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[0]);
 
-    const output = treeFormatter(1, 1, dataset[0]['firstName'], {} as Column, dataset[0], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:0px;"></span><span class="slick-group-toggle"></span>&nbsp;John`);
+    const output = treeExportFormatter(1, 1, dataset[0]['firstName'], {} as Column, dataset[0], gridStub);
+    expect(output).toBe(`John`);
   });
 
   it('should return a span without any icon and 15px indentation of a tree level 1', () => {
@@ -69,8 +69,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(1);
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[1]);
 
-    const output = treeFormatter(1, 1, dataset[1]['firstName'], {} as Column, dataset[1], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:15px;"></span><span class="slick-group-toggle"></span>&nbsp;Jane`);
+    const output = treeExportFormatter(1, 1, dataset[1]['firstName'], {} as Column, dataset[1], gridStub);
+    expect(output).toBe(`.     Jane`);
   });
 
   it('should return a span without any icon and 30px indentation of a tree level 2', () => {
@@ -78,8 +78,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(1);
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[1]);
 
-    const output = treeFormatter(1, 1, dataset[2]['firstName'], {} as Column, dataset[2], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:30px;"></span><span class="slick-group-toggle"></span>&nbsp;Bob`);
+    const output = treeExportFormatter(1, 1, dataset[2]['firstName'], {} as Column, dataset[2], gridStub);
+    expect(output).toBe(`.         Bob`);
   });
 
   it('should return a span with expanded icon and 15px indentation of a tree level 1 when current item is greater than next item', () => {
@@ -87,8 +87,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(1);
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[2]);
 
-    const output = treeFormatter(1, 1, dataset[1]['firstName'], {} as Column, dataset[1], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:15px;"></span><span class="slick-group-toggle expanded"></span>&nbsp;Jane`);
+    const output = treeExportFormatter(1, 1, dataset[1]['firstName'], {} as Column, dataset[1], gridStub);
+    expect(output).toBe(`⮟      Jane`);
   });
 
   it('should return a span with collapsed icon and 0px indentation of a tree level 0 when current item is lower than next item', () => {
@@ -96,8 +96,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getIdxById').mockReturnValue(1);
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[1]);
 
-    const output = treeFormatter(1, 1, dataset[3]['firstName'], {} as Column, dataset[3], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:0px;"></span><span class="slick-group-toggle collapsed"></span>&nbsp;Barbara`);
+    const output = treeExportFormatter(1, 1, dataset[3]['firstName'], {} as Column, dataset[3], gridStub);
+    expect(output).toBe(`⮞  Barbara`);
   });
 
   it('should execute "queryFieldNameGetterFn" callback to get field name to use when it is defined', () => {
@@ -106,8 +106,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[1]);
 
     const mockColumn = { id: 'firstName', field: 'firstName', queryFieldNameGetterFn: (dataContext) => 'fullName' } as Column;
-    const output = treeFormatter(1, 1, null, mockColumn as Column, dataset[3], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:0px;"></span><span class="slick-group-toggle collapsed"></span>&nbsp;Barbara Cane`);
+    const output = treeExportFormatter(1, 1, null, mockColumn as Column, dataset[3], gridStub);
+    expect(output).toBe(`⮞  Barbara Cane`);
   });
 
   it('should execute "queryFieldNameGetterFn" callback to get field name and also apply html encoding when output value includes a character that should be encoded', () => {
@@ -116,8 +116,8 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[2]);
 
     const mockColumn = { id: 'firstName', field: 'firstName', queryFieldNameGetterFn: (dataContext) => 'fullName' } as Column;
-    const output = treeFormatter(1, 1, null, mockColumn as Column, dataset[4], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:0px;"></span><span class="slick-group-toggle collapsed"></span>&nbsp;Anonymous &lt; Doe`);
+    const output = treeExportFormatter(1, 1, null, mockColumn as Column, dataset[4], gridStub);
+    expect(output).toBe(`⮞  Anonymous < Doe`);
   });
 
   it('should execute "queryFieldNameGetterFn" callback to get field name, which has (.) dot notation reprensenting complex object', () => {
@@ -126,7 +126,7 @@ describe('Tree Formatter', () => {
     jest.spyOn(dataViewStub, 'getItemByIdx').mockReturnValue(dataset[1]);
 
     const mockColumn = { id: 'zip', field: 'zip', queryFieldNameGetterFn: (dataContext) => 'address.zip' } as Column;
-    const output = treeFormatter(1, 1, null, mockColumn as Column, dataset[3], gridStub);
-    expect(output).toBe(`<span style="display:inline-block; width:0px;"></span><span class="slick-group-toggle collapsed"></span>&nbsp;444444`);
+    const output = treeExportFormatter(1, 1, null, mockColumn as Column, dataset[3], gridStub);
+    expect(output).toBe(`⮞  444444`);
   });
 });
