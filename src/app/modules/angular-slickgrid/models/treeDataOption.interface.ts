@@ -40,4 +40,16 @@ export interface TreeDataOption {
    * For example if tree depth level is 2, the calculation will be (2 * 15 = 30), so the column will be displayed 30px from the left
    */
   indentMarginLeft?: number;
+
+  /**
+   * Defaults to 4, indentation spaces to add from the left (calculated by the tree level multiplied by this number).
+   * For example if tree depth level is 2, the calculation will be (2 * 15 = 30), so the column will be displayed 30px from the left
+   */
+  exportIndentMarginLeft?: number;
+
+  /**
+   * Defaults to dot (.), we added this because Excel seems to trim spaces leading character
+   * and if we add a regular character like a dot then it keeps all tree level indentation spaces
+   */
+  exportIndentationLeadingChar?: string;
 }

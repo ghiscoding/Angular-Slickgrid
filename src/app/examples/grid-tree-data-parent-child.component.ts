@@ -53,13 +53,15 @@ export class GridTreeDataParentChildComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'title', width: 220, cssClass: 'cell-title',
-        filterable: true, sortable: true,
+        filterable: true, sortable: true, exportWithFormatter: false,
         queryFieldSorter: 'id', type: FieldType.string,
-        formatter: Formatters.tree,
+        formatter: Formatters.tree, exportCustomFormatter: Formatters.treeExport
+
       },
       { id: 'duration', name: 'Duration', field: 'duration', minWidth: 90, filterable: true },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', minWidth: 120, maxWidth: 200,
+        id: 'percentComplete', name: '% Complete', field: 'percentComplete',
+        minWidth: 120, maxWidth: 200, exportWithFormatter: false,
         sortable: true, filterable: true, filter: { model: Filters.compoundSlider, operator: '>=' },
         formatter: Formatters.percentCompleteBar, type: FieldType.number,
       },
@@ -77,6 +79,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       },
       {
         id: 'effortDriven', name: 'Effort Driven', width: 80, minWidth: 20, maxWidth: 80, cssClass: 'cell-effort-driven', field: 'effortDriven',
+        exportWithFormatter: false,
         formatter: Formatters.checkmark, cannotTriggerInsert: true,
         filterable: true,
         filter: {
@@ -95,6 +98,8 @@ export class GridTreeDataParentChildComponent implements OnInit {
       enableAutoResize: true,
       enableExport: true,
       enableFiltering: true,
+      exportOptions: { exportWithFormatter: true },
+      excelExportOptions: { exportWithFormatter: true },
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
       treeDataOptions: {
         columnId: 'title',
