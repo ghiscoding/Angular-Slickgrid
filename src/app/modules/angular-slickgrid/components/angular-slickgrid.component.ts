@@ -217,13 +217,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   set dataset(newDataset: any[]) {
     const prevDatasetLn = this._currentDatasetLength;
     let data = newDataset;
-    this._dataset = data;
 
     // when Tree Data is enabled and we don't yet have the hierarchical dataset filled, we can force a convert & sort of the array
     if (this.grid && this.gridOptions?.enableTreeData && Array.isArray(newDataset) && (newDataset.length > 0 || newDataset.length !== prevDatasetLn)) {
       this._isDatasetHierarchicalInitialized = false;
       data = this.sortTreeDataset(newDataset);
     }
+    this._dataset = data;
     this.refreshGridData(data || []);
     this._currentDatasetLength = newDataset.length;
   }
