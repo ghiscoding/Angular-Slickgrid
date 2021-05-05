@@ -1212,8 +1212,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     let sortedDatasetResult;
 
     // if the hierarchical dataset was already initialized then no need to re-convert it, we can use it directly from the shared service ref
-    if (this._isDatasetHierarchicalInitialized && this.sharedService.hierarchicalDataset) {
-      sortedDatasetResult = this.treeDataService.sortHierarchicalDataset(this.sharedService.hierarchicalDataset);
+    if (this._isDatasetHierarchicalInitialized && this.datasetHierarchical) {
+      sortedDatasetResult = this.treeDataService.sortHierarchicalDataset(this.datasetHierarchical);
     } else {
       // else we need to first convert the flat dataset to a hierarchical dataset and then sort
       sortedDatasetResult = this.treeDataService.convertToHierarchicalDatasetAndSort(flatDataset, this._columnDefinitions, this.gridOptions);
