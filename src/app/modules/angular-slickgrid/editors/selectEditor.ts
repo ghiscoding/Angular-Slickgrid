@@ -74,7 +74,7 @@ export class SelectEditor implements Editor {
 
   // flag to signal that the editor is destroying itself, helps prevent
   // commit changes from being called twice and erroring
-  protected _destroying = false;
+  protected _isDisposing = false;
 
   /** Collection Service */
   protected _collectionService!: CollectionService;
@@ -360,7 +360,14 @@ export class SelectEditor implements Editor {
   }
 
   destroy() {
-    this._destroying = true;
+    // when autoCommitEdit is enabled, we might end up leave the editor without it being saved, if so do call a save before destroying
+    // this mainly happens doing a blur or focusing on another cell in the grid (it won't come here if we click outside the grid, in the body)
+    if (this.$editorElm && this.hasAutoCommitEdit && this.isValueChanged() && !this._isDisposing) {
+      this._isDisposing = true; // change destroying flag to avoid infinite loop
+      this.save(true);
+    }
+
+    this._isDisposing = true;
     if (this.$editorElm && typeof this.$editorElm.multipleSelect === 'function') {
       this.$editorElm.multipleSelect('destroy');
       this.$editorElm.remove();
@@ -419,11 +426,11 @@ export class SelectEditor implements Editor {
     });
   }
 
-  save() {
+  save(forceCommitCurrentEdit = false) {
     const validation = this.validate();
-    const isValid = (validation && validation.valid) || false;
+    const isValid = validation?.valid ?? false;
 
-    if (!this._destroying && this.hasAutoCommitEdit && isValid) {
+    if ((!this._isDisposing || forceCommitCurrentEdit) && this.hasAutoCommitEdit && isValid) {
       // do not use args.commitChanges() as this sets the focus to the next row.
       // also the select list will stay shown when clicking off the grid
       this.grid.getEditorLock().commitCurrentEdit();
@@ -443,7 +450,7 @@ export class SelectEditor implements Editor {
   }
 
   isValueChanged(): boolean {
-    const valueSelection = this.$editorElm.multipleSelect('getSelects');
+    const valueSelection = this.$editorElm?.multipleSelect('getSelects');
     if (this.isMultipleSelect) {
       const isEqual = dequal(valueSelection, this.originalValue);
       return !isEqual;

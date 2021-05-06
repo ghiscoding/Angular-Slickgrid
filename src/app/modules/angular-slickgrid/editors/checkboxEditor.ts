@@ -71,6 +71,11 @@ export class CheckboxEditor implements Editor {
     this._$input.focus();
   }
 
+  /** pre-click, when enabled, will simply toggle the checkbox without requiring to double-click */
+  preClick() {
+    this._$input.prop('checked', !this._$input.prop('checked'));
+  }
+
   getValue() {
     return this._$input.prop('checked');
   }
