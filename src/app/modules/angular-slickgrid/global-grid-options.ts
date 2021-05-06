@@ -132,6 +132,17 @@ export const GlobalGridOptions: Partial<GridOption> = {
   forceFitColumns: false,
   frozenHeaderWidthCalcDifferential: 0,
   gridMenu: {
+    commandLabels: {
+      clearAllFiltersCommandKey: 'CLEAR_ALL_FILTERS',
+      clearAllSortingCommandKey: 'CLEAR_ALL_SORTING',
+      clearFrozenColumnsCommandKey: 'CLEAR_PINNING',
+      exportCsvCommandKey: 'EXPORT_TO_CSV',
+      exportExcelCommandKey: 'EXPORT_TO_EXCEL',
+      exportTextDelimitedCommandKey: 'EXPORT_TO_TAB_DELIMITED',
+      refreshDatasetCommandKey: 'REFRESH_DATASET',
+      toggleFilterCommandKey: 'TOGGLE_FILTER_ROW',
+      togglePreHeaderCommandKey: 'TOGGLE_PRE_HEADER_ROW',
+    },
     hideClearAllFiltersCommand: false,
     hideClearAllSortingCommand: false,
     hideClearFrozenColumnsCommand: true, // opt-in command

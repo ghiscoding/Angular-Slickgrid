@@ -84,6 +84,7 @@ export * from './graphqlServiceOption.interface';
 export * from './graphqlSortingOption.interface';
 export * from './gridMenu.interface';
 export * from './gridMenuItem.interface';
+export * from './gridMenuLabel.interface';
 export * from './gridOption.interface';
 export * from './gridServiceDeleteOption.interface';
 export * from './gridServiceInsertOption.interface';

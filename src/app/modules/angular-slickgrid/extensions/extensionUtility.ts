@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from '../constants';
-import { Column } from '../models/index';
+import { Column, Locale } from '../models/index';
 import { SharedService } from '../services/shared.service';
 import { getTranslationPrefix } from '../services/utilities';
 
@@ -125,20 +125,23 @@ export class ExtensionUtility {
 
   /**
    * When "enabledTranslate" is set to True, we will try to translate if the Translate Service exist or use the Locales when not
-   * @param translationKey
-   * @param localeKey
+   * @param {String} translationKey
+   * @param {String} localeKey
+   * @param {String} textToUse - optionally provide a static text to use (that will completely override the other arguments of the method)
    */
-  translateWhenEnabledAndServiceExist(translationKey: string, localeKey: string): string {
+  translateWhenEnabledAndServiceExist(translationKey: string, localeKey: string, textToUse?: string): string {
     let text = '';
-    const gridOptions = this.sharedService && this.sharedService.gridOptions;
+    const gridOptions = this.sharedService?.gridOptions;
 
     // get locales provided by user in main file or else use default English locales via the Constants
-    const locales = gridOptions && gridOptions.locales || Constants.locales;
+    const locales = gridOptions?.locales ?? Constants.locales;
 
-    if (gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
+    if (textToUse) {
+      text = textToUse;
+    } else if (gridOptions.enableTranslate && this.translate?.instant) {
       text = this.translate.instant(translationKey || ' ');
-    } else if (locales && locales.hasOwnProperty(localeKey)) {
-      text = (locales as any)[localeKey];
+    } else if (localeKey in locales) {
+      text = locales[localeKey as keyof Locale] as string;
     } else {
       text = localeKey;
     }
