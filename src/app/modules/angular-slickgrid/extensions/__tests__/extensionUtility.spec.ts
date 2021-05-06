@@ -198,7 +198,7 @@ describe('ExtensionUtility', () => {
 
       it('should not change "frozenColumn" when showing a column that was not found in the visibleColumns columns array', () => {
         const allColumns = [{ id: 'field1' }, { id: 'field2' }, { id: 'field3' }] as Column[];
-        const visibleColumns = [{ id: 'field1' }, { field: 'field2' }] as Column[];
+        const visibleColumns = [{ id: 'field1' }, { field: 'field2' }] as unknown as Column[];
         const setOptionSpy = jest.spyOn(SharedService.prototype.grid, 'setOptions');
 
         utility.readjustFrozenColumnIndexWhenNeeded(0, allColumns, visibleColumns);
@@ -239,6 +239,13 @@ describe('ExtensionUtility', () => {
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         const output = utility.translateWhenEnabledAndServiceExist('COMMANDS', 'NOT_EXIST');
         expect(output).toBe('NOT_EXIST');
+      });
+
+      it('should return the same text when provided as the 3rd argument', () => {
+        const gridOptionsMock = { enableTranslate: false, enableGridMenu: true, gridMenu: { hideForceFitButton: false, hideSyncResizeButton: true, columnTitle: 'Columns' } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+        const output = utility.translateWhenEnabledAndServiceExist('COMMANDS', 'NOT_EXIST', 'last argument wins');
+        expect(output).toBe('last argument wins');
       });
     });
   });

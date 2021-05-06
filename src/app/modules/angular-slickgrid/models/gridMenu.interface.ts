@@ -1,9 +1,11 @@
-import { Column } from './column.interface';
-import { GridMenuItem } from './gridMenuItem.interface';
-import { MenuCallbackArgs } from './menuCallbackArgs.interface';
-import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
-
+import { Column, GridMenuItem, GridMenuLabel, GridOption, MenuCallbackArgs, MenuCommandItemCallbackArgs } from './index';
 export interface GridMenu {
+  /**
+ * All the commands text labels
+ * NOTE: some of the text have other properties outside of this option (like 'customTitle', 'forceFitTitle', ...) and that is because they were created prior to this refactoring of labels
+ */
+  commandLabels?: GridMenuLabel;
+
   /** Defaults to 0 (auto), minimum width of grid menu content (command, column list) */
   contentMinWidth?: number;
 
@@ -122,7 +124,7 @@ export interface GridMenu {
   // action/override callbacks
 
   /** Callback method to override the column name output used by the ColumnPicker/GridMenu. */
-  headerColumnValueExtractor?: (column: Column) => string;
+  headerColumnValueExtractor?: (column: Column, gridOptions?: GridOption) => string;
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
   menuUsabilityOverride?: (args: MenuCallbackArgs) => boolean;
