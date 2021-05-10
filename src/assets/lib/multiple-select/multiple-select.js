@@ -236,14 +236,22 @@
   }
 
   function handleBodyOnClick($el, e) {
-    if ($(e.target)[0] === this.$choice[0] ||
-      $(e.target).parents('.ms-choice')[0] === this.$choice[0]) {
+    // make sure that all elements are filled before running any logic
+    var $target = $(e.target);
+    var $firstTarget = $target && $target[0];
+    var $firstChoice = this.$choice && this.$choice[0];
+    var $firstDrop = this.$drop && this.$drop[0];
+    var $parentChoice = $target.parents('.ms-choice');
+    var $firstParentChoice = $parentChoice && $parentChoice[0];
+    var $parentDrop = $target.parents('.ms-drop');
+    var $firstParentDrop = $parentDrop && $parentDrop[0];
+    var $firstEl = $el && $el[0];
+
+    if ($firstTarget === $firstChoice || $firstParentChoice === $firstChoice) {
       return;
     }
-    if (($(e.target)[0] === this.$drop[0] ||
-      $(e.target).parents('.ms-drop')[0] !== this.$drop[0] && e.target !== $el[0]) &&
-      this.options.isOpen
-    ) {
+
+    if (($firstTarget === $firstDrop || $firstParentDrop !== $firstDrop && e.target !== $firstEl) && this.options && this.options.isOpen) {
       this.close();
     }
   }
