@@ -10,6 +10,7 @@ import {
   convertParentChildArrayToHierarchicalView,
   decimalFormatted,
   deepCopy,
+  emptyElement,
   findItemInHierarchicalStructure,
   findOrDefault,
   formatNumber,
@@ -96,7 +97,7 @@ describe('Service/Utilies', () => {
     });
 
     it('should use jQuery and return a decoded HTML string with single quotes encoded as well when DOMParser is not available in older browser', () => {
-      DOMParser = undefined;
+      DOMParser = undefined as any;
       const result = htmlDecode(`&lt;div class=&#39;color: blue&#39;&gt;Something&lt;/div&gt;`);
       expect(result).toBe(`<div class='color: blue'>Something</div>`);
     });
@@ -204,7 +205,7 @@ describe('Service/Utilies', () => {
   });
 
   describe('convertHierarchicalViewToParentChildArray method', () => {
-    let mockColumns;
+    let mockColumns: any[];
 
     beforeEach(() => {
       mockColumns = [
@@ -235,7 +236,7 @@ describe('Service/Utilies', () => {
   });
 
   describe('findItemInHierarchicalStructure method', () => {
-    let mockColumns;
+    let mockColumns: any[];
 
     beforeEach(() => {
       mockColumns = [
@@ -268,7 +269,7 @@ describe('Service/Utilies', () => {
 
   describe('castToPromise method', () => {
     it('should throw an error when argument provided is not a Promise neither an Observable', async () => {
-      expect(() => castToPromise(null)).toThrowError('Something went wrong,');
+      expect(() => castToPromise(null as any)).toThrowError('Something went wrong,');
     });
 
     it('should return original Promise when argument is already a Promise', async () => {
@@ -414,6 +415,18 @@ describe('Service/Utilies', () => {
     });
   });
 
+  describe('emptyElement method', () => {
+    const div = document.createElement('div');
+    div.innerHTML = `<ul><li>Item 1</li><li>Item 2</li></ul>`;
+    document.body.appendChild(div);
+
+    it('should empty the DOM element', () => {
+      expect(div.outerHTML).toBe('<div><ul><li>Item 1</li><li>Item 2</li></ul></div>');
+      emptyElement(div);
+      expect(div.outerHTML).toBe('<div></div>');
+    });
+  });
+
   describe('formatNumber method', () => {
     it('should return original value when input provided is not a number', () => {
       const input = 'abc';
@@ -460,7 +473,7 @@ describe('Service/Utilies', () => {
     it('should return a string without decimals when these arguments are null or undefined and the input provided is an integer', () => {
       const input = 12345678;
       const output1 = formatNumber(input);
-      const output2 = formatNumber(input, null, null);
+      const output2 = formatNumber(input, null as any, null as any);
       const output3 = formatNumber(input, undefined, undefined);
 
       expect(output1).toBe('12345678');
@@ -472,7 +485,7 @@ describe('Service/Utilies', () => {
       const input = 12345678;
       const decimalSeparator = '.';
       const thousandSeparator = ',';
-      const output1 = formatNumber(input, null, null, false, '', '', decimalSeparator, thousandSeparator);
+      const output1 = formatNumber(input, null as any, null as any, false, '', '', decimalSeparator, thousandSeparator);
       const output2 = formatNumber(input, undefined, undefined, false, '', '', decimalSeparator, thousandSeparator);
 
       expect(output1).toBe('12,345,678');
@@ -483,7 +496,7 @@ describe('Service/Utilies', () => {
       const input = 12345678;
       const decimalSeparator = ',';
       const thousandSeparator = '.';
-      const output1 = formatNumber(input, null, null, false, '', '', decimalSeparator, thousandSeparator);
+      const output1 = formatNumber(input, null as any, null as any, false, '', '', decimalSeparator, thousandSeparator);
       const output2 = formatNumber(input, undefined, undefined, false, '', '', decimalSeparator, thousandSeparator);
 
       expect(output1).toBe('12.345.678');
@@ -559,7 +572,7 @@ describe('Service/Utilies', () => {
       const displayNegativeNumberWithParentheses = true;
       const currencyPrefix = '$';
       const currencySuffix = ' CAD';
-      const output = formatNumber(input, null, null, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix);
+      const output = formatNumber(input, null as any, null as any, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix);
       expect(output).toBe('($1234 CAD)');
     });
 
@@ -570,7 +583,7 @@ describe('Service/Utilies', () => {
       const currencySuffix = ' CAD';
       const decimalSeparator = ',';
       const thousandSeparator = '_';
-      const output = formatNumber(input, null, null, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix, decimalSeparator, thousandSeparator);
+      const output = formatNumber(input, null as any, null as any, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix, decimalSeparator, thousandSeparator);
       expect(output).toBe('($12_345_678 CAD)');
     });
   });
@@ -609,7 +622,7 @@ describe('Service/Utilies', () => {
 
     it('should return the object descendant even when path given is not a dot notation', () => {
       const output = getDescendantProperty(obj, 'user');
-      expect(output).toEqual(obj['user']);
+      expect(output).toEqual((obj as any)['user']);
     });
 
     it('should return the object descendant when using dot notation', () => {
@@ -625,7 +638,7 @@ describe('Service/Utilies', () => {
 
   describe('getTranslationPrefix method', () => {
     it('should return empty Translation Prefix when no Grid Options are provided', () => {
-      const output = getTranslationPrefix(null);
+      const output = getTranslationPrefix(null as any);
       expect(output).toBe('');
     });
 
@@ -1253,17 +1266,17 @@ describe('Service/Utilies', () => {
 
     it('should be able to update an object at 2nd level deep property', () => {
       setDeepValue(obj, 'user.firstName', 'Jane');
-      expect(obj['user'].firstName).toBe('Jane');
+      expect((obj as any)['user'].firstName).toBe('Jane');
     });
 
     it('should be able to update an object at 3rd level deep property', () => {
       setDeepValue(obj, 'user.address.number', 78);
-      expect(obj['user']['address']['number']).toBe(78);
+      expect((obj as any)['user']['address']['number']).toBe(78);
     });
 
     it('should be able to update a property that is not a complex object', () => {
       setDeepValue(obj, 'id', 76);
-      expect(obj['id']).toBe(76);
+      expect((obj as any)['id']).toBe(76);
     });
   });
 
@@ -1276,7 +1289,7 @@ describe('Service/Utilies', () => {
 
     it('should return original value when input provided is undefined', () => {
       const input = undefined;
-      const output = thousandSeparatorFormatted(input, ',');
+      const output = thousandSeparatorFormatted(input as any, ',');
       expect(output).toBe(input);
     });
 
@@ -1315,7 +1328,7 @@ describe('Service/Utilies', () => {
 
     it('should return empty string when input is null', () => {
       const input = null;
-      const output = titleCase(input);
+      const output = titleCase(input as any);
       expect(output).toBe(null);
     });
 
@@ -1341,7 +1354,7 @@ describe('Service/Utilies', () => {
 
     it('should return empty string when input is null', () => {
       const input = null;
-      const output = toCamelCase(input);
+      const output = toCamelCase(input as any);
       expect(output).toBe(null);
     });
 
@@ -1366,7 +1379,7 @@ describe('Service/Utilies', () => {
 
     it('should return empty string when input is null', () => {
       const input = null;
-      const output = toKebabCase(input);
+      const output = toKebabCase(input as any);
       expect(output).toBe(null);
     });
 
@@ -1391,7 +1404,7 @@ describe('Service/Utilies', () => {
 
     it('should return empty string when input is null', () => {
       const input = null;
-      const output = toSnakeCase(input);
+      const output = toSnakeCase(input as any);
       expect(output).toBe(null);
     });
 
@@ -1408,8 +1421,8 @@ describe('Service/Utilies', () => {
 
   describe('uniqueArray method', () => {
     it('should return original value when input is not an array', () => {
-      const output1 = uniqueArray(null);
-      const output2 = uniqueArray(undefined);
+      const output1 = uniqueArray(null as any);
+      const output2 = uniqueArray(undefined as any);
 
       expect(output1).toBeNull();
       expect(output2).toBe(undefined);
@@ -1433,8 +1446,8 @@ describe('Service/Utilies', () => {
 
   describe('uniqueObjectArray method', () => {
     it('should return original value when input is not an array', () => {
-      const output1 = uniqueObjectArray(null);
-      const output2 = uniqueObjectArray(undefined);
+      const output1 = uniqueObjectArray(null as any);
+      const output2 = uniqueObjectArray(undefined as any);
 
       expect(output1).toBeNull();
       expect(output2).toBe(undefined);

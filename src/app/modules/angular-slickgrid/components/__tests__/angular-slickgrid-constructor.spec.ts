@@ -686,6 +686,17 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
       });
 
+      it('should destroy customElement and its DOM element when requested', () => {
+        const spy = jest.spyOn(component, 'emptyGridContainerElm');
+
+        component.gridOptions = { enableFiltering: true } as GridOption;
+        component.ngAfterViewInit();
+        component.destroy(true);
+
+        expect(spy).toHaveBeenCalledWith();
+      });
+
+
       it('should bind local filter when "enableFiltering" is set', () => {
         const bindLocalSpy = jest.spyOn(filterServiceStub, 'bindLocalOnFilter');
 

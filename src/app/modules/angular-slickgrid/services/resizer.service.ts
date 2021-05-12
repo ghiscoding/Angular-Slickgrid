@@ -28,6 +28,7 @@ export class ResizerService {
   private _grid: any;
   private _gridDomElm: any;
   private _gridContainerElm: any;
+  private _hasResizedByContentAtLeastOnce = false;
   private _lastDimensions: GridDimension | undefined;
   private _totalColumnsWidthByContent = 0;
   private _timer: any;
@@ -271,7 +272,7 @@ export class ResizerService {
     const columnWidths: { [columnId in string | number]: number; } = {};
     let reRender = false;
 
-    if (!Array.isArray(dataset) || dataset.length === 0) {
+    if ((!Array.isArray(dataset) || dataset.length === 0) || (this._hasResizedByContentAtLeastOnce && this._gridOptions?.resizeByContentOnlyOnFirstLoad && !recalculateColumnsTotalWidth)) {
       return;
     }
 
@@ -368,6 +369,7 @@ export class ResizerService {
 
     // send updated column definitions widths to SlickGrid
     this._grid.setColumns(columnDefinitions);
+    this._hasResizedByContentAtLeastOnce = true;
 
     // get the grid container viewport width and if our viewport calculated total columns is greater than the viewport width
     // then we'll call reRenderColumns() when getting wider than viewport or else the default autosizeColumns() when we know we have plenty of space to shrink the columns

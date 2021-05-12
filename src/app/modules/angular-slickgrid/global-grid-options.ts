@@ -209,6 +209,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   rowHeight: 35,
   topPanelHeight: 35,
   translationNamespaceSeparator: ':',
+  resizeByContentOnlyOnFirstLoad: true,
   resizeAlwaysRecalculateColumnWidth: false,
   resizeCellCharWidthInPx: 7.8,
   resizeCellPaddingWidthInPx: 14,
