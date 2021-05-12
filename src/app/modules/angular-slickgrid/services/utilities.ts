@@ -194,6 +194,21 @@ export function deepCopy(obj: any) {
 }
 
 /**
+ * Empty a DOM element by removing all of its DOM element children leaving with an empty element (basically an empty shell)
+ * @return {object} element - updated element
+ */
+export function emptyElement<T extends Element = Element>(element?: T | null): T | undefined | null {
+  if (element?.firstChild) {
+    while (element.firstChild) {
+      if (element.lastChild) {
+        element.removeChild(element.lastChild);
+      }
+    }
+  }
+  return element;
+}
+
+/**
  * Find an item from a hierarchical view structure (a parent that can have children array which themseleves can children and so on)
  * @param hierarchicalArray
  * @param predicate

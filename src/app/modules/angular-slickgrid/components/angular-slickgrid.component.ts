@@ -15,7 +15,7 @@ import { isObservable, Observable, Subscription } from 'rxjs';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
-import { convertParentChildArrayToHierarchicalView, titleCase, unsubscribeAllObservables } from './../services/utilities';
+import { emptyElement, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
   AngularGridInstance,
@@ -368,8 +368,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   emptyGridContainerElm() {
-    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId || 'grid1';
-    $(gridContainerId).empty();
+    const gridContainerId = this.gridOptions?.gridContainerId ?? 'grid1';
+    const gridContainerElm = document.querySelector(gridContainerId);
+    emptyElement(gridContainerElm);
   }
 
   /** Dispatch of Custom Event, which by default will bubble & is cancelable */
@@ -658,7 +659,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
           // add a delay so that if column positions changes by changeColumnsArrangement() when using custom Grid Views
           // or presets.columns won't have any impact on the list of visible columns and their positions
-          setTimeout(() => this.resizer.resizeColumnsByCellContent(true), 10);
+          setTimeout(() => this.resizer.resizeColumnsByCellContent(!this.gridOptions?.resizeByContentOnlyOnFirstLoad), 10);
         }
       });
 
