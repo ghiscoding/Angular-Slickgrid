@@ -111,7 +111,8 @@
     "moment-mini": "^2.24.0",
     "rxjs": "^6.3.3",
     "slickgrid": "^2.4.35",
-    "text-encoding-utf-8": "^1.0.2"
+    "text-encoding-utf-8": "^1.0.2",
+    "un-flatten-tree": "^2.0.12"
   },
   "peerDependencies": {
     "@ngx-translate/core": ">=11.0.1",

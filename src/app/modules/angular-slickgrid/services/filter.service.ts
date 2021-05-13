@@ -195,6 +195,7 @@ export class FilterService {
 
   handleLocalOnSearchChange(_e: KeyboardEvent, args: any) {
     const isGridWithTreeData = this._gridOptions && this._gridOptions.enableTreeData || false;
+    const isClearFilterEvent = args?.clearFilterTriggered ?? false;
 
     // When using Tree Data, we need to do it in 2 steps
     // step 1. we need to prefilter (search) the data prior, the result will be an array of IDs which are the node(s) and their parent nodes when necessary.
@@ -207,13 +208,17 @@ export class FilterService {
     if (columnId !== null) {
       this._dataView.refresh();
     }
+
     // emit an onFilterChanged event when it's not called by a clear filter
-    if (args && !args.clearFilterTriggered) {
+    if (!isClearFilterEvent) {
       this.emitFilterChanged(EmitterType.local);
     }
   }
 
   clearFilterByColumnId(event: Event, columnId: number | string) {
+    const isBackendApi = this._gridOptions?.backendServiceApi ?? false;
+    const emitter = isBackendApi ? EmitterType.remote : EmitterType.local;
+
     // get current column filter before clearing, this allow us to know if the filter was empty prior to calling the clear filter
     const currentFilterColumnIds = Object.keys(this._columnFilters);
     let currentColFilter: string | undefined;
@@ -227,12 +232,8 @@ export class FilterService {
       colFilter.clear(true);
     }
 
-    let emitter: EmitterType = EmitterType.local;
-    const isBackendApi = this._gridOptions && this._gridOptions.backendServiceApi || false;
-
     // when using a backend service, we need to manually trigger a filter change but only if the filter was previously filled
     if (isBackendApi) {
-      emitter = EmitterType.remote;
       if (currentColFilter !== undefined) {
         this.onBackendFilterChange(event as KeyboardEvent, { grid: this._grid, columnFilters: this._columnFilters });
       }
@@ -690,11 +691,12 @@ export class FilterService {
   /**
    * when we have a Filter Presets on a Tree Data View grid, we need to call the pre-filtering of tree data
    * we need to do this because Tree Data is the only type of grid that requires a pre-filter (preFilterTreeData) to be executed before the final filtering
-   * @param filters
+   * @param {Array<Object>} [items] - optional flat array of parent/child items to use while redoing the full sort & refresh
    */
-  refreshTreeDataFilters() {
-    if (this._dataView && this._dataView.getItems && this._gridOptions && this._gridOptions.enableTreeData) {
-      this._tmpPreFilteredData = this.preFilterTreeData(this._dataView.getItems(), this._columnFilters);
+   refreshTreeDataFilters(items?: any[]) {
+    const inputItems = items ?? this._dataView.getItems();
+    if (this._dataView && this._gridOptions?.enableTreeData) {
+      this._tmpPreFilteredData = this.preFilterTreeData(inputItems, this._columnFilters);
       this._dataView.refresh(); // and finally this refresh() is what triggers a DataView filtering check
     }
   }

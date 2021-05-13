@@ -13,7 +13,7 @@ import {
   Locale,
 } from './../models/index';
 import { Constants } from './../constants';
-import { exportWithFormatterWhenDefined } from './export-utilities';
+import { exportWithFormatterWhenDefined } from '../formatters/formatterUtilities';
 import { addWhiteSpaces, deepCopy, getTranslationPrefix, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
 
 // using external non-typed js libraries
@@ -370,7 +370,7 @@ export class ExportService {
         }
       } else {
         // get the output by analyzing if we'll pull the value from the cell or from a formatter
-        let itemData = exportWithFormatterWhenDefined(row, col, itemObj, columnDef, this._grid, this._exportOptions);
+        let itemData = exportWithFormatterWhenDefined(row, col, columnDef, itemObj, this._grid, this._exportOptions);
 
         // does the user want to sanitize the output data (remove HTML tags)?
         if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {

@@ -116,7 +116,7 @@ const sortServiceStub = {
 const treeDataServiceStub = {
   convertFlatDatasetConvertToHierarhicalView: jest.fn(),
   init: jest.fn(),
-  convertToHierarchicalDatasetAndSort: jest.fn(),
+  convertFlatParentChildToTreeDatasetAndSort: jest.fn(),
   dispose: jest.fn(),
   handleOnCellClick: jest.fn(),
   toggleTreeDataCollapse: jest.fn(),
@@ -230,10 +230,15 @@ describe('App Component', () => {
   it('should convert parent/child dataset to hierarchical dataset when Tree Data is enabled and "onRowsChanged" was triggered', async (done) => {
     const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
     const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
-    jest.spyOn(treeDataServiceStub, 'convertToHierarchicalDatasetAndSort').mockReturnValue({ hierarchical: [], flat: mockFlatDataset });
+    jest.spyOn(treeDataServiceStub, 'convertFlatParentChildToTreeDatasetAndSort').mockReturnValue({ hierarchical: [], flat: mockFlatDataset as any[] });
 
     component.gridId = 'grid1';
-    component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file' } } as GridOption;
+    component.gridOptions = {
+      enableTreeData: true, treeDataOptions: {
+        columnId: 'file', parentPropName: 'parentId', childrenPropName: 'files',
+        initialSort: { columndId: 'file', direction: 'ASC' }
+      }
+    } as unknown as GridOption;
     component.dataset = mockFlatDataset;
     fixture.detectChanges();
     const gridPaneElm = document.querySelector('.gridPane') as HTMLDivElement;

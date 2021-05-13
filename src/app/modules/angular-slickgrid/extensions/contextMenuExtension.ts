@@ -19,7 +19,7 @@ import { SharedService } from '../services/shared.service';
 import { ExportService } from '../services/export.service';
 import { ExcelExportService } from '../services/excelExport.service';
 import { TreeDataService } from '../services/treeData.service';
-import { exportWithFormatterWhenDefined } from '../services/export-utilities';
+import { exportWithFormatterWhenDefined } from '../formatters/formatterUtilities';
 import { getDescendantProperty, getTranslationPrefix } from '../services/utilities';
 
 // using external non-typed js libraries
@@ -393,7 +393,7 @@ export class ContextMenuExtension implements Extension {
         const dataContext = args && args.dataContext;
         const grid = this.sharedService && this.sharedService.grid;
         const exportOptions = gridOptions && (gridOptions.excelExportOptions || gridOptions.exportOptions);
-        let textToCopy = exportWithFormatterWhenDefined(row, cell, dataContext, columnDef, grid, exportOptions);
+        let textToCopy = exportWithFormatterWhenDefined(row, cell, columnDef, dataContext, grid, exportOptions);
 
         if (typeof columnDef.queryFieldNameGetterFn === 'function') {
           textToCopy = this.getCellValueFromQueryFieldGetter(columnDef, dataContext);

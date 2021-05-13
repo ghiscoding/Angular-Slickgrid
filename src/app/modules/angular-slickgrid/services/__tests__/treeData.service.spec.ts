@@ -7,6 +7,7 @@ declare const Slick: any;
 
 const gridOptionsMock = {
   multiColumnSort: false,
+  enableFiltering: true,
   enableTreeData: true,
   treeDataOptions: {
     columnId: 'file'
@@ -58,6 +59,7 @@ describe('SortService', () => {
 
   beforeEach(() => {
     gridOptionsMock.backendServiceApi = undefined;
+    gridOptionsMock.enableFiltering = true;
     gridOptionsMock.enablePagination = false;
     gridOptionsMock.multiColumnSort = false;
     gridOptionsMock.treeDataOptions = {
@@ -83,6 +85,16 @@ describe('SortService', () => {
       service.init(gridStub);
     } catch (e) {
       expect(e.toString()).toContain('[Angular-Slickgrid] Tree Data does not currently support multi-column sorting');
+      done();
+    }
+  });
+
+  it('should throw an error when used without filter grid option', (done) => {
+    try {
+      gridOptionsMock.enableFiltering = false;
+      service.init(gridStub);
+    } catch (e) {
+      expect(e.toString()).toContain('[Angular-Slickgrid] It looks like you are trying to use Tree Data without using the filtering option');
       done();
     }
   });
@@ -274,7 +286,7 @@ describe('SortService', () => {
       });
     });
 
-    describe('convertToHierarchicalDatasetAndSort method', () => {
+    describe('convertFlatParentChildToTreeDatasetAndSort method', () => {
       let mockColumns: Column[];
       let mockFlatDataset: any;
 
@@ -293,17 +305,17 @@ describe('SortService', () => {
         }];
         const setSortSpy = jest.spyOn(gridStub, 'setSortColumns');
         jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(0);
-        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset as any[], hierarchical: mockHierarchical as any[] });
 
         service.init(gridStub);
-        const result = service.convertToHierarchicalDatasetAndSort(mockFlatDataset, mockColumns, gridOptionsMock);
+        const result = service.convertFlatParentChildToTreeDatasetAndSort(mockFlatDataset, mockColumns, gridOptionsMock);
 
         expect(setSortSpy).toHaveBeenCalledWith([{
           columnId: 'file',
           sortAsc: true,
           sortCol: mockColumns[0]
         }]);
-        expect(result).toEqual({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+        expect(result).toEqual({ flat: mockFlatDataset as any[], hierarchical: mockHierarchical as any[] });
       });
 
       it('should sort by the Tree column by the "initialSort" provided', () => {
@@ -318,17 +330,17 @@ describe('SortService', () => {
         }];
         const setSortSpy = jest.spyOn(gridStub, 'setSortColumns');
         jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(0);
-        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+        jest.spyOn(sortServiceStub, 'sortHierarchicalDataset').mockReturnValue({ flat: mockFlatDataset as any[], hierarchical: mockHierarchical as any[] });
 
         service.init(gridStub);
-        const result = service.convertToHierarchicalDatasetAndSort(mockFlatDataset, mockColumns, gridOptionsMock);
+        const result = service.convertFlatParentChildToTreeDatasetAndSort(mockFlatDataset, mockColumns, gridOptionsMock);
 
         expect(setSortSpy).toHaveBeenCalledWith([{
           columnId: 'size',
           sortAsc: false,
           sortCol: mockColumns[1]
         }]);
-        expect(result).toEqual({ flat: mockFlatDataset, hierarchical: mockHierarchical });
+        expect(result).toEqual({ flat: mockFlatDataset as any[], hierarchical: mockHierarchical as any[] });
       });
     });
 

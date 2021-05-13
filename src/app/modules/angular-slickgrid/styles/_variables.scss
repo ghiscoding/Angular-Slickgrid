@@ -133,36 +133,37 @@ $icon-group-font-size:                          calc(#{$icon-font-size} + 4px) !
 $icon-group-font-weight:                        bold !default;
 $icon-group-margin-right:                       2px !default;
 $icon-group-height:                             20px !default;
+$icon-group-vertical-align:                     middle !default;
 $icon-group-width:                              14px !default;
 $table-background:                              transparent !default;
-$link-color:        				                     #08c !default;
+$link-color:        				                    #08c !default;
 $link-color-hover:                              darker($link-color, 15%) !default;
-$gray-dark:              			                 #333 !default;
-$text-color:             			                 $gray-dark !default;
-$navbar-default-link-hover-color:	             $gray-dark !default;
+$gray-dark:              			                  #333 !default;
+$text-color:             			                  $gray-dark !default;
+$navbar-default-link-hover-color:	              $gray-dark !default;
 
 /* AutoComplete */
-$autocomplete-bg-color:	                       #ffffff !default;
-$autocomplete-border:	                         1px solid rgba(0, 0, 0, 0.15) !default;
-$autocomplete-border-radius:	                   4px !default;
-$autocomplete-box-shadow:	                     0 6px 12px rgba(0, 0, 0, 0.175) !default;
-$autocomplete-hover-color:	                     #262626 !default;
-$autocomplete-hover-bg-color:	                 darken($row-mouse-hover-color, 3%) !default;
+$autocomplete-bg-color:	                        #ffffff !default;
+$autocomplete-border:	                          1px solid rgba(0, 0, 0, 0.15) !default;
+$autocomplete-border-radius:	                  4px !default;
+$autocomplete-box-shadow:	                      0 6px 12px rgba(0, 0, 0, 0.175) !default;
+$autocomplete-hover-color:	                    #262626 !default;
+$autocomplete-hover-bg-color:	                  darken($row-mouse-hover-color, 3%) !default;
 $autocomplete-loading-icon:                     "\f021" !default;
 $autocomplete-loading-icon-color:               $icon-color !default;
 $autocomplete-loading-icon-width:               inherit !default;
 $autocomplete-loading-icon-margin-left:         -16px !default;
 $autocomplete-loading-icon-line-height:         0px !default;
 $autocomplete-loading-icon-vertical-align:      inherit !default;
-$autocomplete-max-height:	                     25vh !default;
-$autocomplete-min-height:	                     75px !default;
-$autocomplete-min-width:	                       50px !default;
-$autocomplete-overflow-x:	                     hidden !default;
-$autocomplete-overflow-y:	                     auto !default;
-$autocomplete-text-color:	                     #333333 !default;
-$autocomplete-text-overflow:	                   ellipsis !default;
-$autocomplete-text-padding:	                   3px 15px !default;
-$autocomplete-z-index:	                         9999 !default;
+$autocomplete-max-height:	                      25vh !default;
+$autocomplete-min-height:	                      75px !default;
+$autocomplete-min-width:	                      50px !default;
+$autocomplete-overflow-x:	                      hidden !default;
+$autocomplete-overflow-y:	                      auto !default;
+$autocomplete-text-color:	                      #333333 !default;
+$autocomplete-text-overflow:	                  ellipsis !default;
+$autocomplete-text-padding:	                    3px 15px !default;
+$autocomplete-z-index:	                        9999 !default;
 
 /** AutoComplte with Custom Styling (2 rows) */
 $autocomplete-tpl2-font-size:                   12px !default;

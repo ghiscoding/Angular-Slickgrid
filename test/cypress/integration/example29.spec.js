@@ -6,6 +6,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
   // const defaultSortDescList = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt', 'pdf', 'phone-bill.pdf', 'map2.pdf', 'map.pdf', 'internet-bill.pdf', 'misc', 'todo.txt', 'bucket-list.txt'];
   const defaultSortAscList = ['bucket-list.txt', 'documents', 'misc', 'todo.txt', 'pdf', 'internet-bill.pdf', 'map.pdf', 'map2.pdf', 'phone-bill.pdf'];
   const defaultSortDescList = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt'];
+  const defaultSortDescListWithExtraSongs = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'pop-122.mp3', 'pop-121.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt'];
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/tree-data-hierarchical`);
@@ -20,7 +21,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
   });
 
   it('should have default Files list', () => {
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row')
       .each(($row, index) => {
         if (index > defaultSortAscList.length - 1) {
@@ -32,6 +33,21 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
       });
   });
 
+  it('should be able to add 2 new pop songs into the Music folder', () => {
+    cy.get('[data-test=add-item-btn]')
+      .contains('Add New Pop Song')
+      .click()
+      .click();
+
+    cy.get('.slick-group-toggle[level=3]')
+      .get('.slick-cell')
+      .contains('pop-121.mp3');
+
+    cy.get('.slick-group-toggle[level=3]')
+      .get('.slick-cell')
+      .contains('pop-122.mp3');
+  });
+
   it('should filter the Files column with the word "map" and expect only 4 rows left', () => {
     const filteredFiles = ['documents', 'pdf', 'map.pdf', 'map2.pdf'];
     const filteredSizes = ['', '', '3.1', '2.9'];
@@ -39,7 +55,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
     cy.get('.search-filter.filter-file')
       .type('map');
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row')
       .each(($row, index) => {
         cy.wrap($row).children('.slick-cell:nth(0)').should('contain', filteredFiles[index]);
@@ -58,7 +74,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
       .find('.input-group-addon.operator select')
       .select('<');
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row .slick-cell:nth(0)')
       .each(($cell, index) => {
         expect($cell.text().trim()).to.contain(filteredFiles[index]);
@@ -72,7 +88,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
       .find('.input-group-addon.operator select')
       .select('>');
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row .slick-cell:nth(0)')
       .each(($cell, index) => {
         expect($cell.text().trim()).to.contain(filteredFiles[index]);
@@ -90,7 +106,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
       .find('.input-group-addon.operator select')
       .select('<=');
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row .slick-cell:nth(0)')
       .each(($cell, index) => {
         expect($cell.text().trim()).to.contain(filteredFiles[index]);
@@ -98,7 +114,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
   });
 
   it('should Clear all Filters and default list', () => {
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('button.slick-gridmenu-button')
       .trigger('click')
       .click();
@@ -110,7 +126,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
       .contains('Clear all Filters')
       .click();
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row')
       .each(($row, index) => {
         if (index > defaultSortAscList.length - 1) {
@@ -126,15 +142,15 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
     cy.get('.slick-header-columns .slick-header-column:nth(0)')
       .click();
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row')
       .each(($row, index) => {
-        if (index > defaultSortDescList.length - 1) {
+        if (index > defaultSortDescListWithExtraSongs.length - 1) {
           return;
         }
         cy.wrap($row).children('.slick-cell')
           .first()
-          .should('contain', defaultSortDescList[index]);
+          .should('contain', defaultSortDescListWithExtraSongs[index]);
       });
   });
 
@@ -149,7 +165,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
         expect($input.val()).to.eq('map');
       });
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row .slick-cell:nth(0)')
       .each(($cell, index) => {
         expect($cell.text().trim()).to.contain(filteredFiles[index]);
@@ -160,7 +176,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
     cy.get('[data-test=clear-search-string]')
       .click();
 
-    cy.get('#grid29')
+    cy.get('#slickGridContainer-grid29')
       .find('.slick-row')
       .each(($row, index) => {
         if (index > defaultSortAscList.length - 1) {
@@ -168,7 +184,21 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', () => {
         }
         cy.wrap($row).children('.slick-cell')
           .first()
-          .should('contain', defaultSortDescList[index]);
+          .should('contain', defaultSortDescListWithExtraSongs[index]);
       });
+  });
+
+  it('should be able to add a 3rd new pop song into the Music folder and see it show up in the UI', () => {
+    cy.get('[data-test=add-item-btn]')
+      .contains('Add New Pop Song')
+      .click();
+
+    cy.get('.slick-group-toggle[level=3]')
+      .get('.slick-cell')
+      .contains('pop-123.mp3');
+
+    cy.get('.slick-group-toggle[level=3]')
+      .get('.slick-cell')
+      .contains('pop-123.mp3');
   });
 });
