@@ -1,12 +1,13 @@
-import { Aggregator } from './aggregator.interface';
-import { SortDirection, SortDirectionString } from './index';
+// import { Aggregator } from './aggregator.interface';
+import { Formatter, SortDirection, SortDirectionString } from './index';
 
 export interface TreeDataOption {
   /** Column Id of which column in the column definitions has the Tree Data, there can only be one with a Tree Data. */
   columnId: string;
 
   /** Grouping Aggregators array */
-  aggregators?: Aggregator[];
+  // NOT YET IMPLEMENTED
+  // aggregators?: Aggregator[];
 
   /** Optionally define the initial sort column and direction */
   initialSort?: {
@@ -15,7 +16,7 @@ export interface TreeDataOption {
 
     /** Direction of the initial Sort (ASC/DESC) */
     direction: SortDirection | SortDirectionString;
-  }
+  };
 
   /** Defaults to "children", object property name used to designate the Children array */
   childrenPropName?: string;
@@ -32,9 +33,6 @@ export interface TreeDataOption {
   /** Defaults to "__treeLevel", object property name used to designate the Tree Level depth number */
   levelPropName?: string;
 
-  /** Defaults to "__hasChildren", object property name used to designate if the item has Children flag */
-  hasChildrenFlagPropName?: string;
-
   /**
    * Defaults to 15px, margin to add from the left (calculated by the tree level multiplied by this number).
    * For example if tree depth level is 2, the calculation will be (2 * 15 = 30), so the column will be displayed 30px from the left
@@ -42,14 +40,23 @@ export interface TreeDataOption {
   indentMarginLeft?: number;
 
   /**
-   * Defaults to 4, indentation spaces to add from the left (calculated by the tree level multiplied by this number).
+   * Defaults to 5, indentation spaces to add from the left (calculated by the tree level multiplied by this number).
    * For example if tree depth level is 2, the calculation will be (2 * 15 = 30), so the column will be displayed 30px from the left
    */
   exportIndentMarginLeft?: number;
 
   /**
-   * Defaults to dot (.), we added this because Excel seems to trim spaces leading character
+   * Defaults to centered dot (·), we added this because Excel seems to trim spaces leading character
    * and if we add a regular character like a dot then it keeps all tree level indentation spaces
    */
   exportIndentationLeadingChar?: string;
+
+  /**
+   * Defaults to 3, when using a collapsing icon then we need to add some extra spaces to compensate on parent level.
+   * If you don't want collapsing icon in your export then you probably want to put this option at 0.
+   */
+  exportIndentationLeadingSpaceCount?: number;
+
+  /** Optional Title Formatter (allows you to format/style the title text differently) */
+  titleFormatter?: Formatter;
 }

@@ -944,16 +944,18 @@ export class GridService {
   }
 
   /**
-   * When dealing with hierarchical dataset, we can invalidate all the rows and force a resort & re-render of the hierarchical dataset.
+   * When dealing with hierarchical (tree) dataset, we can invalidate all the rows and force a full resort & re-render of the hierarchical tree dataset.
    * This method will automatically be called anytime user called `addItem()` or `addItems()`.
    * However please note that it won't be called when `updateItem`, if the data that gets updated does change the tree data column then you should call this method.
+   * @param {Array<Object>} [items] - optional flat array of parent/child items to use while redoing the full sort & refresh
    */
-  invalidateHierarchicalDataset() {
+  invalidateHierarchicalDataset(items?: any[]) {
     // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
     if (this._gridOptions?.enableTreeData && this.treeDataService) {
-      const sortedDatasetResult = this.treeDataService.convertToHierarchicalDatasetAndSort(this._dataView.getItems(), this.sharedService.allColumns, this._gridOptions);
+      const inputItems = items ?? this._dataView.getItems();
+      const sortedDatasetResult = this.treeDataService.convertFlatParentChildToTreeDatasetAndSort(inputItems, this.sharedService.allColumns, this._gridOptions);
       this.sharedService.hierarchicalDataset = sortedDatasetResult.hierarchical;
-      this.filterService.refreshTreeDataFilters();
+      this.filterService.refreshTreeDataFilters(items);
       this._dataView.setItems(sortedDatasetResult.flat);
     }
   }

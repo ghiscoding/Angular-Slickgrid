@@ -6,12 +6,13 @@ import {
   addWhiteSpaces,
   arrayRemoveItemByIndex,
   castToPromise,
-  convertHierarchicalViewToParentChildArray,
-  convertParentChildArrayToHierarchicalView,
+  flattenToParentChildArray,
+  unflattenParentChildArrayToTree,
   decimalFormatted,
   deepCopy,
   emptyElement,
   findItemInHierarchicalStructure,
+  findItemInTreeStructure,
   findOrDefault,
   formatNumber,
   getDescendantProperty,
@@ -39,6 +40,7 @@ import {
   uniqueArray,
   uniqueObjectArray,
   unsubscribeAllObservables,
+  addTreeLevelByMutation,
 } from '../utilities';
 
 describe('Service/Utilies', () => {
@@ -100,6 +102,10 @@ describe('Service/Utilies', () => {
       DOMParser = undefined as any;
       const result = htmlDecode(`&lt;div class=&#39;color: blue&#39;&gt;Something&lt;/div&gt;`);
       expect(result).toBe(`<div class='color: blue'>Something</div>`);
+    });
+
+    it('should return the a simple html string with x &nbsp; separator where x is the number of spaces provided as argument', () => {
+      expect(addWhiteSpaces(2, '&nbsp;')).toBe('&nbsp;&nbsp;');
     });
   });
 
@@ -176,7 +182,7 @@ describe('Service/Utilies', () => {
     });
   });
 
-  describe('convertParentChildArrayToHierarchicalView method', () => {
+  describe('unflattenParentChildArrayToTree method', () => {
     it('should take a parent/child array and return a hierarchical array structure', () => {
       const input = [
         { id: 18, size: 90, dateModified: '2015-03-03', file: 'something.txt', parentId: null, },
@@ -188,27 +194,27 @@ describe('Service/Utilies', () => {
         { id: 15, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, parentId: 14, },
       ];
 
-      const output = convertParentChildArrayToHierarchicalView(input, { parentPropName: 'parentId', childrenPropName: 'files' });
+      const output = unflattenParentChildArrayToTree(input, { parentPropName: 'parentId', childrenPropName: 'files' });
 
       expect(output).toEqual([
         {
-          id: 11, file: 'Music', files: [{
-            id: 12, file: 'mp3', files: [
-              { id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
-              { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
+          id: 11, __treeLevel: 0, parentId: null, file: 'Music', files: [{
+            id: 12, __treeLevel: 1, parentId: 11, file: 'mp3', files: [
+              { id: 14, __treeLevel: 2, parentId: 12, file: 'pop', files: [{ id: 15, __treeLevel: 3, parentId: 14, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
+              { id: 16, __treeLevel: 2, parentId: 12, file: 'rock', files: [{ id: 17, __treeLevel: 3, parentId: 16, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
             ]
           }]
         },
-        { id: 18, file: 'something.txt', dateModified: '2015-03-03', size: 90, },
+        { id: 18, __treeLevel: 0, parentId: null, file: 'something.txt', dateModified: '2015-03-03', size: 90, },
       ]);
     });
   });
 
-  describe('convertHierarchicalViewToParentChildArray method', () => {
-    let mockColumns: any[];
+  describe('flattenToParentChildArray method', () => {
+    let mockTreeArray: any[];
 
     beforeEach(() => {
-      mockColumns = [
+      mockTreeArray = [
         { id: 18, file: 'something.txt', dateModified: '2015-03-03', size: 90 },
         {
           id: 11, file: 'Music', files: [{
@@ -222,14 +228,15 @@ describe('Service/Utilies', () => {
     });
 
     it('should return a flat array from a hierarchical structure', () => {
-      const output = convertHierarchicalViewToParentChildArray(mockColumns, { childrenPropName: 'files' });
+      addTreeLevelByMutation(mockTreeArray, { childrenPropName: 'files', levelPropName: '__treeLevel' });
+      const output = flattenToParentChildArray(mockTreeArray, { childrenPropName: 'files' });
       expect(output).toEqual([
         { id: 18, size: 90, __treeLevel: 0, dateModified: '2015-03-03', file: 'something.txt', __parentId: null, },
-        { id: 11, __treeLevel: 0, file: 'Music', __parentId: null, __hasChildren: true, },
-        { id: 12, __treeLevel: 1, file: 'mp3', __parentId: 11, __hasChildren: true, },
-        { id: 16, __treeLevel: 2, file: 'rock', __parentId: 12, __hasChildren: true, },
+        { id: 11, __treeLevel: 0, file: 'Music', __parentId: null, },
+        { id: 12, __treeLevel: 1, file: 'mp3', __parentId: 11, },
+        { id: 16, __treeLevel: 2, file: 'rock', __parentId: 12, },
         { id: 17, __treeLevel: 3, dateModified: '2015-05-13', file: 'soft.mp3', size: 98, __parentId: 16, },
-        { id: 14, __treeLevel: 2, file: 'pop', __parentId: 12, __hasChildren: true, },
+        { id: 14, __treeLevel: 2, file: 'pop', __parentId: 12, },
         { id: 15, __treeLevel: 3, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, __parentId: 14, },
       ]);
     });
@@ -257,12 +264,12 @@ describe('Service/Utilies', () => {
     });
 
     it('should find an item from a hierarchical array', () => {
-      const item = findItemInHierarchicalStructure(mockColumns, x => x.file === 'pop', 'files');
+      const item = findItemInTreeStructure(mockColumns, x => x.file === 'pop', 'files');
       expect(item).toEqual({ id: 14, file: 'pop', files: [{ id: 15, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] });
     });
 
     it('should return undefined when item is not found', () => {
-      const item = findItemInHierarchicalStructure(mockColumns, x => x.file === 'pop2', 'files');
+      const item = findItemInTreeStructure(mockColumns, x => x.file === 'pop2', 'files');
       expect(item).toEqual(undefined);
     });
   });

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Subject } from 'rxjs';
 
 import { Column, FieldType, GridOption } from './../models/index';
-import { exportWithFormatterWhenDefined } from './export-utilities';
+import { parseFormatterWhenExist } from '../formatters/formatterUtilities';
 import { sanitizeHtmlToText } from './utilities';
 
 // using external non-typed js libraries
@@ -299,8 +299,7 @@ export class ResizerService {
         columnDefinitions.forEach((columnDef, colIdx) => {
           if (!columnDef.originalWidth) {
             const charWidthPx = columnDef?.resizeCharWidthInPx ?? resizeCellCharWidthInPx;
-            const exportOptions = this._gridOptions.enableExport ? this._gridOptions.exportOptions : this._gridOptions.excelExportOptions;
-            const formattedData = exportWithFormatterWhenDefined(rowIdx, colIdx, item, columnDef, this._grid, exportOptions);
+            const formattedData = parseFormatterWhenExist(columnDef?.formatter, rowIdx, colIdx, columnDef, item, this._grid);
             const formattedDataSanitized = sanitizeHtmlToText(formattedData);
             const formattedTextWidthInPx = Math.ceil(formattedDataSanitized.length * charWidthPx);
             const resizeMaxWidthThreshold = columnDef.resizeMaxWidthThreshold;

@@ -6,7 +6,7 @@ import {
   Filters,
   Formatters,
   GridOption,
-  findItemInHierarchicalStructure,
+  findItemInTreeStructure,
   Formatter,
 } from './../modules/angular-slickgrid';
 
@@ -190,12 +190,12 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
     // find first parent object and add the new item as a child
     const tmpDatasetHierarchical = [...this.datasetHierarchical];
-    const popItem = findItemInHierarchicalStructure(tmpDatasetHierarchical, x => x.file === 'pop', 'files');
+    const popItem = findItemInTreeStructure(tmpDatasetHierarchical, x => x.file === 'pop', 'files');
 
     if (popItem && Array.isArray(popItem.files)) {
       popItem.files.push({
         id: newId,
-        file: `pop${Math.round(Math.random() * 1000)}.mp3`,
+        file: `pop-${newId}.mp3`,
         dateModified: new Date(),
         size: Math.round(Math.random() * 100),
       });
@@ -207,7 +207,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       setTimeout(() => {
         const rowIndex = this.dataViewObj.getRowById(popItem.id);
         this.gridObj.scrollRowIntoView(rowIndex + 3);
-      }, 0);
+      }, 10);
     }
   }
 
