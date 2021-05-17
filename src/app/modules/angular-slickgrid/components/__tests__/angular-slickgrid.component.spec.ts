@@ -308,7 +308,7 @@ describe('App Component', () => {
   });
 
   describe('resizeColumnsByCellContent method', () => {
-    it('should call "resizeColumnsByCellContent" when the DataView "onSetItemsCalled" event is triggered and "enableAutoResizeColumnsByCellContent" is set', (done) => {
+    it('should call "resizeColumnsByCellContent" when the DataView "onSetItemsCalled" event is triggered and "enableAutoResizeColumnsByCellContent" is set', () => {
       const resizeContentSpy = jest.spyOn(resizerServiceStub, 'resizeColumnsByCellContent');
       const mockDataset = [{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }];
 
@@ -318,13 +318,10 @@ describe('App Component', () => {
       fixture.detectChanges();
       component.dataView.onSetItemsCalled.notify({ idProperty: 'id', itemCount: 1 });
 
-      setTimeout(() => {
-        expect(resizeContentSpy).toHaveBeenCalledWith(true);
-        done();
-      }, 10);
+      expect(resizeContentSpy).toHaveBeenCalledWith(true);
     });
 
-    it('should call "resizeColumnsByCellContent" when the DataView "onSetItemsCalled" event is triggered and "enableAutoResizeColumnsByCellContent" is set', (done) => {
+    it('should call "resizeColumnsByCellContent" when the DataView "onSetItemsCalled" event is triggered and "enableAutoResizeColumnsByCellContent" is set', () => {
       const resizeContentSpy = jest.spyOn(resizerServiceStub, 'resizeColumnsByCellContent');
       const mockDataset = [{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }];
 
@@ -334,10 +331,7 @@ describe('App Component', () => {
       fixture.detectChanges();
       component.dataView.onSetItemsCalled.notify({ idProperty: 'id', itemCount: 1 });
 
-      setTimeout(() => {
-        expect(resizeContentSpy).toHaveBeenCalledWith(false);
-        done();
-      }, 10);
+      expect(resizeContentSpy).toHaveBeenCalledWith(false);
     });
 
     describe('Custom Footer', () => {
