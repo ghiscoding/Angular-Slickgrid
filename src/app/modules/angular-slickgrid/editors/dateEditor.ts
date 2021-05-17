@@ -118,7 +118,12 @@ export class DateEditor implements Editor {
         closeOnSelect: true,
         wrap: true,
         locale: currentLocale,
-        onChange: () => this.save(),
+        onChange: () => {
+          const currentFlatpickrOptions = this.flatInstance?.config ?? this._pickerMergedOptions;
+          if (this.args && currentFlatpickrOptions?.closeOnSelect) {
+            this.save();
+          }
+        },
         errorHandler: (error: Error) => {
           if (error.toString().includes('invalid locale')) {
             console.warn(`[Angular-Slickgrid] Flatpickr missing locale imports (${currentLocale}), will revert to English as the default locale.
@@ -150,7 +155,7 @@ export class DateEditor implements Editor {
       }
 
       this._$editorInputElm.appendTo(this.args.container);
-      this.flatInstance = (flatpickr && this._$editorInputElm[0] && typeof this._$editorInputElm[0].flatpickr === 'function') ? this._$editorInputElm[0].flatpickr(this._pickerMergedOptions) : flatpickr(this._$editorInputElm, this._pickerMergedOptions as unknown as Partial<FlatpickrBaseOptions>);
+      this.flatInstance = (!!flatpickr && this._$editorInputElm[0] && typeof this._$editorInputElm[0].flatpickr === 'function') ? this._$editorInputElm[0].flatpickr(this._pickerMergedOptions) : flatpickr(this._$editorInputElm, this._pickerMergedOptions as unknown as Partial<FlatpickrBaseOptions>);
 
       // when we're using an alternate input to display data, we'll consider this input as the one to do the focus later on
       // else just use the top one

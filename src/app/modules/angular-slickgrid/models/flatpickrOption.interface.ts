@@ -1,3 +1,4 @@
+import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import { Locale } from 'flatpickr/dist/types/locale';
 
 export interface FlatpickrOption {
@@ -137,10 +138,10 @@ export interface FlatpickrOption {
   // -----------------
 
   /** Function(s) to trigger on every date selection. See Events API */
-  onChange?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onChange?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function(s) to trigger on every time the calendar is closed. See Events API */
-  onClose?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onClose?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function(s) to trigger on every time the calendar gets created. See Events API */
   onDayCreate?: (date: Date | Date[]) => void;
@@ -149,20 +150,20 @@ export interface FlatpickrOption {
   onDestroy?: (day: Date) => void;
 
   /** Function(s) to trigger when the date picker gets drestroyed. See Events API */
-  onKeyDown?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onKeyDown?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function(s) to trigger on every time the month changes. See Events API */
-  onMonthChange?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onMonthChange?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function(s) to trigger on every time the calendar is opened. See Events API */
-  onOpen?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onOpen?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function to trigger when the calendar is ready. See Events API */
   onReady?: () => void;
 
   /** Function(s) to trigger on every time the year changes. See Events API */
-  onValueUpdate?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onValueUpdate?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 
   /** Function(s) to trigger on every time the year changes. See Events API */
-  onYearChange?: (selectedDates: Date[] | Date, dateStr: string, instance: any) => void;
+  onYearChange?: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => void;
 }

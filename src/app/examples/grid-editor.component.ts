@@ -1,11 +1,11 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import {
   AngularGridInstance,
   AutocompleteOption,
   Column,
-  EditCommand,
   Editors,
   EditorArgs,
   EditorValidator,
@@ -308,7 +308,17 @@ export class GridEditorComponent implements OnInit {
           model: Editors.date,
           // override any of the Flatpickr options through "editorOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
-          editorOptions: { minDate: 'today' } as FlatpickrOption
+          editorOptions: {
+            minDate: 'today',
+
+            // if we want to preload the date picker with a different date,
+            // we could toggle the `closeOnSelect: false`, set the date in the picker and re-toggle `closeOnSelect: true`
+            // closeOnSelect: false,
+            // onOpen: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => {
+            //   instance.setDate('2021-12-31', true);
+            //   instance.set('closeOnSelect', true);
+            // },
+          } as FlatpickrOption
         },
       }, {
         id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
