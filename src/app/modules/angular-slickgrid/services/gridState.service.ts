@@ -20,6 +20,7 @@ import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { SortService } from './sort.service';
 import { unsubscribeAllObservables } from './utilities';
+import { ResizerService } from './resizer.service';
 import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
@@ -41,6 +42,7 @@ export class GridStateService {
   constructor(
     private extensionService: ExtensionService,
     private filterService: FilterService,
+    private resizerService: ResizerService,
     private sharedService: SharedService,
     private sortService: SortService
   ) {
@@ -153,10 +155,13 @@ export class GridStateService {
    * Dynamically change the arrangement/distribution of the columns Positions/Visibilities and optionally Widths.
    * For a column to have its visibly as hidden, it has to be part of the original list but excluded from the list provided as argument to be considered a hidden field.
    * If you are passing columns Width, then you probably don't want to trigger the autosizeColumns (2nd argument to False).
+   * We could also resize the columns by their content but be aware that you can only trigger 1 type of resize at a time (either the 2nd argument or the 3rd last argument but not both at same time)
+   * The resize by content could be called by the 3rd argument OR simply by enabling `enableAutoResizeColumnsByCellContent` but again this will only get executed when the 2nd argument is set to false.
    * @param {Array<Column>} definedColumns - defined columns
    * @param {Boolean} triggerAutoSizeColumns - True by default, do we also want to call the "autosizeColumns()" method to make the columns fit in the grid?
+   * @param {Boolean} triggerColumnsFullResizeByContent - False by default, do we also want to call full columns resize by their content?
    */
-  changeColumnsArrangement(definedColumns: CurrentColumn[], triggerAutoSizeColumns = true) {
+  changeColumnsArrangement(definedColumns: CurrentColumn[], triggerAutoSizeColumns = true, triggerColumnsFullResizeByContent = false) {
     if (Array.isArray(definedColumns) && definedColumns.length > 0) {
       const gridColumns: Column[] = this.getAssociatedGridColumns(this._grid, definedColumns);
 
@@ -164,7 +169,7 @@ export class GridStateService {
         // make sure that the checkbox selector is still visible in the list when it is enabled
         if (this._gridOptions.enableCheckboxSelector) {
           const checkboxColumn = (Array.isArray(this.sharedService.allColumns) && this.sharedService.allColumns.length > 0) ? this.sharedService.allColumns[0] : null;
-          if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
+          if (checkboxColumn?.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
             gridColumns.unshift(checkboxColumn);
           }
         }
@@ -180,6 +185,8 @@ export class GridStateService {
         // resize the columns to fit the grid canvas
         if (triggerAutoSizeColumns) {
           this._grid.autosizeColumns();
+        } else if (triggerColumnsFullResizeByContent || (this._gridOptions.enableAutoResizeColumnsByCellContent && !this._gridOptions.autosizeColumnsByCellContentOnFirstLoad)) {
+          this.resizerService.resizeColumnsByCellContent(true);
         }
       }
     }
