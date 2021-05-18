@@ -23,6 +23,9 @@ export interface Locale {
   /** Text "Columns" title displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_COLUMNS: string;
 
+  /** Text "Column Resize by Content" title displayed in the Header Menu */
+  TEXT_COLUMN_RESIZE_BY_CONTENT?: string;
+
   /** Text "Commands" title displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_COMMANDS: string;
 

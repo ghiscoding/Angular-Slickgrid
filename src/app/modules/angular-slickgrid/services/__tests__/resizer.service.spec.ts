@@ -11,6 +11,7 @@ const DATAGRID_PAGINATION_HEIGHT = 35;
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';
+declare const Slick: any;
 
 const gridOptionMock = {
   gridId,
@@ -43,6 +44,8 @@ const gridStub = {
   getUID: () => gridUid,
   reRenderColumns: jest.fn(),
   setColumns: jest.fn(),
+  onColumnsResizeDblClick: new Slick.Event(),
+  onSort: new Slick.Event(),
 };
 
 // define a <div> container to simulate the grid container
@@ -78,6 +81,7 @@ describe('Resizer Service', () => {
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 20,
+      resizeByContentOptions: {},
     } as GridOption;
     jest.spyOn(gridStub, 'getOptions').mockReturnValue(mockGridOptions);
     jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(div.querySelector(`#${gridId}`));
@@ -414,12 +418,12 @@ describe('Resizer Service', () => {
       let mockData: any[];
 
       beforeEach(() => {
-        mockGridOptions.resizeCellCharWidthInPx = 7;
-        mockGridOptions.resizeCellPaddingWidthInPx = 6;
-        mockGridOptions.resizeFormatterPaddingWidthInPx = 5;
-        mockGridOptions.resizeDefaultRatioForStringType = 0.88;
-        mockGridOptions.resizeAlwaysRecalculateColumnWidth = false;
-        mockGridOptions.resizeMaxItemToInspectCellContentWidth = 4;
+        mockGridOptions.resizeByContentOptions!.cellCharWidthInPx = 7;
+        mockGridOptions.resizeByContentOptions!.cellPaddingWidthInPx = 6;
+        mockGridOptions.resizeByContentOptions!.formatterPaddingWidthInPx = 5;
+        mockGridOptions.resizeByContentOptions!.defaultRatioForStringType = 0.88;
+        mockGridOptions.resizeByContentOptions!.alwaysRecalculateColumnWidth = false;
+        mockGridOptions.resizeByContentOptions!.maxItemToInspectCellContentWidth = 4;
         mockColDefs = [
           // typically the `originalWidth` is set by the columnDefinitiosn setter in vanilla grid bundle but we can mock it for our test
           { id: 'userId', field: 'userId', width: 30, originalWidth: 30 },
@@ -441,6 +445,17 @@ describe('Resizer Service', () => {
 
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColDefs);
         jest.spyOn(mockDataView, 'getItems').mockReturnValue(mockData);
+      });
+
+      it('should call handleSingleColumnResizeByContent when "onHeaderMenuColumnResizeByContent" gets triggered', () => {
+        const reRenderSpy = jest.spyOn(gridStub, 'reRenderColumns');
+
+        mockGridOptions.enableColumnResizeOnDoubleClick = true;
+        service.init(gridStub);
+        gridStub.onColumnsResizeDblClick.notify({ triggeredByColumn: 'firstName', grid: gridStub });
+
+        expect(reRenderSpy).toHaveBeenCalledWith(false);
+        expect(mockColDefs[1].width).toBe(56); // longest word "Destinee" (length 8 * charWidth(7) * ratio(0.88)) + cellPadding(6) = 55.28 ceil to => 56
       });
 
       it('should call the resize and expect first column have a fixed width while other will have a calculated width when resizing by their content', () => {

@@ -27,6 +27,7 @@ import {
   OperatorType,
   OperatorString,
   Pagination,
+  ResizeByContentOption,
   RowDetailView,
   RowMoveManager,
   TreeDataOption,
@@ -239,6 +240,12 @@ export interface GridOption {
   /** Defaults to true, which permits the user to move an entire column from a position to another. */
   enableColumnReorder?: boolean | ColumnReorderFunction;
 
+  /**
+   * Defaults to true, when doing a double-click in the column resize section (top right of a column when the mouse resize icon shows up),
+   * do we want to automatically resize the column by its cell content?
+   */
+  enableColumnResizeOnDoubleClick?: boolean;
+
   /** Do we want to enable Context Menu? (mouse right+click) */
   enableContextMenu?: boolean;
 
@@ -435,9 +442,6 @@ export interface GridOption {
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];
 
-  /** defaults to false, if a column `width` is provided (or was previously calculated) should we recalculate it or not when resizing by cell content? */
-  resizeAlwaysRecalculateColumnWidth?: boolean;
-
   /**
    * defaults to true, do we want to resize the grid by content only on the first page or anytime the data changes?
    * Requires `enableAutoResizeColumnsByCellContent` to be set.
@@ -445,27 +449,8 @@ export interface GridOption {
    */
   resizeByContentOnlyOnFirstLoad?: boolean;
 
-  /**
-   * Defaults to 7, width in pixels of a string character which is used by the resize columns by its content, this can vary depending on which font family/size is used & cell padding.
-   * This is only used when resizing the columns width by their content, we need to know the width of a character in pixel to do all calculations.
-   * Requires `enableAutoResizeColumnsByCellContent` to be set.
-   */
-  resizeCellCharWidthInPx?: number;
-
-  /** Defaults to 6, cell padding width to add to the calculation when resizing columns by their cell text content (requires `enableAutoResizeColumnsByCellContent` to be set) */
-  resizeCellPaddingWidthInPx?: number;
-
-  /** Defaults to around ~0.9, what is the ratio to use (on field `type` "string" only) in the calculation when resizing columns by their cell text content (requires `enableAutoResizeColumnsByCellContent` to be set). */
-  resizeDefaultRatioForStringType?: number;
-
-  /** Defaults to 6, padding width to add to the calculation when using a Formatter and resizing columns by their cell text content (requires `enableAutoResizeColumnsByCellContent` to be set). */
-  resizeFormatterPaddingWidthInPx?: number;
-
-  /**
-   * Defaults to 1000, width in pixels of a string character which is used by the resize columns by its content, this can vary depending on which font family/size is used & cell padding.
-   * This is only used when resizing the columns width by their content, we need to know the width of a character in pixel to do all calculations.
-   */
-  resizeMaxItemToInspectCellContentWidth?: number;
+  /** Resize by Content multiple options */
+  resizeByContentOptions?: ResizeByContentOption;
 
   /** Row Detail View Plugin options & events (columnId, cssClass, toolTip, width) */
   rowDetailView?: RowDetailView;

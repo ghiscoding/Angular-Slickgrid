@@ -247,6 +247,9 @@ export interface SlickGrid {
   /** Get the Viewport DOM node element */
   getViewportNode(): HTMLElement;
 
+  /** Get all the Viewport node elements */
+  getViewports(): HTMLElement[];
+
   /**
    * Accepts a row integer and a cell integer, scrolling the view to the row where row is its row index, and cell is its cell index. Optionally accepts a forceEdit boolean which, if true, will attempt to initiate the edit dialogue for the field in the specified cell.
    * Unlike setActiveCell, this scrolls the row into the viewport and sets the keyboard focus.
@@ -486,6 +489,7 @@ export interface SlickGrid {
   onColumnsDrag: SlickEvent;
   onColumnsReordered: SlickEvent;
   onColumnsResized: SlickEvent;
+  onColumnsResizeDblClick: SlickEvent;
   onContextMenu: SlickEvent;
   onDrag: SlickEvent;
   onDragEnd: SlickEvent;
