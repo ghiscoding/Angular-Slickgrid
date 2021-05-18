@@ -185,7 +185,7 @@ export class GridStateService {
         // resize the columns to fit the grid canvas
         if (triggerAutoSizeColumns) {
           this._grid.autosizeColumns();
-        } else if (triggerColumnsFullResizeByContent || this._gridOptions.enableAutoResizeColumnsByCellContent) {
+        } else if (triggerColumnsFullResizeByContent || (this._gridOptions.enableAutoResizeColumnsByCellContent && !this._gridOptions.autosizeColumnsByCellContentOnFirstLoad)) {
           this.resizerService.resizeColumnsByCellContent(true);
         }
       }

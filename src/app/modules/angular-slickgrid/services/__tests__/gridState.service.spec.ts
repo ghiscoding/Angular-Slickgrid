@@ -193,7 +193,7 @@ describe('GridStateService', () => {
         expect(resizeByContentSpy).not.toHaveBeenCalled();
       });
 
-      it('should call the method and expect slickgrid "setColumns" and a pubsub event "onFullResizeByContentRequested" to be called with newest columns when "triggerAutoSizeColumns" is false and "enableAutoResizeColumnsByCellContent" is true', () => {
+      it('should call the method and expect slickgrid "setColumns" and "resizeColumnsByCellContent" method to be called with newest columns when "triggerAutoSizeColumns" is false and "enableAutoResizeColumnsByCellContent" is true', () => {
         gridOptionMock.enableAutoResizeColumnsByCellContent = true;
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(allColumnsMock);
         const setColsSpy = jest.spyOn(gridStub, 'setColumns');
@@ -207,7 +207,22 @@ describe('GridStateService', () => {
         expect(resizeByContentSpy).toHaveBeenCalledWith(true);
       });
 
-      it('should call the method and expect slickgrid "setColumns" and a pubsub event "onFullResizeByContentRequested" to be called with newest columns when "triggerAutoSizeColumns" is false and "enableAutoResizeColumnsByCellContent" is true', () => {
+      it('should call the method and expect slickgrid "setColumns" but WITHOUT calling "resizeColumnsByCellContent" method because it requires "enableAutoResizeColumnsByCellContent: true" AND "autosizeColumnsByCellContentOnFirstLoad: false" because this method is never called on first page load', () => {
+        gridOptionMock.enableAutoResizeColumnsByCellContent = true;
+        gridOptionMock.autosizeColumnsByCellContentOnFirstLoad = true;
+        jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(allColumnsMock);
+        const setColsSpy = jest.spyOn(gridStub, 'setColumns');
+        const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+        const resizeByContentSpy = jest.spyOn(resizerServiceStub, 'resizeColumnsByCellContent');
+
+        service.changeColumnsArrangement(presetColumnsMock, false);
+
+        expect(setColsSpy).toHaveBeenCalledWith([rowCheckboxColumnMock, ...columnsWithoutCheckboxMock]);
+        expect(autoSizeSpy).not.toHaveBeenCalled();
+        expect(resizeByContentSpy).not.toHaveBeenCalledWith(true);
+      });
+
+      it('should call the method and expect slickgrid "setColumns" and "resizeColumnsByCellContent" method to be called with newest columns when "triggerAutoSizeColumns" is false and 3rd is set to true', () => {
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(allColumnsMock);
         const setColsSpy = jest.spyOn(gridStub, 'setColumns');
         const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
