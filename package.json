@@ -68,7 +68,8 @@
     "sass:watch:salesforce": "cross-env npm run sass-build-task:scss-compile:salesforce -- --watch",
     "sass:watch": "run-p sass:watch:bootstrap sass:watch:material sass:watch:salesforce sass:copy:watch",
     "sass:copy:watch": "nodemon --ext scss --watch src/app/modules/angular-slickgrid/styles/*.scss --exec \"npm run sass:copy\"",
-    "build:demo": "ng build --configuration=production"
+    "build:demo": "ng build --configuration=production",
+    "serve:demo": "serve ./docs -l 4500"
   },
   "author": "Ghislain B.",
   "repository": {
@@ -110,6 +111,7 @@
     "jquery-ui-dist": "^1.12.1",
     "moment-mini": "^2.24.0",
     "rxjs": "^6.3.3",
+    "serve": "^11.3.2",
     "slickgrid": "^2.4.36",
     "text-encoding-utf-8": "^1.0.2",
     "un-flatten-tree": "^2.0.12"

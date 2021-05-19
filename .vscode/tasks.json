@@ -2,6 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Build GitHub Prod Demo",
+      "type": "shell",
+      "command": "yarn run build:demo",
+      "problemMatcher": []
+    },
+    {
       "label": "Build Library",
       "type": "shell",
       "command": "yarn run build",
