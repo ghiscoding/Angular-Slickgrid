@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Example 27 - GraphQL Basic API without Pagination', () => {
+xdescribe('Example 27 - GraphQL Basic API without Pagination', () => {
   const GRID_ROW_HEIGHT = 35;
   const fullPreTitles = ['Country', 'Language', 'Continent'];
   const fullTitles = ['Code', 'Name', 'Native', 'Phone Area Code', 'Currency', 'Emoji', 'Names', 'Native', 'Codes', 'Name', 'Code'];
