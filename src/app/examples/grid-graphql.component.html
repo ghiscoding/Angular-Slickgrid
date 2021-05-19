@@ -20,44 +20,50 @@
         </span>
       </div>
 
-      <div class="row col-md-12">
-        <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-sorting"
-                (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
-          <i class="fa fa-filter text-danger"></i>
-          Clear all Filter & Sorts
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
-                (click)="setFiltersDynamically()">
-          Set Filters Dynamically
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
-                (click)="setSortingDynamically()">
-          Set Sorting Dynamically
-        </button>
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-sorting"
+                  (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+            <i class="fa fa-filter text-danger"></i>
+            Clear all Filter & Sorts
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+                  (click)="setFiltersDynamically()">
+            Set Filters Dynamically
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+                  (click)="setSortingDynamically()">
+            Set Sorting Dynamically
+          </button>
+        </div>
       </div>
-      <div class="row col-md-12">
-        <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
-          <i class="fa fa-language"></i>
-          Switch Language
-        </button>
-        <b>Locale:</b>
-        <span style="font-style: italic" data-test="selected-locale">
-          {{selectedLanguage + '.json'}}
-        </span>
+      <div class="row mt-1">
+        <div class="col-md-12">
+          <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
+            <i class="fa fa-language"></i>
+            Switch Language
+          </button>
+          <strong>Locale:</strong>
+          <span style="font-style: italic" data-test="selected-locale">
+            {{selectedLanguage + '.json'}}
+          </span>
+        </div>
       </div>
       <br />
       <div *ngIf="metrics" style="margin: 10px 0px">
         <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
         | {{metrics.totalItemCount}} items
       </div>
-      <div class="row col-md-12" style="margin-bottom: 5px">
-        <label>Programmatically go to first/last page:</label>
-        <button class="btn btn-outline-secondary btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
-          <i class="fa fa-caret-left fa-lg"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
-          <i class="fa fa-caret-right fa-lg"></i>
-        </button>
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <label>Programmatically go to first/last page:</label>
+          <button class="btn btn-outline-secondary btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
+            <i class="fa fa-caret-left fa-lg"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
+            <i class="fa fa-caret-right fa-lg"></i>
+          </button>
+        </div>
       </div>
     </div>
 

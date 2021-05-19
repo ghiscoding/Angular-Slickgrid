@@ -11,41 +11,44 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="row">
-    <span class="context-menu">
-      <strong>Context Menu:</strong>
-      <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(false)"
-              data-test="context-menu-priority-only-button">
-        Show Priority Options Only
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(true)"
-              data-test="context-menu-commands-and-priority-button">
-        Show Commands & Priority Options
-      </button>
-    </span>
+  <div class="row mb-1">
+    <div class="col-12">
+      <span class="context-menu">
+        <strong>Context Menu:</strong>
+        <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(false)"
+                data-test="context-menu-priority-only-button">
+          Show Priority Options Only
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(true)"
+                data-test="context-menu-commands-and-priority-button">
+          Show Commands & Priority Options
+        </button>
+      </span>
 
-    <span class="cell-menu">
-      <strong>Cell Menu:</strong>
-      <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(false)"
-              data-test="cell-menu-commands-and-options-false-button">
-        Show Action Commands Only
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(true)"
-              data-test="cell-menu-commands-and-options-true-button">
-        Show Actions Commands & Completed Options
-      </button>
-    </span>
+      <span class="cell-menu">
+        <strong>Cell Menu:</strong>
+        <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(false)"
+                data-test="cell-menu-commands-and-options-false-button">
+          Show Action Commands Only
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(true)"
+                data-test="cell-menu-commands-and-options-true-button">
+          Show Actions Commands & Completed Options
+        </button>
+      </span>
+    </div>
   </div>
-
   <div class="row locale">
-    <button class="btn btn-outline-secondary btn-xs" (click)="switchLanguage()" data-test="language-button">
-      <i class="fa fa-language"></i>
-      Switch Language
-    </button>
-    <b>Locale:</b>
-    <span style="font-style: italic" data-test="selected-locale">
-      {{selectedLanguage + '.json'}}
-    </span>
+    <div class="col-12">
+      <button class="btn btn-outline-secondary btn-xs" (click)="switchLanguage()" data-test="language-button">
+        <i class="fa fa-language"></i>
+        Switch Language
+      </button>
+      <b>Locale:</b>
+      <span style="font-style: italic" data-test="selected-locale">
+        {{selectedLanguage + '.json'}}
+      </span>
+    </div>
   </div>
 
   <div class="col-sm-12">
