@@ -22,13 +22,13 @@ describe('Example 23 - Grid AutoHeight', () => {
 
   it('should search for Duration over 50 and expect rows to be that', () => {
     cy.get('[data-test="search-column-list"]')
-      .select('Duration (days)');
+      .select('Duration (days)', { force: true });
 
     cy.get('[data-test="search-operator-list"]')
-      .select('>');
+      .select('>', { force: true });
 
     cy.get('[data-test="search-value-input"]')
-      .type('50');
+      .type('50', { force: true });
 
     cy.get('#grid23')
       .find('.slick-row .slick-cell:nth(1)')
@@ -42,7 +42,7 @@ describe('Example 23 - Grid AutoHeight', () => {
 
   it('should search for Duration below 50 and expect rows to be that', () => {
     cy.get('[data-test="search-operator-list"]')
-      .select('<');
+      .select('<', { force: true });
 
     cy.wait(200);
 
@@ -61,13 +61,13 @@ describe('Example 23 - Grid AutoHeight', () => {
       .click();
 
     cy.get('[data-test="search-column-list"]')
-      .select('Title');
+      .select('Title', { force: true });
 
     cy.get('[data-test="search-operator-list"]')
-      .select('EndsWith');
+      .select('EndsWith', { force: true });
 
     cy.get('[data-test="search-value-input"]')
-      .type('5');
+      .type('5', { force: true });
 
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0)`).should('contain', 'Task 5');
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0)`).should('contain', 'Task 15');

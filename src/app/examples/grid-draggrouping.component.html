@@ -12,75 +12,76 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <form class="form-inline">
-    <div class="row col-sm-12">
-      <button class="btn btn-outline-secondary btn-xs" data-test="add-500-rows-btn" (click)="loadData(500)">
-        500 rows
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="add-50k-rows-btn" (click)="loadData(50000)">
-        50k rows
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="clear-grouping-btn" (click)="clearGroupsAndSelects()">
-        <i class="fa fa-times"></i> Clear grouping
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="collapse-all-btn" (click)="collapseAllGroups()">
-        <i class="fa fa-compress"></i> Collapse all groups
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="expand-all-btn" (click)="expandAllGroups()">
-        <i class="fa fa-expand"></i> Expand all groups
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" (click)="toggleDraggableGroupingRow()">
-        Toggle Draggable Grouping Row
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" (click)="exportToExcel()">
-        <i class="fa fa-file-excel-o text-success"></i> Export to Excel
-      </button>
+    <div class="row">
+      <div class="col-sm-12">
+        <button class="btn btn-outline-secondary btn-xs" data-test="add-500-rows-btn" (click)="loadData(500)">
+          500 rows
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="add-50k-rows-btn" (click)="loadData(50000)">
+          50k rows
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="clear-grouping-btn"
+                (click)="clearGroupsAndSelects()">
+          <i class="fa fa-times"></i> Clear grouping
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="collapse-all-btn" (click)="collapseAllGroups()">
+          <i class="fa fa-compress"></i> Collapse all groups
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="expand-all-btn" (click)="expandAllGroups()">
+          <i class="fa fa-expand"></i> Expand all groups
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" (click)="toggleDraggableGroupingRow()">
+          Toggle Draggable Grouping Row
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" (click)="exportToExcel()">
+          <i class="fa fa-file-excel-o text-success"></i> Export to Excel
+        </button>
+      </div>
     </div>
-
-    <div class="row col-sm-12">
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-value-btn"
-              (click)="groupByDurationOrderByCount(false)">
-        Group by duration &amp; sort groups by value
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-count-btn"
-              (click)="groupByDurationOrderByCount(true)">
-        Group by duration &amp; sort groups by count
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-effort-btn"
-              (click)="groupByDurationEffortDriven()">
-        Group by Duration &amp; then Effort-Driven
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
-        Set Filters Dynamically
-      </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="set-dynamic-sorting"
-              (click)="setSortingDynamically()">
-        Set Sorting Dynamically
-      </button>
+    <div class="row">
+      <div class="col-sm-12">
+        <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-value-btn"
+                (click)="groupByDurationOrderByCount(false)">
+          Group by duration &amp; sort groups by value
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-count-btn"
+                (click)="groupByDurationOrderByCount(true)">
+          Group by duration &amp; sort groups by count
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-effort-btn"
+                (click)="groupByDurationEffortDriven()">
+          Group by Duration &amp; then Effort-Driven
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="set-dynamic-filter"
+                (click)="setFiltersDynamically()">
+          Set Filters Dynamically
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="set-dynamic-sorting"
+                (click)="setSortingDynamically()">
+          Set Sorting Dynamically
+        </button>
+      </div>
     </div>
-
-    <div class="col-sm-12">
-      <br>
-    </div>
-
-    <div class="row col-sm-12">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="field1" class="col-sm-3 mb-2">Group by field(s)</label>
-          <div class="form-group col-md-3"
-               *ngFor="let groupField of selectedGroupingFields; let i = index; trackBy: selectTrackByFn">
-            <select class="form-control" name="groupField{{i}}" [(ngModel)]="selectedGroupingFields[i]"
-                    (ngModelChange)="groupByFieldName($event, i)">
-              <option value=""></option>
-              <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-            </select>
+    <div class="row mt-2">
+      <div class="col-sm-12">
+        <div class="form-row">
+          <div class="row form-group">
+            <label for="field1" class="col-sm-3 mb-2">Group by field(s)</label>
+            <div class="form-group col-md-3"
+                 *ngFor="let groupField of selectedGroupingFields; let i = index; trackBy: selectTrackByFn">
+              <select class="form-select" name="groupField{{i}}" [(ngModel)]="selectedGroupingFields[i]"
+                      (ngModelChange)="groupByFieldName($event, i)">
+                <option value=""></option>
+                <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </form>
-
-  <div class="col-sm-12">
-    <hr>
+  <div class="row mt-1 mb-1">
+    <hr />
   </div>
 
   <angular-slickgrid gridId="grid19"

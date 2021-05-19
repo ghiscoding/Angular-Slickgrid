@@ -13,32 +13,33 @@
 
   <hr />
 
-  <div class="row col-sm-12">
-    <button class="btn btn-outline-secondary btn-sm" (click)="switchLanguage()" data-test="language-button">
-      <i class="fa fa-language"></i>
-      Switch Language
-    </button>
-    <b>Locale:</b>
-    <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+  <div class="row">
+    <div class="col-sm-12">
+      <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
+        <i class="fa fa-language"></i>
+        Switch Language
+      </button>
+      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
-    <span style="margin-left: 20px">
-      <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('csv')">
-        <i class="fa fa-download"></i>
-        Download to CSV
-      </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('txt')">
-        <i class="fa fa-download"></i>
-        Download to Text
-      </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="exportToExcel()">
-        <i class="fa fa-file-excel-o text-success"></i>
-        Download to Excel
-      </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="dynamicallyAddTitleHeader()">
-        <i class="fa fa-plus"></i>
-        Dynamically Duplicate Title Column
-      </button>
-    </span>
+      <span style="margin-left: 20px">
+        <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('csv')">
+          <i class="fa fa-download"></i>
+          Download to CSV
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('txt')">
+          <i class="fa fa-download"></i>
+          Download to Text
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="exportToExcel()">
+          <i class="fa fa-file-excel-o text-success"></i>
+          Download to Excel
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="dynamicallyAddTitleHeader()">
+          <i class="fa fa-plus"></i>
+          Dynamically Duplicate Title Column
+        </button>
+      </span>
+    </div>
   </div>
 
   <div class="col-sm-12">
