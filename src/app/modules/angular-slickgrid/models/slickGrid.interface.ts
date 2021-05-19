@@ -407,11 +407,12 @@ export interface SlickGrid {
 
   /**
    * Extends grid options with a given hash. If an there is an active edit, the grid will attempt to commit the changes and only continue if the attempt succeeds.
-   * @params options An object with configuration options.
-   * @params do we want to supress the grid re-rendering? (defaults to false)
-   * @params do we want to supress the columns set, via "setColumns()" method? (defaults to false)
+   * @param {Object} options - an object with configuration options.
+   * @param {Boolean} suppressRender - do we want to supress the grid re-rendering? (defaults to false)
+   * @param {Boolean} suppressColumnSet - do we want to supress the columns set, via "setColumns()" method? (defaults to false)
+   * @param {Boolean} suppressSetOverflow - do we want to suppress the call to `setOverflow`
    */
-  setOptions(options: GridOption, suppressRender?: boolean, suppressColumnSet?: boolean): void;
+  setOptions(options: GridOption, suppressRender?: boolean, suppressColumnSet?: boolean, suppressSetOverflow?: boolean): void;
 
   /** Set the Pre-Header Visibility and optionally enable/disable animation (enabled by default) */
   setPreHeaderPanelVisibility(visible: boolean, animate?: boolean): void;

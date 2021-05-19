@@ -53,4 +53,33 @@ describe('Example 30 - Columns Resize by Content', () => {
     cy.get('.slick-row').find('.slick-cell:nth(10)').invoke('width').should('be.lt', 100);
     cy.get('.slick-row').find('.slick-cell:nth(11)').invoke('width').should('equal', 58);
   });
+
+  it('should double-click on the "Complexity" column resize handle and expect the column to become wider and show all text', () => {
+    cy.get('.slick-row').find('.slick-cell:nth(5)').invoke('width').should('be.lt', 80);
+
+    cy.get('.slick-header-column:nth-child(6) .slick-resizable-handle')
+      .dblclick();
+
+    cy.get('.slick-row').find('.slick-cell:nth(5)').invoke('width').should('be.gt', 95);
+  });
+
+  it('should open the "Product" header menu and click on "Resize by Content" and expect the column to become wider and show all text', () => {
+    cy.get('.slick-row').find('.slick-cell:nth(9)').invoke('width').should('be.lt', 120);
+
+    cy.get('#grid30')
+      .find('.slick-header-column:nth-child(10)')
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(1)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Resize by Content')
+      .click();
+
+    cy.get('.slick-row').find('.slick-cell:nth(9)').invoke('width').should('be.gt', 120);
+  });
 });

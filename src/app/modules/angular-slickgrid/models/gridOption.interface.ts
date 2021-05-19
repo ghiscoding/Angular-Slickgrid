@@ -371,6 +371,13 @@ export interface GridOption {
   /** Number of row index(es) to freeze (pin) in the grid */
   frozenRow?: number;
 
+  /**
+   * Defaults to 100, what is the minimum width to keep for the section on the right of a frozen grid?
+   * This basically fixes an issue that if the user expand any column on the left of the frozen (pinning) section
+   * and make it bigger than the viewport width, then the grid becomes unusable because the right section goes into a void/hidden area.
+   */
+  frozenRightViewportMinWidth?: number;
+
   /** Defaults to false, which leads to have row with full width */
   fullWidthRows?: boolean;
 

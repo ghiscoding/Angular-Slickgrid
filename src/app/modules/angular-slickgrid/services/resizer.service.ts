@@ -185,7 +185,7 @@ export class ResizerService {
   /** Dispose function when service is destroyed */
   dispose() {
     // unsubscribe all SlickGrid events
-    this._eventHandler?.unsubscribeAll?.();
+    this._eventHandler?.unsubscribeAll();
 
     $(window).off(`resize.grid.${this._gridUid}`);
   }
@@ -361,6 +361,10 @@ export class ResizerService {
     this._totalColumnsWidthByContent > viewportWidth ? this._grid.reRenderColumns(reRender) : this._grid.autosizeColumns();
   }
 
+  // --
+  // private functions
+  // ------------------
+
   /**
    * Step 1 - The first step will read through the entire dataset (unless max item count is reached),
    * it will analyze each cell of the grid and calculate its max width via its content and column definition info (it will do so by calling step 2 method while looping through each cell).
@@ -471,13 +475,13 @@ export class ResizerService {
   }
 
   /**
- * Checks wether the new calculated column width is valid or not, if it's not the return a lower and acceptable width.
- * When using frozen (pinned) column, we cannot make our column wider than the grid viewport because it would become unusable/unscrollable
- * and so if we do reach that threshold then our calculate column width becomes officially invalid
- * @param {Object} column - column definition
- * @param {Number} newColumnWidth - calculated column width
- * @returns boolean
- */
+   * Checks wether the new calculated column width is valid or not, if it's not then return a lower and acceptable width.
+   * When using frozen (pinned) column, we cannot make our column wider than the grid viewport because it would become unusable/unscrollable
+   * and so if we do reach that threshold then our calculated column width becomes officially invalid
+   * @param {Object} column - column definition
+   * @param {Number} newColumnWidth - calculated column width input
+   * @returns boolean
+   */
   private readjustNewColumnWidthWhenOverLimit(column: Column, newColumnWidth: number): number {
     const frozenColumnIdx = this._gridOptions.frozenColumn ?? -1;
     const columns = (this._grid && this._grid.getColumns() || []) as Column[];
@@ -496,7 +500,6 @@ export class ResizerService {
         if (isGreaterThanFullViewportWidth) {
           const resizeWidthToRemoveFromExceededWidthReadjustment = this.resizeByContentOptions.widthToRemoveFromExceededWidthReadjustment ?? 50;
           adjustedWidth = (leftViewportWidth - leftViewportWidthMinusCurrentCol + rightViewportWidth - resizeWidthToRemoveFromExceededWidthReadjustment);
-          console.error(`[Angular-Slickgrid] You cannot apply this new column width of ${newColumnWidth}px since that would be greater than the grid viewport width ${viewportFullWidth}px. Leftover width ${adjustedWidth}px`);
         }
       }
     }
