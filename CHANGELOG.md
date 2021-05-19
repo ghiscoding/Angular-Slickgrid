@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.29.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.28.2...v2.29.0) (2021-05-19)
+
+
+### Features
+
+* **addon:** provide grid menu labels for all built-in commands ([b8b5aa2](https://github.com/ghiscoding/angular-slickgrid/commit/b8b5aa2071cd85252b8fec476c7cfdd62bef8e16))
+* **editors:** add ways to preload date without closing date picker ([a544a76](https://github.com/ghiscoding/angular-slickgrid/commit/a544a76642a8b3a0018e96a4bb20ff703e7c50a0))
+* **resizer:** add `resizeByContentOnlyOnFirstLoad` grid option ([135771e](https://github.com/ghiscoding/angular-slickgrid/commit/135771e67afcce885623c0b89766bc45538170ae))
+* **resizer:** add single Column Resize by Content dblClick & headerMenu ([183f33f](https://github.com/ghiscoding/angular-slickgrid/commit/183f33f70070665da1fc068e74be0a5875662e99))
+* **styling:** switch from node-sass to dart-sass (sass) ([3dcf7c9](https://github.com/ghiscoding/angular-slickgrid/commit/3dcf7c9766a24beaa4ae965206eedb2149cfd30f))
+* **tree:** improve Tree Data speed considerably & fix more issues ([900cd59](https://github.com/ghiscoding/angular-slickgrid/commit/900cd5966ff298f88805f075151fd3b65e8fedf2))
+
+
+### Bug Fixes
+
+* **editors:** select editor inline blur save before destroy, fixes [#752](https://github.com/ghiscoding/angular-slickgrid/issues/752) ([aa27c56](https://github.com/ghiscoding/angular-slickgrid/commit/aa27c567ff10dc1a5a0df368b9e7c492e8f5dd1f))
+* **resizer:** remove delay to call resize by content to avoid flickering ([ea4a196](https://github.com/ghiscoding/angular-slickgrid/commit/ea4a196ca399235fa1fe6fe508b63d2fa048cac6)), closes [#341](https://github.com/ghiscoding/angular-slickgrid/issues/341)
+* **services:** fix resizer issue found in `changeColumnsArrangement` ([288e364](https://github.com/ghiscoding/angular-slickgrid/commit/288e3648f58ac5ba161fa060d66cd340bfdba578))
+* addItem from grid service should work with tree data ([94f83ca](https://github.com/ghiscoding/angular-slickgrid/commit/94f83cafd094a82995442c1c12f2d9b5b744df89))
+* export to file/excel should also have tree indentation ([4450bc4](https://github.com/ghiscoding/angular-slickgrid/commit/4450bc4fd7836668823c01b5306e213c5cba3830))
+* **styling:** add a better search filter magnify glass icon as placeholder ([dc87beb](https://github.com/ghiscoding/angular-slickgrid/commit/dc87bebae76278923fa925724cc852932ca902db))
+* **tree:** couple of issues found in Tree Data ([0b120f4](https://github.com/ghiscoding/angular-slickgrid/commit/0b120f4038a0ea33fedfa0765027ae9336e4b1fa))
+
 ### [2.28.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.28.1...v2.28.2) (2021-04-26)
 
 
