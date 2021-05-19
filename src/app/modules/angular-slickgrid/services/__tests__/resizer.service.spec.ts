@@ -558,4 +558,15 @@ describe('Resizer Service', () => {
       expect(resizeCanvasSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('dispose method', () => {
+    it('should unsubscribe all event from the event handler', () => {
+      const eventHandler = service.eventHandler;
+      const spy = jest.spyOn(eventHandler, 'unsubscribeAll');
+
+      service.dispose();
+
+      expect(spy).toHaveBeenCalled();
+    });
+  });
 });
