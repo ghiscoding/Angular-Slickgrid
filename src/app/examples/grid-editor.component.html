@@ -37,27 +37,31 @@
       </span>
     </div>
     <div class="row" style="margin-top: 5px">
-      <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
-        Clear Filters
-      </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
-        Clear Sorting
-      </button>
-      <button class="btn btn-sm btn-outline-info" (click)="addItem()"
-              title="Clear Filters &amp; Sorting to see it better">Add item</button>
-      <button class="btn btn-sm btn-outline-danger" (click)="deleteItem()">Delete item</button>
+      <div class="col-sm-12">
+        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
+          Clear Filters
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
+          Clear Sorting
+        </button>
+        <button class="btn btn-sm btn-outline-info" (click)="addItem()"
+                title="Clear Filters &amp; Sorting to see it better">Add item</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteItem()">Delete item</button>
+      </div>
     </div>
     <div class="row" style="margin-top: 5px">
-      <button class="btn btn-outline-secondary btn-sm" data-test="add-title-column"
-              (click)="dynamicallyAddTitleHeader()">
-        <i class="fa fa-plus"></i>
-        Dynamically Duplicate Title Column
-      </button>
-      <button class="btn btn-outline-secondary btn-sm" data-test="remove-title-column"
-              (click)="dynamicallyRemoveLastColumn()">
-        <i class="fa fa-minus"></i>
-        Dynamically Remove Last Column
-      </button>
+      <div class="col-sm-12">
+        <button class="btn btn-outline-secondary btn-sm" data-test="add-title-column"
+                (click)="dynamicallyAddTitleHeader()">
+          <i class="fa fa-plus"></i>
+          Dynamically Duplicate Title Column
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" data-test="remove-title-column"
+                (click)="dynamicallyRemoveLastColumn()">
+          <i class="fa fa-minus"></i>
+          Dynamically Remove Last Column
+        </button>
+      </div>
     </div>
   </div>
 

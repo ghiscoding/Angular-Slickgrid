@@ -12,8 +12,12 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid7" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)"
-                       [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+    <angular-slickgrid gridId="grid7"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset"
+                       (onDataviewCreated)="dataviewReady($event)"
+                       (onGridCreated)="gridReady($event)">
     </angular-slickgrid>
   </div>
 </div>

@@ -11,38 +11,39 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="row">
-    <button class="btn btn-outline-secondary btn-sm" data-test="hide-duration-btn"
-            (click)="hideDurationColumnDynamically()">
-      <i class="fa fa-eye-slash"></i>
-      Dynamically Hide "Duration"
-    </button>
-    <button class="btn btn-outline-secondary btn-sm" data-test="disable-filters-btn" (click)="disableFilters()">
-      <i class="fa fa-times"></i>
-      Disable Filters
-    </button>
-    <button class="btn btn-outline-secondary btn-sm" data-test="disable-sorting-btn" (click)="disableSorting()">
-      <i class="fa fa-times"></i>
-      Disable Sorting
-    </button>
-    <button class="btn btn-outline-secondary btn-sm" data-test="toggle-filtering-btn" (click)="toggleFilter()">
-      <i class="fa fa-random"></i>
-      Toggle Filtering
-    </button>
-    <button class="btn btn-outline-secondary btn-sm" data-test="toggle-sorting-btn" (click)="toggleSorting()">
-      <i class="fa fa-random"></i>
-      Toggle Sorting
-    </button>
+  <div class="row mb-2">
+    <div class="col-sm-12">
+      <button class="btn btn-outline-secondary btn-sm" data-test="hide-duration-btn"
+              (click)="hideDurationColumnDynamically()">
+        <i class="fa fa-eye-slash"></i>
+        Dynamically Hide "Duration"
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="disable-filters-btn" (click)="disableFilters()">
+        <i class="fa fa-times"></i>
+        Disable Filters
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="disable-sorting-btn" (click)="disableSorting()">
+        <i class="fa fa-times"></i>
+        Disable Sorting
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="toggle-filtering-btn" (click)="toggleFilter()">
+        <i class="fa fa-random"></i>
+        Toggle Filtering
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="toggle-sorting-btn" (click)="toggleSorting()">
+        <i class="fa fa-random"></i>
+        Toggle Sorting
+      </button>
+    </div>
   </div>
-
-  <br />
-
-  <div class="col-sm-12">
-    <angular-slickgrid gridId="grid17"
-                       (onAngularGridCreated)="angularGridReady($event)"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset">
-    </angular-slickgrid>
+  <div class="row">
+    <div class="col-sm-12">
+      <angular-slickgrid gridId="grid17"
+                         [columnDefinitions]="columnDefinitions"
+                         [gridOptions]="gridOptions"
+                         [dataset]="dataset"
+                         (onAngularGridCreated)="angularGridReady($event)">
+      </angular-slickgrid>
+    </div>
   </div>
 </div>
