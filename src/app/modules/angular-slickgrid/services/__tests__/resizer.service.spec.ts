@@ -11,6 +11,7 @@ const DATAGRID_PAGINATION_HEIGHT = 35;
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';
+declare const Slick: any;
 
 const gridOptionMock = {
   gridId,
@@ -37,12 +38,15 @@ const gridStub = {
   getColumns: jest.fn(),
   getContainerNode: jest.fn(),
   getScrollbarDimensions: jest.fn(),
+  getViewports: jest.fn(),
   resizeCanvas: jest.fn(),
   getData: () => mockDataView,
   getOptions: () => gridOptionMock,
   getUID: () => gridUid,
   reRenderColumns: jest.fn(),
   setColumns: jest.fn(),
+  onColumnsResizeDblClick: new Slick.Event(),
+  onSort: new Slick.Event(),
 };
 
 // define a <div> container to simulate the grid container
@@ -78,11 +82,11 @@ describe('Resizer Service', () => {
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 20,
+      resizeByContentOptions: {},
     } as GridOption;
     jest.spyOn(gridStub, 'getOptions').mockReturnValue(mockGridOptions);
     jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(div.querySelector(`#${gridId}`));
     service = new ResizerService();
-    service.init(gridStub);
   });
 
   afterEach(() => {
@@ -413,13 +417,18 @@ describe('Resizer Service', () => {
       let mockColDefs: Column[];
       let mockData: any[];
 
+      afterEach(() => {
+        service.dispose();
+        jest.clearAllMocks();
+      });
+
       beforeEach(() => {
-        mockGridOptions.resizeCellCharWidthInPx = 7;
-        mockGridOptions.resizeCellPaddingWidthInPx = 6;
-        mockGridOptions.resizeFormatterPaddingWidthInPx = 5;
-        mockGridOptions.resizeDefaultRatioForStringType = 0.88;
-        mockGridOptions.resizeAlwaysRecalculateColumnWidth = false;
-        mockGridOptions.resizeMaxItemToInspectCellContentWidth = 4;
+        mockGridOptions.resizeByContentOptions!.cellCharWidthInPx = 7;
+        mockGridOptions.resizeByContentOptions!.cellPaddingWidthInPx = 6;
+        mockGridOptions.resizeByContentOptions!.formatterPaddingWidthInPx = 5;
+        mockGridOptions.resizeByContentOptions!.defaultRatioForStringType = 0.88;
+        mockGridOptions.resizeByContentOptions!.alwaysRecalculateColumnWidth = false;
+        mockGridOptions.resizeByContentOptions!.maxItemToInspectCellContentWidth = 4;
         mockColDefs = [
           // typically the `originalWidth` is set by the columnDefinitiosn setter in vanilla grid bundle but we can mock it for our test
           { id: 'userId', field: 'userId', width: 30, originalWidth: 30 },
@@ -429,18 +438,57 @@ describe('Resizer Service', () => {
           { id: 'age', field: 'age', type: FieldType.number, resizeExtraWidthPadding: 2 },
           { id: 'street', field: 'street', maxWidth: 15 },
           { id: 'country', field: 'country', maxWidth: 15, resizeMaxWidthThreshold: 14, rerenderOnResize: true },
+          { id: 'zip', field: 'zip', width: 20, type: 'number' },
         ] as Column[];
         mockData = [
-          { userId: 1, firstName: 'John', lastName: 'Doe', gender: 'male', age: 20, street: '478 Kunze Land', country: 'United States of America' },
-          { userId: 2, firstName: 'Destinee', lastName: 'Shanahan', gender: 'female', age: 25, street: '20519 Watson Lodge', country: 'Australia' },
-          { userId: 3, firstName: 'Sarai', lastName: 'Altenwerth', gender: 'female', age: 30, street: '184 Preston Pine', country: 'United States of America' },
-          { userId: 4, firstName: 'Tyshawn', lastName: 'Hyatt', gender: 'male', age: 35, street: '541 Senger Drives', country: 'Canada' },
-          { userId: 5, firstName: 'Alvina', lastName: 'Franecki', gender: 'female', age: 100, street: '20229 Tia Turnpike', country: 'United States of America' },
-          { userId: 6, firstName: 'Therese', lastName: 'Brakus', gender: 'female', age: 99, street: '34767 Lindgren Dam', country: 'Bosnia' },
+          { userId: 1, firstName: 'John', lastName: 'Doe', gender: 'male', age: 20, street: '478 Kunze Land', country: 'United States of America', zip: 123456 },
+          { userId: 2, firstName: 'Destinee', lastName: 'Shanahan', gender: 'female', age: 25, street: '20519 Watson Lodge', country: 'Australia', zip: 223344 },
+          { userId: 3, firstName: 'Sarai', lastName: 'Altenwerth', gender: 'female', age: 30, street: '184 Preston Pine', country: 'United States of America', zip: 334433 },
+          { userId: 4, firstName: 'Tyshawn', lastName: 'Hyatt', gender: 'male', age: 35, street: '541 Senger Drives', country: 'Canada', zip: 444455 },
+          { userId: 5, firstName: 'Alvina', lastName: 'Franecki', gender: 'female', age: 100, street: '20229 Tia Turnpike', country: 'United States of America', zip: 777555 },
+          { userId: 6, firstName: 'Therese', lastName: 'Brakus', gender: 'female', age: 99, street: '34767 Lindgren Dam', country: 'Bosnia', zip: 654321 },
         ];
 
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColDefs);
         jest.spyOn(mockDataView, 'getItems').mockReturnValue(mockData);
+      });
+
+      it('should call handleSingleColumnResizeByContent when "onHeaderMenuColumnResizeByContent" gets triggered', () => {
+        const reRenderSpy = jest.spyOn(gridStub, 'reRenderColumns');
+        const onSingleColResizeSpy = jest.spyOn(service, 'handleSingleColumnResizeByContent');
+
+        mockGridOptions.enableColumnResizeOnDoubleClick = true;
+
+        service.init(gridStub);
+        gridStub.onColumnsResizeDblClick.notify({ triggeredByColumn: 'zip', grid: gridStub });
+
+        expect(reRenderSpy).toHaveBeenCalledWith(false);
+        expect(onSingleColResizeSpy).toBeCalledTimes(1);
+        expect(mockColDefs[7].width).toBe(48); // longest number "777555" (length 6 * charWidth(7)) + cellPadding(6) = 48
+      });
+
+      it('should call handleSingleColumnResizeByContent when "onHeaderMenuColumnResizeByContent" gets triggered but expect a resized column width when left section width becomes greater than full viewport width', () => {
+        const viewportLeft = document.createElement('div');
+        viewportLeft.className = 'slick-viewport-left';
+        Object.defineProperty(viewportLeft, 'clientWidth', { writable: true, configurable: true, value: 250 });
+
+        const viewportRight = document.createElement('div');
+        viewportRight.className = 'slick-viewport-right';
+        Object.defineProperty(viewportRight, 'clientWidth', { writable: true, configurable: true, value: 27 });
+
+        jest.spyOn(gridStub, 'getViewports').mockReturnValue([viewportLeft, viewportRight]);
+        const reRenderSpy = jest.spyOn(gridStub, 'reRenderColumns');
+        const onSingleColResizeSpy = jest.spyOn(service, 'handleSingleColumnResizeByContent');
+
+        mockGridOptions.frozenColumn = 7;
+        mockGridOptions.enableColumnResizeOnDoubleClick = true;
+        mockGridOptions.resizeByContentOptions!.widthToRemoveFromExceededWidthReadjustment = 20;
+        service.init(gridStub);
+        gridStub.onColumnsResizeDblClick.notify({ triggeredByColumn: 'zip', grid: gridStub });
+
+        expect(reRenderSpy).toHaveBeenCalledWith(false);
+        expect(onSingleColResizeSpy).toBeCalledTimes(1);
+        expect(mockColDefs[7].width).toBeLessThan(30);
       });
 
       it('should call the resize and expect first column have a fixed width while other will have a calculated width when resizing by their content', () => {
@@ -457,8 +505,9 @@ describe('Resizer Service', () => {
             expect.objectContaining({ id: 'lastName', width: 68 }), // longest word "Altenwerth" (length 10 * charWidth(7) * ratio(0.88)) + cellPadding(6) = 67.6 ceil to => 68
             expect.objectContaining({ id: 'gender', width: 57 }), // longest word "female" (length 6 * charWidth(7) * customRatio(1.2)) + cellPadding(6) = 56.4 ceil to 57
             expect.objectContaining({ id: 'age', width: 29 }), // longest number 100 (length 3 * charWidth(7) * ratio(1)) + cellPadding(6) + extraPadding(2) = 44.96 ceil to 45
-            expect.objectContaining({ id: 'street', width: 15 }), // longest number "20229 Tia Turnpike" goes over maxWidth so we fallback to it
-            expect.objectContaining({ id: 'country', width: 14 }), // longest number "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+            expect.objectContaining({ id: 'street', width: 15 }), // longest text "20229 Tia Turnpike" goes over maxWidth so we fallback to it
+            expect.objectContaining({ id: 'country', width: 14 }), // longest text "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+            expect.objectContaining({ id: 'zip', width: 48 }), // longest number "777555"
           ]));
         expect(reRenderColumnsSpy).toHaveBeenCalledWith(true);
       });
@@ -479,8 +528,9 @@ describe('Resizer Service', () => {
             expect.objectContaining({ id: 'lastName', width: 73 }), // longest word "Altenwerth" (length 10 * charWidth(7) * ratio(0.88)) + cellPadding(6) + editorPadding(5) = 72.6 ceil to => 73
             expect.objectContaining({ id: 'gender', width: 57 }), // longest word "female" (length 6 * charWidth(7) * customRatio(1.2)) + cellPadding(6) = 56.4 ceil to 57
             expect.objectContaining({ id: 'age', width: 29 }), // longest number 100 (length 3 * charWidth(7) * ratio(1)) + cellPadding(6) + extraPadding(2) = 44.96 ceil to 45
-            expect.objectContaining({ id: 'street', width: 15 }), // longest number "20229 Tia Turnpike" goes over maxWidth so we fallback to it
-            expect.objectContaining({ id: 'country', width: 14 }), // longest number "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+            expect.objectContaining({ id: 'street', width: 15 }), // longest text "20229 Tia Turnpike" goes over maxWidth so we fallback to it
+            expect.objectContaining({ id: 'country', width: 14 }), // longest text "United States of America" goes over resizeMaxWidthThreshold so we fallback to it
+            expect.objectContaining({ id: 'zip', width: 48 }), // longest number "777555"
           ]));
         expect(reRenderColumnsSpy).toHaveBeenCalledWith(true);
       });
@@ -506,6 +556,17 @@ describe('Resizer Service', () => {
       // with JSDOM the height is always 0 so we can assume that the height will be the minimum height (without the padding)
       expect(serviceCalculateSpy).toHaveBeenCalled();
       expect(resizeCanvasSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('dispose method', () => {
+    it('should unsubscribe all event from the event handler', () => {
+      const eventHandler = service.eventHandler;
+      const spy = jest.spyOn(eventHandler, 'unsubscribeAll');
+
+      service.dispose();
+
+      expect(spy).toHaveBeenCalled();
     });
   });
 });

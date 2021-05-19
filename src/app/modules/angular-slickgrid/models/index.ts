@@ -130,6 +130,7 @@ export * from './operatorType.enum';
 export * from './pagination.interface';
 export * from './paginationChangedArgs.interface';
 export * from './pagingInfo.interface';
+export * from './resizeByContentOption.interface';
 export * from './queryArgument.interface';
 export * from './rowDetailView.interface';
 export * from './rowMoveManager.interface';

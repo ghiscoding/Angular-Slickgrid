@@ -229,7 +229,7 @@ describe('Example 12: Localization (i18n)', () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menuitem:nth-child(4)')
         .children('.slick-header-menucontent')
         .should('contain', 'Sort Descending')
         .click();

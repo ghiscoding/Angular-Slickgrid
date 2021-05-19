@@ -12,6 +12,7 @@ export class Constants {
     TEXT_COLLAPSE_ALL_GROUPS: 'Collapse all Groups',
     TEXT_CONTAINS: 'Contains',
     TEXT_COLUMNS: 'Columns',
+    TEXT_COLUMN_RESIZE_BY_CONTENT: 'Resize by Content',
     TEXT_COMMANDS: 'Commands',
     TEXT_COPY: 'Copy',
     TEXT_EQUALS: 'Equals',

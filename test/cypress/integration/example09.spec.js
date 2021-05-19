@@ -59,7 +59,7 @@ describe('Example 9 - Grid Menu', () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menuitem:nth-child(4)')
         .children('.slick-header-menucontent')
         .should('contain', 'Hide Column')
         .click({ force: true });
@@ -187,7 +187,7 @@ describe('Example 9 - Grid Menu', () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menuitem:nth-child(4)')
         .children('.slick-header-menucontent')
         .should('contain', 'Hide Column')
         .click({ force: true });
@@ -258,7 +258,7 @@ describe('Example 9 - Grid Menu', () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menuitem:nth-child(4)')
         .children('.slick-header-menucontent')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });
@@ -303,7 +303,7 @@ describe('Example 9 - Grid Menu', () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menuitem:nth-child(4)')
         .children('.slick-header-menucontent')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });

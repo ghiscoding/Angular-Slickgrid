@@ -206,7 +206,7 @@ describe('Example 21 - Row Detail View', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(2)')
+      .children('.slick-header-menuitem:nth-child(4)')
       .children('.slick-header-menucontent')
       .should('contain', 'Sort Descending')
       .click();
@@ -220,7 +220,7 @@ describe('Example 21 - Row Detail View', () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(1)')
+      .children('.slick-header-menuitem:nth-child(3)')
       .children('.slick-header-menucontent')
       .should('contain', 'Sort Ascending')
       .click();

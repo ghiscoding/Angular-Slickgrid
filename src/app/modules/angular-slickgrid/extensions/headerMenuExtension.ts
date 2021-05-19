@@ -17,6 +17,7 @@ import {
   SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
+import { ResizerService } from '../services/resizer.service';
 import { SortService } from '../services/sort.service';
 import { SharedService } from '../services/shared.service';
 import { arrayRemoveItemByIndex, getTranslationPrefix } from '../services/utilities';
@@ -34,6 +35,7 @@ export class HeaderMenuExtension implements Extension {
   constructor(
     private readonly extensionUtility: ExtensionUtility,
     private readonly filterService: FilterService,
+    private readonly resizerService: ResizerService,
     private readonly sharedService: SharedService,
     private readonly sortService: SortService,
     @Optional() private readonly translate: TranslateService,
@@ -136,23 +138,37 @@ export class HeaderMenuExtension implements Extension {
             };
           }
 
-          const columnHeaderMenuItems: Array<MenuCommandItem | 'divider'> = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
+          const columnHeaderMenuItems: Array<MenuCommandItem | 'divider'> = columnDef?.header?.menu?.items ?? [];
 
           // Freeze Column (pinning)
+          let hasFrozenOrResizeCommand = false;
           if (headerMenuOptions && !headerMenuOptions.hideFreezeColumnsCommand) {
+            hasFrozenOrResizeCommand = true;
             if (columnHeaderMenuItems.filter(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === 'freeze-columns').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconFreezeColumns || 'fa fa-thumb-tack',
                 title: options.enableTranslate ? this.translate.instant(`${translationPrefix}FREEZE_COLUMNS`) : this._locales && this._locales.TEXT_FREEZE_COLUMNS,
                 command: 'freeze-columns',
+                positionOrder: 47
+              });
+            }
+          }
+          // Column Resize by Content (column autofit)
+          if (headerMenuOptions && !headerMenuOptions.hideColumnResizeByContentCommand && this.sharedService.gridOptions.enableColumnResizeOnDoubleClick) {
+            hasFrozenOrResizeCommand = true;
+            if (!columnHeaderMenuItems.some(item => item !== 'divider' && item.hasOwnProperty('command') && item.command === 'column-resize-by-content')) {
+              columnHeaderMenuItems.push({
+                iconCssClass: headerMenuOptions.iconColumnResizeByContentCommand || 'fa fa-arrows-h',
+                title: this.extensionUtility.translateWhenEnabledAndServiceExist(`${translationPrefix}COLUMN_RESIZE_BY_CONTENT`, 'TEXT_COLUMN_RESIZE_BY_CONTENT'),
+                command: 'column-resize-by-content',
                 positionOrder: 48
               });
             }
+          }
 
-            // add a divider (separator) between the top freeze columns commands and the rest of the commands
-            if (columnHeaderMenuItems.filter(item => item !== 'divider' && item.positionOrder === 49).length === 0) {
-              columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 49 });
-            }
+          // add a divider (separator) between the top freeze columns commands and the rest of the commands
+          if (hasFrozenOrResizeCommand && !columnHeaderMenuItems.some(item => item !== 'divider' && item.positionOrder === 49)) {
+            columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 49 });
           }
 
           // Sorting Commands
@@ -221,7 +237,7 @@ export class HeaderMenuExtension implements Extension {
 
   /** Hide a column from the grid */
   hideColumn(column: Column) {
-    if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns && this.sharedService.grid.getColumnIndex) {
+    if (this.sharedService?.grid?.getColumnIndex) {
       const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
       const currentVisibleColumns = this.sharedService.grid.getColumns() as Column[];
 
@@ -280,6 +296,9 @@ export class HeaderMenuExtension implements Extension {
           columnHeaderMenuItems.forEach(item => {
             if (item !== 'divider' && item.hasOwnProperty('command')) {
               switch (item.command) {
+                case 'column-resize-by-content':
+                  item.title = this.translate.instant(`${translationPrefix}COLUMN_RESIZE_BY_CONTENT`) || this._locales && this._locales.TEXT_COLUMN_RESIZE_BY_CONTENT;
+                  break;
                 case 'clear-filter':
                   item.title = this.translate.instant(`${translationPrefix}REMOVE_FILTER`) || this._locales && this._locales.TEXT_REMOVE_FILTER;
                   break;
@@ -340,6 +359,9 @@ export class HeaderMenuExtension implements Extension {
           break;
         case 'clear-sort':
           this.clearColumnSort(event, args);
+          break;
+        case 'column-resize-by-content':
+          this.resizerService.handleSingleColumnResizeByContent(`${args.column.id}`);
           break;
         case 'freeze-columns':
           const visibleColumns = [...this.sharedService.visibleColumns];

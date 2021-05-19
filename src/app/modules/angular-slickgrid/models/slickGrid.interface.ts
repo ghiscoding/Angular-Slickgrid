@@ -247,6 +247,9 @@ export interface SlickGrid {
   /** Get the Viewport DOM node element */
   getViewportNode(): HTMLElement;
 
+  /** Get all the Viewport node elements */
+  getViewports(): HTMLElement[];
+
   /**
    * Accepts a row integer and a cell integer, scrolling the view to the row where row is its row index, and cell is its cell index. Optionally accepts a forceEdit boolean which, if true, will attempt to initiate the edit dialogue for the field in the specified cell.
    * Unlike setActiveCell, this scrolls the row into the viewport and sets the keyboard focus.
@@ -404,11 +407,12 @@ export interface SlickGrid {
 
   /**
    * Extends grid options with a given hash. If an there is an active edit, the grid will attempt to commit the changes and only continue if the attempt succeeds.
-   * @params options An object with configuration options.
-   * @params do we want to supress the grid re-rendering? (defaults to false)
-   * @params do we want to supress the columns set, via "setColumns()" method? (defaults to false)
+   * @param {Object} options - an object with configuration options.
+   * @param {Boolean} suppressRender - do we want to supress the grid re-rendering? (defaults to false)
+   * @param {Boolean} suppressColumnSet - do we want to supress the columns set, via "setColumns()" method? (defaults to false)
+   * @param {Boolean} suppressSetOverflow - do we want to suppress the call to `setOverflow`
    */
-  setOptions(options: GridOption, suppressRender?: boolean, suppressColumnSet?: boolean): void;
+  setOptions(options: GridOption, suppressRender?: boolean, suppressColumnSet?: boolean, suppressSetOverflow?: boolean): void;
 
   /** Set the Pre-Header Visibility and optionally enable/disable animation (enabled by default) */
   setPreHeaderPanelVisibility(visible: boolean, animate?: boolean): void;
@@ -486,6 +490,7 @@ export interface SlickGrid {
   onColumnsDrag: SlickEvent;
   onColumnsReordered: SlickEvent;
   onColumnsResized: SlickEvent;
+  onColumnsResizeDblClick: SlickEvent;
   onContextMenu: SlickEvent;
   onDrag: SlickEvent;
   onDragEnd: SlickEvent;
