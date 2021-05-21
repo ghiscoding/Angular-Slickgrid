@@ -892,9 +892,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.dataView = this.dataView;
     this.sharedService.grid = this.grid;
 
-    // load the resizer service
-    this.resizer.init(this.grid);
-
     this.extensionService.bindDifferentExtensions();
     this.bindDifferentHooks(this.grid, this.gridOptions, this.dataView);
 
@@ -909,6 +906,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // initialize the SlickGrid grid
     this.grid.init();
+
+    // initialized the resizer service only after SlickGrid is initialized
+    // if we don't we end up binding our resize to a grid element that doesn't yet exist in the DOM and the resizer service will fail silently (because it has a try/catch that unbinds the resize without throwing back)
+    this.resizer.init(this.grid);
 
     // when using Tree Data View
     if (this.gridOptions.enableTreeData) {
