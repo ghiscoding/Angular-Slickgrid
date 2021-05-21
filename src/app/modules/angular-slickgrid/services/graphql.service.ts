@@ -29,6 +29,7 @@ import {
   OperatorString
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
+import { SharedService } from "./shared.service";
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
@@ -38,7 +39,7 @@ export class GraphqlService implements BackendService {
   private _currentFilters: ColumnFilters | CurrentFilter[] = [];
   private _currentPagination?: CurrentPagination;
   private _currentSorters: CurrentSorter[] = [];
-  private _columnDefinitions!: Column[];
+  private _columnDefinitions?: Column[];
   private _grid: any;
   private _datasetIdPropName = 'id';
   options!: GraphqlServiceOption;
@@ -59,14 +60,14 @@ export class GraphqlService implements BackendService {
   }
 
   /** Initialization of the service, which acts as a constructor */
-  init(serviceOptions?: GraphqlServiceOption | undefined, pagination?: Pagination, grid?: any): void {
+  init(serviceOptions?: GraphqlServiceOption | undefined, pagination?: Pagination, grid?: any, sharedService?: SharedService): void {
     this._grid = grid;
     this.options = serviceOptions || { datasetName: '', columnDefinitions: [] };
     this.pagination = pagination;
     this._datasetIdPropName = this._gridOptions.datasetIdPropertyName || 'id';
 
-    if (grid && grid.getColumns) {
-      this._columnDefinitions = (serviceOptions && serviceOptions.columnDefinitions) || grid.getColumns();
+    if (grid?.getColumns) {
+      this._columnDefinitions = sharedService?.allColumns ?? serviceOptions?.columnDefinitions ?? grid.getColumns();
     }
   }
 
@@ -81,7 +82,7 @@ export class GraphqlService implements BackendService {
 
     // get the column definitions and exclude some if they were tagged as excluded
     let columnDefinitions = this._columnDefinitions || this.options.columnDefinitions;
-    columnDefinitions = columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
+    columnDefinitions = columnDefinitions?.filter((column: Column) => !column.excludeFromQuery);
 
     const queryQb = new QueryBuilder('query');
     const datasetQb = new QueryBuilder(this.options.datasetName);
@@ -520,7 +521,7 @@ export class GraphqlService implements BackendService {
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = currentSorters.map((sorter) => {
-        const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
+        const columnDef = this._columnDefinitions?.find((column: Column) => column.id === sorter.columnId);
 
         graphqlSorters.push({
           field: columnDef ? ((columnDef.queryFieldSorter || columnDef.queryField || columnDef.field) + '') : (sorter.columnId + ''),
