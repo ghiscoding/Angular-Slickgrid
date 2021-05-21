@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.29.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.29.0...v2.29.1) (2021-05-21)
+
+
+### Bug Fixes
+
+* **backend:** able to preset filters on hidden columns & all queried ([e10f723](https://github.com/ghiscoding/angular-slickgrid/commit/e10f7232a1738ad87a1f7bf1438ffa572edf0a53))
+* **resizer:** fix a regression bug caused by previous ([1e47ed2](https://github.com/ghiscoding/angular-slickgrid/commit/1e47ed216d6c0c0e0b11cd03b11d29118f4b098d))
+* **sorting:** multi-column sort shouldn't work when option is disabled ([9841155](https://github.com/ghiscoding/angular-slickgrid/commit/984115559fd537aed0cdd2b3a297b9e9aef8cb08))
+
 ## [2.29.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.28.2...v2.29.0) (2021-05-19)
 
 
