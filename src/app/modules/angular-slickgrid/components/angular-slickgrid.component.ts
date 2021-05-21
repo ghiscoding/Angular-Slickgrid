@@ -719,7 +719,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
         // Sorters "presets"
         if (backendApiService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
-          backendApiService.updateSorters(undefined, gridOptions.presets.sorters);
+          // when using multi-column sort, we can have multiple but on single sort then only grab the first sort provided
+          const sortColumns = this.gridOptions.multiColumnSort ? gridOptions.presets.sorters : gridOptions.presets.sorters.slice(0, 1);
+          backendApiService.updateSorters(undefined, sortColumns);
         }
         // Pagination "presets"
         if (backendApiService.updatePagination && gridOptions.presets.pagination) {
@@ -794,7 +796,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters)) {
-        this.sortService.loadGridSorters(gridOptions.presets.sorters);
+        // when using multi-column sort, we can have multiple but on single sort then only grab the first sort provided
+        const sortColumns = this.gridOptions.multiColumnSort ? gridOptions.presets.sorters : gridOptions.presets.sorters.slice(0, 1);
+        this.sortService.loadGridSorters(sortColumns);
       }
     }
   }
