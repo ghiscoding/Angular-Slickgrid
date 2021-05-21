@@ -945,15 +945,27 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(spy).toHaveBeenCalledWith(mockFilters, true);
       });
 
-      it('should call the "updateSorters" method when filters are defined in the "presets" property', () => {
+      it('should call the "updateSorters" method when sorters are defined in the "presets" property with multi-column sort enabled', () => {
         jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const spy = jest.spyOn(mockGraphqlService, 'updateSorters');
-        const mockSorters = [{ columnId: 'name', direction: 'asc' }] as CurrentSorter[];
+        const mockSorters = [{ columnId: 'firstName', direction: 'asc' }, { columnId: 'lastName', direction: 'desc' }] as CurrentSorter[];
 
         component.gridOptions.presets = { sorters: mockSorters };
         component.ngAfterViewInit();
 
         expect(spy).toHaveBeenCalledWith(undefined, mockSorters);
+      });
+
+      it('should call the "updateSorters" method with ONLY 1 column sort when multi-column sort is disabled and user provided multiple sorters in the "presets" property', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true as any);
+        const spy = jest.spyOn(mockGraphqlService, 'updateSorters');
+        const mockSorters = [{ columnId: 'firstName', direction: 'asc' }, { columnId: 'lastName', direction: 'desc' }] as CurrentSorter[];
+
+        component.gridOptions.multiColumnSort = false;
+        component.gridOptions.presets = { sorters: mockSorters };
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalledWith(undefined, [mockSorters[0]]);
       });
 
       it('should call the "updatePagination" method when filters are defined in the "presets" property', () => {

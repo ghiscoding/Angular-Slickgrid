@@ -260,7 +260,7 @@ export class SortService {
    * If a column is passed as an argument, that will be exclusion so we won't add this column to our output array since it is already in the array.
    * The usage of this method is that we want to know the sort prior to calling the next sorting command
    */
-  getCurrentColumnSorts(excludedColumnId?: string): { sortCol: Column; sortAsc: boolean; }[] {
+  getCurrentColumnSorts(excludedColumnId?: string): ColumnSort[] {
     // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
     const oldSortColumns = this._grid && this._grid.getSortColumns();
 
@@ -268,7 +268,7 @@ export class SortService {
     if (Array.isArray(oldSortColumns)) {
       const sortedCols = oldSortColumns.reduce((cols, col) => {
         if (!excludedColumnId || col.columnId !== excludedColumnId) {
-          cols.push({ sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+          cols.push({ columnId: col.columnId || '', sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
         }
         return cols;
       }, []);
@@ -284,7 +284,9 @@ export class SortService {
     const sortCols: ColumnSort[] = [];
 
     if (Array.isArray(sorters)) {
-      sorters.forEach((sorter: CurrentSorter) => {
+      const tmpSorters = this._gridOptions.multiColumnSort ? sorters : sorters.slice(0, 1);
+
+      tmpSorters.forEach((sorter: CurrentSorter) => {
         const gridColumn = this._columnDefinitions.find((col: Column) => col.id === sorter.columnId);
         if (gridColumn) {
           sortCols.push({
