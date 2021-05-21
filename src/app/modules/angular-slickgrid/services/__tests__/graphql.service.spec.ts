@@ -3,24 +3,25 @@ import { GraphqlService } from './../graphql.service';
 import {
   Column,
   ColumnFilter,
+  ColumnFilters,
   ColumnSort,
   CurrentFilter,
+  CurrentSorter,
+  FieldType,
   FilterChangedArgs,
   GraphqlServiceApi,
   GraphqlServiceOption,
   GridOption,
   MultiColumnSort,
-  Pagination,
-  ColumnFilters,
   OperatorType,
-  FieldType,
-  CurrentSorter,
+  Pagination,
 } from '../../models';
+import { SharedService } from '../shared.service';
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
-function removeSpaces(textS) {
+function removeSpaces(textS: string) {
   return `${textS}`.replace(/\s+/g, '');
 }
 
@@ -33,8 +34,8 @@ const gridOptionMock = {
     preProcess: jest.fn(),
     process: jest.fn(),
     postProcess: jest.fn(),
-  } as GraphqlServiceApi
-} as GridOption;
+  } as unknown as GraphqlServiceApi
+} as unknown as GridOption;
 
 const gridStub = {
   autosizeColumns: jest.fn(),
@@ -53,9 +54,11 @@ describe('GraphqlService', () => {
   let service: GraphqlService;
   let paginationOptions: Pagination;
   let serviceOptions: GraphqlServiceOption;
+  let sharedService: SharedService;
 
   beforeEach(() => {
     mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+    sharedService = new SharedService();
     service = new GraphqlService();
     serviceOptions = {
       columnDefinitions: mockColumns,
@@ -67,7 +70,7 @@ describe('GraphqlService', () => {
       pageSize: 10,
       totalItems: 100
     };
-    gridOptionMock.backendServiceApi.service = service;
+    gridOptionMock.backendServiceApi!.service = service;
   });
 
   afterEach(() => {
@@ -107,7 +110,7 @@ describe('GraphqlService', () => {
     });
 
     it('should throw an error when no dataset is provided in the service options after service init', () => {
-      service.init({ datasetName: undefined });
+      service.init({ datasetName: undefined as any });
       expect(() => service.buildQuery()).toThrow('GraphQL Service requires the "datasetName" property to properly build the GraphQL query');
     });
 
@@ -148,7 +151,7 @@ describe('GraphqlService', () => {
 
     it('should return a simple query with pagination set and nodes that includes at least "id" when the column definitions is an empty array', () => {
       const expectation = `query{ users(first:10, offset:0){ totalCount, nodes{ id }}}`;
-      const columns = [];
+      const columns: Column[] = [];
 
       service.init({ datasetName: 'users', columnDefinitions: columns }, paginationOptions, gridStub);
       const query = service.buildQuery();
@@ -188,7 +191,7 @@ describe('GraphqlService', () => {
 
     it('should return a simple query with pagination set and nodes that includes at least "id" when the column definitions is an empty array when using cursor', () => {
       const expectation = `query{users(first:20) { totalCount, nodes{id}, pageInfo{ hasNextPage,hasPreviousPage,endCursor,startCursor }, edges{ cursor }}}`;
-      const columns = [];
+      const columns: Column[] = [];
 
       service.init({ datasetName: 'users', columnDefinitions: columns, isWithCursor: true }, paginationOptions, gridStub);
       service.updatePagination(3, 20);
@@ -442,7 +445,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return empty string when dataset name is undefined', () => {
-      service.init({ datasetName: undefined, columnDefinitions: [] });
+      service.init({ datasetName: undefined as any, columnDefinitions: [] });
       const output = service.getDatasetName();
       expect(output).toBe('');
     });
@@ -504,7 +507,7 @@ describe('GraphqlService', () => {
       } as FilterChangedArgs;
 
       service.init(serviceOptions, paginationOptions, gridStub);
-      const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const query = service.processOnFilterChanged(null as any, mockFilterChangedArgs);
       const currentFilters = service.getCurrentFilters();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
@@ -534,7 +537,7 @@ describe('GraphqlService', () => {
       } as FilterChangedArgs;
 
       service.init(serviceOptions, paginationOptions, gridStub);
-      const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const query = service.processOnFilterChanged(null as any, mockFilterChangedArgs);
       const currentFilters = service.getCurrentFilters();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
@@ -553,7 +556,7 @@ describe('GraphqlService', () => {
       const querySpy = jest.spyOn(service, 'buildQuery');
 
       service.init(serviceOptions, paginationOptions, gridStub);
-      const query = service.processOnPaginationChanged(null, { newPage: 3, pageSize: 20 });
+      const query = service.processOnPaginationChanged(null as any, { newPage: 3, pageSize: 20 });
       const currentPagination = service.getCurrentPagination();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
@@ -567,7 +570,7 @@ describe('GraphqlService', () => {
 
       service.init(serviceOptions, paginationOptions, gridStub);
       // @ts-ignore
-      const query = service.processOnPaginationChanged(null, { newPage: 3 });
+      const query = service.processOnPaginationChanged(null as any, { newPage: 3 });
       const currentPagination = service.getCurrentPagination();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
@@ -581,7 +584,7 @@ describe('GraphqlService', () => {
 
       service.init(serviceOptions, undefined, gridStub);
       // @ts-ignore
-      const query = service.processOnPaginationChanged(null, { newPage: 3 });
+      const query = service.processOnPaginationChanged(null as any, { newPage: 3 });
       const currentPagination = service.getCurrentPagination();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
@@ -598,7 +601,7 @@ describe('GraphqlService', () => {
       const mockSortChangedArgs = { columnId: 'gender', sortCol: mockColumn, sortAsc: false, multiColumnSort: false } as ColumnSort;
 
       service.init(serviceOptions, paginationOptions, gridStub);
-      const query = service.processOnSortChanged(null, mockSortChangedArgs);
+      const query = service.processOnSortChanged(null as any, mockSortChangedArgs);
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(querySpy).toHaveBeenCalled();
@@ -616,7 +619,7 @@ describe('GraphqlService', () => {
       const mockSortChangedArgs = { sortCols: [mockColumnSort, mockColumnSortName], multiColumnSort: true, grid: gridStub } as MultiColumnSort;
 
       service.init(serviceOptions, paginationOptions, gridStub);
-      const query = service.processOnSortChanged(null, mockSortChangedArgs);
+      const query = service.processOnSortChanged(null as any, mockSortChangedArgs);
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(querySpy).toHaveBeenCalled();
@@ -1050,7 +1053,7 @@ describe('GraphqlService', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:EQ, value:""}]) { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
-        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: [undefined], operator: 'EQ', type: FieldType.string },
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: [undefined as any], operator: 'EQ', type: FieldType.string },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);
@@ -1121,6 +1124,8 @@ describe('GraphqlService', () => {
   });
 
   describe('presets', () => {
+    let mockColumns: Column[] = [];
+
     beforeEach(() => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }, { id: 'startDate', field: 'startDate' }];
     });
@@ -1128,9 +1133,29 @@ describe('GraphqlService', () => {
     it('should return a query with search having a range of exclusive numbers when the search value contains 2 dots (..) to represent a range of numbers', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) {
         totalCount,nodes{ id,company,gender,duration,startDate } }}`;
-      const presetFilters = [
-        { columnId: 'duration', searchTerms: ['2..33'] },
-      ] as CurrentFilter[];
+      const presetFilters = [{ columnId: 'duration', searchTerms: ['2..33'] }] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query with all columns and search even when having hidden columns (basically when it is not part of the `getColumns()` return) when all passed are passed with the shared service', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:"2"}, {field:duration, operator:LE, value:"33"}]) {
+        totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const presetFilters = [{ columnId: 'duration', searchTerms: ['2..33'] }] as CurrentFilter[];
+      const mockColumnsCopy = [...mockColumns];
+
+      // remove "Gender" column from `getColumns` (to simulate hidden field)
+      mockColumnsCopy.splice(1, 1);
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumnsCopy);
+
+      // but still pass all columns to the service init
+      jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
 
       service.init(serviceOptions, paginationOptions, gridStub);
       service.updateFilters(presetFilters, true);

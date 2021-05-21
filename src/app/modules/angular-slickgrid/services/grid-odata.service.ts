@@ -25,6 +25,7 @@ import {
   SearchTerm
 } from './../models/index';
 import { OdataQueryBuilderService } from './odataQueryBuilder.service';
+import { SharedService } from './shared.service';
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
@@ -64,7 +65,7 @@ export class GridOdataService implements BackendService {
     this._odataService = new OdataQueryBuilderService();
   }
 
-  init(serviceOptions: Partial<OdataOption> | undefined, pagination?: Pagination, grid?: any): void {
+  init(serviceOptions: Partial<OdataOption> | undefined, pagination?: Pagination, grid?: any, sharedService?: SharedService): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...serviceOptions };
 
@@ -85,9 +86,9 @@ export class GridOdataService implements BackendService {
     this.options = this._odataService.options;
     this.pagination = pagination;
 
-    if (grid && grid.getColumns) {
-      this._columnDefinitions = serviceOptions && serviceOptions.columnDefinitions || grid.getColumns();
-      this._columnDefinitions = this._columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
+    if (grid?.getColumns) {
+      const tmpColumnDefinitions = sharedService?.allColumns ?? serviceOptions?.columnDefinitions ?? grid.getColumns();
+      this._columnDefinitions = tmpColumnDefinitions.filter((column: Column) => !column.excludeFromQuery);
     }
   }
 
