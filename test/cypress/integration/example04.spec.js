@@ -5,7 +5,7 @@ function removeExtraSpaces(textS) {
   return `${textS}`.replace(/\s+/g, ' ').trim();
 }
 
-describe('Example 4 - Client Side Sort/Filter Grid', () => {
+describe('Example 4 - Client Side Sort/Filter Grid', { retries: 1 }, () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/clientside`);
     cy.get('h2').should('contain', 'Example 4: Client Side Sort/Filter');

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Example 14 - Grouping & Aggregators', () => {
+describe('Example 14 - Grouping & Aggregators', { retries: 1 }, () => {
   const fullTitles = ['#', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort Driven'];
   const GRID_ROW_HEIGHT = 35;
 

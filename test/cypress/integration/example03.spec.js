@@ -4,7 +4,7 @@ function removeExtraSpaces(textS) {
   return `${textS}`.replace(/\s+/g, ' ').trim();
 }
 
-describe('Example 3 - Grid with Editors', () => {
+describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 35;
   const fullTitles = [
     '', '', 'Title', 'Title, Custom Editor', 'Duration (days)', '% Complete',
