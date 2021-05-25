@@ -1,13 +1,12 @@
 import * as flatpickr_ from 'flatpickr';
 import * as moment_ from 'moment-mini';
 import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
-import { FlatpickrFn } from 'flatpickr/dist/types/instance';
+import { Instance as FlatpickrInstance, FlatpickrFn } from 'flatpickr/dist/types/instance';
 const flatpickr: FlatpickrFn = (flatpickr_ && flatpickr_['default'] || flatpickr_) as any; // patch for rollup
 const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from './../constants';
-import { destroyObjectDomElementProps, getDescendantProperty, mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType, setDeepValue } from './../services/utilities';
 import {
   Column,
   ColumnEditor,
@@ -18,7 +17,17 @@ import {
   FieldType,
   FlatpickrOption,
   GridOption,
+  SlickGrid,
 } from './../models/index';
+import {
+  destroyObjectDomElementProps,
+  emptyElement,
+  getDescendantProperty,
+  mapFlatpickrDateFormatWithFieldType,
+  mapMomentDateFormatWithFieldType,
+  setDeepValue,
+} from './../services/utilities';
+import { BindingEventService } from '../services/bindingEvent.service';
 
 declare function require(name: string): any;
 require('flatpickr');
@@ -31,36 +40,39 @@ declare const $: any;
  * https://chmln.github.io/flatpickr
  */
 export class DateEditor implements Editor {
-  protected _$inputWithData: any;
-  protected _$input: any;
-  protected _$editorInputElm: any;
-  protected _originalDate = '';
+  protected _bindEventService: BindingEventService;
+  protected _closeButtonElm!: HTMLButtonElement;
+  protected _editorInputGroupElm!: HTMLDivElement;
+  protected _inputElm!: HTMLInputElement;
+  protected _inputWithDataElm!: HTMLInputElement | null;
+  protected _isValueTouched = false;
+  protected _lastTriggeredByClearDate = false;
+  protected _originalDate?: string;
   protected _pickerMergedOptions!: FlatpickrOption;
 
-  /** The translate library */
-  protected _translate?: TranslateService;
-
-  flatInstance: any;
+  flatInstance!: FlatpickrInstance;
   defaultDate?: string;
-  originalDate?: string;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
   /** Grid options */
   gridOptions: GridOption;
 
-  constructor(protected args: EditorArguments) {
+  /** The translate library */
+  protected _translate?: TranslateService;
+
+  constructor(protected readonly args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
-    this.gridOptions = (args.grid && args.grid.getOptions() || {}) as GridOption;
+    this.gridOptions = (this.grid.getOptions() || {}) as GridOption;
     const options = this.gridOptions || this.args.column.params || {};
-    if (options && options.i18n instanceof TranslateService) {
+    if (options?.i18n instanceof TranslateService) {
       this._translate = options.i18n;
     }
-
+    this._bindEventService = new BindingEventService();
     this.init();
   }
 
@@ -74,9 +86,9 @@ export class DateEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
-  /** Get the Editor DOM Element */
-  get editorDomElement(): any {
-    return this._$input;
+  /** Getter for the Editor DOM Element */
+  get editorDomElement(): HTMLInputElement {
+    return this._inputElm;
   }
 
   /** Get Flatpickr options passed to the editor by the user */
@@ -94,13 +106,13 @@ export class DateEditor implements Editor {
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
   get validator(): EditorValidator | undefined {
-    return this.columnEditor.validator || this.columnDef.validator;
+    return this.columnEditor?.validator ?? this.columnDef?.validator;
   }
 
   init(): void {
     if (this.args && this.columnDef) {
-      const columnId = this.columnDef && this.columnDef.id;
-      const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+      const columnId = this.columnDef?.id ?? '';
+      const placeholder = this.columnEditor?.placeholder ?? '';
       const title = this.columnEditor && this.columnEditor.title || '';
       this.defaultDate = (this.args.item) ? this.args.item[this.columnDef.field] : null;
       const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnEditor.type || this.columnDef.type || FieldType.dateUtc);
@@ -118,12 +130,7 @@ export class DateEditor implements Editor {
         closeOnSelect: true,
         wrap: true,
         locale: currentLocale,
-        onChange: () => {
-          const currentFlatpickrOptions = this.flatInstance?.config ?? this._pickerMergedOptions;
-          if (this.args && currentFlatpickrOptions?.closeOnSelect) {
-            this.save();
-          }
-        },
+        onChange: () => this.handleOnDateChange(),
         errorHandler: (error: Error) => {
           if (error.toString().includes('invalid locale')) {
             console.warn(`[Angular-Slickgrid] Flatpickr missing locale imports (${currentLocale}), will revert to English as the default locale.
@@ -141,25 +148,39 @@ export class DateEditor implements Editor {
         this._pickerMergedOptions.altInputClass = 'flatpickr-alt-input form-control';
       }
 
-      this._$editorInputElm = $(`<div class="flatpickr input-group"></div>`);
-      const closeButtonElm = $(`<span class="input-group-btn input-group-append" data-clear>
-          <button class="btn btn-default icon-close" type="button"></button>
-        </span>`);
-      this._$input = $(`<input type="text" data-input data-defaultDate="${this.defaultDate}" class="${inputCssClasses.replace(/\./g, ' ')}" placeholder="${placeholder}" title="${title}" />`);
-      this._$input.appendTo(this._$editorInputElm);
+      this._editorInputGroupElm = document.createElement('div');
+      this._editorInputGroupElm.className = 'flatpickr input-group';
+
+      const closeButtonGroupElm = document.createElement('span');
+      closeButtonGroupElm.className = 'input-group-btn input-group-append';
+      closeButtonGroupElm.dataset.clear = '';
+
+      this._closeButtonElm = document.createElement('button');
+      this._closeButtonElm.type = 'button';
+      this._closeButtonElm.className = 'btn btn-default icon-clear';
+
+      this._inputElm = document.createElement('input');
+      this._inputElm.dataset.input = '';
+      this._inputElm.dataset.defaultdate = this.defaultDate;
+      this._inputElm.className = inputCssClasses.replace(/\./g, ' ');
+      this._inputElm.placeholder = placeholder;
+      this._inputElm.title = title;
+
+      this._editorInputGroupElm.appendChild(this._inputElm);
 
       // show clear date button (unless user specifically doesn't want it)
-      const isCloseButtonHidden = this.columnEditor && this.columnEditor.params && this.columnEditor.params.hideClearButton || false;
-      if (!isCloseButtonHidden) {
-        closeButtonElm.appendTo(this._$editorInputElm);
+      if (!this.columnEditor?.params?.hideClearButton) {
+        closeButtonGroupElm.appendChild(this._closeButtonElm);
+        this._editorInputGroupElm.appendChild(closeButtonGroupElm);
+        this._bindEventService.bind(this._closeButtonElm, 'click', () => this._lastTriggeredByClearDate = true);
       }
 
-      this._$editorInputElm.appendTo(this.args.container);
-      this.flatInstance = (!!flatpickr && this._$editorInputElm[0] && typeof this._$editorInputElm[0].flatpickr === 'function') ? this._$editorInputElm[0].flatpickr(this._pickerMergedOptions) : flatpickr(this._$editorInputElm, this._pickerMergedOptions as unknown as Partial<FlatpickrBaseOptions>);
+      this.args.container.appendChild(this._editorInputGroupElm);
+      this.flatInstance = flatpickr(this._editorInputGroupElm, this._pickerMergedOptions as unknown as Partial<FlatpickrBaseOptions>);
 
       // when we're using an alternate input to display data, we'll consider this input as the one to do the focus later on
       // else just use the top one
-      this._$inputWithData = (this._pickerMergedOptions && this._pickerMergedOptions.altInput) ? $(`${inputCssClasses}.flatpickr-alt-input`) : this._$input;
+      this._inputWithDataElm = (this._pickerMergedOptions?.altInput) ? document.querySelector<HTMLInputElement>(`${inputCssClasses}.flatpickr-alt-input`) : this._inputElm;
 
       setTimeout(() => {
         this.show();
@@ -170,28 +191,26 @@ export class DateEditor implements Editor {
 
   destroy() {
     this.hide();
-    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
+    this._bindEventService.unbindAll();
+
+    if (this.flatInstance?.destroy) {
       this.flatInstance.destroy();
-      if (this.flatInstance.element) {
+      if (this.flatInstance?.element) {
         setTimeout(() => destroyObjectDomElementProps(this.flatInstance));
       }
-      this.flatInstance = null;
     }
-    if (this._$editorInputElm) {
-      this._$editorInputElm.remove();
-      this._$editorInputElm = null;
-    }
-    if (this._$inputWithData) {
-      this._$inputWithData.remove();
-      this._$inputWithData = null;
-    }
-    this._$input.remove();
+    emptyElement(this._editorInputGroupElm);
+    emptyElement(this._inputWithDataElm);
+    emptyElement(this._inputElm);
   }
 
   focus() {
-    this._$input.focus();
-    if (this._$inputWithData && typeof this._$inputWithData.focus === 'function') {
-      this._$inputWithData.focus().select();
+    if (this._inputElm?.focus) {
+      this._inputElm.focus();
+    }
+    if (this._inputWithDataElm?.focus) {
+      this._inputWithDataElm.focus();
+      this._inputWithDataElm.select();
     }
   }
 
@@ -208,7 +227,7 @@ export class DateEditor implements Editor {
   }
 
   getValue(): string {
-    return this._$input.val();
+    return this._inputElm.value;
   }
 
   setValue(val: string) {
@@ -220,7 +239,7 @@ export class DateEditor implements Editor {
     if (fieldName !== undefined) {
       const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
       const saveTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.saveOutputType || this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
-      const isComplexObject = fieldName && fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+      const isComplexObject = fieldName?.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
 
       // validate the value before applying it (if not valid we'll set an empty string)
       const validation = this.validate(state);
@@ -228,7 +247,10 @@ export class DateEditor implements Editor {
 
       // set the new value to the item datacontext
       if (isComplexObject) {
-        setDeepValue(item, fieldName, newValue);
+        // when it's a complex object, user could override the object path (where the editable object is located)
+        // else we use the path provided in the Field Column Definition
+        const objectPath = this.columnEditor?.complexObjectPath ?? fieldName ?? '';
+        setDeepValue(item, objectPath, newValue);
       } else {
         item[fieldName] = newValue;
       }
@@ -236,16 +258,16 @@ export class DateEditor implements Editor {
   }
 
   isValueChanged(): boolean {
-    const elmValue = this._$input.val();
-    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || (this.columnDef && this.columnDef.type) || FieldType.dateIso);
+    const elmValue = this._inputElm.value;
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || this.columnDef?.type || FieldType.dateIso);
     const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateUtc);
     const elmDateStr = elmValue ? moment(elmValue, inputFormat, false).format(outputTypeFormat) : '';
     const orgDateStr = this._originalDate ? moment(this._originalDate, inputFormat, false).format(outputTypeFormat) : '';
     if (elmDateStr === 'Invalid date' || orgDateStr === 'Invalid date') {
       return false;
     }
+    const isChanged = this._lastTriggeredByClearDate || (!(elmDateStr === '' && orgDateStr === '')) && (elmDateStr !== orgDateStr);
 
-    const isChanged = (!(elmDateStr === '' && orgDateStr === '')) && (elmDateStr !== orgDateStr);
     return isChanged;
   }
 
@@ -254,7 +276,7 @@ export class DateEditor implements Editor {
 
     if (item && fieldName !== undefined) {
       // is the field a complex object, "address.streetNumber"
-      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
+      const isComplexObject = fieldName?.indexOf('.') > 0;
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
 
       this._originalDate = value;
@@ -276,13 +298,13 @@ export class DateEditor implements Editor {
   }
 
   serializeValue() {
-    const domValue: string = this._$input.val();
+    const domValue: string = this._inputElm.value;
 
     if (!domValue) {
       return '';
     }
 
-    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || (this.columnDef && this.columnDef.type) || FieldType.dateIso);
+    const inputFormat = mapMomentDateFormatWithFieldType(this.columnEditor.type || this.columnDef?.type || FieldType.dateIso);
     const outputTypeFormat = mapMomentDateFormatWithFieldType((this.columnDef && (this.columnDef.outputType || this.columnEditor.type || this.columnDef.type)) || FieldType.dateIso);
     const value = moment(domValue, inputFormat, false).format(outputTypeFormat);
 
@@ -291,7 +313,7 @@ export class DateEditor implements Editor {
 
   validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this._inputElm?.value;
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {
@@ -300,15 +322,22 @@ export class DateEditor implements Editor {
 
     // by default the editor is almost always valid (except when it's required but not provided)
     if (isRequired && elmValue === '') {
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
-      };
+      return { valid: false, msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD };
     }
 
-    return {
-      valid: true,
-      msg: null
-    };
+    return { valid: true, msg: null };
+  }
+
+  //
+  // protected functions
+  // ------------------
+
+  protected handleOnDateChange() {
+    this._isValueTouched = true;
+
+    if (this.args) {
+      this.save();
+    }
+    setTimeout(() => this._lastTriggeredByClearDate = false); // reset flag after a cycle
   }
 }
