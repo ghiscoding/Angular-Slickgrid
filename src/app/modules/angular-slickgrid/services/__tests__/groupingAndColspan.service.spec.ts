@@ -155,6 +155,12 @@ describe('GroupingAndColspanService', () => {
     let mockColumns: Column[];
 
     beforeEach(() => {
+      const mockParentPreHeaderElm = document.createElement('div');
+      const mockPreHeaderPanelElm = document.createElement('div');
+      mockPreHeaderPanelElm.className = 'slick-header-columns';
+      mockPreHeaderPanelElm.style.left = '-1000px';
+      mockPreHeaderPanelElm.style.width = '2815px';
+      mockParentPreHeaderElm.appendChild(mockPreHeaderPanelElm);
       mockColumns = [
         { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
         { id: 'duration', name: 'Duration', field: 'duration', width: 100, columnGroup: 'Common Factor' },
@@ -163,7 +169,9 @@ describe('GroupingAndColspanService', () => {
       ];
       gridStub.getColumns = jest.fn();
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
-      jest.spyOn(gridStub, 'getPreHeaderPanel').mockReturnValue(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns"></div>`);
+      jest.spyOn(gridStub, 'getPreHeaderPanel').mockReturnValue(mockPreHeaderPanelElm);
+      jest.spyOn(gridStub, 'getPreHeaderPanelLeft').mockReturnValue(document.createElement('div'));
+      jest.spyOn(gridStub, 'getPreHeaderPanelRight').mockReturnValue(document.createElement('div'));
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" on initial load even when there are no column definitions', () => {
@@ -350,8 +358,8 @@ describe('GroupingAndColspanService', () => {
       const frozenColumns = 2;
       gridOptionMock.frozenColumn = frozenColumns;
       const headerGroupSpy = jest.spyOn(service, 'renderHeaderGroups');
-      const preHeaderLeftSpy = jest.spyOn(gridStub, 'getPreHeaderPanelLeft');
-      const preHeaderRightSpy = jest.spyOn(gridStub, 'getPreHeaderPanelRight');
+      const preHeaderLeftSpy = jest.spyOn(gridStub, 'getPreHeaderPanelLeft').mockReturnValue(document.createElement('div'));
+      const preHeaderRightSpy = jest.spyOn(gridStub, 'getPreHeaderPanelRight').mockReturnValue(document.createElement('div'));
       const divHeaderColumns = document.getElementsByClassName('slick-header-columns');
 
       service.init(gridStub, dataViewStub);

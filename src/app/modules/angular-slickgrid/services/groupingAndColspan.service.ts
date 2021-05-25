@@ -5,7 +5,7 @@ import { Column, GridOption, SlickEventHandler, ExtensionName } from './../model
 import { ExtensionUtility } from '../extensions/extensionUtility';
 import { ExtensionService } from './extension.service';
 import { ResizerService } from './resizer.service';
-import { unsubscribeAllObservables } from './utilities';
+import { emptyElement, unsubscribeAllObservables } from './utilities';
 import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
@@ -101,55 +101,63 @@ export class GroupingAndColspanService {
   renderPreHeaderRowGroupingTitles() {
     if (this._gridOptions && this._gridOptions.frozenColumn !== undefined && this._gridOptions.frozenColumn >= 0) {
       // Add column groups to left panel
-      let $preHeaderPanel = $(this._grid.getPreHeaderPanelLeft());
-      this.renderHeaderGroups($preHeaderPanel, 0, this._gridOptions.frozenColumn + 1);
+      let preHeaderPanelElm = this._grid.getPreHeaderPanelLeft();
+      this.renderHeaderGroups(preHeaderPanelElm, 0, this._gridOptions.frozenColumn + 1);
 
       // Add column groups to right panel
-      $preHeaderPanel = $(this._grid.getPreHeaderPanelRight());
-      this.renderHeaderGroups($preHeaderPanel, this._gridOptions.frozenColumn + 1, this._columnDefinitions.length);
+      preHeaderPanelElm = this._grid.getPreHeaderPanelRight();
+      this.renderHeaderGroups(preHeaderPanelElm, this._gridOptions?.frozenColumn + 1, this._columnDefinitions.length);
     } else {
       // regular grid (not a frozen grid)
-      const $preHeaderPanel = $(this._grid.getPreHeaderPanel());
-      this.renderHeaderGroups($preHeaderPanel, 0, this._columnDefinitions.length);
+      const preHeaderPanelElm = this._grid.getPreHeaderPanel();
+      this.renderHeaderGroups(preHeaderPanelElm, 0, this._columnDefinitions.length);
     }
   }
 
-  renderHeaderGroups(preHeaderPanel: any, start: number, end: number) {
-    preHeaderPanel.empty()
-      .addClass('slick-header-columns')
-      .css('left', '-1000px')
-      .width(this._grid.getHeadersWidth());
-    preHeaderPanel.parent().addClass('slick-header');
+  renderHeaderGroups(preHeaderPanel: HTMLElement, start: number, end: number) {
+    emptyElement(preHeaderPanel);
+    preHeaderPanel.className = 'slick-header-columns';
+    preHeaderPanel.style.left = '-1000px';
+    preHeaderPanel.style.width = `${this._grid.getHeadersWidth()}px`;
+
+    if (preHeaderPanel.parentElement) {
+      preHeaderPanel.parentElement.classList.add('slick-header');
+    }
 
     const headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
 
     let colDef;
-    let header;
+    let headerElm: HTMLDivElement | null = null;
     let lastColumnGroup = '';
     let widthTotal = 0;
-    const frozenHeaderWidthCalcDifferential = this._gridOptions && this._gridOptions.frozenHeaderWidthCalcDifferential || 0;
-    const isFrozenGrid = (this._gridOptions && (this._gridOptions.frozenColumn !== undefined && this._gridOptions.frozenColumn >= 0));
+    const frozenHeaderWidthCalcDifferential = this._gridOptions?.frozenHeaderWidthCalcDifferential ?? 0;
+    const isFrozenGrid = (this._gridOptions?.frozenColumn !== undefined && this._gridOptions.frozenColumn >= 0);
 
     for (let i = start; i < end; i++) {
       colDef = this._columnDefinitions[i];
       if (colDef) {
         if (lastColumnGroup === colDef.columnGroup && i > 0) {
           widthTotal += colDef.width || 0;
-          if (header && header.width) {
-            header.width(widthTotal - headerColumnWidthDiff - frozenHeaderWidthCalcDifferential); // remove possible frozen border
+          if (headerElm?.style) {
+            headerElm.style.width = `${widthTotal - headerColumnWidthDiff - frozenHeaderWidthCalcDifferential}px`; // remove possible frozen border
           }
         } else {
           widthTotal = colDef.width || 0;
-          header = $(`<div class="ui-state-default slick-header-column ${isFrozenGrid ? 'frozen' : ''}" />`)
-            .html(`<span class="slick-column-name">${colDef.columnGroup || ''}</span>`)
-            .width(widthTotal - headerColumnWidthDiff)
-            .appendTo(preHeaderPanel);
+          headerElm = document.createElement('div');
+          headerElm.className = `ui-state-default slick-header-column ${isFrozenGrid ? 'frozen' : ''}`;
+          headerElm.style.width = `${widthTotal - headerColumnWidthDiff}px`;
+
+          const spanColumnNameElm = document.createElement('span');
+          spanColumnNameElm.className = 'slick-column-name';
+          spanColumnNameElm.textContent = colDef.columnGroup || '';
+
+          headerElm.appendChild(spanColumnNameElm);
+          preHeaderPanel.appendChild(headerElm);
         }
         lastColumnGroup = colDef.columnGroup || '';
       }
     }
   }
-
 
   /** Translate Column Group texts and re-render them afterward. */
   translateGroupingAndColSpan() {
