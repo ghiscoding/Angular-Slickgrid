@@ -139,6 +139,8 @@ export class DualInputEditor implements Editor {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
     this._bindEventService.unbindAll();
+    this._leftInput?.remove?.();
+    this._rightInput?.remove?.();
   }
 
   createInput(position: 'leftInput' | 'rightInput'): HTMLInputElement {
