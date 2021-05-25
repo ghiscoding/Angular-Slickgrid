@@ -30,7 +30,7 @@ export class LongTextEditor implements Editor {
   protected _bindEventService: BindingEventService;
   protected _defaultTextValue: any;
   protected _locales: Locale;
-  protected _timer?: NodeJS.Timeout;
+  protected _timer?: any;
   protected _currentLengthElm!: HTMLSpanElement;
   protected _textareaElm!: HTMLTextAreaElement;
   protected _wrapperElm!: HTMLDivElement;
