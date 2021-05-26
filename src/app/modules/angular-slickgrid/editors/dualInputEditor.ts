@@ -86,7 +86,7 @@ export class DualInputEditor implements Editor {
 
   /** Get the Shared Validator function, can be passed in Editor property or Column Definition */
   get validator(): EditorValidator | undefined {
-    return (this.columnEditor && this.columnEditor.validator) || (this.columnDef && this.columnDef.validator);
+    return this.columnEditor?.validator ?? this.columnDef?.validator;
   }
 
   init() {
@@ -139,6 +139,8 @@ export class DualInputEditor implements Editor {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
     this._bindEventService.unbindAll();
+    this._leftInput?.remove?.();
+    this._rightInput?.remove?.();
   }
 
   createInput(position: 'leftInput' | 'rightInput'): HTMLInputElement {

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Example 9 - Grid Menu', () => {
+describe('Example 9 - Grid Menu', { retries: 1 }, () => {
   const fullEnglishTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
   const fullFrenchTitles = ['Titre', 'Durée', '% Achevée', 'Début', 'Fin', 'Terminé'];
 

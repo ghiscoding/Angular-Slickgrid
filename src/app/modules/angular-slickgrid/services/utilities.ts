@@ -489,7 +489,7 @@ export function getDescendantProperty<T = any>(obj: T, path: string): T {
 
 /** Get HTML Element position offset (without jQuery) */
 export function getHtmlElementOffset(element: HTMLElement): { top: number; left: number; } {
-  const rect = element.getBoundingClientRect();
+  const rect = element?.getBoundingClientRect?.();
   let top = 0;
   let left = 0;
 

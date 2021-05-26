@@ -8,7 +8,7 @@ describe('Example 5 - OData Grid', () => {
     });
   });
 
-  it('should display Example title', () => {
+  it('should display Example title', { retries: 1 }, () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/odata`);
     cy.get('h2').should('contain', 'Example 5: Grid connected to Backend Server with OData');
   });

@@ -225,7 +225,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
     this._dataset = data;
     this.refreshGridData(data || []);
-    this._currentDatasetLength = newDataset.length;
+    this._currentDatasetLength = (newDataset || []).length;
   }
 
   @Input()

@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   template: `
   <div id="{{dropdownId}}" class="dropdown" style="position:absolute; z-index:12000;">
     <a class="dropdown-toggle"
-       id="{{dropDownToggleId}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+       id="{{dropDownToggleId}}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Actions
       <span class="caret"></span>
     </a>

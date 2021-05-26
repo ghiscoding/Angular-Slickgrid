@@ -4,7 +4,7 @@ function removeExtraSpaces(textS) {
   return `${textS}`.replace(/\s+/g, ' ').trim();
 }
 
-describe('Example 20 - Frozen Grid', () => {
+describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
   // NOTE:  everywhere there's a * 2 is because we have a top+bottom (frozen rows) containers even after Unfreeze Columns/Rows
 
   const fullTitles = ['#', 'Title', '% Complete', 'Start', 'Finish', 'Cost | Duration', 'Effort Driven', 'Title 1', 'Title 2', 'Title 3', 'Title 4'];

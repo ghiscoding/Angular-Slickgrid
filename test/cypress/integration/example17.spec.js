@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
+describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries: 1 }, () => {
   const fullTitles = ['', '', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
 
   it('should display Example title', () => {

@@ -1,26 +1,31 @@
 import { Constants } from './../constants';
-import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, GridOption, SlickGrid } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
-
-// using external non-typed js libraries
-declare const $: any;
+import { BindingEventService } from '../services/bindingEvent.service';
 
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CheckboxEditor implements Editor {
-  protected _$input: any;
-  originalValue!: boolean;
+  protected _bindEventService: BindingEventService;
+  protected _checkboxContainerElm!: HTMLDivElement;
+  protected _input!: HTMLInputElement;
+  protected _originalValue?: boolean | string;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
-  constructor(protected args: EditorArguments) {
+  /** Grid options */
+  gridOptions: GridOption;
+
+  constructor(protected readonly args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
+    this.gridOptions = (this.grid.getOptions() || {}) as GridOption;
+    this._bindEventService = new BindingEventService();
     this.init();
   }
 
@@ -34,9 +39,9 @@ export class CheckboxEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
-  /** Get the Editor DOM Element */
+  /** Getter for the Editor DOM Element */
   get editorDomElement(): any {
-    return this._$input;
+    return this._input;
   }
 
   get hasAutoCommitEdit() {
@@ -45,80 +50,98 @@ export class CheckboxEditor implements Editor {
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
   get validator(): EditorValidator | undefined {
-    return this.columnEditor.validator || this.columnDef.validator;
+    return this.columnEditor?.validator ?? this.columnDef?.validator;
   }
 
   init(): void {
-    const fieldId = this.columnDef && this.columnDef.id;
-    const title = this.columnEditor && this.columnEditor.title || '';
+    const columnId = this.columnDef?.id ?? '';
+    const title = this.columnEditor?.title ?? '';
 
-    this._$input = $(`<input type="checkbox" value="true" class="editor-checkbox editor-${fieldId}" title="${title}" />`);
-    this._$input.appendTo(this.args.container);
-    this.focus();
+    this._checkboxContainerElm = document.createElement('div');
+    this._checkboxContainerElm.className = `checkbox-editor-container editor-${columnId}`;
+
+    this._input = document.createElement('input');
+    this._input.className = `editor-checkbox editor-${columnId}`;
+    this._input.title = title;
+    this._input.type = 'checkbox';
+    this._input.value = 'true';
+
+    const cellContainer = this.args?.container;
+    if (cellContainer && typeof cellContainer.appendChild === 'function') {
+      cellContainer.appendChild(this._input);
+    }
 
     // make the checkbox editor act like a regular checkbox that commit the value on click
     if (this.hasAutoCommitEdit) {
-      this._$input.click(() => this.save());
+      this._bindEventService.bind(this._input, 'click', () => this.save());
     }
+
+    this.focus();
   }
 
-  destroy(): void {
-    this._$input.remove();
-    this._$input = null;
+  destroy() {
+    this._bindEventService.unbindAll();
+    this._input?.remove?.();
   }
 
   focus(): void {
-    this._$input.focus();
+    if (this._input) {
+      this._input.focus();
+    }
   }
 
   /** pre-click, when enabled, will simply toggle the checkbox without requiring to double-click */
   preClick() {
-    this._$input.prop('checked', !this._$input.prop('checked'));
+    if (this._input) {
+      this._input.checked = !this._input.checked;
+    }
   }
 
   getValue() {
-    return this._$input.prop('checked');
+    return this._input?.checked ?? false;
   }
 
   setValue(val: boolean | string) {
     const isChecked = val ? true : false;
-    this._$input.prop('checked', isChecked);
+    if (this._input) {
+      this._input.checked = isChecked;
+    }
   }
 
   applyValue(item: any, state: any) {
     const fieldName = this.columnDef && this.columnDef.field;
-    const isComplexObject = fieldName && fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+    if (fieldName !== undefined) {
+      const isComplexObject = fieldName?.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
 
-    // validate the value before applying it (if not valid we'll set an empty string)
-    const validation = this.validate(state);
-    const newValue = (validation && validation.valid) ? state : '';
+      // validate the value before applying it (if not valid we'll set an empty string)
+      const validation = this.validate(state);
+      const newValue = (validation && validation.valid) ? state : '';
 
-    // set the new value to the item datacontext
-    if (isComplexObject) {
-      setDeepValue(item, fieldName, newValue);
-    } else {
-      item[fieldName] = newValue;
+      // set the new value to the item datacontext
+      if (isComplexObject) {// when it's a complex object, user could override the object path (where the editable object is located)
+        // else we use the path provided in the Field Column Definition
+        const objectPath = this.columnEditor?.complexObjectPath ?? fieldName ?? '';
+        setDeepValue(item, objectPath, newValue);
+      } else {
+        item[fieldName] = newValue;
+      }
     }
   }
 
-  isValueChanged() {
-    return (this.serializeValue() !== this.originalValue);
+  isValueChanged(): boolean {
+    return (this.serializeValue() !== this._originalValue);
   }
 
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    if (item && fieldName !== undefined) {
+    if (item && fieldName !== undefined && this._input) {
       // is the field a complex object, "address.streetNumber"
-      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
+      const isComplexObject = fieldName?.indexOf('.') > 0;
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
 
-      this.originalValue = value;
-      if (this.originalValue) {
-        this._$input.prop('checked', true);
-      } else {
-        this._$input.prop('checked', false);
-      }
+      this._originalValue = value;
+      this._input.checked = !!this._originalValue;
     }
   }
 
@@ -136,12 +159,12 @@ export class CheckboxEditor implements Editor {
   }
 
   serializeValue(): boolean {
-    return this._$input.prop('checked');
+    return this._input?.checked ?? false;
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const isChecked = (inputValue !== undefined) ? inputValue : this._$input && this._$input.prop && this._$input.prop('checked');
+    const isChecked = (inputValue !== undefined) ? inputValue : this._input?.checked;
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {

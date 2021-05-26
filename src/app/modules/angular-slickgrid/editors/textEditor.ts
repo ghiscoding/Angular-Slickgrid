@@ -1,27 +1,32 @@
-import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, GridOption, KeyCode, SlickGrid } from './../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
 import { textValidator } from '../editorValidators/textValidator';
-
-// using external non-typed js libraries
-declare const $: any;
+import { BindingEventService } from '../services/bindingEvent.service';
 
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class TextEditor implements Editor {
-  protected _lastInputEvent?: JQuery.Event;
-  protected _$input: any;
-  originalValue?: string;
+  protected _bindEventService: BindingEventService;
+  protected _input!: HTMLInputElement | undefined;
+  protected _lastInputKeyEvent?: KeyboardEvent;
+  protected _originalValue?: string;
+  protected _timer?: any;
 
   /** SlickGrid Grid object */
-  grid: any;
+  grid: SlickGrid;
 
-  constructor(protected args: EditorArguments) {
+  /** Grid options */
+  gridOptions: GridOption;
+
+  constructor(protected readonly args: EditorArguments) {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
+    this.gridOptions = args.grid && args.grid.getOptions() as GridOption;
+    this._bindEventService = new BindingEventService();
     this.init();
   }
 
@@ -35,9 +40,9 @@ export class TextEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
-  /** Get the Editor DOM Element */
+  /** Getter for the Editor DOM Element */
   get editorDomElement(): any {
-    return this._$input;
+    return this._input;
   }
 
   get hasAutoCommitEdit() {
@@ -46,87 +51,103 @@ export class TextEditor implements Editor {
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
   get validator(): EditorValidator | undefined {
-    return this.columnEditor.validator || this.columnDef.validator;
+    return this.columnEditor?.validator ?? this.columnDef?.validator;
   }
 
   init() {
-    const columnId = this.columnDef && this.columnDef.id;
-    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
-    const title = this.columnEditor && this.columnEditor.title || '';
+    const columnId = this.columnDef?.id ?? '';
+    const placeholder = this.columnEditor?.placeholder ?? '';
+    const title = this.columnEditor?.title ?? '';
 
-    this._$input = $(`<input type="text" role="presentation"  autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
-      .appendTo(this.args.container)
-      .on('keydown.nav', (event: JQuery.Event) => {
-        this._lastInputEvent = event;
-        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
-          event.stopImmediatePropagation();
-        }
-      });
+    this._input = document.createElement('input') as HTMLInputElement;
+    this._input.className = `editor-text editor-${columnId}`;
+    this._input.type = 'text';
+    this._input.setAttribute('role', 'presentation');
+    this._input.autocomplete = 'off';
+    this._input.placeholder = placeholder;
+    this._input.title = title;
+    const cellContainer = this.args?.container;
+    if (cellContainer && typeof cellContainer.appendChild === 'function') {
+      cellContainer.appendChild(this._input);
+    }
+
+    this._bindEventService.bind(this._input, 'focus', () => this._input?.select());
+    this._bindEventService.bind(this._input, 'keydown', ((event: KeyboardEvent) => {
+      this._lastInputKeyEvent = event;
+      if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+        event.stopImmediatePropagation();
+      }
+    }) as EventListener);
 
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this._$input.on('focusout', () => this.save());
+      this._bindEventService.bind(this._input, 'focusout', () => this.save());
     }
-
-    setTimeout(() => this.focus(), 50);
   }
 
   destroy() {
-    this._$input.off('keydown.nav focusout').remove();
-    this._$input = null;
+    this._bindEventService.unbindAll();
+    this._input?.remove?.();
   }
 
-  focus() {
-    if (this._$input) {
-      this._$input.focus();
+  focus(): void {
+    if (this._input) {
+      this._input.focus();
     }
   }
 
   getValue(): string {
-    return this._$input.val();
+    return this._input?.value || '';
   }
 
-  setValue(val: string) {
-    this._$input.val(val);
+  setValue(value: string) {
+    if (this._input) {
+      this._input.value = value;
+    }
   }
 
   applyValue(item: any, state: any) {
     const fieldName = this.columnDef && this.columnDef.field;
-    const isComplexObject = fieldName && fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+    if (fieldName !== undefined) {
+      const isComplexObject = fieldName?.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
 
-    // validate the value before applying it (if not valid we'll set an empty string)
-    const validation = this.validate(state);
-    const newValue = (validation && validation.valid) ? state : '';
+      // validate the value before applying it (if not valid we'll set an empty string)
+      const validation = this.validate(state);
+      const newValue = (validation && validation.valid) ? state : '';
 
-    // set the new value to the item datacontext
-    if (isComplexObject) {
-      setDeepValue(item, fieldName, newValue);
-    } else {
-      item[fieldName] = newValue;
+      // set the new value to the item datacontext
+      if (isComplexObject) {
+        // when it's a complex object, user could override the object path (where the editable object is located)
+        // else we use the path provided in the Field Column Definition
+        const objectPath = this.columnEditor?.complexObjectPath ?? fieldName ?? '';
+        setDeepValue(item, objectPath, newValue);
+      } else if (fieldName) {
+        item[fieldName] = newValue;
+      }
     }
   }
 
   isValueChanged(): boolean {
-    const elmValue = this._$input.val();
-    const lastKeyEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    const elmValue = this._input?.value;
+    const lastKeyEvent = this._lastInputKeyEvent && this._lastInputKeyEvent.keyCode;
     if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastKeyEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(elmValue === '' && (this.originalValue === null || this.originalValue === undefined))) && (elmValue !== this.originalValue);
+    return (!(elmValue === '' && (this._originalValue === null || this._originalValue === undefined))) && (elmValue !== this._originalValue);
   }
 
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    if (item && fieldName !== undefined) {
+    if (item && fieldName !== undefined && this._input) {
       // is the field a complex object, "address.streetNumber"
-      const isComplexObject = fieldName && fieldName.indexOf('.') > 0;
-      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      const isComplexObject = fieldName?.indexOf('.') > 0;
+      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : (item.hasOwnProperty(fieldName) && item[fieldName] || '');
 
-      this.originalValue = value;
-      this._$input.val(this.originalValue);
-      this._$input.select();
+      this._originalValue = value;
+      this._input.value = this._originalValue as string;
+      this._input.select();
     }
   }
 
@@ -144,11 +165,11 @@ export class TextEditor implements Editor {
   }
 
   serializeValue() {
-    return this._$input.val();
+    return this._input?.value;
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
-    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this._input && this._input.value;
     return textValidator(elmValue, {
       editorArgs: this.args,
       errorMessage: this.columnEditor.errorMessage,

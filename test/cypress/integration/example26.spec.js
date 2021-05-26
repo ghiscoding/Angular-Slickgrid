@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Example 26 - Cell Menu & Context Menu Plugins', () => {
+describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => {
   const fullEnglishTitles = ['#', 'Title', '% Complete', 'Start', 'Finish', 'Priority', 'Completed', 'Action'];
   const fullFrenchTitles = ['#', 'Titre', '% Achevée', 'Début', 'Fin', 'Priorité', 'Terminé', 'Action'];
 
