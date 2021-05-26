@@ -2,7 +2,6 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
-    "emitDecoratorMetadata": true,
     "types": [
       "cypress",
       "jest",
