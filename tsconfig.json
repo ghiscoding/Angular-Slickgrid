@@ -12,6 +12,7 @@
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "noImplicitReturns": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es2015",
     "typeRoots": [
