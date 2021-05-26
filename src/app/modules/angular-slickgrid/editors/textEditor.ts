@@ -87,15 +87,8 @@ export class TextEditor implements Editor {
   }
 
   destroy() {
-    if (this._input) {
-      this._bindEventService.unbindAll();
-      setTimeout(() => {
-        if (this._input) {
-          this._input.remove();
-          this._input = undefined;
-        }
-      });
-    }
+    this._bindEventService.unbindAll();
+    this._input?.remove?.();
   }
 
   focus(): void {

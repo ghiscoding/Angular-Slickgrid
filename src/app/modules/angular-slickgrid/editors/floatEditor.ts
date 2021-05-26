@@ -97,13 +97,7 @@ export class FloatEditor implements Editor {
 
   destroy() {
     this._bindEventService.unbindAll();
-    if (this._input) {
-      setTimeout(() => {
-        if (this._input) {
-          this._input.remove();
-        }
-      });
-    }
+    this._input?.remove?.();
   }
 
   focus(): void {
