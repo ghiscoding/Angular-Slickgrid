@@ -12,7 +12,7 @@ export class IntegerEditor implements Editor {
   protected _lastInputKeyEvent?: KeyboardEvent;
   protected _input!: HTMLInputElement | undefined;
   protected _originalValue?: number | string;
-  protected _timer?: NodeJS.Timeout;
+  protected _timer?: any;
 
   /** is the Editor disabled? */
   disabled = false;

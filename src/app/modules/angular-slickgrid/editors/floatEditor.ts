@@ -14,7 +14,7 @@ export class FloatEditor implements Editor {
   protected _input!: HTMLInputElement;
   protected _lastInputKeyEvent?: KeyboardEvent;
   protected _originalValue?: number | string;
-  protected _timer?: NodeJS.Timeout;
+  protected _timer?: any;
 
   /** is the Editor disabled? */
   disabled = false;
