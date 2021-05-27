@@ -44,7 +44,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
-For Angular 12+ see the instructions below
+For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
 ### ngx-translate Compatibility
 
