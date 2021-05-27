@@ -1,9 +1,5 @@
 /// <reference types="cypress" />
 
-function removeExtraSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, ' ').trim();
-}
-
 describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
   // NOTE:  everywhere there's a * 2 is because we have a top+bottom (frozen rows) containers even after Unfreeze Columns/Rows
 
