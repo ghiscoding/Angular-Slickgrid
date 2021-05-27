@@ -4,6 +4,7 @@ module.exports = {
       ignorableDeepImportMatchers: [
         /slickgrid\//,
         /flatpickr/,
+        /dequal/,
         /jquery-ui-dist\//,
       ]
     },

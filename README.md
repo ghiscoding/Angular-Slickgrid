@@ -44,6 +44,8 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
+For Angular 12+ see the instructions below
+
 ### ngx-translate Compatibility
 
 If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even if you just use a single Locale, because it is a `peerDependency` of Angular-Slickgrid. We use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should be removed by tree shaking process after a running a build. See their version compatibility table below
@@ -75,6 +77,35 @@ You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to you
 "options": {
   "allowedCommonJsDependencies": ["angular-slickgrid"]
 }
+```
+
+### Angular 12 with WebPack 5 - how to fix polyfill error
+Since Angular 12 switched to WebPack 5, you might get some new errors and you will need to add some polyfills manually to get the Excel Builder (Excel Export) to work.
+
+#### The error you might get
+
+```shell
+BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
+This is no longer the case. Verify if you need this module and configure a polyfill for it.
+```
+
+#### Steps to fix it
+1. `npm install stream-browserify`
+2. Add a path mapping in `tsconfig.json`:
+```
+{
+  ...
+  "compilerOptions": {
+    "paths": {
+      "stream": [ "./node_modules/stream-browserify" ]
+    },
+```
+3. Add `stream` to `allowedCommonJsDependencies` in `angular.json`:
+```
+  "options": {
+    "allowedCommonJsDependencies": [
+      "angular-slickgrid", "stream"
+    ],
 ```
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
