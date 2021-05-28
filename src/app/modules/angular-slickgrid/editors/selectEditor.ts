@@ -177,8 +177,8 @@ export class SelectEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
   }
 
-  get hasAutoCommitEdit() {
-    return this.grid.getOptions().autoCommitEdit;
+  get hasAutoCommitEdit(): boolean {
+    return this.grid.getOptions().autoCommitEdit ?? false;
   }
 
   /**
