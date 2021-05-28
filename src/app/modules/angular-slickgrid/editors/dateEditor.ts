@@ -97,7 +97,7 @@ export class DateEditor implements Editor {
   }
 
   get hasAutoCommitEdit(): boolean {
-    return this.grid.getOptions().autoCommitEdit ?? false;
+    return this.gridOptions.autoCommitEdit ?? false;
   }
 
   get pickerOptions(): FlatpickrOption {

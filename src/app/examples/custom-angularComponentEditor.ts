@@ -65,7 +65,7 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   get hasAutoCommitEdit(): boolean {
-    return this.grid.getOptions().autoCommitEdit ?? false;
+    return this.gridOptions.autoCommitEdit ?? false;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */

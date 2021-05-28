@@ -47,7 +47,7 @@ export class InputEditor implements Editor {
   }
 
   get hasAutoCommitEdit(): boolean {
-    return this.grid.getOptions().autoCommitEdit ?? false;
+    return this.gridOptions.autoCommitEdit ?? false;
   }
 
   /** Getter of input type (text, number, password) */
