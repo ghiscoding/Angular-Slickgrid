@@ -110,7 +110,7 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
         // the RECOMMENDED is to use "dataContextIds" since that will always work even with Pagination, while "gridRowIndexes" is only good for 1 page
         rowSelection: {
           // gridRowIndexes: [2],       // the row position of what you see on the screen (UI)
-          dataContextIds: [2, 3, 6, 7]  // (recommended) select by your data object IDs
+          dataContextIds: [1, 2, 6, 7]  // (recommended) select by your data object IDs
         }
       },
     };

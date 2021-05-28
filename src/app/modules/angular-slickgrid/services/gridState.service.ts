@@ -502,7 +502,7 @@ export class GridStateService {
         setTimeout(() => {
           const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
-          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes) && this._gridOptions.enablePagination) {
+          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
         });
@@ -543,7 +543,7 @@ export class GridStateService {
           // this could happen if the previous step was a page change
           const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
-          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes) && this._gridOptions.enablePagination) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
 
