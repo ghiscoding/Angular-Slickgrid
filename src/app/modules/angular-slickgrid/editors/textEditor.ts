@@ -7,12 +7,12 @@ import { BindingEventService } from '../services/bindingEvent.service';
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
-export class TextEditor implements Editor {
+export class InputEditor implements Editor {
   protected _bindEventService: BindingEventService;
   protected _input!: HTMLInputElement | undefined;
+  protected _inputType = 'text';
   protected _lastInputKeyEvent?: KeyboardEvent;
-  protected _originalValue?: string;
-  protected _timer?: any;
+  protected _originalValue?: number | string;
 
   /** SlickGrid Grid object */
   grid: SlickGrid;
@@ -20,13 +20,14 @@ export class TextEditor implements Editor {
   /** Grid options */
   gridOptions: GridOption;
 
-  constructor(protected readonly args: EditorArguments) {
+  constructor(protected readonly args: EditorArguments, inputType: string) {
     if (!args) {
-      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+      throw new Error('[Slickgrid-Universal] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
     this.gridOptions = args.grid && args.grid.getOptions() as GridOption;
     this._bindEventService = new BindingEventService();
+    this.inputType = inputType || 'text';
     this.init();
   }
 
@@ -45,8 +46,18 @@ export class TextEditor implements Editor {
     return this._input;
   }
 
-  get hasAutoCommitEdit() {
-    return this.grid.getOptions().autoCommitEdit;
+  get hasAutoCommitEdit(): boolean {
+    return this.grid.getOptions().autoCommitEdit ?? false;
+  }
+
+  /** Getter of input type (text, number, password) */
+  get inputType() {
+    return this._inputType;
+  }
+
+  /** Setter of input type (text, number, password) */
+  set inputType(type: string) {
+    this._inputType = type;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -61,12 +72,12 @@ export class TextEditor implements Editor {
 
     this._input = document.createElement('input') as HTMLInputElement;
     this._input.className = `editor-text editor-${columnId}`;
-    this._input.type = 'text';
+    this._input.type = this._inputType || 'text';
     this._input.setAttribute('role', 'presentation');
     this._input.autocomplete = 'off';
     this._input.placeholder = placeholder;
     this._input.title = title;
-    const cellContainer = this.args?.container;
+    const cellContainer = this.args.container;
     if (cellContainer && typeof cellContainer.appendChild === 'function') {
       cellContainer.appendChild(this._input);
     }
@@ -82,7 +93,9 @@ export class TextEditor implements Editor {
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this._bindEventService.bind(this._input, 'focusout', () => this.save());
+      this._bindEventService.bind(this._input, 'focusout', () => {
+        this.save();
+      });
     }
   }
 
@@ -101,9 +114,9 @@ export class TextEditor implements Editor {
     return this._input?.value || '';
   }
 
-  setValue(value: string) {
+  setValue(value: number | string) {
     if (this._input) {
-      this._input.value = value;
+      this._input.value = `${value}`;
     }
   }
 
@@ -114,7 +127,7 @@ export class TextEditor implements Editor {
 
       // validate the value before applying it (if not valid we'll set an empty string)
       const validation = this.validate(state);
-      const newValue = (validation && validation.valid) ? state : '';
+      const newValue = (validation?.valid) ? state : '';
 
       // set the new value to the item datacontext
       if (isComplexObject) {
@@ -164,8 +177,8 @@ export class TextEditor implements Editor {
     }
   }
 
-  serializeValue() {
-    return this._input?.value;
+  serializeValue(): number | string {
+    return this._input?.value ?? '';
   }
 
   validate(inputValue?: any): EditorValidatorOutput {

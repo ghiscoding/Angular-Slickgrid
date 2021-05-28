@@ -88,7 +88,9 @@ describe('FloatEditor', () => {
     it('should initialize the editor', () => {
       editor = new FloatEditor(editorArguments);
       const editorCount = divContainer.querySelectorAll('input.editor-text.editor-price').length;
+
       expect(editorCount).toBe(1);
+      expect(editor.inputType).toBe('number');
     });
 
     it('should initialize the editor and focus on the element after a small delay', () => {
@@ -97,6 +99,7 @@ describe('FloatEditor', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(editorCount).toBe(1);
+      expect(editor.inputType).toBe('number');
     });
 
     it('should have a placeholder when defined in its column definition', () => {
