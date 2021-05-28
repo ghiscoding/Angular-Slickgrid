@@ -22,7 +22,7 @@ export class InputEditor implements Editor {
 
   constructor(protected readonly args: EditorArguments, inputType: string) {
     if (!args) {
-      throw new Error('[Slickgrid-Universal] Something is wrong with this grid, an Editor must always have valid arguments.');
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
     this.gridOptions = args.grid && args.grid.getOptions() as GridOption;

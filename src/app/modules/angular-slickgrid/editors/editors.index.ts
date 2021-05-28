@@ -4,6 +4,7 @@ import { DateEditor } from './dateEditor';
 import { DualInputEditor } from './dualInputEditor';
 import { FloatEditor } from './floatEditor';
 import { InputEditor } from './inputEditor';
+import { InputPasswordEditor } from './inputPasswordEditor';
 import { IntegerEditor } from './integerEditor';
 import { LongTextEditor } from './longTextEditor';
 import { MultipleSelectEditor } from './multipleSelectEditor';
@@ -34,6 +35,9 @@ export const Editors = {
 
   /** Multiple Select editor (which uses 3rd party lib "multiple-select.js") */
   multipleSelect: MultipleSelectEditor,
+
+  /** Editor with an input of type Password (note that only the text shown in the UI will be masked, the editor value is still plain text) */
+  password: InputPasswordEditor,
 
   /** Single Select editor (which uses 3rd party lib "multiple-select.js") */
   singleSelect: SingleSelectEditor,
