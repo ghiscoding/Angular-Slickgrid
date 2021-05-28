@@ -112,7 +112,7 @@ export class GridStateService {
     }
 
     if (this.hasRowSelectionEnabled()) {
-      const currentRowSelection = this.getCurrentRowSelections(args && args.requestRefreshRowFilteredRow);
+      const currentRowSelection = this.getCurrentRowSelections(args?.requestRefreshRowFilteredRow);
       if (currentRowSelection) {
         gridState.rowSelection = currentRowSelection;
       }
@@ -136,8 +136,8 @@ export class GridStateService {
     const currentColumns: CurrentColumn[] = [];
 
     if (gridColumns && Array.isArray(gridColumns)) {
-      gridColumns.forEach((column: Column, index: number) => {
-        if (column && column.id) {
+      gridColumns.forEach((column: Column) => {
+        if (column?.id) {
           currentColumns.push({
             columnId: column.id as string,
             cssClass: column.cssClass || '',
@@ -204,7 +204,7 @@ export class GridStateService {
     if (currentColumns && Array.isArray(currentColumns)) {
       currentColumns.forEach((currentColumn: CurrentColumn, index: number) => {
         const gridColumn = gridColumns.find((c: Column) => c.id === currentColumn.columnId);
-        if (gridColumn && gridColumn.id) {
+        if (gridColumn?.id) {
           columns.push({
             ...gridColumn,
             cssClass: currentColumn.cssClass,
@@ -240,10 +240,10 @@ export class GridStateService {
   getCurrentFilters(): CurrentFilter[] | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService && backendService.getCurrentFilters) {
+      if (backendService?.getCurrentFilters) {
         return backendService.getCurrentFilters() as CurrentFilter[];
       }
-    } else if (this.filterService && this.filterService.getCurrentLocalFilters) {
+    } else if (this.filterService?.getCurrentLocalFilters) {
       return this.filterService.getCurrentLocalFilters();
     }
     return null;
@@ -254,10 +254,10 @@ export class GridStateService {
    * @return current pagination state
    */
   getCurrentPagination(): CurrentPagination | undefined {
-    if (this._gridOptions.enablePagination) {
-      if (this._gridOptions && this._gridOptions.backendServiceApi) {
+    if (this._gridOptions?.enablePagination) {
+      if (this._gridOptions.backendServiceApi) {
         const backendService = this._gridOptions.backendServiceApi.service;
-        if (backendService && backendService.getCurrentPagination) {
+        if (backendService?.getCurrentPagination) {
           return backendService.getCurrentPagination();
         }
       } else {
@@ -296,12 +296,12 @@ export class GridStateService {
    * @return current sorters
    */
   getCurrentSorters(): CurrentSorter[] | null {
-    if (this._gridOptions && this._gridOptions.backendServiceApi) {
+    if (this._gridOptions?.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService && backendService.getCurrentSorters) {
+      if (backendService?.getCurrentSorters) {
         return backendService.getCurrentSorters() as CurrentSorter[];
       }
-    } else if (this.sortService && this.sortService.getCurrentLocalSorters) {
+    } else if (this.sortService?.getCurrentLocalSorters) {
       return this.sortService.getCurrentLocalSorters();
     }
     return null;
@@ -310,7 +310,7 @@ export class GridStateService {
   /** Check whether the row selection needs to be preserved */
   needToPreserveRowSelection(): boolean {
     let preservedRowSelection = false;
-    if (this._gridOptions && this._gridOptions.dataView && this._gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+    if (this._gridOptions?.dataView && this._gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
       const syncGridSelection = this._gridOptions.dataView.syncGridSelection;
       if (typeof syncGridSelection === 'boolean') {
         preservedRowSelection = this._gridOptions.dataView.syncGridSelection as boolean;
@@ -351,8 +351,8 @@ export class GridStateService {
   resetRowSelectionWhenRequired() {
     if (!this.needToPreserveRowSelection() && (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector)) {
       // this also requires the Row Selection Model to be registered as well
-      const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
-      if (rowSelectionExtension && rowSelectionExtension.instance) {
+      const rowSelectionExtension = this.extensionService?.getExtensionByName?.(ExtensionName.rowSelection);
+      if (rowSelectionExtension?.instance) {
         this._grid.setSelectedRows([]);
       }
     }
@@ -435,12 +435,12 @@ export class GridStateService {
    * @param grid
    */
   private bindExtensionAddonEventToGridStateChange(extensionName: ExtensionName, eventName: string) {
-    const extension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(extensionName);
-    const slickEvent = extension && extension.instance && extension.instance[eventName];
+    const extension = this.extensionService?.getExtensionByName?.(extensionName);
+    const slickEvent = extension?.instance?.[eventName];
 
     if (slickEvent && slickEvent.subscribe) {
-      this._eventHandler.subscribe(slickEvent, (e: Event, args: any) => {
-        const columns: Column[] = args && args.columns;
+      this._eventHandler.subscribe(slickEvent, (_e: Event, args: any) => {
+        const columns: Column[] = args?.columns;
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
       });
@@ -543,7 +543,7 @@ export class GridStateService {
           // this could happen if the previous step was a page change
           const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
-          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+          if (!dequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes) && this._gridOptions.enablePagination) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
 

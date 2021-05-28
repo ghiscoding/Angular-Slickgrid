@@ -166,8 +166,8 @@ export class SortService {
           }
         }
       } else if (this._isBackendGrid) {
-        const backendService = this._gridOptions && this._gridOptions.backendServiceApi && this._gridOptions.backendServiceApi.service;
-        if (backendService && backendService.clearSorters) {
+        const backendService = this._gridOptions?.backendServiceApi?.service;
+        if (backendService?.clearSorters) {
           backendService.clearSorters();
         }
       }
