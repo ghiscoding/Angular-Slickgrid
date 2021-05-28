@@ -140,7 +140,7 @@ export class CompoundInputFilter implements Filter {
   setValues(values: SearchTerm[] | SearchTerm, operator?: OperatorType | OperatorString) {
     if (values) {
       const newValue = Array.isArray(values) ? values[0] : values;
-      this._filterInputElm.value = `${newValue}`;
+      this._filterInputElm.value = `${newValue ?? ''}`;
     }
 
     // set the operator, in the DOM as well, when defined
@@ -157,16 +157,19 @@ export class CompoundInputFilter implements Filter {
 
   protected buildInputElement(): HTMLInputElement {
     const columnId = this.columnDef?.id ?? '';
-    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-    if (this.columnFilter && this.columnFilter.placeholder) {
+
+    // create the DOM element & add an ID and filter class
+    let placeholder = this.gridOptions?.defaultFilterPlaceholder ?? '';
+    if (this.columnFilter?.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
+
     const inputElm = document.createElement('input');
     inputElm.type = this._inputType || 'text';
     inputElm.className = `form-control compound-input filter-${columnId}`;
-    inputElm.dataset.role = 'presentation';
     inputElm.autocomplete = 'off';
     inputElm.placeholder = placeholder;
+    inputElm.setAttribute('role', 'presentation');
 
     return inputElm;
   }
@@ -257,7 +260,7 @@ export class CompoundInputFilter implements Filter {
     // create the DOM element & add an ID and filter class
     filterContainerElm.appendChild(containerInputGroupElm);
 
-    this._filterInputElm.value = `${searchTerm}`;
+    this._filterInputElm.value = `${searchTerm ?? ''}`;
     this._filterInputElm.dataset.columnid = `${columnId}`;
 
     if (this.operator) {
