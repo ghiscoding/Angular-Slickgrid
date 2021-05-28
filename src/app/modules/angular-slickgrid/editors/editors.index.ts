@@ -3,12 +3,12 @@ import { CheckboxEditor } from './checkboxEditor';
 import { DateEditor } from './dateEditor';
 import { DualInputEditor } from './dualInputEditor';
 import { FloatEditor } from './floatEditor';
+import { InputEditor } from './inputEditor';
 import { IntegerEditor } from './integerEditor';
 import { LongTextEditor } from './longTextEditor';
 import { MultipleSelectEditor } from './multipleSelectEditor';
 import { SingleSelectEditor } from './singleSelectEditor';
 import { SliderEditor } from './sliderEditor';
-import { InputEditor } from './textEditor';
 
 export const Editors = {
   /** AutoComplete Editor (using jQuery UI autocomplete feature) */
@@ -23,10 +23,10 @@ export const Editors = {
   /** Dual Input Editor, default input type is text but it could be (integer/float/number/password/text) */
   dualInput: DualInputEditor,
 
-  /** Float Number Editor */
+  /** Float Number Editor using an input of type "number" */
   float: FloatEditor,
 
-  /** Integer Editor */
+  /** Integer Number Editor using an input of type "number" */
   integer: IntegerEditor,
 
   /** Long Text Editor (uses a textarea) */
@@ -38,9 +38,9 @@ export const Editors = {
   /** Single Select editor (which uses 3rd party lib "multiple-select.js") */
   singleSelect: SingleSelectEditor,
 
-  /** Slider Editor */
+  /** Slider Editor using an input of type "range" */
   slider: SliderEditor,
 
-  /** Text Editor */
+  /** Text Editor using an input of type "text" */
   text: InputEditor
 };

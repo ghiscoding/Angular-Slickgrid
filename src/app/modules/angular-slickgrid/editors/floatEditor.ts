@@ -1,7 +1,7 @@
 import { EditorArguments, EditorValidatorOutput, KeyCode } from './../models/index';
 import { getDescendantProperty } from '../services/utilities';
 import { floatValidator } from '../editorValidators/floatValidator';
-import { InputEditor } from './textEditor';
+import { InputEditor } from './inputEditor';
 
 const DEFAULT_DECIMAL_PLACES = 0;
 

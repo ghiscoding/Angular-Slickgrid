@@ -1,4 +1,4 @@
-import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, GridOption, KeyCode, SlickGrid } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, GridOption, KeyCode, SlickGrid } from '../models/index';
 import { getDescendantProperty, setDeepValue } from '../services/utilities';
 import { textValidator } from '../editorValidators/textValidator';
 import { BindingEventService } from '../services/bindingEvent.service';

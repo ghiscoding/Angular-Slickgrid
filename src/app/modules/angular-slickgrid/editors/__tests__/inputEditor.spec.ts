@@ -1,5 +1,5 @@
 import { Editors } from '../index';
-import { InputEditor } from '../textEditor';
+import { InputEditor } from '../inputEditor';
 import { AutocompleteOption, Column, ColumnEditor, EditorArguments, GridOption, KeyCode } from '../../models';
 
 const KEY_CHAR_A = 97;
@@ -30,7 +30,7 @@ const gridStub = {
   render: jest.fn(),
 };
 
-describe('InputEditor', () => {
+describe('InputEditor (TextEditor)', () => {
   let divContainer: HTMLDivElement;
   let editor: InputEditor;
   let editorArguments: EditorArguments;

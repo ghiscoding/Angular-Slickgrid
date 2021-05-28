@@ -1,7 +1,7 @@
 import { EditorArguments, EditorValidatorOutput, KeyCode } from './../models/index';
 import { getDescendantProperty } from '../services/utilities';
 import { integerValidator } from '../editorValidators/integerValidator';
-import { InputEditor } from './textEditor';
+import { InputEditor } from './inputEditor';
 
 export class IntegerEditor extends InputEditor {
   constructor(protected readonly args: EditorArguments) {
