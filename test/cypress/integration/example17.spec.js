@@ -45,7 +45,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
       .should('have.length', 4);
   });
 
-  it('should expect row to be moved to another row index', () => {
+  it('should expect the row to have moved to another row index', () => {
     cy.get('.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');
 
@@ -62,8 +62,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
   it('should uncheck all rows', () => {
     // click twice to check then uncheck all
     cy.get('.slick-headerrow-column input[type=checkbox]')
-      .click({ force: true });
-    cy.get('.slick-headerrow-column input[type=checkbox]')
+      .click({ force: true })
       .click({ force: true });
   });
 
