@@ -1,9 +1,5 @@
 /// <reference types="cypress" />
 
-function removeExtraSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, ' ').trim();
-}
-
 describe('Example 23 - Grid AutoHeight', { retries: 1 }, () => {
   const fullTitles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
   const GRID_ROW_HEIGHT = 35;
