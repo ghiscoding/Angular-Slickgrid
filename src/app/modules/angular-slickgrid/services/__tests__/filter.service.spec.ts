@@ -1,8 +1,7 @@
 // import 3rd party lib multiple-select for the tests
 import '../../../../../assets/lib/multiple-select/multiple-select';
 
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import {
@@ -17,13 +16,15 @@ import {
   MenuCommandItem,
   SlickEventHandler,
 } from '../../models';
-import { Filters } from '../../filters';
+import { Filters, InputFilter, NativeSelectFilter } from '../../filters';
 import { FilterService } from '../filter.service';
 import { FilterFactory } from '../../filters/filterFactory';
 import { getParsedSearchTermsByFieldType } from '../../filter-conditions';
 import { SharedService } from '../shared.service';
-import { CollectionService, SlickgridConfig } from '../../index';
+import { CollectionService } from '../../index';
+import { SlickgridConfig } from '../../slickgrid-config';
 import * as utilities from '../../services/backend-utilities';
+import { TranslateServiceStub } from '../../../../../../test/translateServiceStub';
 
 const mockRefreshBackendDataset = jest.fn();
 // @ts-ignore
@@ -93,39 +94,36 @@ const gridStub = {
   onHeaderRowCellRendered: new Slick.Event(),
   render: jest.fn(),
   setColumns: jest.fn(),
-  setOptions: jest.fn(),
   setHeaderRowVisibility: jest.fn(),
   setSortColumns: jest.fn(),
+  setOptions: jest.fn(),
 };
 
 describe('FilterService', () => {
   let service: FilterService;
   let sharedService: SharedService;
+  let collectionService: CollectionService;
+  let slickgridConfig: SlickgridConfig;
   let slickgridEventHandler: SlickEventHandler;
+  let translateService: TranslateService;
   const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     // define a <div> container to simulate a row detail DOM element
     const div = document.createElement('div');
     div.innerHTML = `<div id="${DOM_ELEMENT_ID}">some text</div>`;
     document.body.appendChild(div);
 
-    TestBed.configureTestingModule({
-      providers: [
-        FilterService,
-        CollectionService,
-        FilterFactory,
-        SharedService,
-        SlickgridConfig,
-      ],
-      imports: [
-        TranslateModule.forRoot()
-      ]
-    });
-    service = TestBed.inject(FilterService);
-    sharedService = TestBed.inject(SharedService);
+    sharedService = new SharedService();
+    slickgridConfig = new SlickgridConfig();
+    slickgridConfig.options.defaultFilter = InputFilter;
+    translateService = new TranslateServiceStub() as unknown as TranslateService;
+    collectionService = new CollectionService(translateService);
+    const filterFactory = new FilterFactory(slickgridConfig, translateService, collectionService);
+    service = new FilterService(filterFactory, sharedService);
     slickgridEventHandler = service.eventHandler;
-  }));
+    jest.spyOn(gridStub, 'getHeaderRowColumn').mockReturnValue(div);
+  });
 
   afterEach(() => {
     delete gridOptionMock.backendServiceApi;
@@ -167,7 +165,7 @@ describe('FilterService', () => {
 
       expect(columnFilters).toEqual({});
       expect(filterMetadataArray.length).toBe(1);
-      expect(filterMetadataArray[0]).toContainEntry(['$filterElm', expect.anything()]);
+      expect(filterMetadataArray[0] instanceof InputFilter).toBeTruthy();
       expect(filterMetadataArray[0]).toContainEntry(['searchTerms', []]);
     });
 
@@ -175,7 +173,7 @@ describe('FilterService', () => {
       const mockColumn = {
         id: 'isActive', field: 'isActive', filterable: true, type: FieldType.boolean,
         filter: {
-          model: Filters.singleSelect, searchTerms: [true], collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }],
+          model: Filters.select, searchTerms: [true], collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }],
         }
       } as Column;
       const mockArgs = { grid: gridStub, column: mockColumn, node: document.getElementById(DOM_ELEMENT_ID), };
@@ -192,7 +190,7 @@ describe('FilterService', () => {
         isActive: { columnDef: mockColumn, columnId: 'isActive', operator: 'EQ', searchTerms: [true], parsedSearchTerms: true, type: FieldType.boolean },
       });
       expect(filterMetadataArray.length).toBe(1);
-      expect(filterMetadataArray[0]).toContainEntry(['$filterElm', expect.anything()]);
+      expect(filterMetadataArray[0] instanceof NativeSelectFilter).toBeTruthy();
       expect(filterMetadataArray[0]).toContainEntry(['searchTerms', [true]]);
     });
 
@@ -252,7 +250,7 @@ describe('FilterService', () => {
 
       expect(columnFilters).toEqual({});
       expect(filterMetadataArray.length).toBe(1);
-      expect(filterMetadataArray[0]).toContainEntry(['$filterElm', expect.anything()]);
+      expect(filterMetadataArray[0] instanceof InputFilter).toBeTruthy();
       expect(filterMetadataArray[0]).toContainEntry(['searchTerms', []]);
     });
 
@@ -384,7 +382,7 @@ describe('FilterService', () => {
       service.bindLocalOnFilter(gridStub);
       mockArgs.column.filter = { emptySearchTermReturnAllValues: false };
       gridStub.onHeaderRowCellRendered.notify(mockArgs as any, new Slick.EventData(), gridStub);
-      service.getFiltersMetadata()[0].callback(new CustomEvent('input'), { columnDef: mockColumn, operator: 'EQ', searchTerms: [''], shouldTriggerQuery: true });
+      service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn, operator: 'EQ', searchTerms: [''], shouldTriggerQuery: true });
 
       expect(service.getColumnFilters()).toContainEntry(['firstName', expectationColumnFilter]);
       expect(spySearchChange).toHaveBeenCalledWith({
@@ -431,9 +429,10 @@ describe('FilterService', () => {
         service: backendServiceStub,
         process: () => of([]),
       };
-      mockColumn1 = { id: 'firstName', field: 'firstName', filterable: true } as Column;
-      mockColumn2 = { id: 'lastName', field: 'lastName', filterable: true } as Column;
-      mockColumn3 = { id: 'age', field: 'age', filterable: true } as Column;
+      mockColumn1 = { id: 'firstName', field: 'firstName', filterable: true, filter: { model: Filters.input } } as Column;
+      mockColumn2 = { id: 'lastName', field: 'lastName', filterable: true, filter: { model: Filters.inputText } } as Column;
+      mockColumn3 = { id: 'age', field: 'age', filterable: true, filter: { model: Filters.inputNumber } } as Column;
+
       const mockArgs1 = { grid: gridStub, column: mockColumn1, node: document.getElementById(DOM_ELEMENT_ID) };
       const mockArgs2 = { grid: gridStub, column: mockColumn2, node: document.getElementById(DOM_ELEMENT_ID) };
       const mockArgs3 = { grid: gridStub, column: mockColumn3, node: document.getElementById(DOM_ELEMENT_ID) };
@@ -443,6 +442,7 @@ describe('FilterService', () => {
       gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
       gridStub.onHeaderRowCellRendered.notify(mockArgs3, new Slick.EventData(), gridStub);
+      service.getFiltersMetadata()[1].callback(new Event('input'), { columnDef: mockColumn3 });
       service.getFiltersMetadata()[0].callback(new Event('input'), { columnDef: mockColumn1, operator: 'EQ', searchTerms: ['John'], shouldTriggerQuery: true });
       service.getFiltersMetadata()[1].callback(new Event('input'), { columnDef: mockColumn2, operator: 'NE', searchTerms: ['Doe'], shouldTriggerQuery: true });
     });
@@ -1547,7 +1547,7 @@ describe('FilterService', () => {
       expect(spySetSortCols).toHaveBeenCalledWith([{ columnId: 'file', sortAsc: true }]);
       expect(columnFilters).toEqual({});
       expect(filterMetadataArray.length).toBe(1);
-      expect(filterMetadataArray[0]).toContainEntry(['$filterElm', expect.anything()]);
+      expect(filterMetadataArray[0] instanceof InputFilter).toBeTruthy();
       expect(filterMetadataArray[0]).toContainEntry(['searchTerms', []]);
     });
 
