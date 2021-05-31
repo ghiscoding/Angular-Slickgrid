@@ -16,8 +16,17 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
   });
 
-  it('should drag opened Row Detail to another position in the grid', () => {
+  it('should have 4 rows selected count shown in the grid left footer', () => {
+    cy.get('.slick-custom-footer')
+      .find('div.left-footer')
+      .should($span => {
+        expect($span.text()).to.eq(`4 items selected`);
+      });
+  });
+
+  it('should drag opened row to another position in the grid', () => {
     cy.get('[style="top:35px"] > .slick-cell.cell-reorder').as('moveIconTask1');
+    cy.get('[style="top:70px"] > .slick-cell.cell-reorder').as('moveIconTask2');
     cy.get('[style="top:105px"] > .slick-cell.cell-reorder').as('moveIconTask3');
 
     cy.get('@moveIconTask3').should('have.length', 1);
@@ -30,11 +39,13 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
       .trigger('mousemove', 'bottomRight')
       .trigger('mouseup', 'bottomRight', { force: true });
 
+    cy.get('@moveIconTask2').trigger('mouseover', { force: true });
+
     cy.get('input[type="checkbox"]:checked')
-      .should('have.length', 0);
+      .should('have.length', 4);
   });
 
-  it('should expect row to be moved to another row index', () => {
+  it('should expect the row to have moved to another row index', () => {
     cy.get('.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');
 
@@ -45,10 +56,25 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
     cy.get('[style="top:140px"] > .slick-cell:nth(2)').should('contain', 'Task 4');
 
     cy.get('input[type="checkbox"]:checked')
-      .should('have.length', 0);
+      .should('have.length', 4);
   });
 
-  it('should select 2 rows (Task 3,4), then move row and expect the 2 rows to still be selected without any others', () => {
+  it('should uncheck all rows', () => {
+    // click twice to check then uncheck all
+    cy.get('.slick-headerrow-column input[type=checkbox]')
+      .click({ force: true })
+      .click({ force: true });
+  });
+
+  it('should have 0 row selected count shown in the grid left footer', () => {
+    cy.get('.slick-custom-footer')
+      .find('div.left-footer')
+      .should($span => {
+        expect($span.text()).to.eq(`0 items selected`);
+      });
+  });
+
+  it('should select 2 rows (Task 3,4), then move the rows and expect both rows to still be selected without any other rows', () => {
     cy.get('[style="top:70px"] > .slick-cell:nth(1)').click();
     cy.get('[style="top:140px"] > .slick-cell:nth(1)').click();
 

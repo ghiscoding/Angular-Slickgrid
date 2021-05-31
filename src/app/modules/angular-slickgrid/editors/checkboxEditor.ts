@@ -44,8 +44,8 @@ export class CheckboxEditor implements Editor {
     return this._input;
   }
 
-  get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+  get hasAutoCommitEdit(): boolean {
+    return this.gridOptions.autoCommitEdit ?? false;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */

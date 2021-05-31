@@ -28,9 +28,9 @@ export class InputMaskFilter extends InputFilter {
     this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // get input mask from params (can be in columnDef or columnFilter params)
-    if (this.columnDef && this.columnDef.params && this.columnDef.params.mask) {
+    if (this.columnDef?.params?.mask) {
       this._inputMask = this.columnDef.params.mask;
-    } else if (this.columnFilter && this.columnFilter.params && this.columnFilter.params.mask) {
+    } else if (this.columnFilter?.params?.mask) {
       this._inputMask = this.columnFilter.params.mask;
     }
 
@@ -42,47 +42,50 @@ export class InputMaskFilter extends InputFilter {
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
     const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
-    // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString();
+    // step 1, create the DOM Element of the filter & initialize it if searchTerm is filled
+    this._filterElm = this.createDomElement(searchTerm);
 
-    // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
-    this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
-
-    // step 3, subscribe to the input change event and run the callback when that happens
+    // step 2, subscribe to the input event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
+    // we'll use all necessary events to cover the following (keyup, change, mousewheel & spinner)
+    this._bindEventService.bind(this._filterElm, ['keyup', 'blur', 'change'], this.handleInputChange.bind(this));
+  }
 
-    this.$filterElm.on('keyup blur change', (e: any) => {
-      let value = '';
-      if (e && e.target && e.target.value) {
-        let targetValue = e.target.value;
-        const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
-        if (typeof targetValue === 'string' && enableWhiteSpaceTrim) {
-          targetValue = targetValue.trim();
-        }
-
-        // if it has a mask, we need to do a bit more work
-        // and replace the filter string by the masked output without triggering an event
-        const unmaskedValue = this.unmaskValue(targetValue);
-        const maskedValue = this.maskValue(unmaskedValue);
-        value = unmaskedValue;
-
-        if (e.keyCode >= 48) {
-          this.$filterElm.val(maskedValue); // replace filter string with masked string
-          e.preventDefault();
-        }
+  /**
+   * Event handler to cover the following (keyup, change, mousewheel & spinner)
+   * We will trigger the Filter Service callback from this handler
+   */
+  protected handleInputChange(event: Event) {
+    let value = '';
+    if ((event?.target as HTMLInputElement)?.value) {
+      let targetValue = (event?.target as HTMLInputElement)?.value ?? '';
+      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+      if (typeof targetValue === 'string' && enableWhiteSpaceTrim) {
+        targetValue = targetValue.trim();
       }
 
-      if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-        this.$filterElm.removeClass('filled');
-      } else {
-        this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+      // if it has a mask, we need to do a bit more work
+      // and replace the filter string by the masked output without triggering an event
+      const unmaskedValue = this.unmaskValue(targetValue);
+      const maskedValue = this.maskValue(unmaskedValue);
+      value = unmaskedValue;
+
+      if ((event as KeyboardEvent)?.keyCode >= 48) {
+        this._filterElm.value = maskedValue; // replace filter string with masked string
+        event.preventDefault();
       }
-      // reset both flags for next use
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
-    });
+    }
+
+    if (this._clearFilterTriggered) {
+      this.callback(event, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this._filterElm.classList.remove('filled');
+    } else {
+      this._filterElm.classList.add('filled');
+      this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+    }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 
   /** From a regular string, we will use the mask to output a new string */

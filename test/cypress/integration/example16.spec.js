@@ -172,7 +172,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
       .children('.slick-header-column:nth(2)')
       .trigger('mouseover')
       .children('.slick-header-menubutton')
-      .should('be.hidden')
+      // .should('be.hidden')
       .invoke('show')
       .click();
 

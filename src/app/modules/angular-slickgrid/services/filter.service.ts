@@ -95,9 +95,8 @@ export class FilterService {
 
   dispose() {
     // unsubscribe all SlickGrid events
-    if (this._eventHandler && this._eventHandler.unsubscribeAll) {
-      this._eventHandler.unsubscribeAll();
-    }
+    this._eventHandler.unsubscribeAll();
+
     if (isObservable(this.httpCancelRequests$)) {
       this.httpCancelRequests$.next(); // this cancels any pending http requests
       this.httpCancelRequests$.complete();
@@ -110,20 +109,12 @@ export class FilterService {
    * Dispose of the filters, since it's a singleton, we don't want to affect other grids with same columns
    */
   disposeColumnFilters() {
-    // we need to loop through all columnFilters and delete them 1 by 1
-    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
-    if (typeof this._columnFilters === 'object') {
-      for (const columnId in this._columnFilters) {
-        if (columnId && this._columnFilters[columnId]) {
-          delete this._columnFilters[columnId];
-        }
-      }
-    }
+    this.resetColumnFilters();
 
     // also destroy each Filter instances
     if (Array.isArray(this._filtersMetadata)) {
-      this._filtersMetadata.forEach((filter) => {
-        if (filter && filter.destroy) {
+      this._filtersMetadata.forEach(filter => {
+        if (filter?.destroy) {
           filter.destroy();
         }
       });
@@ -180,7 +171,6 @@ export class FilterService {
    */
   bindLocalOnFilter(grid: any) {
     this._filtersMetadata = [];
-
     this._dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid, dataView: this._dataView });
     this._dataView.setFilter(this.customLocalFilter.bind(this));
 
@@ -228,7 +218,7 @@ export class FilterService {
 
     // find the filter object and call its clear method with true (the argument tells the method it was called by a clear filter)
     const colFilter: Filter | undefined = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
-    if (colFilter && colFilter.clear) {
+    if (colFilter?.clear) {
       colFilter.clear(true);
     }
 
@@ -246,7 +236,7 @@ export class FilterService {
   /** Clear the search filters (below the column titles) */
   clearFilters(triggerChange = true) {
     this._filtersMetadata.forEach((filter: Filter) => {
-      if (filter && filter.clear) {
+      if (filter?.clear) {
         // clear element but don't trigger individual clear change,
         // we'll do 1 trigger for all filters at once afterward
         filter.clear(false);
@@ -272,7 +262,7 @@ export class FilterService {
     }
 
     // when using backend service, we need to query only once so it's better to do it here
-    const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+    const backendApi = this._gridOptions?.backendServiceApi;
     if (backendApi && triggerChange) {
       const callbackArgs = { clearFilterTriggered: true, shouldTriggerQuery: triggerChange, grid: this._grid, columnFilters: this._columnFilters };
       const queryResponse = backendApi.service.processOnFilterChanged(undefined, callbackArgs as FilterChangedArgs);
@@ -281,12 +271,12 @@ export class FilterService {
         console.warn(`[Angular-Slickgrid] please note that the "processOnFilterChanged" from your Backend Service, should now return a string instead of a Promise.
           Returning a Promise will be deprecated in the future.`);
         queryResponse.then((query: string) => {
-          const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+          const totalItems = this._gridOptions?.pagination?.totalItems ?? 0;
           executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
         });
       } else {
         const query = queryResponse as string;
-        const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+        const totalItems = this._gridOptions?.pagination?.totalItems ?? 0;
         executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
       }
     }
@@ -693,7 +683,7 @@ export class FilterService {
    * we need to do this because Tree Data is the only type of grid that requires a pre-filter (preFilterTreeData) to be executed before the final filtering
    * @param {Array<Object>} [items] - optional flat array of parent/child items to use while redoing the full sort & refresh
    */
-   refreshTreeDataFilters(items?: any[]) {
+  refreshTreeDataFilters(items?: any[]) {
     const inputItems = items ?? this._dataView.getItems();
     if (this._dataView && this._gridOptions?.enableTreeData) {
       this._tmpPreFilteredData = this.preFilterTreeData(inputItems, this._columnFilters);
