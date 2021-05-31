@@ -1,7 +1,6 @@
 import { Editors } from '../index';
-import { TextEditor } from '../textEditor';
-import { AutocompleteOption, Column, EditorArguments, GridOption, KeyCode } from '../../models';
-import { ColumnEditor } from '../../../../../../dist/public_api';
+import { InputPasswordEditor } from '../inputPasswordEditor';
+import { AutocompleteOption, Column, ColumnEditor, EditorArguments, GridOption, KeyCode } from '../../models';
 
 const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
@@ -31,9 +30,9 @@ const gridStub = {
   render: jest.fn(),
 };
 
-describe('TextEditor', () => {
+describe('InputPasswordEditor', () => {
   let divContainer: HTMLDivElement;
-  let editor: TextEditor;
+  let editor: InputPasswordEditor;
   let editorArguments: EditorArguments;
   let mockColumn: Column;
   let mockItemData: any;
@@ -63,7 +62,7 @@ describe('TextEditor', () => {
   describe('with invalid Editor instance', () => {
     it('should throw an error when trying to call init without any arguments', (done) => {
       try {
-        editor = new TextEditor(null as any);
+        editor = new InputPasswordEditor(null as any);
       } catch (e) {
         expect(e.toString()).toContain(`[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.`);
         done();
@@ -85,13 +84,13 @@ describe('TextEditor', () => {
     });
 
     it('should initialize the editor', () => {
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorCount = divContainer.querySelectorAll('input.editor-text.editor-title').length;
       expect(editorCount).toBe(1);
     });
 
     it('should initialize the editor and focus on the element after a small delay', () => {
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorCount = divContainer.querySelectorAll('input.editor-text.editor-title').length;
 
       jest.runAllTimers(); // fast-forward timer
@@ -101,7 +100,7 @@ describe('TextEditor', () => {
 
     it('should initialize the editor even when user define his own editor options', () => {
       (mockColumn.internalColumnEditor as ColumnEditor).editorOptions = { minLength: 3 } as AutocompleteOption;
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorCount = divContainer.querySelectorAll('input.editor-text.editor-title').length;
 
       expect(editorCount).toBe(1);
@@ -111,7 +110,7 @@ describe('TextEditor', () => {
       const testValue = 'test placeholder';
       (mockColumn.internalColumnEditor as ColumnEditor).placeholder = testValue;
 
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorElm = divContainer.querySelector('input.editor-text.editor-title') as HTMLInputElement;
 
       expect(editorElm.placeholder).toBe(testValue);
@@ -121,7 +120,7 @@ describe('TextEditor', () => {
       const testValue = 'test title';
       (mockColumn.internalColumnEditor as ColumnEditor).title = testValue;
 
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorElm = divContainer.querySelector('input.editor-text.editor-title') as HTMLInputElement;
 
       expect(editorElm.title).toBe(testValue);
@@ -134,20 +133,20 @@ describe('TextEditor', () => {
         alwaysSaveOnEnterKey: false,
       };
 
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
 
       expect(editor.columnEditor).toEqual(mockColumn.internalColumnEditor);
     });
 
     it('should call "setValue" and expect the DOM element value to be the same string when calling "getValue"', () => {
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       editor.setValue('task 1');
 
       expect(editor.getValue()).toBe('task 1');
     });
 
     it('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       editor.loadValue(mockItemData);
       const editorElm = editor.editorDomElement;
 
@@ -158,7 +157,7 @@ describe('TextEditor', () => {
       const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KeyCode.LEFT, bubbles: true, cancelable: true });
       const spyEvent = jest.spyOn(event, 'stopImmediatePropagation');
 
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorElm = divContainer.querySelector('input.editor-title') as HTMLInputElement;
 
       editor.focus();
@@ -171,7 +170,7 @@ describe('TextEditor', () => {
       const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KeyCode.RIGHT, bubbles: true, cancelable: true });
       const spyEvent = jest.spyOn(event, 'stopImmediatePropagation');
 
-      editor = new TextEditor(editorArguments);
+      editor = new InputPasswordEditor(editorArguments);
       const editorElm = divContainer.querySelector('input.editor-title') as HTMLInputElement;
 
       editor.focus();
@@ -184,7 +183,7 @@ describe('TextEditor', () => {
       it('should return True when previously dispatched keyboard event is a new char "a"', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.setValue('z');
         const editorElm = divContainer.querySelector('input.editor-title') as HTMLInputElement;
 
@@ -197,7 +196,7 @@ describe('TextEditor', () => {
       it('should return False when previously dispatched keyboard event is same string number as current value', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const editorElm = divContainer.querySelector('input.editor-title') as HTMLInputElement;
 
         editor.loadValue({ id: 1, title: 'a', isActive: true });
@@ -211,7 +210,7 @@ describe('TextEditor', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KeyCode.ENTER, bubbles: true, cancelable: true });
         (mockColumn.internalColumnEditor as ColumnEditor).alwaysSaveOnEnterKey = true;
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const editorElm = divContainer.querySelector('input.editor-title') as HTMLInputElement;
 
         editor.focus();
@@ -226,7 +225,7 @@ describe('TextEditor', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).validator = null as any;
         mockItemData = { id: 1, title: 'task 1', isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.applyValue(mockItemData, 'task 2');
 
         expect(mockItemData).toEqual({ id: 1, title: 'task 2', isActive: true });
@@ -237,7 +236,7 @@ describe('TextEditor', () => {
         mockColumn.field = 'part.title';
         mockItemData = { id: 1, part: { title: 'task 1' }, isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.applyValue(mockItemData, 'task 2');
 
         expect(mockItemData).toEqual({ id: 1, part: { title: 'task 2' }, isActive: true });
@@ -252,7 +251,7 @@ describe('TextEditor', () => {
         };
         mockItemData = { id: 1, title: 'task 1', isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.applyValue(mockItemData, 'task 2');
 
         expect(mockItemData).toEqual({ id: 1, title: '', isActive: true });
@@ -263,7 +262,7 @@ describe('TextEditor', () => {
       it('should return serialized value as a string', () => {
         mockItemData = { id: 1, title: 'task 1', isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
@@ -273,7 +272,7 @@ describe('TextEditor', () => {
       it('should return serialized value as an empty string when item value is also an empty string', () => {
         mockItemData = { id: 1, title: '', isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
@@ -283,7 +282,7 @@ describe('TextEditor', () => {
       it('should return serialized value as an empty string when item value is null', () => {
         mockItemData = { id: 1, title: null, isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
@@ -294,7 +293,7 @@ describe('TextEditor', () => {
         mockColumn.field = 'task.title';
         mockItemData = { id: 1, task: { title: 'task 1' }, isActive: true };
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
@@ -312,7 +311,7 @@ describe('TextEditor', () => {
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.setValue('task 21');
         editor.save();
@@ -325,7 +324,7 @@ describe('TextEditor', () => {
         gridOptionMock.autoCommitEdit = false;
         const spy = jest.spyOn(editorArguments, 'commitChanges');
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.setValue('task 21');
         editor.save();
@@ -339,7 +338,7 @@ describe('TextEditor', () => {
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.setValue('');
         editor.save();
@@ -352,7 +351,7 @@ describe('TextEditor', () => {
         gridOptionMock.autoCommitEdit = true;
         const spyCommit = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         editor.loadValue(mockItemData);
         editor.setValue('task 21');
         const spySave = jest.spyOn(editor, 'save');
@@ -369,7 +368,7 @@ describe('TextEditor', () => {
     describe('validate method', () => {
       it('should return False when field is required and field is empty', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).required = true;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('');
 
         expect(validation).toEqual({ valid: false, msg: 'Field is required' });
@@ -377,7 +376,7 @@ describe('TextEditor', () => {
 
       it('should return True when field is required and input is a valid input value', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).required = true;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -385,7 +384,7 @@ describe('TextEditor', () => {
 
       it('should return False when field is lower than a minLength defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 5;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is at least 5 character(s)' });
@@ -394,7 +393,7 @@ describe('TextEditor', () => {
       it('should return False when field is lower than a minLength defined using exclusive operator', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 5;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'exclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is more than 5 character(s)' });
@@ -402,7 +401,7 @@ describe('TextEditor', () => {
 
       it('should return True when field is equal to the minLength defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 4;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -410,7 +409,7 @@ describe('TextEditor', () => {
 
       it('should return False when field is greater than a maxLength defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });
@@ -419,7 +418,7 @@ describe('TextEditor', () => {
       it('should return False when field is greater than a maxLength defined using exclusive operator', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'exclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 10 characters' });
@@ -427,7 +426,7 @@ describe('TextEditor', () => {
 
       it('should return True when field is equal to the maxLength defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 16;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -436,7 +435,7 @@ describe('TextEditor', () => {
       it('should return True when field is equal to the maxLength defined and "operatorType" is set to "inclusive"', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 16;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'inclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -445,7 +444,7 @@ describe('TextEditor', () => {
       it('should return False when field is equal to the maxLength defined but "operatorType" is set to "exclusive"', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 16;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'exclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than 16 characters' });
@@ -454,7 +453,7 @@ describe('TextEditor', () => {
       it('should return False when field is not between minLength & maxLength defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 0;
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text length is between 0 and 10 characters' });
@@ -463,7 +462,7 @@ describe('TextEditor', () => {
       it('should return True when field is is equal to maxLength defined when both min/max values are defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 0;
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 16;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text is 16 chars');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -473,7 +472,7 @@ describe('TextEditor', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 4;
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 15;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'inclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: true, msg: '' });
@@ -483,7 +482,7 @@ describe('TextEditor', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).minLength = 4;
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 16;
         (mockColumn.internalColumnEditor as ColumnEditor).operatorConditionalType = 'exclusive';
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation1 = editor.validate('text is 16 chars');
         const validation2 = editor.validate('text');
 
@@ -493,7 +492,7 @@ describe('TextEditor', () => {
 
       it('should return False when field is greater than a maxValue defined', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).maxLength = 10;
-        editor = new TextEditor(editorArguments);
+        editor = new InputPasswordEditor(editorArguments);
         const validation = editor.validate('Task is longer than 10 chars');
 
         expect(validation).toEqual({ valid: false, msg: 'Please make sure your text is less than or equal to 10 characters' });

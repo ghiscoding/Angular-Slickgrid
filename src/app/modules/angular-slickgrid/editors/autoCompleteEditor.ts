@@ -100,8 +100,8 @@ export class AutoCompleteEditor implements Editor {
     return customStructure as CollectionCustomStructure;
   }
 
-  get hasAutoCommitEdit() {
-    return this.gridOptions.autoCommitEdit;
+  get hasAutoCommitEdit(): boolean {
+    return this.gridOptions.autoCommitEdit ?? false;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
