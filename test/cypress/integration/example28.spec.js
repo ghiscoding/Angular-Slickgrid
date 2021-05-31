@@ -137,7 +137,7 @@ describe('Example 28 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
 
   it('should no longer have filters and it should show the full item count in the footer', () => {
     cy.get('.search-filter.filter-percentComplete .operator .form-control')
-      .should('have.value', null);
+      .should('have.value', '');
 
     cy.get('.rangeInput_percentComplete')
       .invoke('val')

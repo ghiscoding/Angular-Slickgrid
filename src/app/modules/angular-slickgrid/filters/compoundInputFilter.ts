@@ -42,12 +42,12 @@ export class CompoundInputFilter implements Filter {
 
   /** Getter for the Grid Options pulled through the Grid Object */
   protected get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    return this.grid?.getOptions?.() ?? {};
   }
 
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter || {};
+    return this.columnDef?.filter ?? {};
   }
 
   /** Getter to know what would be the default operator when none is specified */
@@ -121,7 +121,7 @@ export class CompoundInputFilter implements Filter {
       this._clearFilterTriggered = true;
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
-      this._selectOperatorElm.value = '';
+      this._selectOperatorElm.selectedIndex = 0;
       this._filterInputElm.value = '';
       this.onTriggerEvent(undefined);
     }
@@ -132,8 +132,8 @@ export class CompoundInputFilter implements Filter {
    */
   destroy() {
     this._bindEventService.unbindAll();
-    this._filterElm?.remove?.();
     this._selectOperatorElm?.remove?.();
+    this._filterElm?.remove?.();
   }
 
   /** Set value(s) on the DOM element */
