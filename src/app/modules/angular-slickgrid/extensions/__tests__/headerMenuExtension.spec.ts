@@ -492,7 +492,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true }, false, true);
         expect(setColumnsSpy).toHaveBeenCalled();
       });
 
@@ -505,7 +505,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[1], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, enableMouseWheelScrollHandler: true });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, enableMouseWheelScrollHandler: true }, false, true);
         expect(setColumnsSpy).toHaveBeenCalled();
       });
 
