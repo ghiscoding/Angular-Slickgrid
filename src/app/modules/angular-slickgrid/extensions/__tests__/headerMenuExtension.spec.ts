@@ -472,6 +472,10 @@ describe('headerMenuExtension', () => {
         jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
       });
 
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
       it('should trigger the command "column-resize-by-content" and grid "setOptions" method to be called with current column position', () => {
         const resizerSpy = jest.spyOn(resizerServiceStub, 'handleSingleColumnResizeByContent');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu as HeaderMenu, 'onCommand');
@@ -492,7 +496,7 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true }, false, true);
         expect(setColumnsSpy).toHaveBeenCalled();
       });
 
@@ -505,8 +509,24 @@ describe('headerMenuExtension', () => {
         instance.onCommand.notify({ column: columnsMock[1], grid: gridStub, command: 'freeze-columns' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, enableMouseWheelScrollHandler: true });
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: -1, enableMouseWheelScrollHandler: true }, false, true);
         expect(setColumnsSpy).toHaveBeenCalled();
+      });
+
+      it('should trigger the command "freeze-columns" and expect "setColumns" to be called with same as original even when the column definitions list did not change', () => {
+        const originalColumnDefinitions = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
+        const setOptionsSpy = jest.spyOn(gridStub, 'setOptions');
+        jest.spyOn(gridStub, 'getColumns').mockReturnValue(originalColumnDefinitions);
+        jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(originalColumnDefinitions);
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu as HeaderMenu, 'onCommand');
+
+        const instance = extension.register();
+        instance.onCommand!.notify({ column: originalColumnDefinitions[0], grid: gridStub, command: 'freeze-columns', item: { command: 'freeze-columns' } }, new Slick.EventData(), gridStub);
+
+        expect(onCommandSpy).toHaveBeenCalled();
+        expect(setOptionsSpy).toHaveBeenCalledWith({ frozenColumn: 0, enableMouseWheelScrollHandler: true }, false, true);
+        expect(setColumnsSpy).toHaveBeenCalledWith(originalColumnDefinitions);
       });
 
       it('should trigger the command "hide" and expect the grid "autosizeColumns" method being called', () => {

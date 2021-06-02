@@ -367,7 +367,12 @@ export class HeaderMenuExtension implements Extension {
           const visibleColumns = [...this.sharedService.visibleColumns];
           const columnPosition = visibleColumns.findIndex((col) => col.id === args.column.id);
           const newGridOptions = { frozenColumn: columnPosition, enableMouseWheelScrollHandler: true };
-          this.sharedService.grid.setOptions(newGridOptions);
+
+          // to circumvent a bug in SlickGrid core lib, let's keep the columns positions ref and re-apply them after calling setOptions
+          // the bug is highlighted in this issue comment:: https://github.com/6pac/SlickGrid/issues/592#issuecomment-822885069
+          const previousColumnDefinitions = this.sharedService.grid.getColumns();
+
+          this.sharedService.grid.setOptions(newGridOptions, false, true); // suppress the setColumns (3rd argument) since we'll do that ourselves
           this.sharedService.gridOptions.frozenColumn = newGridOptions.frozenColumn;
           this.sharedService.gridOptions.enableMouseWheelScrollHandler = newGridOptions.enableMouseWheelScrollHandler;
           this.sharedService.frozenVisibleColumnId = args.column.id;
@@ -376,6 +381,9 @@ export class HeaderMenuExtension implements Extension {
           // to make sure that we only use the visible columns, not doing this will have the undesired effect of showing back some of the hidden columns
           if (this.sharedService.hasColumnsReordered || (Array.isArray(this.sharedService.allColumns) && visibleColumns.length !== this.sharedService.allColumns.length)) {
             this.sharedService.grid.setColumns(visibleColumns);
+          } else {
+            // to circumvent a bug in SlickGrid core lib re-apply same column definitions that were backend up before calling setOptions()
+            this.sharedService.grid.setColumns(previousColumnDefinitions);
           }
 
           // we also need to autosize columns if the option is enabled
