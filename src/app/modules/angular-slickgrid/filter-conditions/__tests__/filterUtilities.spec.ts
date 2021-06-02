@@ -187,6 +187,11 @@ describe('filterUtilities', () => {
       expect(output).toBeTruthy();
     });
 
+    it('should return True when value1 is "IN_CONTAINS" value2 collection even if there is extra spaces in the string', () => {
+      const output = testFilterCondition('IN_CONTAINS', 'Task2,  Task3 ', ['Task2', 'Task3']);
+      expect(output).toBeTruthy();
+    });
+
     it('should return False when value1 is not "IN_CONTAINS" value2 collection', () => {
       const output = testFilterCondition('IN_CONTAINS', 'Task11,Task4', ['Task 1', 'Task2', 'Task3']);
       expect(output).toBeFalsy();
@@ -208,6 +213,14 @@ describe('filterUtilities', () => {
     it('should return False when value1 is not "NOT_IN_CONTAINS" value2 collection', () => {
       const output1 = testFilterCondition('NIN_CONTAINS', 'Task2,Task3', ['Task2', 'Task3']);
       const output2 = testFilterCondition('NOT_IN_CONTAINS', 'Task2,Task3', ['Task2', 'Task3']);
+
+      expect(output1).toBeFalsy();
+      expect(output2).toBeFalsy();
+    });
+
+    it('should return False when value1 is not "NOT_IN_CONTAINS" value2 collection even if there is extra spaces in the string', () => {
+      const output1 = testFilterCondition('NIN_CONTAINS', 'Task2,  Task3 ', ['Task2', 'Task3']);
+      const output2 = testFilterCondition('NOT_IN_CONTAINS', 'Task2,  Task3', ['Task2', 'Task3']);
 
       expect(output1).toBeFalsy();
       expect(output2).toBeFalsy();
