@@ -119,7 +119,7 @@ describe('SelectEditor', () => {
         (mockColumn.internalColumnEditor as ColumnEditor).collection = [{ hello: 'world' }];
         editor = new SelectEditor(editorArguments, true);
       } catch (e) {
-        expect(e.toString()).toContain(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list`);
+        expect(e.toString()).toContain(`[Angular-Slickgrid] Select Filter/Editor collection with value/label (or value/labelKey when using Locale) is required to populate the Select list`);
         done();
       }
     });
