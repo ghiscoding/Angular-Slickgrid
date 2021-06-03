@@ -777,6 +777,11 @@ export class GridService {
     // end the bulk transaction since we're all done
     this._dataView.endUpdate();
 
+    if (this._gridOptions?.enableTreeData) {
+      // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
+      this.invalidateHierarchicalDataset();
+    }
+
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (options.highlightRow) {
@@ -818,6 +823,11 @@ export class GridService {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
       this._grid.updateRow(rowNumber);
+
+      if (this._gridOptions?.enableTreeData) {
+        // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
+        this.invalidateHierarchicalDataset();
+      }
 
       // do we want to scroll to the row so that it shows in the Viewport (UI)
       if (options.scrollRowIntoView) {
