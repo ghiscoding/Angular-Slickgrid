@@ -1,8 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { dequal } from 'dequal/lite';
 import { Subscription } from 'rxjs';
-import * as DOMPurify_ from 'dompurify';
-const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 import { Constants } from '../constants';
 import {
@@ -20,8 +18,8 @@ import {
   MultipleSelectOption,
   SelectOption,
 } from './../models/index';
-import { CollectionService } from '../services/index';
-import { findOrDefault, getDescendantProperty, getTranslationPrefix, htmlEncode, setDeepValue } from '../services/utilities';
+import { buildSelectEditorOrFilterDomElement, CollectionService } from '../services/index';
+import { findOrDefault, getDescendantProperty, getTranslationPrefix, setDeepValue } from '../services/utilities';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -568,68 +566,18 @@ export class SelectEditor implements Editor {
     }
 
     // step 1, create HTML string template
-    const editorTemplate = this.buildTemplateHtmlString(newCollection);
+    const selectBuildResult = buildSelectEditorOrFilterDomElement(
+      'editor',
+      newCollection,
+      this.columnDef,
+      this.grid,
+      this.isMultipleSelect,
+      this._translate
+    );
 
     // step 2, create the DOM Element of the editor
-    // also subscribe to the onClose event
-    this.createDomElement(editorTemplate);
-  }
-
-  protected buildTemplateHtmlString(collection: any[]) {
-    let options = '';
-    const fieldId = this.columnDef && this.columnDef.id;
-    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
-    const isRenderHtmlEnabled = this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
-    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-
-    // collection could be an Array of Strings OR Objects
-    if (collection.every(x => typeof x === 'string')) {
-      collection.forEach((option: string) => {
-        options += `<option value="${option}" label="${option}">${option}</option>`;
-      });
-    } else {
-      // array of objects will require a label/value pair unless a customStructure is passed
-      collection.forEach((option: SelectOption) => {
-        if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-          throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
-        }
-        const labelKey = (option.labelKey || option[this.labelName]) as string;
-        const labelText = (option.labelKey || ((this.enableTranslateLabel && this._translate) && labelKey)) ? this._translate && this._translate.instant(labelKey || ' ') : labelKey;
-        let prefixText = option[this.labelPrefixName] || '';
-        let suffixText = option[this.labelSuffixName] || '';
-        let optionLabel = option[this.optionLabel] || '';
-        if (optionLabel && optionLabel.toString) {
-          optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-        }
-
-        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-        prefixText = (this.enableTranslateLabel && this._translate && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
-        suffixText = (this.enableTranslateLabel && this._translate && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
-        optionLabel = (this.enableTranslateLabel && this._translate && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
-
-        // add to a temp array for joining purpose and filter out empty text
-        const tmpOptionArray = [prefixText, labelText, suffixText].filter(text => (text !== undefined && text !== ''));
-        let optionText = tmpOptionArray.join(separatorBetweenLabels);
-
-        // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
-        // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
-        if (isRenderHtmlEnabled) {
-          // sanitize any unauthorized html tags like script and others
-          // for the remaining allowed tags we'll permit all attributes
-          const sanitizedText = (DOMPurify.sanitize(optionText, sanitizedOptions) || '').toString();
-          optionText = htmlEncode(sanitizedText);
-        }
-
-        // html text of each select option
-        let optionValue = option[this.valueName];
-        if (optionValue === undefined || optionValue === null) {
-          optionValue = '';
-        }
-        options += `<option value="${optionValue}" label="${optionLabel}">${optionText}</option>`;
-      });
-    }
-
-    return `<select id="${this.elementName}" class="ms-filter search-filter editor-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+    // we will later also subscribe to the onClose event to save the Editor whenever that event is triggered
+    this.createDomElement(selectBuildResult.selectElement);
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
@@ -647,9 +595,12 @@ export class SelectEditor implements Editor {
     return blankEntry;
   }
 
-  /** Build the template HTML string */
-  protected createDomElement(editorTemplate: string) {
-    this.$editorElm = $(editorTemplate);
+  /**
+   * From the Select DOM Element created earlier, create a Multiple/Single Select Editor using the jQuery multiple-select.js lib
+   * @param {Object} selectElement
+   */
+  protected createDomElement(selectElement: HTMLSelectElement) {
+    this.$editorElm = $(selectElement);
 
     if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
       this.$editorElm.appendTo(this.args.container);

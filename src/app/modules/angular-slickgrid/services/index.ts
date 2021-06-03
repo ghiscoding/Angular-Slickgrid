@@ -3,6 +3,7 @@ export * from './backend-utilities';
 export * from './bindingEvent.service';
 export * from './bsDropdown.service';
 export * from './collection.service';
+export * from './domUtilities';
 export * from './excelExport.service';
 export * from './export.service';
 export * from './extension.service';

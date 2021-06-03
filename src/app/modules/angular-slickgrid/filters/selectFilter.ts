@@ -23,6 +23,7 @@ import { Constants } from './../constants';
 import { Locale } from './../models/locale.interface';
 import { CollectionService } from './../services/collection.service';
 import { castToPromise, getDescendantProperty, getTranslationPrefix, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
+import { buildSelectEditorOrFilterDomElement } from '../services/domUtilities';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -351,88 +352,22 @@ export class SelectFilter implements Filter {
     newCollection = this.filterCollection(newCollection);
     newCollection = this.sortCollection(newCollection);
 
-    // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms || []);
+    // step 1, create HTML DOM element
+    const selectBuildResult = buildSelectEditorOrFilterDomElement(
+      'filter',
+      newCollection,
+      this.columnDef,
+      this.grid,
+      this.isMultipleSelect,
+      this.translate,
+      this.searchTerms || []
+    );
+    this.isFilled = selectBuildResult.hasFoundSearchTerm;
 
     // step 2, create the DOM Element of the filter & pre-load search terms
-    // also subscribe to the onClose event
-    this.createDomElement(filterTemplate);
+    // we will later also subscribe to the onClose event to filter the data whenever that event is triggered
+    this.createDomElement(selectBuildResult.selectElement);
     this._collectionLength = newCollection.length;
-  }
-
-  /** Create the HTML template as a string */
-  protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
-    let options = '';
-    const columnId = this.columnDef && this.columnDef.id;
-    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
-    const isEnableTranslate = this.gridOptions && this.gridOptions.enableTranslate;
-    const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
-    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-
-    // collection could be an Array of Strings OR Objects
-    if (Array.isArray(optionCollection)) {
-      if (optionCollection.every(x => typeof x === 'string')) {
-        optionCollection.forEach((option: string) => {
-          const selected = (searchTerms.findIndex((term) => term === option) >= 0) ? 'selected' : '';
-          options += `<option value="${option}" label="${option}" ${selected}>${option}</option>`;
-
-          // if there's at least 1 search term found, we will add the "filled" class for styling purposes
-          // on a single select, we'll also make sure the single value is not an empty string to consider this being filled
-          if ((selected && this.isMultipleSelect) || (selected && !this.isMultipleSelect && option !== '')) {
-            this.isFilled = true;
-          }
-        });
-      } else {
-        // array of objects will require a label/value pair unless a customStructure is passed
-        optionCollection.forEach((option: SelectOption) => {
-          if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-            throw new Error(`[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
-          }
-          const labelKey = (option.labelKey || option[this.labelName]) as string;
-          const selected = (searchTerms.findIndex((term) => `${term}` === `${option[this.valueName]}`) >= 0) ? 'selected' : '';
-          const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey && isEnableTranslate) ? this.translate && this.translate.currentLang && this.translate.instant(labelKey || ' ') : labelKey;
-          let prefixText = option[this.labelPrefixName] || '';
-          let suffixText = option[this.labelSuffixName] || '';
-          let optionLabel = option.hasOwnProperty(this.optionLabel) ? option[this.optionLabel] : '';
-          if (optionLabel && optionLabel.toString) {
-            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-          }
-
-          // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-          prefixText = (this.enableTranslateLabel && isEnableTranslate && prefixText && typeof prefixText === 'string') ? this.translate && this.translate.currentLang && this.translate.instant(prefixText || ' ') : prefixText;
-          suffixText = (this.enableTranslateLabel && isEnableTranslate && suffixText && typeof suffixText === 'string') ? this.translate && this.translate.currentLang && this.translate.instant(suffixText || ' ') : suffixText;
-          optionLabel = (this.enableTranslateLabel && isEnableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.currentLang && this.translate.instant(optionLabel || ' ') : optionLabel;
-
-          // add to a temp array for joining purpose and filter out empty text
-          const tmpOptionArray = [prefixText, (typeof labelText === 'string' || typeof labelText === 'number') ? labelText.toString() : labelText, suffixText].filter((text) => text);
-          let optionText = tmpOptionArray.join(separatorBetweenLabels);
-
-          // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
-          // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
-          if (isRenderHtmlEnabled) {
-            // sanitize any unauthorized html tags like script and others
-            // for the remaining allowed tags we'll permit all attributes
-            const sanitizedText = (DOMPurify.sanitize(optionText, sanitizedOptions) || '').toString();
-            optionText = htmlEncode(sanitizedText);
-          }
-
-          // html text of each select option
-          let optionValue = option[this.valueName];
-          if (optionValue === undefined || optionValue === null) {
-            optionValue = '';
-          }
-          options += `<option value="${optionValue}" label="${optionLabel}" ${selected}>${optionText}</option>`;
-
-          // if there's at least 1 search term found, we will add the "filled" class for styling purposes
-          // on a single select, we'll also make sure the single value is not an empty string to consider this being filled
-          if ((selected && this.isMultipleSelect) || (selected && !this.isMultipleSelect && option[this.valueName] !== '')) {
-            this.isFilled = true;
-          }
-        });
-      }
-    }
-
-    return `<select class="ms-filter search-filter filter-${columnId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
@@ -451,11 +386,10 @@ export class SelectFilter implements Filter {
   }
 
   /**
-   * From the html template string, create a DOM element
-   * Subscribe to the onClose event and run the callback when that happens
-   * @param filterTemplate
+   * From the Select DOM Element created earlier, create a Multiple/Single Select Filter using the jQuery multiple-select.js lib
+   * @param {Object} selectElement
    */
-  protected createDomElement(filterTemplate: string) {
+  protected createDomElement(selectElement: HTMLSelectElement) {
     const fieldId = this.columnDef && this.columnDef.id;
 
     // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
@@ -466,7 +400,7 @@ export class SelectFilter implements Filter {
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
-    this.$filterElm = $(filterTemplate);
+    this.$filterElm = $(selectElement);
     if (typeof this.$filterElm.multipleSelect !== 'function') {
       throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
     }
