@@ -43,7 +43,6 @@ module.exports = {
     'dist',
     'node_modules'
   ],
-  reporters: ['default', 'jest-junit'],
   setupFiles: ['<rootDir>/test/jest-pretest.ts'],
   setupFilesAfterEnv: ['jest-extended', '<rootDir>/test/setup-jest.ts'],
   transform: {

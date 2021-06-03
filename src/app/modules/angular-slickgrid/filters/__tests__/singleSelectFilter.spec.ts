@@ -112,6 +112,7 @@ describe('SingleSelectFilter', () => {
     const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=radio]`);
     filterBtnElm.click();
 
+    filterListElm[1].checked = true;
     filterListElm[1].dispatchEvent(new CustomEvent('click'));
 
     const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
