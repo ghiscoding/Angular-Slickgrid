@@ -168,9 +168,9 @@ describe('SliderEditor', () => {
 
     it('should call "setValue" and expect the DOM element value to be the same but as a string when calling "getValue"', () => {
       editor = new SliderEditor(editorArguments);
-      editor.setValue(123);
+      editor.setValue(85);
 
-      expect(editor.getValue()).toBe('123');
+      expect(editor.getValue()).toBe('85');
     });
 
     it('should call "cancel" and expect "cancelChanges" to be called in the Slickgrid editor object', () => {
@@ -182,6 +182,7 @@ describe('SliderEditor', () => {
     });
 
     it('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
+      mockColumn.internalColumnEditor = { maxValue: 500 };
       editor = new SliderEditor(editorArguments);
       editor.loadValue(mockItemData);
       const editorInputElm = editor.editorInputDomElement;
