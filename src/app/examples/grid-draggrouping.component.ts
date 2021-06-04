@@ -16,7 +16,6 @@ import {
   Sorters,
 } from './../modules/angular-slickgrid';
 
-@Injectable()
 @Component({
   templateUrl: './grid-draggrouping.component.html'
 })

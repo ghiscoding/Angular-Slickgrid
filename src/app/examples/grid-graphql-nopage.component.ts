@@ -36,7 +36,6 @@ export interface Country {
   styleUrls: ['./grid-graphql-nopage.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-@Injectable()
 export class GridGraphqlWithoutPaginationComponent implements OnInit {
   title = 'Example 27: GraphQL Basic API without Pagination';
   subTitle = `

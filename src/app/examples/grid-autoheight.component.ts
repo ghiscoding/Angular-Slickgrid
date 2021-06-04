@@ -13,7 +13,6 @@ import {
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid-autoheight.component.html'
 })
-@Injectable()
 export class GridAutoHeightComponent implements OnInit {
   title = 'Example 23: Grid AutoHeight';
   subTitle = `

@@ -66,7 +66,6 @@ const taskFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
 @Component({
   templateUrl: './grid-editor.component.html'
 })
-@Injectable()
 export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors / Delete';
   subTitle = `
