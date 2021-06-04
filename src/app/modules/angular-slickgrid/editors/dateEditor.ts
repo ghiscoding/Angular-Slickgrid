@@ -29,12 +29,6 @@ import {
 } from './../services/utilities';
 import { BindingEventService } from '../services/bindingEvent.service';
 
-declare function require(name: string): any;
-require('flatpickr');
-
-// using external non-typed js libraries
-declare const $: any;
-
 /*
  * An example of a date picker editor using Flatpickr
  * https://chmln.github.io/flatpickr
