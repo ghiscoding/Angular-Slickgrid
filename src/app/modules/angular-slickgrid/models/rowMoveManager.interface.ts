@@ -34,7 +34,7 @@ export interface RowMoveManager {
   onExtensionRegistered?: (plugin: any) => void;
 
   /** SlickGrid Event fired before the row is moved. */
-  onBeforeMoveRows?: (e: Event, args: any) => void;
+  onBeforeMoveRows?: (e: Event, args: any) => boolean | void;
 
   /** SlickGrid Event fired while the row is moved. */
   onMoveRows?: (e: Event, args: any) => void;
