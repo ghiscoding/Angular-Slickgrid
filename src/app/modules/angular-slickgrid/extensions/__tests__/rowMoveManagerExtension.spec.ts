@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, RowMoveManager } from '../../models';
 import { RowMoveManagerExtension } from '../rowMoveManagerExtension';
 import { SharedService } from '../../services/shared.service';
 
@@ -55,12 +55,12 @@ describe('rowMoveManagerExtension', () => {
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {
-    const output = extension.create([] as Column[], null);
+    const output = extension.create([] as Column[], null as any);
     expect(output).toBeNull();
   });
 
   it('should return null after calling "loadAddonWhenNotExists" method when either the column definitions or the grid options is missing', () => {
-    const output = extension.loadAddonWhenNotExists([] as Column[], null);
+    const output = extension.loadAddonWhenNotExists([] as Column[], null as any);
     expect(output).toBeNull();
   });
 
@@ -140,7 +140,7 @@ describe('rowMoveManagerExtension', () => {
     });
 
     it('should expect the column to be at a different column index position when "columnIndexPosition" is defined', () => {
-      gridOptionsMock.rowMoveManager.columnIndexPosition = 2;
+      (gridOptionsMock.rowMoveManager as RowMoveManager).columnIndexPosition = 2;
       const instance = extension.loadAddonWhenNotExists(columnsMock, gridOptionsMock);
       const spy = jest.spyOn(instance, 'getColumnDefinition').mockReturnValue({ id: '_move', field: 'move' });
       extension.create(columnsMock, gridOptionsMock);
@@ -172,7 +172,7 @@ describe('rowMoveManagerExtension', () => {
       jest.clearAllMocks();
     });
     it('should register the addon', () => {
-      const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager, 'onExtensionRegistered');
+      const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onExtensionRegistered');
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
 
       const instance = extension.loadAddonWhenNotExists(columnsMock, gridOptionsMock);
@@ -218,8 +218,8 @@ describe('rowMoveManagerExtension', () => {
 
     it('should call internal event handler subscribe and expect the "onBeforeMoveRows" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager, 'onBeforeMoveRows');
-      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager, 'onMoveRows');
+      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onBeforeMoveRows');
+      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onMoveRows');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
       extension.register();
@@ -234,10 +234,31 @@ describe('rowMoveManagerExtension', () => {
       expect(onMoveSpy).not.toHaveBeenCalled();
     });
 
+    it('should call internal event handler subscribe and expect the "onBeforeMoveRows" option to be called AND have returned with a boolean when original callbacks returns a boolean', () => {
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      gridOptionsMock.rowMoveManager!.onBeforeMoveRows = () => false;
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onBeforeMoveRows');
+      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onMoveRows');
+
+      const instance = extension.create(columnsMock, gridOptionsMock);
+      extension.register();
+      instance.onBeforeMoveRows.notify({ insertBefore: 3, rows: [1], grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalledTimes(2);
+      expect(handlerSpy).toHaveBeenCalledWith(
+        { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+        expect.anything()
+      );
+      expect(onBeforeSpy).toHaveBeenCalledWith(expect.anything(), { insertBefore: 3, rows: [1], grid: gridStub });
+      expect(onBeforeSpy).toHaveReturnedWith(false);
+      expect(onMoveSpy).not.toHaveBeenCalled();
+    });
+
     it('should call internal event handler subscribe and expect the "onMoveRows" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager, 'onBeforeMoveRows');
-      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager, 'onMoveRows');
+      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onBeforeMoveRows');
+      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onMoveRows');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
       extension.register();
