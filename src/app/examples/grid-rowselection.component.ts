@@ -13,7 +13,6 @@ import {
   templateUrl: './grid-rowselection.component.html',
   styles: ['.alert { padding: 8px; margin-bottom: 10px }', '.col-sm-1{ max-width: 70px }'],
 })
-@Injectable()
 export class GridRowSelectionComponent implements OnInit {
   title = 'Example 10: Multiple Grids with Row Selection';
   subTitle = `

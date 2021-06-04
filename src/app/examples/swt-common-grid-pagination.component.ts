@@ -72,8 +72,8 @@ import { GridOption } from '../modules/angular-slickgrid';
 export class SwtCommonGridPaginationComponent implements OnInit {
   private logger: Logger;
 
-  @Input('pageCount') pageCount = 1;
-  @Input('pageNumber') pageNumber = 1;
+  @Input() pageCount = 1;
+  @Input() pageNumber = 1;
 
   totalItems = 0;
   processing = false;
