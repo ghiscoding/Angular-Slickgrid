@@ -55,7 +55,7 @@ module.exports = {
   setupFiles: ['<rootDir>/test/jest-pretest.ts'],
   setupFilesAfterEnv: ['jest-extended', '<rootDir>/test/setup-jest.ts'],
   transform: {
-    '^.+\\.(ts|html)$': 'ts-jest'
+    '^.+\\.(ts|html)$': 'jest-preset-angular',
   },
   transformIgnorePatterns: [
     '<rootDir>/node_modules/angular-slickgrid/',
