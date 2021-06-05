@@ -4,7 +4,7 @@ import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOp
 @Component({
   templateUrl: './grid-rowmove.component.html'
 })
-export class GridRowMoveComponent implements OnInit, OnDestroy {
+export class GridRowMoveComponent implements OnInit {
   title = 'Example 17: Row Move & Checkbox Selector';
   subTitle = `This example demonstrates using the <b>Slick.Plugins.RowMoveManager</b> plugin to easily move a row in the grid.<br/>
     <ul>
@@ -33,9 +33,6 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
 
   get rowMoveInstance(): any {
     return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowMoveManager) || {};
-  }
-
-  ngOnDestroy() {
   }
 
   ngOnInit(): void {
@@ -135,10 +132,10 @@ export class GridRowMoveComponent implements OnInit, OnDestroy {
     this.dataset = mockDataset;
   }
 
-  onBeforeMoveRow(e: Event, data: any) {
-    for (let i = 0; i < data.rows.length; i++) {
+  onBeforeMoveRow(e: Event, data: { rows: number[]; insertBefore: number; }) {
+    for (const rowIdx of data.rows) {
       // no point in moving before or after itself
-      if (data.rows[i] === data.insertBefore || data.rows[i] === data.insertBefore - 1) {
+      if (rowIdx === data.insertBefore || rowIdx === data.insertBefore - 1) {
         e.stopPropagation();
         return false;
       }

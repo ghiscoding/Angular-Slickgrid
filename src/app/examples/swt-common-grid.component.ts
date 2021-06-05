@@ -1,7 +1,7 @@
-import { Component, OnInit, Injectable, AfterViewInit, Input, EventEmitter, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, EventEmitter, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-  AngularSlickgridComponent, Column, FieldType, Formatters,
+  AngularSlickgridComponent, Column, FieldType,
   GridOption, BackendService,
   BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination
 } from '../modules/angular-slickgrid';
@@ -38,8 +38,6 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
          }
     `]
 })
-
-@Injectable()
 export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendService {
 
   private logger: Logger;
@@ -73,10 +71,9 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
   options!: BackendServiceOption;
   pagination?: Pagination;
 
-
-  @Output('onFilterChanged') onFilterChanged_: EventEmitter<FilterChangedArgs> = new EventEmitter<FilterChangedArgs>();
-  @Output('onPaginationChanged') onPaginationChanged_: EventEmitter<PaginationChangedArgs> = new EventEmitter<PaginationChangedArgs>();
-  @Output('onSortChanged') onSortChanged_: EventEmitter<SortChangedArgs> = new EventEmitter<SortChangedArgs>();
+  @Output() onFilterChanged: EventEmitter<FilterChangedArgs> = new EventEmitter<FilterChangedArgs>();
+  @Output() onPaginationChanged: EventEmitter<PaginationChangedArgs> = new EventEmitter<PaginationChangedArgs>();
+  @Output() onSortChanged: EventEmitter<SortChangedArgs> = new EventEmitter<SortChangedArgs>();
 
   sortedGridColumn = '';
   currentPage = 1;
@@ -119,7 +116,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     realPagination: false
   };
 
-  @Input('pagination')
+  @Input()
   set paginationComponent(value: SwtCommonGridPaginationComponent) {
     this.logger!.info('method [pagination] - START, assigned datagrid pagination object: ', value.realPagination);
     if (value.realPagination) {
@@ -355,8 +352,8 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
       this.currentPage = 1;
 
       // dispatch event
-      this.onFilterChanged_.emit(args);
-      this.logger.info('method [onFilterChanged] - onFilterChanged_.emit(args) performed, filteredGridColumns=' + this.filteredGridColumns);
+      this.onFilterChanged.emit(args);
+      this.logger.info('method [onFilterChanged] - onFilterChanged.emit(args) performed, filteredGridColumns=' + this.filteredGridColumns);
     }, timing);
 
     this.logger.info('method [onFilterChanged] - END');
@@ -372,7 +369,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
   processOnPaginationChanged(event: Event | undefined, args: PaginationChangedArgs) {
     this.logger.info('method [onPaginationChanged] - START');
     this.currentPage = args.newPage;
-    this.onPaginationChanged_.emit(args);
+    this.onPaginationChanged.emit(args);
     this.logger.info('method [onPaginationChanged] - END, currentPage=' + this.currentPage);
     return 'onPaginationChanged';
   }
@@ -391,7 +388,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         this.sortedGridColumn = '' + idx + sortDirection;
       }
     }
-    this.onSortChanged_.emit(args);
+    this.onSortChanged.emit(args);
     this.logger.info('method [onSortChanged] - END, sortedGridColumn=' + this.sortedGridColumn);
     return 'onSortChanged';
   }

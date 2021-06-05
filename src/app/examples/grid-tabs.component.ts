@@ -7,7 +7,6 @@ const URL_CUSTOMERS = 'assets/data/customers_100.json';
 @Component({
   templateUrl: './grid-tabs.component.html'
 })
-@Injectable()
 export class GridTabsComponent implements OnInit {
   title = 'Example 24: Grids in Bootstrap Tabs';
   subTitle = `This example demonstrate the creation of multiple grids in Bootstrap Tabs

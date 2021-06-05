@@ -101,7 +101,7 @@ export class RowMoveManagerExtension implements Extension {
         }
         this._eventHandler.subscribe(this._addon.onBeforeMoveRows, (e: any, args: CellArgs) => {
           if (this.sharedService.gridOptions.rowMoveManager && typeof this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows === 'function') {
-            this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows(e, args);
+            return this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onMoveRows, (e: any, args: CellArgs) => {

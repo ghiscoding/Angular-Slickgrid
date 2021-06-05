@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { Column, GridOption } from '../../models';
+import { Column, GridOption, RowMoveManager } from '../../models';
 import { RowMoveManagerExtension } from '../rowMoveManagerExtension';
 import { SharedService } from '../../services/shared.service';
 import { RowMoveManager } from '../../../../../../dist/public_api';
@@ -232,6 +232,27 @@ describe('rowMoveManagerExtension', () => {
         expect.anything()
       );
       expect(onBeforeSpy).toHaveBeenCalledWith(expect.anything(), { insertBefore: 3, rows: [1] });
+      expect(onMoveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call internal event handler subscribe and expect the "onBeforeMoveRows" option to be called AND have returned with a boolean when original callbacks returns a boolean', () => {
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      gridOptionsMock.rowMoveManager!.onBeforeMoveRows = () => false;
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+      const onBeforeSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onBeforeMoveRows');
+      const onMoveSpy = jest.spyOn(SharedService.prototype.gridOptions.rowMoveManager as RowMoveManager, 'onMoveRows');
+
+      const instance = extension.create(columnsMock, gridOptionsMock);
+      extension.register();
+      instance.onBeforeMoveRows.notify({ insertBefore: 3, rows: [1], grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalledTimes(2);
+      expect(handlerSpy).toHaveBeenCalledWith(
+        { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+        expect.anything()
+      );
+      expect(onBeforeSpy).toHaveBeenCalledWith(expect.anything(), { insertBefore: 3, rows: [1], grid: gridStub });
+      expect(onBeforeSpy).toHaveReturnedWith(false);
       expect(onMoveSpy).not.toHaveBeenCalled();
     });
 

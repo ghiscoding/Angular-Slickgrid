@@ -8,7 +8,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./grid-menu.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-@Injectable()
 export class GridMenuComponent implements OnInit, OnDestroy {
   title = 'Example 9: Grid Menu Control';
   subTitle = `
