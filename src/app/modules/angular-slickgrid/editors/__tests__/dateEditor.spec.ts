@@ -43,12 +43,12 @@ describe('DateEditor', () => {
   let mockItemData: any;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [],
       imports: [TranslateModule.forRoot()]
     });

@@ -24,8 +24,8 @@ describe('autoTooltipExtension', () => {
   let extension: AutoTooltipExtension;
   const gridOptionsMock = { enableAutoTooltip: true } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [AutoTooltipExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });

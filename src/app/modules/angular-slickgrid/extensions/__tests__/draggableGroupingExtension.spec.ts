@@ -35,8 +35,8 @@ describe('draggableGroupingExtension', () => {
     }
   } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [DraggableGroupingExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });
@@ -44,7 +44,7 @@ describe('draggableGroupingExtension', () => {
   });
 
   it('should return null after calling "create" method when the grid options is missing', () => {
-    const output = extension.create(null);
+    const output = extension.create(null as any);
     expect(output).toBeNull();
   });
 
@@ -60,7 +60,7 @@ describe('draggableGroupingExtension', () => {
     });
 
     it('should register the addon', () => {
-      const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.draggableGrouping, 'onExtensionRegistered');
+      const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.draggableGrouping!, 'onExtensionRegistered');
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
 
       const instance = extension.create(gridOptionsMock);
@@ -107,7 +107,7 @@ describe('draggableGroupingExtension', () => {
 
     it('should call internal event handler subscribe and expect the "onGroupChanged" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.draggableGrouping, 'onGroupChanged');
+      const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.draggableGrouping!, 'onGroupChanged');
 
       const instance = extension.create(gridOptionsMock);
       extension.register();

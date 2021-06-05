@@ -3,7 +3,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./out-tsc/spec",
     "module": "commonjs",

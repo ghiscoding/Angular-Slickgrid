@@ -1,9 +1,9 @@
 const mock = () => {
-  let storage = {};
+  let storage: any = {};
   return {
-    getItem: key => key in storage ? storage[key] : null,
-    setItem: (key, value) => storage[key] = value || '',
-    removeItem: key => delete storage[key],
+    getItem: (key: any) => key in storage ? storage[key] : null,
+    setItem: (key: any, value: any) => storage[key] = value || '',
+    removeItem: (key: any) => delete storage[key],
     clear: () => storage = {},
   };
 };
@@ -16,27 +16,18 @@ Object.defineProperty(window, 'getComputedStyle', {
 
 Object.defineProperty(window, '__env', { value: { env: { backendUrl: 'mocked URL' } } });
 
-Object.defineProperty(window, 'CSS', { value: null });
-Object.defineProperty(document, 'doctype', {
-  value: '<!DOCTYPE html>',
-});
 Object.defineProperty(window, 'getComputedStyle', {
-  value: () => {
-    return {
-      display: 'none',
-      appearance: ['-webkit-appearance'],
-    };
-  },
+  value: () => ({
+    getPropertyValue: () => {
+      return '';
+    }
+  })
 });
-/**
- * ISSUE: https://github.com/angular/material2/issues/7101
- * Workaround for JSDOM missing transform property
- */
-Object.defineProperty(document.body.style, 'transform', {
-  value: () => {
-    return {
-      enumerable: true,
-      configurable: true,
-    };
+
+// Mock
+Object.defineProperty(window, 'location', {
+  value: {
+    pathname: '/terminals',
+    assign: jest.fn(),
   },
 });

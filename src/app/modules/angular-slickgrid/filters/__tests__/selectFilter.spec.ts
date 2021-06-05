@@ -36,7 +36,7 @@ describe('SelectFilter', () => {
   let collectionService: CollectionService;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -54,7 +54,7 @@ describe('SelectFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [CollectionService],
       imports: [TranslateModule.forRoot()]
     });
@@ -180,6 +180,7 @@ describe('SelectFilter', () => {
     filterBtnElm.click();
 
     // we can use property "checked" or dispatch an event
+    filterListElm[0].checked = true;
     filterListElm[0].dispatchEvent(new CustomEvent('click'));
     filterOkElm.click();
 

@@ -160,25 +160,23 @@ describe('CheckboxEditor', () => {
       it('should return True when previous event is a click event', () => {
         gridOptionMock.autoCommitEdit = true;
         editor = new CheckboxEditor(editorArguments);
-        const spy = jest.spyOn(editor, 'save');
+        const saveSpy = jest.spyOn(editor, 'save');
         editor.loadValue({ id: 2, title: 'task 1', isActive: true });
 
-        const editorElm = divContainer.querySelector('input.editor-isActive') as HTMLInputElement;
-        editorElm.dispatchEvent(new (window.window as any).CustomEvent('click'));
+        editor.editorDomElement.checked = false;
+        editor.editorDomElement.dispatchEvent(new (window.window as any).Event('click'));
 
         expect(editor.isValueChanged()).toBe(true);
-        expect(spy).toHaveBeenCalled();
+        expect(saveSpy).toHaveBeenCalledTimes(1);
       });
 
       it('should return False when previous event is not a click event', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_SPACE, bubbles: true, cancelable: true });
 
         editor = new CheckboxEditor(editorArguments);
-        const editorElm = divContainer.querySelector('input.editor-isActive') as HTMLInputElement;
-
         editor.loadValue({ id: 1, title: 'task 1', isActive: true });
         editor.focus();
-        editorElm.dispatchEvent(event);
+        editor.editorDomElement.dispatchEvent(event);
 
         expect(editor.isValueChanged()).toBe(false);
       });

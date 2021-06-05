@@ -25,11 +25,11 @@ describe('CompoundInputPasswordFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: CompoundInputPasswordFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: any;
   let mockColumn: Column;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -42,7 +42,7 @@ describe('CompoundInputPasswordFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [],
       imports: [TranslateModule.forRoot()]
     });
@@ -71,7 +71,7 @@ describe('CompoundInputPasswordFilter', () => {
   });
 
   it('should throw an error when trying to call init without any arguments', () => {
-    expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    expect(() => filter.init(null as any)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
   it('should initialize the filter and expect an input of type password', () => {

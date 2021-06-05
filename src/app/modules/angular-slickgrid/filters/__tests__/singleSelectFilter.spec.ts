@@ -34,7 +34,7 @@ describe('SingleSelectFilter', () => {
   let collectionService: CollectionService;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -52,7 +52,7 @@ describe('SingleSelectFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [CollectionService],
       imports: [TranslateModule.forRoot()]
     });

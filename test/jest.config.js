@@ -11,10 +11,7 @@ module.exports = {
       diagnostics: false,
       isolatedModules: true,
       tsconfig: '<rootDir>/tsconfig.spec.json',
-      stringifyContentPathRegex: '\\.html$',
-      astTransformers: [
-        'jest-preset-angular/InlineHtmlStripStylesTransformer'
-      ]
+      stringifyContentPathRegex: '\\.html$'
     },
   },
   globalSetup: '<rootDir>/test/jest-global-setup.js',
@@ -61,7 +58,6 @@ module.exports = {
     '^.+\\.(ts|html)$': 'ts-jest'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!@ngrx)',
     '<rootDir>/node_modules/angular-slickgrid/',
     '<rootDir>/node_modules/slickgrid/'
   ],

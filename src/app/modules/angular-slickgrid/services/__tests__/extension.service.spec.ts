@@ -78,8 +78,8 @@ describe('ExtensionService', () => {
   let translate: TranslateService;
 
   describe('with ngx-translate', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [
           // services
           ExtensionService,

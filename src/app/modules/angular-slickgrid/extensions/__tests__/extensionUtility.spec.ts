@@ -61,8 +61,8 @@ describe('ExtensionUtility', () => {
     let translate: TranslateService;
     let utility: ExtensionUtility;
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [ExtensionUtility, SharedService],
         imports: [TranslateModule.forRoot()]
       });
@@ -211,8 +211,8 @@ describe('ExtensionUtility', () => {
   describe('without ngx-translate', () => {
     let utility: ExtensionUtility;
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [ExtensionUtility, SharedService],
         imports: []
       });

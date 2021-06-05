@@ -25,8 +25,8 @@ describe('rowSelectionExtension', () => {
   let extension: RowSelectionExtension;
   const gridOptionsMock = { enableRowSelection: true } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [RowSelectionExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });

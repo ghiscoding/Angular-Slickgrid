@@ -38,13 +38,13 @@ describe('bsdropdown-service', () => {
   let component: TestComponent;
   let service: BsDropDownService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // define a <div> container to simulate a row detail DOM element
     div = document.createElement('div');
     div.innerHTML = gridTemplate;
     document.body.appendChild(div);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [TestComponent],
       providers: [
         BsDropDownService,
@@ -62,7 +62,7 @@ describe('bsdropdown-service', () => {
     });
 
     describe('render method', () => {
-      let mockComponent;
+      let mockComponent: any;
 
       beforeEach(() => {
         mockComponent = {

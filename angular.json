@@ -14,9 +14,8 @@
             "outputPath": "docs",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "showCircularDependencies": true,
             "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "angular-slickgrid",
               "jquery-ui-dist/jquery-ui",
