@@ -19,7 +19,8 @@
             "allowedCommonJsDependencies": [
               "angular-slickgrid",
               "jquery-ui-dist/jquery-ui",
-              "excel-builder-webpacker"
+              "excel-builder-webpacker",
+              "stream"
             ],
             "assets": [
               "src/assets",
