@@ -13,9 +13,6 @@ const mockSelectionModel = {
 };
 const mockSelectionModelImplementation = jest.fn().mockImplementation(() => mockSelectionModel);
 
-jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModelImplementation);
-Slick.RowSelectionModel = mockSelectionModelImplementation;
-
 const filterServiceStub = {
   clearFilters: jest.fn(),
   refreshTreeDataFilters: jest.fn(),
@@ -81,14 +78,17 @@ const treeDataServiceStub = {
 } as unknown as TreeDataService;
 
 describe('Grid Service', () => {
+  jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModelImplementation);
+  Slick.RowSelectionModel = mockSelectionModelImplementation;
+
   let service: GridService;
   let sharedService = new SharedService();
   let translate: TranslateService;
   const mockGridOptions = { enableAutoResize: true } as GridOption;
   jest.spyOn(gridStub, 'getOptions').mockReturnValue(mockGridOptions);
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: FilterService, useValue: filterServiceStub },
         { provide: GridStateService, useValue: gridStateServiceStub },

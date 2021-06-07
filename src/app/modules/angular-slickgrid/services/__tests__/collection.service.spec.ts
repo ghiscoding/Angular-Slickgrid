@@ -11,14 +11,14 @@ import {
 } from '../../models/index';
 
 describe('CollectionService', () => {
-  let collection = [];
-  let stringCollection = [];
+  let collection: any[] = [];
+  let stringCollection: any[] = [];
   let translate: TranslateService;
   let service: CollectionService;
 
   describe('with ngx-translate', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [CollectionService],
         imports: [TranslateModule.forRoot()]
       });
@@ -58,7 +58,7 @@ describe('CollectionService', () => {
     });
 
     afterEach(() => {
-      collection = undefined;
+      collection = undefined as any;
     });
 
     it('should create the service', () => {
@@ -341,8 +341,8 @@ describe('CollectionService', () => {
   }); // with ngx-translate
 
   describe('without ngx-translate', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [CollectionService],
         imports: []
       });

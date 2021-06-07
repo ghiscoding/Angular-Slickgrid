@@ -33,7 +33,7 @@ describe('CompoundInputFilter', () => {
   let mockColumn: Column;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -46,7 +46,7 @@ describe('CompoundInputFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [],
       imports: [TranslateModule.forRoot()]
     });

@@ -6,6 +6,7 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { MultipleSelectEditor } from '../multipleSelectEditor';
 import { Column, EditorArguments, GridOption } from '../../models';
+import { ColumnEditor } from '../../../../../../dist/public_api';
 
 const containerId = 'demo-container';
 
@@ -20,7 +21,7 @@ const gridOptionMock = {
   autoCommitEdit: false,
   editable: true,
   i18n: null,
-} as GridOption;
+} as unknown as GridOption;
 
 const getEditorLockMock = {
   commitCurrentEdit: jest.fn(),
@@ -44,12 +45,12 @@ describe('SelectEditor', () => {
   let mockItemData: any;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [],
       imports: [TranslateModule.forRoot()]
     });
@@ -72,7 +73,7 @@ describe('SelectEditor', () => {
       grid: gridStub,
       column: mockColumn,
       item: mockItemData,
-      event: null,
+      event: null as any,
       cancelChanges: jest.fn(),
       commitChanges: jest.fn(),
       container: divContainer,
@@ -87,7 +88,7 @@ describe('SelectEditor', () => {
     beforeEach(() => {
       mockItemData = { id: 1, gender: 'male', isActive: true };
       mockColumn = { id: 'gender', field: 'gender', editable: true, editor: { model: Editors.multipleSelect }, internalColumnEditor: {} } as Column;
-      mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      (mockColumn.internalColumnEditor as ColumnEditor).collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
 
       editorArguments.column = mockColumn;
       editorArguments.item = mockItemData;
@@ -98,7 +99,7 @@ describe('SelectEditor', () => {
     });
 
     it('should initialize the editor', (done) => {
-      mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      (mockColumn.internalColumnEditor as ColumnEditor).collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
       gridOptionMock.i18n = translate;
       editor = new MultipleSelectEditor(editorArguments);
       const editorCount = document.body.querySelectorAll('select.ms-filter.editor-gender').length;
@@ -120,7 +121,7 @@ describe('SelectEditor', () => {
 
     it('should hide the DOM element div wrapper when the "hide" method is called', () => {
       editor = new MultipleSelectEditor(editorArguments);
-      const editorElm = document.body.querySelector<HTMLDivElement>('[name=editor-gender].ms-drop');
+      const editorElm = document.body.querySelector('[name=editor-gender].ms-drop') as HTMLInputElement;
 
       editor.show();
       expect(editorElm.style.display).toBe('');
@@ -131,7 +132,7 @@ describe('SelectEditor', () => {
 
     it('should show the DOM element div wrapper when the "show" method is called', () => {
       editor = new MultipleSelectEditor(editorArguments);
-      const editorElm = document.body.querySelector<HTMLDivElement>('[name=editor-gender].ms-drop');
+      const editorElm = document.body.querySelector('[name=editor-gender].ms-drop') as HTMLInputElement;
 
       editor.hide();
       expect(editorElm.style.display).toBe('none');

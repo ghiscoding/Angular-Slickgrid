@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -35,8 +35,8 @@ describe('App Component', () => {
   let translate: TranslateService;
   let mockServicePagination: ServicePagination;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [
         SlickPaginationComponent
       ],
@@ -72,7 +72,7 @@ describe('App Component', () => {
     });
     translate.use('fr');
     fixture.detectChanges();
-  }));
+  });
 
   it('should create the Slick-Pagination component', () => {
     expect(component).toBeTruthy();
@@ -98,7 +98,6 @@ describe('App Component', () => {
     afterEach(() => {
       // clear all the spyOn mocks to not influence next test
       jest.clearAllMocks();
-      spyOn(component, 'ngOnDestroy').and.callFake(() => { });
       fixture.destroy();
     });
 

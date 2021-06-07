@@ -45,8 +45,8 @@ describe('columnPickerExtension', () => {
     },
   } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [ColumnPickerExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });

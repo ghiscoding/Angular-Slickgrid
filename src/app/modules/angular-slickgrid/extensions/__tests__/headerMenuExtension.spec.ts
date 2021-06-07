@@ -102,8 +102,8 @@ describe('headerMenuExtension', () => {
   } as unknown as GridOption;
 
   describe('with ngx-translate', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [
           HeaderMenuExtension,
           ExtensionUtility,

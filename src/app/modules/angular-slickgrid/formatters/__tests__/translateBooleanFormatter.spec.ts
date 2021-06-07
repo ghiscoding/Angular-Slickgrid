@@ -11,8 +11,8 @@ describe('the Translate Formatter', () => {
     getOptions: jest.fn()
   };
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()]
     });
     translate = TestBed.inject(TranslateService);

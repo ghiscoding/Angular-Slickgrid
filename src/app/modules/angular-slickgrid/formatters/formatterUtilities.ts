@@ -1,7 +1,7 @@
 import { Column, FieldType, Formatter, GridOption, FormatterOption, ExportOption, ExcelExportOption } from '../models/index';
 import { mapMomentDateFormatWithFieldType } from '../services/utilities';
 import * as moment_ from 'moment-mini';
-const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 /**
  * Find the option value from the following (in order of execution)

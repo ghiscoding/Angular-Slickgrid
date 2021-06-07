@@ -3,6 +3,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   Column,
   DelimiterType,
+  ExportOption,
   FieldType,
   FileType,
   Formatter,
@@ -14,13 +15,14 @@ import { ExportService } from '../export.service';
 import { Formatters } from './../../formatters/index';
 import { Sorters } from './../../sorters/index';
 import { GroupTotalFormatters } from '../..';
-import { ExportOption } from '../../../../../../dist/public_api';
 
 function removeMultipleSpaces(inputText: string) {
   return `${inputText}`.replace(/  +/g, '');
 }
 
+// stubLocation({ pathname: "/facebook/jest/issues/5124" });
 // URL object is not supported in JSDOM, we can simply mock it
+(window as any).location.navigation = jest.fn();
 (global as any).URL.createObjectURL = jest.fn();
 
 const myBoldHtmlFormatter: Formatter = (row, cell, value) => value !== null ? { text: `<b>${value}</b>` } : '';
@@ -65,6 +67,7 @@ describe('ExportService', () => {
   let mockExportTxtOptions: ExportOption;
   let mockCsvBlob: Blob;
   let mockTxtBlob: Blob;
+  jest.spyOn(global.console, 'error').mockReturnValue(); // disregard JSDOM console error for missing navigation implementation
 
   describe('with ngx-translate', () => {
     beforeEach(() => {

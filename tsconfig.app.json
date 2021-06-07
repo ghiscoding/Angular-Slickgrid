@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "outDir": "../out-tsc/app",
@@ -11,12 +11,13 @@
     "paths": {
       "jszip": [
         "../node_modules/jszip/dist/jszip.min.js"
-      ]
+      ],
+      "stream": [ "./node_modules/stream-browserify" ]
     }
   },
   "files": [
-    "main.ts",
-    "polyfills.ts"
+    "src/main.ts",
+    "src/polyfills.ts"
   ],
   "include": [
     "src/**/*.d.ts"

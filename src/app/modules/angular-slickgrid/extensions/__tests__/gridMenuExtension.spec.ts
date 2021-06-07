@@ -127,12 +127,12 @@ describe('gridMenuExtension', () => {
   } as unknown as GridOption;
 
   describe('with ngx-translate', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const div = document.createElement('div');
       div.innerHTML = template;
       document.body.appendChild(div);
 
-      TestBed.configureTestingModule({
+      await TestBed.configureTestingModule({
         providers: [
           GridMenuExtension,
           ExtensionUtility,

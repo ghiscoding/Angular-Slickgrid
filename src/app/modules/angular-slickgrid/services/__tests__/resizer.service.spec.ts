@@ -111,11 +111,9 @@ describe('Resizer Service', () => {
 
   describe('resizeGrid method', () => {
     beforeEach(() => {
-      beforeEach(() => {
-        // @ts-ignore
-        navigator.__defineGetter__('userAgent', () => 'Netscape');
-        gridOptionMock.gridId = 'grid1';
-      });
+      // @ts-ignore
+      navigator.__defineGetter__('userAgent', () => 'Netscape');
+      gridOptionMock.gridId = 'grid1';
     });
 
     afterEach(() => {

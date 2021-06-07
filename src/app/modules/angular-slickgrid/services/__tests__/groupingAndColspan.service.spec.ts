@@ -87,13 +87,13 @@ describe('GroupingAndColspanService', () => {
   let slickgridEventHandler: SlickEventHandler;
   const sharedService = new SharedService();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const div = document.createElement('div');
     div.innerHTML = template;
     document.body.appendChild(div);
 
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [
         GroupingAndColspanService,
         SharedService,
@@ -153,6 +153,7 @@ describe('GroupingAndColspanService', () => {
 
   describe('init method', () => {
     let mockColumns: Column[];
+    let setTimeoutSpy: any;
 
     beforeEach(() => {
       const mockParentPreHeaderElm = document.createElement('div');
@@ -172,6 +173,7 @@ describe('GroupingAndColspanService', () => {
       jest.spyOn(gridStub, 'getPreHeaderPanel').mockReturnValue(mockPreHeaderPanelElm);
       jest.spyOn(gridStub, 'getPreHeaderPanelLeft').mockReturnValue(document.createElement('div'));
       jest.spyOn(gridStub, 'getPreHeaderPanelRight').mockReturnValue(document.createElement('div'));
+      setTimeoutSpy = jest.spyOn(global, 'setTimeout');
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" on initial load even when there are no column definitions', () => {
@@ -182,8 +184,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onSort"', () => {
@@ -194,8 +196,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onAutosizeColumns"', () => {
@@ -206,8 +208,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onRendered"', () => {
@@ -218,8 +220,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onColumnsResized"', () => {
@@ -230,8 +232,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid "onColumnsReordered"', () => {
@@ -242,8 +244,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a dataView "onColumnsResized"', () => {
@@ -254,8 +256,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid resize', () => {
@@ -266,8 +268,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      // expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility from column picker', () => {
@@ -284,8 +286,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(3);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility from grid menu', () => {
@@ -302,8 +304,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(3);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after changing column visibility & closing the grid menu', () => {
@@ -320,8 +322,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
     });
 
     it('should call the "renderPreHeaderRowGroupingTitles" after calling the "translateGroupingAndColSpan" method', () => {
@@ -348,8 +350,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
       expect(divHeaderColumns.length).toBeGreaterThan(2);
       expect(divHeaderColumns[0].outerHTML).toEqual(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns">All your colums div here</div>`);
     });
@@ -369,8 +371,8 @@ describe('GroupingAndColspanService', () => {
       expect(preHeaderRightSpy).toHaveBeenCalledTimes(1);
       expect(headerGroupSpy).toHaveBeenNthCalledWith(1, expect.anything(), 0, (frozenColumns + 1));
       expect(headerGroupSpy).toHaveBeenNthCalledWith(2, expect.anything(), (frozenColumns + 1), mockColumns.length);
-      expect(setTimeout).toHaveBeenCalledTimes(1);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 50);
       expect(divHeaderColumns.length).toBeGreaterThan(2);
       expect(divHeaderColumns[0].outerHTML).toEqual(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns">All your colums div here</div>`);
     });
@@ -385,8 +387,8 @@ describe('GroupingAndColspanService', () => {
       jest.runAllTimers(); // fast-forward timer
 
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenCalledTimes(2);
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 0);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(2);
+      expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 0);
       expect(divHeaderColumns.length).toBeGreaterThan(2);
       expect(divHeaderColumns[0].outerHTML).toEqual(`<div style="width: 2815px; left: -1000px;" class="slick-header-columns">All your colums div here</div>`);
     });

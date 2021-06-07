@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
@@ -33,8 +33,8 @@ describe('without ngx-translate', () => {
   let component: SlickPaginationComponent;
   let mockServicePagination: ServicePagination;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [
         SlickPaginationComponent
       ],
@@ -60,12 +60,11 @@ describe('without ngx-translate', () => {
 
     paginationServiceStub.onPaginationChanged.next(mockServicePagination);
     fixture.detectChanges();
-  }));
+  });
 
   afterEach(() => {
     // clear all the spyOn mocks to not influence next test
     jest.clearAllMocks();
-    spyOn(component, 'ngOnDestroy').and.callFake(() => { });
     fixture.destroy();
   });
 
@@ -76,7 +75,6 @@ describe('without ngx-translate', () => {
   it('should throw an error when "enableTranslate" is set and Translate Service is not provided', (done) => {
     try {
       component.gridOptions.enableTranslate = true;
-      component.constructor();
       component.ngOnInit();
     } catch (e) {
       expect(e.toString()).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');

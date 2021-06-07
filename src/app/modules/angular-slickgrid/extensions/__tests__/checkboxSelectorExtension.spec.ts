@@ -37,8 +37,8 @@ describe('checkboxSelectorExtension', () => {
   let extension: CheckboxSelectorExtension;
   const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [CheckboxSelectorExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });

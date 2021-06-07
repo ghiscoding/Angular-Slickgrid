@@ -27,13 +27,13 @@ describe('AngularUtilService', () => {
   let fixture: ComponentFixture<TestPreloadComponent>;
   let component: TestPreloadComponent;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // define a <div> container to simulate a row detail DOM element
     const div = document.createElement('div');
     div.innerHTML = `<div id="${DOM_PARENT_ID}">parent text</div><div id="${DOM_ELEMENT_ID}">some text</div>`;
     document.body.appendChild(div);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [TestPreloadComponent],
       providers: [
         AngularUtilService,
@@ -48,7 +48,7 @@ describe('AngularUtilService', () => {
   });
 
   afterEach(() => {
-    const domElm = document.getElementById(DOM_ELEMENT_ID);
+    const domElm = document.getElementById(DOM_ELEMENT_ID) as HTMLDivElement;
     domElm.innerHTML = 'some text';
   });
 
@@ -58,10 +58,10 @@ describe('AngularUtilService', () => {
 
   describe('createAngularComponent method', () => {
     let domElm: HTMLElement;
-    let mockComponentFactory;
+    let mockComponentFactory: any;
 
     beforeEach(() => {
-      domElm = document.getElementById(DOM_ELEMENT_ID);
+      domElm = document.getElementById(DOM_ELEMENT_ID) as HTMLDivElement;
       mockComponentFactory = { hostView: { rootNodes: [domElm] } };
     });
 
@@ -81,11 +81,11 @@ describe('AngularUtilService', () => {
   describe('createAngularComponentAppendToDom method', () => {
     let domElm: HTMLElement;
     let domParentElm: HTMLElement;
-    let mockComponentFactory;
+    let mockComponentFactory: any;
 
     beforeEach(() => {
-      domElm = document.getElementById(DOM_ELEMENT_ID);
-      domParentElm = document.getElementById(DOM_PARENT_ID);
+      domElm = document.getElementById(DOM_ELEMENT_ID) as HTMLDivElement;
+      domParentElm = document.getElementById(DOM_PARENT_ID) as HTMLDivElement;
       mockComponentFactory = { hostView: { rootNodes: [domElm] } };
     });
 

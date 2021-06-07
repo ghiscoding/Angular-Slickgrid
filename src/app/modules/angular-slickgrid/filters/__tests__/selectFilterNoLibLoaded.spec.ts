@@ -37,7 +37,7 @@ describe('SelectFilter', () => {
   let mockColumn: Column;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -56,7 +56,7 @@ describe('SelectFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [{ provide: CollectionService, useValue: collectionServiceStub }],
       imports: [TranslateModule.forRoot()]
     });
@@ -72,6 +72,6 @@ describe('SelectFilter', () => {
   });
 
   it('should throw an error when multiple-select.js is not provided or imported', () => {
-    expect(() => filter.init(filterArguments, true)).toThrowError(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file`);
+    expect(() => filter.init(filterArguments)).toThrowError(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file`);
   });
 });

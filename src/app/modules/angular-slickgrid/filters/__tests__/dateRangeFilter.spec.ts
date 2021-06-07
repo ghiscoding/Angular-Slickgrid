@@ -4,6 +4,7 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Column, FilterArguments, GridOption, FieldType } from '../../models';
 import { Filters } from '..';
 import { DateRangeFilter } from '../dateRangeFilter';
+import { ColumnFilter } from '../../../../../../dist/public_api';
 
 const containerId = 'demo-container';
 
@@ -26,11 +27,11 @@ describe('DateRangeFilter', () => {
   let divContainer: HTMLDivElement;
   let filter: DateRangeFilter;
   let filterArguments: FilterArguments;
-  let spyGetHeaderRow;
+  let spyGetHeaderRow: any;
   let mockColumn: Column;
   let translate: TranslateService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     divContainer.innerHTML = template;
     document.body.appendChild(divContainer);
@@ -43,7 +44,7 @@ describe('DateRangeFilter', () => {
       callback: jest.fn()
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [],
       imports: [TranslateModule.forRoot()]
     });
@@ -72,7 +73,7 @@ describe('DateRangeFilter', () => {
   });
 
   it('should throw an error when trying to call init without any arguments', () => {
-    expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    expect(() => filter.init(null as any)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
   it('should initialize the filter', () => {
@@ -85,10 +86,10 @@ describe('DateRangeFilter', () => {
 
   it('should have a placeholder when defined in its column definition', () => {
     const testValue = 'test placeholder';
-    mockColumn.filter.placeholder = testValue;
+    (mockColumn.filter as ColumnFilter).placeholder = testValue;
 
     filter.init(filterArguments);
-    const filterElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input');
+    const filterElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input') as HTMLInputElement;
 
     expect(filterElm.placeholder).toBe(testValue);
   });
@@ -96,7 +97,7 @@ describe('DateRangeFilter', () => {
   it('should hide the DOM element when the "hide" method is called', () => {
     filter.init(filterArguments);
     const spy = jest.spyOn(filter.flatInstance, 'close');
-    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
     filter.hide();
 
     expect(calendarElm).toBeTruthy();
@@ -106,7 +107,7 @@ describe('DateRangeFilter', () => {
   it('should show the DOM element when the "show" method is called', () => {
     filter.init(filterArguments);
     const spy = jest.spyOn(filter.flatInstance, 'open');
-    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
     filter.show();
 
     expect(calendarElm).toBeTruthy();
@@ -147,12 +148,12 @@ describe('DateRangeFilter', () => {
   });
 
   it('should trigger input change event and expect the callback to be called with the date provided in the input', () => {
-    mockColumn.filter.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
-    mockColumn.filter.operator = 'RangeInclusive';
+    (mockColumn.filter as ColumnFilter).filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
+    (mockColumn.filter as ColumnFilter).operator = 'RangeInclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
     filterInputElm.value = '2001-01-02T16:02:02.239Z to 2001-01-31T16:02:02.239Z';
     filterInputElm.dispatchEvent(new CustomEvent('change'));
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
@@ -163,12 +164,12 @@ describe('DateRangeFilter', () => {
   });
 
   it('should pass a different operator then trigger an input change event and expect the callback to be called with the date provided in the input', () => {
-    mockColumn.filter.filterOptions = { allowInput: true, enableTime: false }; // change to allow input value only for testing purposes
-    mockColumn.filter.operator = 'RangeExclusive';
+    (mockColumn.filter as ColumnFilter).filterOptions = { allowInput: true, enableTime: false }; // change to allow input value only for testing purposes
+    (mockColumn.filter as ColumnFilter).operator = 'RangeExclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
     filterInputElm.value = '2001-01-02T16:02:02.239Z to 2001-01-31T16:02:02.239Z';
     filterInputElm.dispatchEvent(new CustomEvent('change'));
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
@@ -180,11 +181,11 @@ describe('DateRangeFilter', () => {
 
   it('should create the input filter with a default search term when passed as a filter argument', () => {
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
-    mockColumn.filter.operator = 'RangeInclusive';
+    (mockColumn.filter as ColumnFilter).operator = 'RangeInclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -197,11 +198,11 @@ describe('DateRangeFilter', () => {
 
   it('should create the input filter with a default search term when passed as a filter argument with 2 dots (..) notation', () => {
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z..2000-01-31T05:00:00.000Z'];
-    mockColumn.filter.operator = 'RangeInclusive';
+    (mockColumn.filter as ColumnFilter).operator = 'RangeInclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -216,12 +217,12 @@ describe('DateRangeFilter', () => {
     await (await import('flatpickr/dist/l10n/fr')).French;
     translate.use('fr');
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
-    mockColumn.filter.operator = 'RangeInclusive';
+    (mockColumn.filter as ColumnFilter).operator = 'RangeInclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
-    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
+    const calendarElm = document.body.querySelector('.flatpickr-calendar') as HTMLDivElement;
     const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>(' .flatpickr-monthDropdown-months option');
 
     filter.show();
@@ -269,7 +270,7 @@ describe('DateRangeFilter', () => {
 
     filter.init(filterArguments);
     filter.clear();
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
 
     expect(filterInputElm.value).toBe('');
@@ -283,7 +284,7 @@ describe('DateRangeFilter', () => {
 
     filter.init(filterArguments);
     filter.clear(false);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
 
     expect(filterInputElm.value).toBe('');
@@ -292,13 +293,13 @@ describe('DateRangeFilter', () => {
   });
 
   it('should have a value with date & time in the picker when "enableTime" option is set and we trigger a change', () => {
-    mockColumn.filter.filterOptions = { enableTime: true, allowInput: true }; // change to allow input value only for testing purposes
+    (mockColumn.filter as ColumnFilter).filterOptions = { enableTime: true, allowInput: true }; // change to allow input value only for testing purposes
     mockColumn.outputType = FieldType.dateTimeIsoAmPm;
-    mockColumn.filter.operator = '>';
+    (mockColumn.filter as ColumnFilter).operator = '>';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
     filterInputElm.value = '2000-01-01T05:00:00.000+05:00 to 2000-01-31T05:00:00.000+05:00';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
@@ -312,13 +313,13 @@ describe('DateRangeFilter', () => {
   });
 
   it('should have a value with date & time in the picker when using no "outputType" which will default to UTC date', () => {
-    mockColumn.outputType = null;
+    mockColumn.outputType = null as any;
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
-    mockColumn.filter.operator = '<=';
+    (mockColumn.filter as ColumnFilter).operator = '<=';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.flatpickr.search-filter.filter-finish input.input');
+    const filterInputElm = divContainer.querySelector('.flatpickr.search-filter.filter-finish input.input') as HTMLInputElement;
 
     filterInputElm.focus();
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));

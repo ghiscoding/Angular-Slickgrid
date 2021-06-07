@@ -243,15 +243,15 @@ const mockGroupItemMetaProviderImplementation = jest.fn().mockImplementation(() 
 const mockGridImplementation = jest.fn().mockImplementation(() => (mockGrid));
 const mockDraggableGroupingImplementation = jest.fn().mockImplementation(() => (mockDraggableGrouping));
 
-jest.mock('slickgrid/slick.core', () => mockSlickCoreImplementation);
-jest.mock('slickgrid/slick.grid', () => mockGridImplementation);
-jest.mock('slickgrid/plugins/slick.draggablegrouping', () => mockDraggableGroupingImplementation);
-Slick.Grid = mockGridImplementation;
-Slick.EventHandler = mockSlickCoreImplementation;
-Slick.Data = { DataView: mockDataViewImplementation, GroupItemMetadataProvider: mockGroupItemMetaProviderImplementation };
-Slick.DraggableGrouping = mockDraggableGroupingImplementation;
-
 describe('Angular-Slickgrid Custom Component instantiated via Constructor', () => {
+  jest.mock('slickgrid/slick.core', () => mockSlickCoreImplementation);
+  jest.mock('slickgrid/slick.grid', () => mockGridImplementation);
+  jest.mock('slickgrid/plugins/slick.draggablegrouping', () => mockDraggableGroupingImplementation);
+  Slick.Grid = mockGridImplementation;
+  Slick.EventHandler = mockSlickCoreImplementation;
+  Slick.Data = { DataView: mockDataViewImplementation, GroupItemMetadataProvider: mockGroupItemMetaProviderImplementation };
+  Slick.DraggableGrouping = mockDraggableGroupingImplementation;
+
   let component: AngularSlickgridComponent;
   let divContainer: HTMLDivElement;
   let cellDiv: HTMLDivElement;
@@ -271,14 +271,14 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     dataset.bind="dataset">
   </angular-slickgrid>`;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     divContainer = document.createElement('div');
     cellDiv = document.createElement('div');
     divContainer.innerHTML = template;
     divContainer.appendChild(cellDiv);
     document.body.appendChild(divContainer);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()]
     });
     translate = TestBed.inject(TranslateService);

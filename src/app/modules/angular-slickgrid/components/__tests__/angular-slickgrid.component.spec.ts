@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -127,11 +127,11 @@ describe('App Component', () => {
   let component: AngularSlickgridComponent;
   let translate: TranslateService;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     // @ts-ignore
     navigator.__defineGetter__('userAgent', () => 'MSIE 8'); // just to skip resizerService calling grid.resizeCanvas()
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [
         AngularSlickgridComponent,
         SlickPaginationComponent
@@ -209,7 +209,7 @@ describe('App Component', () => {
     component.gridOptions = { enableFiltering: true, dataView: { syncGridSelection: false } };
     component.columnDefinitions = [];
     component.dataset = [];
-  }));
+  });
 
   it('should make sure Angular-Slickgrid is defined', () => {
     expect(component).toBeTruthy();
@@ -227,7 +227,7 @@ describe('App Component', () => {
     expect(gridContainerElm.id).toBe('grid1');
   });
 
-  it('should convert parent/child dataset to hierarchical dataset when Tree Data is enabled and "onRowsChanged" was triggered', async (done) => {
+  it('should convert parent/child dataset to hierarchical dataset when Tree Data is enabled and "onRowsChanged" was triggered', async () => {
     const mockFlatDataset = [{ id: 0, file: 'documents' }, { id: 1, file: 'vacation.txt', parentId: 0 }];
     const hierarchicalSpy = jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'set');
     jest.spyOn(treeDataServiceStub, 'convertFlatParentChildToTreeDatasetAndSort').mockReturnValue({ hierarchical: [], flat: mockFlatDataset as any[] });
@@ -249,7 +249,6 @@ describe('App Component', () => {
 
     setTimeout(() => {
       expect(hierarchicalSpy).toHaveBeenCalled();
-      done();
     }, 51)
   });
 
@@ -274,7 +273,7 @@ describe('App Component', () => {
     expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize"');
   });
 
-  it('should trigger a SlickGrid (sgOnRendered) event & DataView (sgOnRowsChanged) event when dataset changed', async (done) => {
+  it('should trigger a SlickGrid (sgOnRendered) event & DataView (sgOnRowsChanged) event when dataset changed', async () => {
     const mockDataset = [{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }];
     const onBeforeGridCreateSpy = jest.spyOn(component.onBeforeGridCreate, 'emit');
     const onDataviewCreatedSpy = jest.spyOn(component.onDataviewCreated, 'emit');
@@ -296,7 +295,6 @@ describe('App Component', () => {
       expect(dispatchSpy).toHaveBeenCalledWith(new CustomEvent('sgOnRowsChanged', expect.any(Object)));
       expect(dispatchCustomSpy).toHaveBeenCalledWith('sgOnRendered', expect.any(Object));
       expect(dispatchCustomSpy).toHaveBeenCalledWith('sgOnRowsChanged', expect.any(Object));
-      done();
     }, 10);
   });
 

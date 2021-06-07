@@ -36,7 +36,7 @@ describe('headerButtonExtension', () => {
     command: 'toggle-highlight',
     grid: gridStub
   } as HeaderButtonOnCommandArgs;
-  const mockEventCallback = (e, args: HeaderButtonOnCommandArgs) => { };
+  const mockEventCallback = () => { };
   const gridOptionsMock = {
     enableHeaderButton: true,
     headerButton: {
@@ -45,8 +45,8 @@ describe('headerButtonExtension', () => {
     }
   } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [HeaderButtonExtension, ExtensionUtility, SharedService],
       imports: [TranslateModule.forRoot()]
     });
@@ -81,7 +81,7 @@ describe('headerButtonExtension', () => {
 
     it('should call internal event handler subscribe and expect the "onCommand" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const onCopySpy = jest.spyOn(SharedService.prototype.gridOptions.headerButton, 'onCommand');
+      const onCopySpy = jest.spyOn(SharedService.prototype.gridOptions.headerButton!, 'onCommand');
       const instance = extension.register();
       instance.onCommand.notify(mockOnCommandArgs, new Slick.EventData(), gridStub);
 

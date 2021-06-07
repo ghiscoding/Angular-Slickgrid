@@ -3,6 +3,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Column, GridOption, RowMoveManager } from '../../models';
 import { RowMoveManagerExtension } from '../rowMoveManagerExtension';
 import { SharedService } from '../../services/shared.service';
+import { RowMoveManager } from '../../../../../../dist/public_api';
 
 declare const Slick: any;
 
@@ -46,8 +47,8 @@ describe('rowMoveManagerExtension', () => {
     },
   } as GridOption;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [RowMoveManagerExtension, SharedService],
       imports: [TranslateModule.forRoot()]
     });

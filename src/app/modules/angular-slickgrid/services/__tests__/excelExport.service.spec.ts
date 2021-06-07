@@ -70,6 +70,7 @@ describe('ExcelExportService', () => {
   let translate: TranslateService;
   let mockExportExcelOptions: ExcelExportOption;
   let mockExcelBlob: Blob;
+  jest.spyOn(global.console, 'error').mockReturnValue(); // disregard JSDOM console error for missing navigation implementation
 
   describe('with ngx-translate', () => {
     beforeEach(() => {
