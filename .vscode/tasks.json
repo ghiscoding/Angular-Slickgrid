@@ -52,13 +52,13 @@
     {
       "label": "Run Jest Tests with Coverage",
       "type": "shell",
-      "command": "yarn test:coverage",
+      "command": "yarn jest:coverage",
       "problemMatcher": []
     },
     {
       "label": "Run Jest Watch",
       "type": "shell",
-      "command": "yarn test:watch",
+      "command": "yarn jest:watch",
       "problemMatcher": []
     },
     {
