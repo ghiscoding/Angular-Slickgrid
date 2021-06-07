@@ -1,0 +1,80 @@
+name: CI Build
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch on Push and any branches on PR
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
+env:
+  CI: true
+  PREFERRED_WORKSPACE_MANAGER: yarn
+
+jobs:
+  run:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [14]
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+
+      - name: Set Node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - run: node --version
+      - run: npm --version
+
+      - name: Install root dependencies
+        uses: bahmutov/npm-install@v1
+
+      - name: Run Project Build
+        run: yarn build
+
+      - name: Run Jest unit tests
+        run: yarn jest:ci
+
+      - name: Upload Jest coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
+
+      - name: Start server in the background
+        run: yarn start &
+
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: test/cypress
+          wait-on: 'http://localhost:4300'
+          browser: chrome
+          record: true
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prod Build for GitHub demo website
+        run: |
+          yarn build:demo
+
+      # deploy (re-publish) GitHub demo page with a Prod build but only when merging to "master" branch
+      # and the commit message contains the text "chore(release)"
+      - name: Deploy to gh-pages
+        if: |
+          github.ref == 'refs/heads/master' &&
+          contains(github.event.head_commit.message, 'chore(release)')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
