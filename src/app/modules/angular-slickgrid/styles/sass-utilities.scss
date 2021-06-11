@@ -1,3 +1,5 @@
+@use './private';
+
 @function encodecolor($string) {
 	@if type-of($string) == 'color' {
         $hex: str-slice(ie-hex-str($string), 4);
@@ -8,9 +10,9 @@
 }
 
 @mixin recolor($color: #000, $opacity: 1) {
-  $r: red($color) / 255;
-  $g: green($color) / 255;
-  $b: blue($color) / 255;
+  $r: private.private-div(red($color), 255);
+  $g: private.private-div(green($color), 255);
+  $b: private.private-div(blue($color), 255);
   $a: $opacity;
 
   // grayscale fallback if SVG from data url is not supported
@@ -40,8 +42,6 @@
     display: $display;
     vertical-align: bottom;
     margin-top: -1px; // small patch to remove padding all around the SVG
-    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{$fill}" viewBox="0 0 24 24">\
-        <path d="#{$path-drawing}"></path>\
-      </svg>');
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="#{$fill}" viewBox="0 0 24 24"><path d="#{$path-drawing}"></path></svg>');
   }
 }
