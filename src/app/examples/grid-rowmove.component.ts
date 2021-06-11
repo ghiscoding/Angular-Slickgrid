@@ -89,7 +89,7 @@ export class GridRowMoveComponent implements OnInit {
         disableRowSelection: true,
         cancelEditOnDrag: true,
         width: 30,
-        onBeforeMoveRows: this.onBeforeMoveRow,
+        onBeforeMoveRows: this.onBeforeMoveRow.bind(this),
         onMoveRows: this.onMoveRows.bind(this),
 
         // you can change the move icon position of any extension (RowMove, RowDetail or RowSelector icon)
@@ -135,7 +135,7 @@ export class GridRowMoveComponent implements OnInit {
   onBeforeMoveRow(e: Event, data: { rows: number[]; insertBefore: number; }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
-      if (rowIdx === data.insertBefore || rowIdx === data.insertBefore - 1) {
+      if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.angularGrid.dataView.getItemCount()))) {
         e.stopPropagation();
         return false;
       }
@@ -162,7 +162,7 @@ export class GridRowMoveComponent implements OnInit {
     const filteredItems = this.angularGrid.dataView.getFilteredItems();
 
     const itemOnRight = this.angularGrid.dataView.getItem(insertBefore);
-    const insertBeforeFilteredIdx = this.angularGrid.dataView.getIdxById(itemOnRight.id);
+    const insertBeforeFilteredIdx = itemOnRight ? this.angularGrid.dataView.getIdxById(itemOnRight.id) : this.angularGrid.dataView.getItemCount();
 
     const filteredRowItems: any[] = [];
     rows.forEach(row => filteredRowItems.push(filteredItems[row]));
