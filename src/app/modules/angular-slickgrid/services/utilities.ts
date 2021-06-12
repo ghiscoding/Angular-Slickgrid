@@ -4,6 +4,7 @@ import { first } from 'rxjs/operators';
 import * as moment_ from 'moment-mini';
 const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
+import { Constants } from '../constants';
 import { FieldType, GridOption, OperatorString, OperatorType } from '../models/index';
 
 // using external non-typed js libraries
@@ -55,14 +56,15 @@ export function arrayRemoveItemByIndex<T>(array: T[], index: number): T[] {
 /**
  * Convert a flat array (with "parentId" references) into a hierarchical (tree) dataset structure (where children are array(s) inside their parent objects)
  * @param flatArray input array (flat dataset)
- * @param options you can provide the following options:: "parentPropName" (defaults to "parent"), "childrenPropName" (defaults to "children") and "identifierPropName" (defaults to "id")
+ * @param options you can provide the following tree data options (which are all prop names, except 1 boolean flag, to use or else use their defaults):: collapsedPropName, childrenPropName, parentPropName, identifierPropName and levelPropName and initiallyCollapsed (boolean)
  * @return roots - hierarchical (tree) data view array
  */
-export function unflattenParentChildArrayToTree<P, T extends P & { [childrenPropName: string]: P[] }>(flatArray: P[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; levelPropName?: string; }): T[] {
-  const childrenPropName = options?.childrenPropName ?? 'children';
-  const parentPropName = options?.parentPropName ?? '__parentId';
+export function unflattenParentChildArrayToTree<P, T extends P & { [childrenPropName: string]: P[] }>(flatArray: P[], options?: { childrenPropName?: string; collapsedPropName?: string; identifierPropName?: string; levelPropName?: string; parentPropName?: string; initiallyCollapsed?: boolean; }): T[] {
   const identifierPropName = options?.identifierPropName ?? 'id';
-  const levelPropName = options?.levelPropName ?? '__treeLevel';
+  const childrenPropName = options?.childrenPropName ?? Constants.treeDataProperties.CHILDREN_PROP;
+  const parentPropName = options?.parentPropName ?? Constants.treeDataProperties.PARENT_PROP;
+  const levelPropName = options?.levelPropName ?? Constants.treeDataProperties.TREE_LEVEL_PROP;
+  const collapsedPropName = options?.collapsedPropName ?? Constants.treeDataProperties.COLLAPSED_PROP;
   const inputArray: P[] = flatArray || [];
   const roots: T[] = []; // items without parent which at the root
 
@@ -75,15 +77,16 @@ export function unflattenParentChildArrayToTree<P, T extends P & { [childrenProp
   Object.keys(all).forEach((id) => {
     const item = all[id];
     if (!(parentPropName in item) || item[parentPropName] === null || item[parentPropName] === undefined || item[parentPropName] === '') {
-      // delete item[parentPropName];
       roots.push(item);
     } else if (item[parentPropName] in all) {
       const p = all[item[parentPropName]];
       if (!(childrenPropName in p)) {
         p[childrenPropName] = [];
       }
-      // delete item[parentPropName];
       p[childrenPropName].push(item);
+      if (p[collapsedPropName] === undefined) {
+        p[collapsedPropName] = options?.initiallyCollapsed ?? false;
+      }
     }
   });
 
@@ -102,7 +105,7 @@ export function unflattenParentChildArrayToTree<P, T extends P & { [childrenProp
  * @param {Number} [treeLevel] - current tree level
  */
 export function addTreeLevelByMutation<T>(treeArray: T[], options: { childrenPropName: string; levelPropName: string; }, treeLevel = 0) {
-  const childrenPropName = (options?.childrenPropName ?? 'children') as keyof T;
+  const childrenPropName = (options?.childrenPropName ?? Constants.treeDataProperties.CHILDREN_PROP) as keyof T;
 
   if (Array.isArray(treeArray)) {
     for (const item of treeArray) {
@@ -124,11 +127,12 @@ export function addTreeLevelByMutation<T>(treeArray: T[], options: { childrenPro
  * @param {Object} options - you can provide "childrenPropName" (defaults to "children")
  * @return {Array<Object>} output - Parent/Child array
  */
-export function flattenToParentChildArray<T>(treeArray: T[], options?: { parentPropName?: string; childrenPropName?: string; identifierPropName?: string; shouldAddTreeLevelNumber?: boolean; levelPropName?: string; }) {
-  const childrenPropName = (options?.childrenPropName ?? 'children') as keyof T & string;
+export function flattenToParentChildArray<T>(treeArray: T[], options?: { parentPropName?: string; childrenPropName?: string; hasChildrenPropName?: string; identifierPropName?: string; shouldAddTreeLevelNumber?: boolean; levelPropName?: string; }) {
   const identifierPropName = (options?.identifierPropName ?? 'id') as keyof T & string;
-  const parentPropName = (options?.parentPropName ?? '__parentId') as keyof T & string;
-  const levelPropName = options?.levelPropName ?? '__treeLevel';
+  const childrenPropName = (options?.childrenPropName ?? Constants.treeDataProperties.CHILDREN_PROP) as keyof T & string;
+  const hasChildrenPropName = (options?.hasChildrenPropName ?? Constants.treeDataProperties.HAS_CHILDREN_PROP) as keyof T & string;
+  const parentPropName = (options?.parentPropName ?? Constants.treeDataProperties.PARENT_PROP) as keyof T & string;
+  const levelPropName = options?.levelPropName ?? Constants.treeDataProperties.TREE_LEVEL_PROP;
   type FlatParentChildArray = Omit<T, keyof typeof childrenPropName>;
 
   if (options?.shouldAddTreeLevelNumber) {
@@ -142,6 +146,7 @@ export function flattenToParentChildArray<T>(treeArray: T[], options?: { parentP
       return {
         [identifierPropName]: node[identifierPropName],
         [parentPropName]: parentNode !== undefined ? parentNode[identifierPropName] : null,
+        [hasChildrenPropName]: !!node[childrenPropName],
         ...objectWithoutKey(node, childrenPropName as keyof T) // reuse the entire object except the children array property
       } as unknown as FlatParentChildArray;
     }
@@ -224,9 +229,9 @@ export function findItemInHierarchicalStructure<T = any>(treeArray: T[], predica
 
 /**
  * Find an item from a tree (hierarchical) view structure (a parent that can have children array which themseleves can children and so on)
- * @param treeArray
- * @param predicate
- * @param childrenPropertyName
+ * @param {Array<Object>} treeArray - hierarchical tree dataset
+ * @param {Function} predicate - search predicate to find the item in the hierarchical tree structure
+ * @param {String} childrenPropertyName - children property name to use in the tree (defaults to "children")
  */
 export function findItemInTreeStructure<T = any>(treeArray: T[], predicate: (item: T) => boolean, childrenPropertyName: string): T | undefined {
   if (!childrenPropertyName) {

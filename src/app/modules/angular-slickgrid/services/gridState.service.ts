@@ -14,7 +14,9 @@ import {
   GridState,
   GridStateChange,
   GridStateType,
+  SlickDataView,
   SlickEventHandler,
+  TreeToggleStateChange,
 } from './../models/index';
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
@@ -22,6 +24,7 @@ import { SortService } from './sort.service';
 import { unsubscribeAllObservables } from './utilities';
 import { ResizerService } from './resizer.service';
 import { SharedService } from './shared.service';
+import { TreeDataService } from './treeData.service';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -40,18 +43,19 @@ export class GridStateService {
   onGridStateChanged = new Subject<GridStateChange>();
 
   constructor(
-    private extensionService: ExtensionService,
-    private filterService: FilterService,
-    private resizerService: ResizerService,
-    private sharedService: SharedService,
-    private sortService: SortService
+    private readonly extensionService: ExtensionService,
+    private readonly filterService: FilterService,
+    private readonly resizerService: ResizerService,
+    private readonly sharedService: SharedService,
+    private readonly sortService: SortService,
+    private readonly treeDataService: TreeDataService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
-    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    return this._grid?.getOptions?.() ?? {};
   }
 
   private get datasetIdPropName(): string {
@@ -106,17 +110,28 @@ export class GridStateService {
       pinning: { frozenColumn, frozenRow, frozenBottom },
     };
 
+    // optional Pagination
     const currentPagination = this.getCurrentPagination();
     if (currentPagination) {
       gridState.pagination = currentPagination;
     }
 
+    // optional Row Selection
     if (this.hasRowSelectionEnabled()) {
       const currentRowSelection = this.getCurrentRowSelections(args?.requestRefreshRowFilteredRow);
       if (currentRowSelection) {
         gridState.rowSelection = currentRowSelection;
       }
     }
+
+    // optional Tree Data toggle items
+    if (this._gridOptions?.enableTreeData) {
+      const treeDataTreeToggleState = this.getCurrentTreeDataToggleState();
+      if (treeDataTreeToggleState) {
+        gridState.treeData = treeDataTreeToggleState;
+      }
+    }
+
     return gridState;
   }
 
@@ -238,7 +253,7 @@ export class GridStateService {
    * @return current filters
    */
   getCurrentFilters(): CurrentFilter[] | null {
-    if (this._gridOptions && this._gridOptions.backendServiceApi) {
+    if (this._gridOptions?.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService?.getCurrentFilters) {
         return backendService.getCurrentFilters() as CurrentFilter[];
@@ -303,6 +318,17 @@ export class GridStateService {
       }
     } else if (this.sortService?.getCurrentLocalSorters) {
       return this.sortService.getCurrentLocalSorters();
+    }
+    return null;
+  }
+
+  /**
+   * Get the current list of Tree Data item(s) that got toggled in the grid
+   * @returns {Array<TreeToggledItem>} treeDataToggledItems - items that were toggled (array of `parentId` and `isCollapsed` flag)
+   */
+  getCurrentTreeDataToggleState(): Omit<TreeToggleStateChange, 'fromItemId'> | null {
+    if (this._gridOptions?.enableTreeData && this.treeDataService) {
+      return this.treeDataService.getCurrentToggleState();
     }
     return null;
   }
@@ -421,6 +447,20 @@ export class GridStateService {
       this.sharedService.onHeaderMenuHideColumns.subscribe((visibleColumns: Column[]) => {
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(visibleColumns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+      })
+    );
+
+    // subscribe to Tree Data toggle items changes
+    this._subscriptions.push(
+      this.sharedService.onTreeItemToggled.subscribe((toggleChange: TreeToggleStateChange) => {
+        this.onGridStateChanged.next({ change: { newValues: toggleChange, type: GridStateType.treeData }, gridState: this.getCurrentGridState() });
+      })
+    );
+
+    // subscribe to Tree Data full tree toggle changes
+    this._subscriptions.push(
+      this.sharedService.onTreeFullToggleEnd.subscribe((toggleChange: Omit<TreeToggleStateChange, 'fromItemId'>) => {
+        this.onGridStateChanged.next({ change: { newValues: toggleChange, type: GridStateType.treeData }, gridState: this.getCurrentGridState() });
       })
     );
   }

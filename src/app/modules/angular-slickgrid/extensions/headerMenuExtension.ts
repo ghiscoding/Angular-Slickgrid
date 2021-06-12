@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import {
   Column,
-  ColumnSort,
   CurrentSorter,
   EmitterType,
   Extension,

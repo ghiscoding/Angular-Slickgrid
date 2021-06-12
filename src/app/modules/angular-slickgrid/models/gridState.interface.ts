@@ -1,4 +1,12 @@
-import { CurrentColumn, CurrentFilter, CurrentPagination, CurrentPinning, CurrentRowSelection, CurrentSorter } from './index';
+import {
+  CurrentColumn,
+  CurrentFilter,
+  CurrentPagination,
+  CurrentPinning,
+  CurrentRowSelection,
+  CurrentSorter,
+  TreeToggleStateChange,
+} from './index';
 
 export interface GridState {
   /** Columns (and their state: visibility/position) that are currently applied in the grid */
@@ -18,4 +26,7 @@ export interface GridState {
 
   /** Row Selections (by their dataContext IDs and/or grid row indexes) */
   rowSelection?: CurrentRowSelection | null;
+
+  /** Tree Data changes which include toggled items (when the change is an item toggle, this could be `null` when the change is a full collapse/expand) */
+  treeData?: Partial<TreeToggleStateChange> | null;
 }
