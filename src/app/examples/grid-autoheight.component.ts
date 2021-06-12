@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,

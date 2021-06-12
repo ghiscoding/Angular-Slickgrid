@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Formatter } from '@slickgrid-universal/common';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
   AngularGridInstance,
   Column,
   FieldType,
   Filters,
-  Formatter,
   Formatters,
   GridOption,
   GridStateChange,

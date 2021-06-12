@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as DOMPurify from 'dompurify';
 
 import { EmptyWarning, GridOption } from '../models/index';
+import { TranslaterService } from '../services/translater.service';
 
 export class SlickEmptyWarningComponent {
   private _grid: any;
@@ -22,7 +23,7 @@ export class SlickEmptyWarningComponent {
     this._grid = slickGrid;
   }
 
-  constructor(@Optional() private translate?: TranslateService) { }
+  constructor(@Optional() private translaterService?: TranslaterService) { }
 
   dispose() {
     if (this._warningLeftElement && this._warningLeftElement.remove) {
@@ -92,8 +93,8 @@ export class SlickEmptyWarningComponent {
 
     // warning message could come from a translation key or by the warning options
     let warningMessage = mergedOptions.message;
-    if (this.gridOptions.enableTranslate && this.translate && this.translate.instant && mergedOptions && mergedOptions.messageKey) {
-      warningMessage = this.translate.instant(mergedOptions.messageKey);
+    if (this.gridOptions.enableTranslate && this.translaterService?.translate && mergedOptions?.messageKey) {
+      warningMessage = this.translaterService.translate(mergedOptions.messageKey);
     }
 
     if (!this._warningLeftElement && gridCanvasLeftElm && gridCanvasRightElm) {

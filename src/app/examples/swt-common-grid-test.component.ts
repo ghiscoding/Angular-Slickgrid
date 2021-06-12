@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   Component,
   ComponentFactoryResolver,
-  Injectable,
   OnInit,
   ViewChild,
   ViewContainerRef,

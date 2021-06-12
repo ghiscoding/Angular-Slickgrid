@@ -159,6 +159,7 @@ export class CellExternalCopyManagerExtension implements Extension {
         if (!this.sharedService.gridOptions.editable || !columnDef.editor) {
           const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.exportWithFormatter);
           if (columnDef.formatter && isEvaluatingFormatter) {
+            // @ts-ignore
             const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.sharedService.grid);
             if (columnDef.sanitizeDataExport || (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
               let outputString = formattedOutput as string;

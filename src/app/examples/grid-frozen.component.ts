@@ -100,6 +100,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
       },
       {
         id: 'cost', name: 'Cost | Duration', field: 'cost',
+        // @ts-ignore
         formatter: this.costDurationFormatter.bind(this),
         minWidth: 150, width: 170,
         sortable: true,
@@ -269,7 +270,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     }
   }
 
-  costDurationFormatter(row: number, cell: number, value: any, columnDef: Column, dataContext: any) {
+  costDurationFormatter(_row: number, _cell: number, _value: any, _columnDef: Column, dataContext: any) {
     const costText = this.isNullUndefinedOrEmpty(dataContext.cost) ? 'n/a' : formatNumber(dataContext.cost, 0, 2, false, '$', '', '.', ',');
     let durationText = 'n/a';
     if (!this.isNullUndefinedOrEmpty(dataContext.duration) && dataContext.duration >= 0) {

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
+import { parseFormatterWhenExist } from '@slickgrid-universal/common';
 import { Subject } from 'rxjs';
 
 import { Column, FieldType, GridOption, ResizeByContentOption, SlickEventHandler } from './../models/index';
-import { parseFormatterWhenExist } from '../formatters/formatterUtilities';
 import { sanitizeHtmlToText } from './utilities';
 
 // using external non-typed js libraries
@@ -415,6 +415,7 @@ export class ResizerService {
 
     if (!columnDef.originalWidth) {
       const charWidthPx = columnDef?.resizeCharWidthInPx ?? resizeCellCharWidthInPx;
+      // @ts-ignore
       const formattedData = parseFormatterWhenExist(columnDef?.formatter, rowIdx, colIdx, columnDef, item, this._grid);
       const formattedDataSanitized = sanitizeHtmlToText(formattedData);
       const formattedTextWidthInPx = Math.ceil(formattedDataSanitized.length * charWidthPx);

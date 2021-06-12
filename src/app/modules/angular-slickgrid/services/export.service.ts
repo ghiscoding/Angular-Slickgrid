@@ -1,5 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { exportWithFormatterWhenDefined } from '@slickgrid-universal/common';
 import { TextEncoder } from 'text-encoding-utf-8';
 import { Subject } from 'rxjs';
 
@@ -13,7 +14,6 @@ import {
   Locale,
 } from './../models/index';
 import { Constants } from './../constants';
-import { exportWithFormatterWhenDefined } from '../formatters/formatterUtilities';
 import { addWhiteSpaces, deepCopy, getTranslationPrefix, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
 
 // using external non-typed js libraries
@@ -370,6 +370,7 @@ export class ExportService {
         }
       } else {
         // get the output by analyzing if we'll pull the value from the cell or from a formatter
+        // @ts-ignore
         let itemData = exportWithFormatterWhenDefined(row, col, columnDef, itemObj, this._grid, this._exportOptions);
 
         // does the user want to sanitize the output data (remove HTML tags)?
@@ -431,6 +432,7 @@ export class ExportService {
 
       // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
       if (columnDef.groupTotalsFormatter) {
+        // @ts-ignore
         itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
       }
 

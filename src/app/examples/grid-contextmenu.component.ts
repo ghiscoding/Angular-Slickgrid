@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Formatter } from '@slickgrid-universal/common';
 import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
@@ -8,7 +9,6 @@ import {
   ExtensionName,
   FieldType,
   Filters,
-  Formatter,
   Formatters,
   GridOption,
   unsubscribeAllObservables,
@@ -41,6 +41,7 @@ const priorityExportFormatter: Formatter = (row, cell, value, columnDef, dataCon
     return '';
   }
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+  // @ts-ignore
   const translate = gridOptions.i18n;
   const count = +(value >= 3 ? 3 : value);
   const key = count === 3 ? 'HIGH' : (count === 2 ? 'MEDIUM' : 'LOW');

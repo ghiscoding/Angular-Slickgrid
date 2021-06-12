@@ -2,15 +2,16 @@ import 'slickgrid/lib/jquery.jsonp-2.4.min';
 import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, Formatter, GridOption } from './../modules/angular-slickgrid';
+import { Formatter } from '@slickgrid-universal/common';
+import { AngularGridInstance, Column, GridOption } from './../modules/angular-slickgrid';
 
 declare const Slick: any;
 
-const brandFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+const brandFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) => {
   return dataContext && dataContext.brand && dataContext.brand.name || '';
 };
 
-const mpnFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+const mpnFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) => {
   let link = '';
   if (dataContext && dataContext.octopart_url && dataContext.mpn) {
     link = `<a href="${dataContext.octopart_url}" target="_blank">${dataContext.mpn}</a>`;

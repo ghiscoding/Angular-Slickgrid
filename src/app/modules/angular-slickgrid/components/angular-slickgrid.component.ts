@@ -15,6 +15,7 @@ import { isObservable, Observable, Subscription } from 'rxjs';
 
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
+import { TranslaterService } from '../services/translater.service';
 import { emptyElement, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
@@ -117,6 +118,7 @@ const slickgridEventPrefix = 'sg';
     SharedService,
     SortService,
     SlickgridConfig,
+    TranslaterService,
     TreeDataService,
   ]
 })
@@ -280,9 +282,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private readonly sortService: SortService,
     private readonly treeDataService: TreeDataService,
     @Optional() private readonly translate: TranslateService,
+    @Optional() private readonly translaterService: TranslaterService,
     @Inject('config') private forRootConfig: GridOption
   ) {
-    this.slickEmptyWarning = new SlickEmptyWarningComponent(this.translate);
+    this.slickEmptyWarning = new SlickEmptyWarningComponent(this.translaterService);
   }
 
   ngAfterViewInit() {
@@ -560,7 +563,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
-    if (this.translate && this.translate.onLangChange) {
+    if (this.translate?.onLangChange) {
       // translate some of them on first load, then on each language change
       if (gridOptions.enableTranslate) {
         this.translateColumnHeaderTitleKeys();
@@ -841,6 +844,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private initialization() {
+    // @ts-ignore
+    this.gridOptions.translater = this.translaterService;
+
     // when detecting a frozen grid, we'll automatically enable the mousewheel scroll handler so that we can scroll from both left/right frozen containers
     if (this.gridOptions && ((this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0) || this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) && this.gridOptions.enableMouseWheelScrollHandler === undefined) {
       this.gridOptions.enableMouseWheelScrollHandler = true;

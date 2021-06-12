@@ -1,6 +1,8 @@
-import { Component, OnDestroy, OnInit, Injectable } from '@angular/core';
+import { Component, OnDestroy, OnInit, } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Formatter } from '@slickgrid-universal/common';
 import { Subscription } from 'rxjs';
+
 import {
   AngularGridInstance,
   Column,
@@ -8,7 +10,6 @@ import {
   FieldType,
   FileType,
   Filters,
-  Formatter,
   Formatters,
   GridOption,
   GridStateChange,

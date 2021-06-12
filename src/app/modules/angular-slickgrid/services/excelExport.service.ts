@@ -1,7 +1,8 @@
-import { Injectable, Optional } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 // @ts-ignore
 import * as ExcelBuilder from 'excel-builder-webpacker';
+import { Injectable, Optional } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { exportWithFormatterWhenDefined } from '@slickgrid-universal/common';
 import { Subject } from 'rxjs';
 import * as moment_ from 'moment-mini';
 const moment = (moment_ as any)['default'] || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
@@ -21,7 +22,6 @@ import {
   Locale,
 } from '../models/index';
 import { Constants } from '../constants';
-import { exportWithFormatterWhenDefined } from '../formatters/formatterUtilities';
 import { addWhiteSpaces, deepCopy, getTranslationPrefix, mapMomentDateFormatWithFieldType, sanitizeHtmlToText, titleCase } from './utilities';
 
 
@@ -552,6 +552,7 @@ export class ExcelExportService {
       } else {
         // -- Read Data & Push to Data Array
         // get the output by analyzing if we'll pull the value from the cell or from a formatter
+        // @ts-ignore
         let itemData: ExcelCellFormat | string = exportWithFormatterWhenDefined(row, col, columnDef, itemObj, this._grid, this._excelExportOptions);
 
         // does the user want to sanitize the output data (remove HTML tags)?
@@ -604,9 +605,11 @@ export class ExcelExportService {
 
       // if there's a exportCustomGroupTotalsFormatter or groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
       if (columnDef.exportCustomGroupTotalsFormatter) {
+        // @ts-ignore
         itemData = columnDef.exportCustomGroupTotalsFormatter(itemObj, columnDef);
       } else {
         if (columnDef.groupTotalsFormatter) {
+          // @ts-ignore
           itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
         }
       }

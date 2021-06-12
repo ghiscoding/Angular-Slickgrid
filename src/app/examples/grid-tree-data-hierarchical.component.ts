@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Formatter } from '@slickgrid-universal/common';
+
 import {
   AngularGridInstance,
   Column,
@@ -7,7 +9,6 @@ import {
   Formatters,
   GridOption,
   findItemInTreeStructure,
-  Formatter,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -140,7 +141,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     this.angularGrid.filterService.updateFilters([{ columnId: 'file', searchTerms: [this.searchString] }], true, false, true);
   }
 
-  treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  treeFormatter: Formatter = (_row, _cell, value, _columnDef, dataContext, grid) => {
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
@@ -149,7 +150,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     const dataView = grid.getData();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
-    const idx = dataView.getIdxById(dataContext[identifierPropName]);
+    const idx = dataView.getIdxById(dataContext[identifierPropName]) as number;
     const prefix = this.getFileIcon(value);
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
 import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({

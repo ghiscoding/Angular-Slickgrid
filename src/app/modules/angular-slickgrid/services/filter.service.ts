@@ -470,6 +470,7 @@ export class FilterService {
       const dataView = grid.getData();
       const idPropName = this._gridOptions.datasetIdPropertyName || 'id';
       const rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item[idPropName]) : 0;
+      // @ts-ignore
       cellValue = (columnDef && typeof columnDef.formatter === 'function') ? columnDef.formatter(rowIndex || 0, columnIndex, cellValue, columnDef, item, this._grid) : '';
       cellValue = sanitizeHtmlToText(cellValue); // also remove any html tag
     }

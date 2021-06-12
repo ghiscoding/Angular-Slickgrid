@@ -1,6 +1,7 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { Formatter } from '@slickgrid-universal/common';
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import {
   AngularGridInstance,
@@ -12,7 +13,6 @@ import {
   FieldType,
   Filters,
   FlatpickrOption,
-  Formatter,
   Formatters,
   GridOption,
   LongTextEditorOption,

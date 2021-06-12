@@ -1,4 +1,5 @@
-import { Formatters } from '../formatters/index';
+import { Formatters } from '@slickgrid-universal/common';
+
 import { Column, Formatter } from '../models/index';
 
 /**
@@ -13,11 +14,13 @@ export function autoAddEditorFormatterToColumnsWithEditor(columnDefinitions: Col
       if (columnDef.editor) {
         if (columnDef.formatter && columnDef.formatter !== Formatters.multiple) {
           const prevFormatter = columnDef.formatter;
+          // @ts-ignore
           columnDef.formatter = Formatters.multiple;
           columnDef.params = { ...columnDef.params, formatters: [prevFormatter, customEditableFormatter] };
         } else if (columnDef.formatter && columnDef.formatter === Formatters.multiple && columnDef.params) {
           columnDef.params.formatters = [...columnDef.params.formatters, customEditableFormatter];
         } else {
+          // @ts-ignore
           columnDef.formatter = customEditableFormatter;
         }
       }
