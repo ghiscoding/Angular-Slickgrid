@@ -17,6 +17,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
+              "assign-deep",
               "angular-slickgrid",
               "jquery-ui-dist/jquery-ui",
               "excel-builder-webpacker",
