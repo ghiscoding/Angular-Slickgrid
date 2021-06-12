@@ -151,3 +151,6 @@ export * from './sortDirectionString';
 export * from './sorter.interface';
 export * from './statistic.interface';
 export * from './treeDataOption.interface';
+export * from './treeToggledItem.interface';
+export * from './treeToggleStateChange.interface';
+export * from './toggleStateChangeType';

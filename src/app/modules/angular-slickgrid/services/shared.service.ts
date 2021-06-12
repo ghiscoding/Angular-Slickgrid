@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Subject } from 'rxjs';
 
-import { Column, CurrentPagination, GridOption } from '../models';
+import { Column, CurrentPagination, GridOption, TreeToggleStateChange } from '../models';
 
 @Injectable()
 export class SharedService {
@@ -17,6 +17,9 @@ export class SharedService {
   private _hierarchicalDataset: any[] | undefined;
   private _frozenVisibleColumnId: string | number | undefined;
   onHeaderMenuHideColumns = new Subject<Column[]>();
+  onTreeItemToggled = new Subject<TreeToggleStateChange>();
+  onTreeFullToggleStart = new Subject<{ collapsing: boolean }>();
+  onTreeFullToggleEnd = new Subject<Omit<TreeToggleStateChange, 'fromItemId'>>();
 
   // --
   // public

@@ -198,10 +198,10 @@ describe('Service/Utilies', () => {
 
       expect(output).toEqual([
         {
-          id: 11, __treeLevel: 0, parentId: null, file: 'Music', files: [{
-            id: 12, __treeLevel: 1, parentId: 11, file: 'mp3', files: [
-              { id: 14, __treeLevel: 2, parentId: 12, file: 'pop', files: [{ id: 15, __treeLevel: 3, parentId: 14, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
-              { id: 16, __treeLevel: 2, parentId: 12, file: 'rock', files: [{ id: 17, __treeLevel: 3, parentId: 16, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
+          id: 11, __treeLevel: 0, __collapsed: false, parentId: null, file: 'Music', files: [{
+            id: 12, __treeLevel: 1, __collapsed: false, parentId: 11, file: 'mp3', files: [
+              { id: 14, __treeLevel: 2, __collapsed: false, parentId: 12, file: 'pop', files: [{ id: 15, __treeLevel: 3, parentId: 14, file: 'theme.mp3', dateModified: '2015-03-01', size: 85, }] },
+              { id: 16, __treeLevel: 2, __collapsed: false, parentId: 12, file: 'rock', files: [{ id: 17, __treeLevel: 3, parentId: 16, file: 'soft.mp3', dateModified: '2015-05-13', size: 98, }] },
             ]
           }]
         },
@@ -231,13 +231,13 @@ describe('Service/Utilies', () => {
       addTreeLevelByMutation(mockTreeArray, { childrenPropName: 'files', levelPropName: '__treeLevel' });
       const output = flattenToParentChildArray(mockTreeArray, { childrenPropName: 'files' });
       expect(output).toEqual([
-        { id: 18, size: 90, __treeLevel: 0, dateModified: '2015-03-03', file: 'something.txt', __parentId: null, },
-        { id: 11, __treeLevel: 0, file: 'Music', __parentId: null, },
-        { id: 12, __treeLevel: 1, file: 'mp3', __parentId: 11, },
-        { id: 16, __treeLevel: 2, file: 'rock', __parentId: 12, },
-        { id: 17, __treeLevel: 3, dateModified: '2015-05-13', file: 'soft.mp3', size: 98, __parentId: 16, },
-        { id: 14, __treeLevel: 2, file: 'pop', __parentId: 12, },
-        { id: 15, __treeLevel: 3, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, __parentId: 14, },
+        { id: 18, size: 90, __treeLevel: 0, dateModified: '2015-03-03', file: 'something.txt', __parentId: null, __hasChildren: false },
+        { id: 11, __treeLevel: 0, file: 'Music', __parentId: null, __hasChildren: true },
+        { id: 12, __treeLevel: 1, file: 'mp3', __parentId: 11, __hasChildren: true },
+        { id: 16, __treeLevel: 2, file: 'rock', __parentId: 12, __hasChildren: true },
+        { id: 17, __treeLevel: 3, dateModified: '2015-05-13', file: 'soft.mp3', size: 98, __parentId: 16, __hasChildren: false },
+        { id: 14, __treeLevel: 2, file: 'pop', __parentId: 12, __hasChildren: true },
+        { id: 15, __treeLevel: 3, dateModified: '2015-03-01', file: 'theme.mp3', size: 85, __parentId: 14, __hasChildren: false },
       ]);
     });
   });

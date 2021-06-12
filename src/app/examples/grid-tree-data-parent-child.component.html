@@ -24,6 +24,17 @@
         <span class="mdi mdi-filter-outline"></span>
         <span>Dynamically Change Filter (% complete &lt; 40)</span>
       </button>
+      <button (click)="collapseAllWithoutEvent()" data-test="collapse-all-noevent-btn"
+              class="btn btn-outline-secondary btn-sm">
+        <span class="icon mdi mdi-arrow-collapse"></span>
+        <span>Collapse All (without triggering event)</span>
+      </button>
+      <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
+              class="btn btn-outline-secondary btn-sm"
+              [disabled]="hasNoExpandCollapseChanged">
+        <span class="icon mdi mdi-history"></span>
+        <span>Reapply Previous Toggled Items</span>
+      </button>
       <div class.bind="loadingClass"></div>
     </div>
   </div>
@@ -41,6 +52,9 @@
       <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm">
         <span class="icon mdi mdi-arrow-expand"></span>
         <span>Expand All</span>
+      </button>
+      <button (click)="logTreeDataToggledItems()" class="btn btn-outline-secondary btn-sm">
+        <span>Log Tree Toggled Items</span>
       </button>
       <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm">
         <span>Log Flat Structure</span>
@@ -60,6 +74,7 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
+                     (onGridStateChanged)="handleOnGridStateChanged($event)"
                      (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>

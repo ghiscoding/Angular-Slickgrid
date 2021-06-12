@@ -6,6 +6,10 @@ import {
   Filters,
   Formatters,
   GridOption,
+  GridStateChange,
+  GridStateType,
+  TreeToggledItem,
+  TreeToggleStateChange,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 500;
@@ -38,6 +42,10 @@ export class GridTreeDataParentChildComponent implements OnInit {
   columnDefinitions!: Column[];
   dataset!: any[];
   datasetHierarchical: any[] = [];
+  loadingClass = '';
+  isLargeDataset = false;
+  hasNoExpandCollapseChanged = true;
+  treeToggleItems: TreeToggledItem[] = [];
 
   constructor() { }
 
@@ -108,6 +116,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
         // this is optional, you can define the tree level property name that will be used for the sorting/indentation, internally it will use "__treeLevel"
         levelPropName: 'treeLevel',
         indentMarginLeft: 15,
+        initiallyCollapsed: true,
 
         // you can optionally sort by a different column and/or sort direction
         // this is the recommend approach, unless you are 100% that your original array is already sorted (in most cases it's not)
@@ -126,7 +135,8 @@ export class GridTreeDataParentChildComponent implements OnInit {
       },
       multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       presets: {
-        filters: [{ columnId: 'percentComplete', searchTerms: [25], operator: '>=' }]
+        filters: [{ columnId: 'percentComplete', searchTerms: [25], operator: '>=' }],
+        treeData: { toggledItems: [{ itemId: 1, isCollapsed: false }] },
       },
       // change header/cell row height for material design theme
       headerRowHeight: 45,
@@ -207,6 +217,10 @@ export class GridTreeDataParentChildComponent implements OnInit {
     this.angularGrid.treeDataService.toggleTreeDataCollapse(true);
   }
 
+  collapseAllWithoutEvent() {
+    this.angularGrid.treeDataService.toggleTreeDataCollapse(true, false);
+  }
+
   expandAll() {
     this.angularGrid.treeDataService.toggleTreeDataCollapse(false);
   }
@@ -214,6 +228,16 @@ export class GridTreeDataParentChildComponent implements OnInit {
   dynamicallyChangeFilter() {
     // const randomPercentage = Math.floor((Math.random() * 99));
     this.angularGrid.filterService.updateFilters([{ columnId: 'percentComplete', operator: '<', searchTerms: [40] }]);
+  }
+
+  hideSpinner() {
+    setTimeout(() => this.loadingClass = '', 200); // delay the hide spinner a bit to avoid show/hide too quickly
+  }
+
+  showSpinner() {
+    if (this.isLargeDataset) {
+      this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-24px color-alt-success';
+    }
   }
 
   logHierarchicalStructure() {
@@ -225,6 +249,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
   }
 
   loadData(rowCount: number) {
+    this.isLargeDataset = rowCount > 5000; // we'll show a spinner when it's large, else don't show show since it should be fast enough
     let indent = 0;
     const parents = [];
     const data = [];
@@ -237,11 +262,25 @@ export class GridTreeDataParentChildComponent implements OnInit {
       const item: any = (data[i] = {});
       let parentId;
 
-      // for implementing filtering/sorting, don't go over indent of 2
-      if (Math.random() > 0.8 && i > 0 && indent < 3) {
+      /*
+        for demo & E2E testing purposes, let's make "Task 0" empty and then "Task 1" a parent that contains at least "Task 2" and "Task 3" which the latter will also contain "Task 4" (as shown below)
+        also for all other rows don't go over indent tree level depth of 2
+        Task 0
+        Task 1
+          Task 2
+          Task 3
+            Task 4
+        ...
+       */
+      if (i === 1 || i === 0) {
+        indent = 0;
+        parents.pop();
+      } if (i === 3) {
+        indent = 1;
+      } else if (i === 2 || i === 4 || (Math.random() > 0.8 && i > 0 && indent < 3 && i - 1 !== 0 && i - 1 !== 2)) { // also make sure Task 0, 2 remains empty
         indent++;
         parents.push(i - 1);
-      } else if (Math.random() < 0.3 && indent > 0) {
+      } else if ((Math.random() < 0.3 && indent > 0)) {
         indent--;
         parents.pop();
       }
@@ -262,7 +301,25 @@ export class GridTreeDataParentChildComponent implements OnInit {
       item['effortDriven'] = (i % 5 === 0);
     }
     this.dataset = data;
-
     return data;
   }
+
+  /** Dispatched event of a Grid State Changed event */
+  handleOnGridStateChanged(gridStateChange: GridStateChange) {
+    this.hasNoExpandCollapseChanged = false;
+
+    if (gridStateChange.change!.type === GridStateType.treeData) {
+      console.log('Tree Data gridStateChange', gridStateChange.gridState!.treeData);
+      this.treeToggleItems = gridStateChange.gridState!.treeData!.toggledItems as TreeToggledItem[];
+    }
+  }
+
+  logTreeDataToggledItems() {
+    console.log(this.angularGrid.treeDataService.getToggledItems());
+  }
+
+  reapplyToggledItems() {
+    this.angularGrid.treeDataService.applyToggledItemStateChanges(this.treeToggleItems);
+  }
+
 }

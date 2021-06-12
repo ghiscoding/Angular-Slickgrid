@@ -980,6 +980,10 @@ describe('FilterService', () => {
       };
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should return an empty array when column definitions returns nothing as well', () => {
       gridStub.getColumns = undefined as any;
 
@@ -1047,7 +1051,7 @@ describe('FilterService', () => {
       ]);
     });
 
-    it('should pre-filter the tree dataset when the grid is a Tree Data View', () => {
+    it('should pre-filter the tree dataset when the grid is a Tree Data View & dataset is empty', (done) => {
       const spyRefresh = jest.spyOn(dataViewStub, 'refresh');
       const spyPreFilter = jest.spyOn(service, 'preFilterTreeData');
       const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([
@@ -1055,6 +1059,42 @@ describe('FilterService', () => {
         { id: 'gender', field: 'gender' },
         { id: 'size', field: 'size', filter: { model: Filters.input, operator: '>=' } }
       ]);
+      const mockFlatDataset = [{ id: 0, name: 'John', gender: 'male', size: 170 }, { id: 1, name: 'Jane', gender: 'female', size: 150 }];
+      jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(mockFlatDataset);
+      gridOptionMock.enableTreeData = true;
+      gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files' };
+      gridOptionMock.presets = {
+        filters: [{ columnId: 'size', searchTerms: [20], operator: '>=' }]
+      };
+      service.init(gridStub);
+      const output = service.populateColumnFilterSearchTermPresets(gridOptionMock.presets!.filters as any);
+
+      expect(spyRefresh).not.toHaveBeenCalled();
+      jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockFlatDataset);
+
+      setTimeout(() => {
+        expect(spyGetCols).toHaveBeenCalled();
+        expect(spyPreFilter).toHaveBeenCalled();
+        expect(spyRefresh).toHaveBeenCalled();
+        expect(output).toEqual([
+          { id: 'name', field: 'name', filter: { model: Filters.input, operator: 'EQ' } },
+          { id: 'gender', field: 'gender', },
+          { id: 'size', field: 'size', filter: { model: Filters.input, operator: '>=', searchTerms: [20] } },
+        ]);
+        done();
+      });
+    });
+
+    it('should pre-filter the tree dataset when the grid is a Tree Data View & dataset is filled', () => {
+      const spyRefresh = jest.spyOn(dataViewStub, 'refresh');
+      const spyPreFilter = jest.spyOn(service, 'preFilterTreeData');
+      const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([
+        { id: 'name', field: 'name', filter: { model: Filters.input, operator: 'EQ' } },
+        { id: 'gender', field: 'gender' },
+        { id: 'size', field: 'size', filter: { model: Filters.input, operator: '>=' } }
+      ]);
+      const mockFlatDataset = [{ id: 0, name: 'John', gender: 'male', size: 170 }, { id: 1, name: 'Jane', gender: 'female', size: 150 }];
+      jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockFlatDataset);
       gridOptionMock.enableTreeData = true;
       gridOptionMock.treeDataOptions = { columnId: 'file', childrenPropName: 'files' };
       gridOptionMock.presets = {
@@ -1561,6 +1601,9 @@ describe('FilterService', () => {
       beforeEach(() => {
         gridStub.getColumns = jest.fn();
         gridOptionMock.backendServiceApi = undefined;
+        gridOptionMock.presets = {
+          treeData: { toggledItems: [{ itemId: 4, isCollapsed: true }] }
+        };
         dataset = [
           { __parentId: null, __treeLevel: 0, dateModified: '2012-03-05T12:44:00.123Z', file: 'bucket-list.txt', id: 24, size: 0.5 },
           { __hasChildren: true, __parentId: null, __treeLevel: 0, file: 'documents', id: 21 },

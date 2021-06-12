@@ -85,7 +85,7 @@ export interface SlickDataView {
   getItem: <T = any>(index: number) => T;
 
   /** Get an item in the DataView by its Id */
-  getItemById: <T = any>(id: string | number) => T;
+  getItemById: <T = any>(id: string | number) => T | null;
 
   /** Get an item in the DataView by its row index */
   getItemByIdx(idx: number): number;

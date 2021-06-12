@@ -53,6 +53,14 @@ export class Constants {
     TEXT_X_OF_Y_SELECTED: '# of % selected',
   };
 
+  static readonly treeDataProperties = {
+    CHILDREN_PROP: 'children',
+    COLLAPSED_PROP: '__collapsed',
+    HAS_CHILDREN_PROP: '__hasChildren',
+    TREE_LEVEL_PROP: '__treeLevel',
+    PARENT_PROP: '__parentId',
+  };
+
   // some Validation default texts
   static readonly VALIDATION_REQUIRED_FIELD = 'Field is required';
   static readonly VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';

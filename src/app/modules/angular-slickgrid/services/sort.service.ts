@@ -364,7 +364,7 @@ export class SortService {
   /** When a Sort Changes on a Local grid (JSON dataset) */
   onLocalSortChanged(grid: any, sortColumns: Array<ColumnSort & { clearSortTriggered?: boolean; }>, forceReSort = false, emitSortChanged = false) {
     const datasetIdPropertyName = this._gridOptions?.datasetIdPropertyName ?? 'id';
-    const isTreeDataEnabled = this._gridOptions && this._gridOptions.enableTreeData || false;
+    const isTreeDataEnabled = this._gridOptions?.enableTreeData ?? false;
     const dataView = grid && grid.getData && grid.getData();
 
     if (grid && dataView) {
@@ -373,8 +373,7 @@ export class SortService {
       }
 
       if (isTreeDataEnabled && this.sharedService && Array.isArray(this.sharedService.hierarchicalDataset)) {
-        const hierarchicalDataset = this.sharedService.hierarchicalDataset;
-        const datasetSortResult = this.sortHierarchicalDataset(hierarchicalDataset, sortColumns);
+        const datasetSortResult = this.sortHierarchicalDataset(this.sharedService.hierarchicalDataset, sortColumns);
 
         // we could use the DataView sort but that would require re-sorting again (since the 2nd array that is currently in the DataView would have to be resorted against the 1st array that was sorting from tree sort)
         // it is simply much faster to just replace the entire dataset
