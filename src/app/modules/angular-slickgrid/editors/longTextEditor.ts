@@ -157,9 +157,9 @@ export class LongTextEditor implements Editor {
     editorFooterElm.appendChild(saveBtnElm);
     this._bindEventService.bind(cancelBtnElm, 'click', this.cancel.bind(this) as EventListener);
     this._bindEventService.bind(saveBtnElm, 'click', this.save.bind(this) as EventListener);
+    this.position(this.args?.position);
     this._textareaElm.focus();
     this._textareaElm.select();
-    this.position(this.args?.position);
     this._wrapperElm.appendChild(editorFooterElm);
 
     this._bindEventService.bind(this._textareaElm, 'keydown', this.handleKeyDown.bind(this) as EventListener);
