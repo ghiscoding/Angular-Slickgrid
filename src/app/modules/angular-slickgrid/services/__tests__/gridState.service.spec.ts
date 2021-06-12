@@ -1151,30 +1151,30 @@ describe('GridStateService', () => {
       expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
     });
 
-    // it('should trigger a "onGridStateChanged" event when "onTreeItemToggled" is triggered', () => {
-    //   const toggleChangeMock = { type: 'toggle-expand', fromItemId: 2, previousFullToggleType: 'full-collapse', toggledItems: [{ itemId: 2, isCollapsed: true }] } as TreeToggleStateChange;
-    //   const gridStateMock = { columns: [], filters: [], sorters: [], treeData: toggleChangeMock } as GridState;
-    //   const stateChangeMock = { change: { newValues: toggleChangeMock, type: GridStateType.treeData }, gridState: gridStateMock } as GridStateChange;
-    //   const pubSubSpy = jest.spyOn(mockPubSub, 'publish');
-    //   const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+    it('should trigger a "onGridStateChanged" event when "onTreeItemToggled" is triggered', () => {
+      const toggleChangeMock = { type: 'toggle-expand', fromItemId: 2, previousFullToggleType: 'full-collapse', toggledItems: [{ itemId: 2, isCollapsed: true }] } as TreeToggleStateChange;
+      const gridStateMock = { columns: [], filters: [], sorters: [], treeData: toggleChangeMock } as GridState;
+      const stateChangeMock = { change: { newValues: toggleChangeMock, type: GridStateType.treeData }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+      const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
 
-    //   fnCallbacks['onTreeItemToggled'](toggleChangeMock);
+      sharedService.onTreeItemToggled.next(toggleChangeMock);
 
-    //   expect(getCurGridStateSpy).toHaveBeenCalled();
-    //   expect(pubSubSpy).toHaveBeenCalledWith(`onGridStateChanged`, stateChangeMock);
-    // });
+      expect(getCurGridStateSpy).toHaveBeenCalled();
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
 
-    // it('should trigger a "onGridStateChanged" event when "onTreeFullToggleEnd" is triggered', () => {
-    //   const toggleChangeMock = { type: 'full-expand', previousFullToggleType: 'full-expand', toggledItems: null } as TreeToggleStateChange;
-    //   const gridStateMock = { columns: [], filters: [], sorters: [], treeData: toggleChangeMock } as GridState;
-    //   const stateChangeMock = { change: { newValues: toggleChangeMock, type: GridStateType.treeData }, gridState: gridStateMock } as GridStateChange;
-    //   const pubSubSpy = jest.spyOn(mockPubSub, 'publish');
-    //   const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+    it('should trigger a "onGridStateChanged" event when "onTreeFullToggleEnd" is triggered', () => {
+      const toggleChangeMock = { type: 'full-expand', previousFullToggleType: 'full-expand', toggledItems: null } as TreeToggleStateChange;
+      const gridStateMock = { columns: [], filters: [], sorters: [], treeData: toggleChangeMock } as GridState;
+      const stateChangeMock = { change: { newValues: toggleChangeMock, type: GridStateType.treeData }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+      const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
 
-    //   fnCallbacks['onTreeFullToggleEnd'](toggleChangeMock);
+      sharedService.onTreeFullToggleEnd.next(toggleChangeMock);
 
-    //   expect(getCurGridStateSpy).toHaveBeenCalled();
-    //   expect(pubSubSpy).toHaveBeenCalledWith(`onGridStateChanged`, stateChangeMock);
-    // });
+      expect(getCurGridStateSpy).toHaveBeenCalled();
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
   });
 });
