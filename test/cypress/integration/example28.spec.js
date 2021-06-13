@@ -5,7 +5,7 @@ function removeExtraSpaces(text) {
 }
 
 describe('Example 28 - Tree Data (from a Hierarchical Dataset)', { retries: 1 }, () => {
-  const GRID_ROW_HEIGHT = 45;
+  const GRID_ROW_HEIGHT = 40;
   const titles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {
@@ -27,6 +27,92 @@ describe('Example 28 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
     cy.get('.search-filter.filter-percentComplete')
       .find('.input-group-addon.operator select')
       .contains('>=');
+  });
+
+  it('should have data filtered, with "% Complete" >=25, and not show the full item count in the footer', () => {
+    cy.get('.search-filter.filter-percentComplete .operator .form-control')
+      .should('have.value', '>=');
+
+    cy.get('.rangeInput_percentComplete')
+      .invoke('val')
+      .then(text => expect(text).to.eq('25'));
+
+    cy.get('.search-filter .input-group-text')
+      .should($span => expect($span.text()).to.eq('25'));
+
+    cy.get('.right-footer')
+      .should($span => {
+        const text = removeExtraSpaces($span.text()); // remove all white spaces
+        expect(text).not.to.eq('500 of 500 items');
+      });
+  });
+
+  it('should open the Grid Menu "Clear all Filters" command', () => {
+    cy.get('#grid28')
+      .find('button.slick-gridmenu-button')
+      .trigger('click')
+      .click();
+
+    cy.get(`.slick-gridmenu:visible`)
+      .find('.slick-gridmenu-item')
+      .first()
+      .find('span')
+      .contains('Clear all Filters')
+      .click();
+  });
+
+  it('should expect the "Task 1" to be expanded on page load by the grid preset toggled items array', () => {
+    cy.get(`.slick-group-toggle.expanded`).should('have.length', 1);
+
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0).slick-tree-level-0`).should('contain', 'Task 0');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0).slick-tree-level-0`).should('contain', 'Task 1');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0).slick-tree-level-1`).should('contain', 'Task 2');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0).slick-tree-level-1`).should('contain', 'Task 3');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0)`).should('not.contain', 'Task 4');
+  });
+
+  it('should be able to expand the "Task 3"', () => {
+    /*
+      now we should find this structure
+      Task 0
+        Task 1
+          Task 2
+          Task 3
+            Task 4
+        ...
+    */
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`)
+      .click();
+
+    cy.get(`#grid28 .slick-group-toggle.expanded`).should('have.length', 2);
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0).slick-tree-level-0`).should('contain', 'Task 0');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0).slick-tree-level-0`).should('contain', 'Task 1');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`);
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0).slick-tree-level-1`).should('contain', 'Task 2');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0).slick-tree-level-1`).should('contain', 'Task 3');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`);
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 4}px"] > .slick-cell:nth(0).slick-tree-level-2`).should('contain', 'Task 4');
+  });
+
+  it('should be able to click on the "Collapse All (wihout event)" button', () => {
+    cy.get('[data-test=collapse-all-noevent-btn]')
+      .contains('Collapse All (without triggering event)')
+      .click();
+  });
+
+  it('should be able to click on the "Reapply Previous Toggled Items" button and expect "Task 1" and "Task 3" parents to become open (via Grid State change) while every other parents remains collapsed', () => {
+    cy.get('[data-test=reapply-toggled-items-btn]')
+      .contains('Reapply Previous Toggled Items')
+      .click();
+
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0)`).should('contain', 'Task 1');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
+
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0)`).should('contain', 'Task 2');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0)`).should('contain', 'Task 3');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
+
+    cy.get(`#grid28 .slick-group-toggle.expanded`).should('have.length', 2);
   });
 
   it('should collapsed all rows from "Collapse All" button', () => {
@@ -80,7 +166,7 @@ describe('Example 28 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .should(($rows) => expect($rows).to.have.length.greaterThan(0));
   });
 
-  it('should collapsed all rows from "Expand All" context menu', () => {
+  it('should expand all rows from "Expand All" context menu', () => {
     cy.get('#grid28')
       .contains('5 days');
 
@@ -101,38 +187,6 @@ describe('Example 28 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
     cy.get('#grid28')
       .find('.slick-group-toggle.expanded')
       .should(($rows) => expect($rows).to.have.length.greaterThan(0));
-  });
-
-  it('should have data filtered, with "% Complete" >=25, and not show the full item count in the footer', () => {
-    cy.get('.search-filter.filter-percentComplete .operator .form-control')
-      .should('have.value', '>=');
-
-    cy.get('.rangeInput_percentComplete')
-      .invoke('val')
-      .then(text => expect(text).to.eq('25'));
-
-    cy.get('.search-filter .input-group-text')
-      .should($span => expect($span.text()).to.eq('25'));
-
-    cy.get('.right-footer')
-      .should($span => {
-        const text = removeExtraSpaces($span.text()); // remove all white spaces
-        expect(text).not.to.eq('500 of 500 items');
-      });
-  });
-
-  it('should open the Grid Menu "Clear all Filters" command', () => {
-    cy.get('#grid28')
-      .find('button.slick-gridmenu-button')
-      .trigger('click')
-      .click();
-
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
-      .first()
-      .find('span')
-      .contains('Clear all Filters')
-      .click();
   });
 
   it('should no longer have filters and it should show the full item count in the footer', () => {

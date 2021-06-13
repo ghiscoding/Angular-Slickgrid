@@ -963,7 +963,7 @@ export class GridService {
     // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
     if (this._gridOptions?.enableTreeData && this.treeDataService) {
       const inputItems = items ?? this._dataView.getItems();
-      const sortedDatasetResult = this.treeDataService.convertFlatParentChildToTreeDatasetAndSort(inputItems, this.sharedService.allColumns, this._gridOptions);
+      const sortedDatasetResult = this.treeDataService.convertFlatParentChildToTreeDatasetAndSort(inputItems || [], this.sharedService.allColumns, this._gridOptions);
       this.sharedService.hierarchicalDataset = sortedDatasetResult.hierarchical;
       this.filterService.refreshTreeDataFilters(items);
       this._dataView.setItems(sortedDatasetResult.flat);

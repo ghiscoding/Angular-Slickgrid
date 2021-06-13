@@ -246,7 +246,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (newHierarchicalDataset && this.grid && this.sortService?.processTreeDataInitialSort) {
       this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
       this.sortService.processTreeDataInitialSort();
-
+      this.sortTreeDataset([]);
       // we also need to reset/refresh the Tree Data filters because if we inserted new item(s) then it might not show up without doing this refresh
       // however we need 1 cpu cycle before having the DataView refreshed, so we need to wrap this check in a setTimeout
       setTimeout(() => {
@@ -336,18 +336,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // dispose the Components
     this.slickEmptyWarning.dispose();
 
-    if (this._eventHandler && this._eventHandler.unsubscribeAll) {
+    if (this._eventHandler?.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
     if (this.dataView) {
-      if (this.dataView && this.dataView.setItems) {
+      if (this.dataView?.setItems) {
         this.dataView.setItems([]);
       }
       if (this.dataView.destroy) {
         this.dataView.destroy();
       }
     }
-    if (this.grid && this.grid.destroy) {
+    if (this.grid?.destroy) {
       this.grid.destroy(shouldEmptyDomElementContainer);
     }
 
@@ -448,7 +448,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.displayEmptyDataWarning(finalTotalCount < 1);
     }
 
-    if (Array.isArray(dataset) && this.grid && this.dataView && typeof this.dataView.setItems === 'function') {
+    if (Array.isArray(dataset) && this.grid && this.dataView?.setItems) {
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi && !this.gridOptions.enableTreeData) {
         this.dataView.reSort();
@@ -590,7 +590,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         })
       );
     }
-
     if (!this.customDataView) {
       // bind external sorting (backend) when available or default onSort (dataView)
       if (gridOptions.enableSorting) {
@@ -1096,8 +1095,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private loadFilterPresetsWhenDatasetInitialized() {
     if (this.gridOptions && !this.customDataView) {
       // if user entered some Filter "presets", we need to reflect them all in the DOM
-      if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.filters)) {
-        this.filterService.populateColumnFilterSearchTermPresets(this.gridOptions.presets.filters);
+      // also note that a presets of Tree Data Toggling will also call this method because Tree Data toggling does work with data filtering
+      // (collapsing a parent will basically use Filter for hidding (aka collapsing) away the child underneat it)
+      if (this.gridOptions.presets && (Array.isArray(this.gridOptions.presets.filters) || Array.isArray(this.gridOptions.presets?.treeData?.toggledItems))) {
+        this.filterService.populateColumnFilterSearchTermPresets(this.gridOptions.presets?.filters || []);
       }
     }
   }

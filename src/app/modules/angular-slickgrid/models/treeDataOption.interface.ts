@@ -18,13 +18,22 @@ export interface TreeDataOption {
     direction: SortDirection | SortDirectionString;
   };
 
+  /** Defaults to False, will the Tree be collapsed on first load? */
+  initiallyCollapsed?: boolean;
+
   /** Defaults to "children", object property name used to designate the Children array */
   childrenPropName?: string;
 
   /** Defaults to "__collapsed", object property name used to designate the Collapsed flag */
   collapsedPropName?: string;
 
-  /** Defaults to "id", object property name used to designate the Id field */
+  /** Defaults to "__hasChildren", object property name used to designate if the item has children or not (boolean) */
+  hasChildrenPropName?: string;
+
+  /**
+   * Defaults to "id", object property name used to designate the Id field (you would rarely override this property, it is mostly used for internal usage).
+   * NOTE: by default it will read the `datasetIdPropertyName` from the grid option, so it's typically better NOT to override this property.
+   */
   identifierPropName?: string;
 
   /** Defaults to "__parentId", object property name used to designate the Parent Id */
