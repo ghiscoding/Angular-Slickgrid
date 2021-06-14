@@ -332,13 +332,14 @@ describe('SortService', () => {
         const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
         const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
         const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
-        // const pubSubSpy = jest.spyOn(pubSubServiceStub, 'publish');
+        const rxStartSpy = jest.spyOn(sharedService.onTreeFullToggleStart, 'next');
+        const rxEndSpy = jest.spyOn(sharedService.onTreeFullToggleEnd, 'next');
 
         service.init(gridStub);
         service.toggleTreeDataCollapse(true);
 
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleStart`, { collapsing: true });
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleEnd`, { type: 'full-collapse', previousFullToggleType: 'full-collapse', toggledItems: null, });
+        expect(rxStartSpy).toHaveBeenCalledWith({ collapsing: true });
+        expect(rxEndSpy).toHaveBeenCalledWith({ type: 'full-collapse', previousFullToggleType: 'full-collapse', toggledItems: null, });
         expect(dataGetItemsSpy).toHaveBeenCalled();
         expect(beginUpdateSpy).toHaveBeenCalled();
         expect(updateItemSpy).toHaveBeenNthCalledWith(1, 0, { __collapsed: true, __hasChildren: true, id: 0, file: 'TXT', size: 5.8 });
@@ -356,13 +357,14 @@ describe('SortService', () => {
         const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
         const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
         const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
-        // const pubSubSpy = jest.spyOn(pubSubServiceStub, 'publish');
+        const rxStartSpy = jest.spyOn(sharedService.onTreeFullToggleStart, 'next');
+        const rxEndSpy = jest.spyOn(sharedService.onTreeFullToggleEnd, 'next');
 
         service.init(gridStub);
         service.toggleTreeDataCollapse(true);
 
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleStart`, { collapsing: true });
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleEnd`, { type: 'full-collapse', previousFullToggleType: 'full-collapse', toggledItems: null, });
+        expect(rxStartSpy).toHaveBeenCalledWith({ collapsing: true });
+        expect(rxEndSpy).toHaveBeenCalledWith({ type: 'full-collapse', previousFullToggleType: 'full-collapse', toggledItems: null, });
         expect(dataGetItemsSpy).toHaveBeenCalled();
         expect(dataGetItemsSpy).toHaveBeenCalled();
         expect(beginUpdateSpy).toHaveBeenCalled();
@@ -376,13 +378,14 @@ describe('SortService', () => {
         const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
         const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
         const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
-        // const pubSubSpy = jest.spyOn(pubSubServiceStub, 'publish');
+        const rxStartSpy = jest.spyOn(sharedService.onTreeFullToggleStart, 'next');
+        const rxEndSpy = jest.spyOn(sharedService.onTreeFullToggleEnd, 'next');
 
         service.init(gridStub);
         service.toggleTreeDataCollapse(false);
 
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleStart`, { collapsing: false });
-        // expect(pubSubSpy).toHaveBeenCalledWith(`onTreeFullToggleEnd`, { type: 'full-expand', previousFullToggleType: 'full-expand', toggledItems: null, });
+        expect(rxStartSpy).toHaveBeenCalledWith({ collapsing: false });
+        expect(rxEndSpy).toHaveBeenCalledWith({ type: 'full-expand', previousFullToggleType: 'full-expand', toggledItems: null, });
         expect(dataGetItemsSpy).toHaveBeenCalled();
         expect(beginUpdateSpy).toHaveBeenCalled();
         expect(updateItemSpy).toHaveBeenNthCalledWith(1, 0, { __collapsed: false, __hasChildren: true, id: 0, file: 'TXT', size: 5.8 });
@@ -391,13 +394,14 @@ describe('SortService', () => {
       });
 
       describe('applyToggledItemStateChanges method', () => {
-        it('should execute the method', () => {
+        it('should execute the method and expect a full toggle or items', () => {
           const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockFlatDataset);
           jest.spyOn(dataViewStub, 'getItemById').mockReturnValue(mockFlatDataset[3]);
           jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(mockHierarchical);
           const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
           const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
           const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
+          const rxToggleSpy = jest.spyOn(sharedService.onTreeItemToggled, 'next');
 
           service.init(gridStub);
           service.applyToggledItemStateChanges([{ itemId: 4, isCollapsed: true }]);
@@ -405,6 +409,45 @@ describe('SortService', () => {
           expect(dataGetItemsSpy).toHaveBeenCalled();
           expect(beginUpdateSpy).toHaveBeenCalled();
           expect(updateItemSpy).toHaveBeenNthCalledWith(1, 4, { __collapsed: true, __hasChildren: true, id: 4, file: 'MP3', size: 3.4 });
+          expect(rxToggleSpy).not.toHaveBeenCalled();
+          expect(endUpdateSpy).toHaveBeenCalled();
+        });
+
+        it('should execute the method but without calling "getItems" to skip doing a full toggle of items', () => {
+          const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockFlatDataset);
+          jest.spyOn(dataViewStub, 'getItemById').mockReturnValue(mockFlatDataset[3]);
+          jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(mockHierarchical);
+          const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
+          const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
+          const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
+          const rxToggleSpy = jest.spyOn(sharedService.onTreeItemToggled, 'next');
+
+          service.init(gridStub);
+          service.applyToggledItemStateChanges([{ itemId: 4, isCollapsed: true }], 'full-collapse', false, true);
+
+          expect(dataGetItemsSpy).not.toHaveBeenCalled();
+          expect(beginUpdateSpy).toHaveBeenCalled();
+          expect(updateItemSpy).toHaveBeenNthCalledWith(1, 4, { __collapsed: true, __hasChildren: true, id: 4, file: 'MP3', size: 3.4 });
+          expect(rxToggleSpy).toHaveBeenCalledWith({ fromItemId: 4, previousFullToggleType: 'full-collapse', toggledItems: [{ itemId: 4, isCollapsed: true }], type: 'toggle-collapse' });
+          expect(endUpdateSpy).toHaveBeenCalled();
+        });
+
+        it('should execute the method and also trigger an event when specified', () => {
+          const dataGetItemsSpy = jest.spyOn(dataViewStub, 'getItems').mockReturnValue(mockFlatDataset);
+          jest.spyOn(dataViewStub, 'getItemById').mockReturnValue(mockFlatDataset[3]);
+          jest.spyOn(SharedService.prototype, 'hierarchicalDataset', 'get').mockReturnValue(mockHierarchical);
+          const beginUpdateSpy = jest.spyOn(dataViewStub, 'beginUpdate');
+          const endUpdateSpy = jest.spyOn(dataViewStub, 'endUpdate');
+          const updateItemSpy = jest.spyOn(dataViewStub, 'updateItem');
+          const rxToggleSpy = jest.spyOn(sharedService.onTreeItemToggled, 'next');
+
+          service.init(gridStub);
+          service.applyToggledItemStateChanges([{ itemId: 4, isCollapsed: true }], 'full-collapse', true, true);
+
+          expect(dataGetItemsSpy).toHaveBeenCalled();
+          expect(beginUpdateSpy).toHaveBeenCalled();
+          expect(updateItemSpy).toHaveBeenNthCalledWith(1, 4, { __collapsed: true, __hasChildren: true, id: 4, file: 'MP3', size: 3.4 });
+          expect(rxToggleSpy).toHaveBeenCalledWith({ fromItemId: 4, previousFullToggleType: 'full-collapse', toggledItems: [{ itemId: 4, isCollapsed: true }], type: 'toggle-collapse' });
           expect(endUpdateSpy).toHaveBeenCalled();
         });
       });
