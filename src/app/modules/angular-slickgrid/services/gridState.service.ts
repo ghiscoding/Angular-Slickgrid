@@ -182,10 +182,12 @@ export class GridStateService {
 
       if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
         // make sure that the checkbox selector is still visible in the list when it is enabled
-        if (this._gridOptions.enableCheckboxSelector) {
-          const checkboxColumn = (Array.isArray(this.sharedService.allColumns) && this.sharedService.allColumns.length > 0) ? this.sharedService.allColumns[0] : null;
-          if (checkboxColumn?.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
-            gridColumns.unshift(checkboxColumn);
+        if (this._gridOptions.enableCheckboxSelector && Array.isArray(this.sharedService.allColumns)) {
+          const checkboxColumnIdx = this.sharedService.allColumns.findIndex(col => col.id === '_checkbox_selector');
+          const associatedGridCheckboxColumnIdx = gridColumns.findIndex(col => col.id === '_checkbox_selector');
+          if (checkboxColumnIdx >= 0 && associatedGridCheckboxColumnIdx === -1) {
+            const checkboxColumn = this.sharedService.allColumns[checkboxColumnIdx];
+            checkboxColumnIdx === 0 ? gridColumns.unshift(checkboxColumn) : gridColumns.splice(checkboxColumnIdx, 0, checkboxColumn);
           }
         }
 
