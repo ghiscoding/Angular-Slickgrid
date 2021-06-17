@@ -33,7 +33,7 @@ import { SharedService } from './shared.service';
 
 interface ExtensionWithColumnIndexPosition {
   name: ExtensionName;
-  position: number;
+  columnIndexPosition: number;
   extension: CheckboxSelectorExtension | RowDetailViewExtension | RowMoveManagerExtension;
 }
 
@@ -286,23 +286,23 @@ export class ExtensionService {
    * @param gridOptions
    */
   createExtensionsBeforeGridCreation(columnDefinitions: Column[], gridOptions: GridOption) {
-    const featureWithColumnIndexPositions: { name: ExtensionName; position: number; extension: CheckboxSelectorExtension | RowDetailViewExtension | RowMoveManagerExtension; }[] = [];
+    const featureWithColumnIndexPositions: ExtensionWithColumnIndexPosition[] = [];
 
     // the following 3 features might have `columnIndexPosition` that we need to respect their column order, we will execute them by their sort order further down
     // we push them into a array and we'll process them by their position (if provided, else use same order that they were inserted)
     if (gridOptions.enableCheckboxSelector) {
       if (!this.getCreatedExtensionByName(ExtensionName.checkboxSelector)) {
-        featureWithColumnIndexPositions.push({ name: ExtensionName.checkboxSelector, extension: this.checkboxSelectorExtension, position: gridOptions?.checkboxSelector?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
+        featureWithColumnIndexPositions.push({ name: ExtensionName.checkboxSelector, extension: this.checkboxSelectorExtension, columnIndexPosition: gridOptions?.checkboxSelector?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
       }
     }
     if (gridOptions.enableRowMoveManager) {
       if (!this.getCreatedExtensionByName(ExtensionName.rowMoveManager)) {
-        featureWithColumnIndexPositions.push({ name: ExtensionName.rowMoveManager, extension: this.rowMoveManagerExtension, position: gridOptions?.rowMoveManager?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
+        featureWithColumnIndexPositions.push({ name: ExtensionName.rowMoveManager, extension: this.rowMoveManagerExtension, columnIndexPosition: gridOptions?.rowMoveManager?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
       }
     }
     if (gridOptions.enableRowDetailView) {
       if (!this.getCreatedExtensionByName(ExtensionName.rowDetailView)) {
-        featureWithColumnIndexPositions.push({ name: ExtensionName.rowDetailView, extension: this.rowDetailViewExtension, position: gridOptions?.rowDetailView?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
+        featureWithColumnIndexPositions.push({ name: ExtensionName.rowDetailView, extension: this.rowDetailViewExtension, columnIndexPosition: gridOptions?.rowDetailView?.columnIndexPosition ?? featureWithColumnIndexPositions.length });
       }
     }
 
@@ -462,7 +462,7 @@ export class ExtensionService {
    */
   private createExtensionByTheirColumnIndex(featureWithIndexPositions: ExtensionWithColumnIndexPosition[], columnDefinitions: Column[], gridOptions: GridOption) {
     // 1- first step is to sort them by their index position
-    featureWithIndexPositions.sort((feat1, feat2) => feat1.position - feat2.position);
+    featureWithIndexPositions.sort((feat1, feat2) => feat1.columnIndexPosition - feat2.columnIndexPosition);
 
     // 2- second step, we can now proceed to create each extension/addon and that will position them accordingly in the column definitions list
     featureWithIndexPositions.forEach(feature => {
