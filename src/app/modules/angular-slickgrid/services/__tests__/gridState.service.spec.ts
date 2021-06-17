@@ -9,6 +9,7 @@ import { SortService } from '../sort.service';
 import { TreeDataService } from '../treeData.service';
 import {
   BackendService,
+  CheckboxSelector,
   CurrentFilter,
   CurrentPagination,
   CurrentPinning,
@@ -21,8 +22,11 @@ import {
   GridState,
   GridStateChange,
   GridStateType,
+  RowDetailView,
+  RowMoveManager,
   TreeToggleStateChange,
 } from '../../models';
+import { RowMoveManagerExtension } from '../../extensions';
 
 declare const Slick: any;
 
@@ -165,9 +169,9 @@ describe('GridStateService', () => {
 
       beforeEach(() => {
         allColumnsMock = [
-          rowCheckboxColumnMock,
           rowDetailColumnMock,
           rowMoveColumnMock,
+          rowCheckboxColumnMock,
           { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
           { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
           { id: 'field3', field: 'field3' },
@@ -196,6 +200,10 @@ describe('GridStateService', () => {
         gridOptionMock.enableCheckboxSelector = true;
         gridOptionMock.enableRowDetailView = true;
         gridOptionMock.enableRowMoveManager = true;
+        gridOptionMock.rowDetailView = { columnIndexPosition: 0 } as unknown as RowDetailView;
+        gridOptionMock.rowMoveManager = { columnIndexPosition: 1 } as unknown as RowMoveManager;
+        gridOptionMock.checkboxSelector = { columnIndexPosition: 2 } as unknown as CheckboxSelector;
+
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(allColumnsMock);
         const setColsSpy = jest.spyOn(gridStub, 'setColumns');
         const autoSizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
@@ -203,7 +211,7 @@ describe('GridStateService', () => {
 
         service.changeColumnsArrangement(presetColumnsMock);
 
-        expect(setColsSpy).toHaveBeenCalledWith([rowCheckboxColumnMock, rowDetailColumnMock, rowMoveColumnMock, ...columnsWithoutCheckboxMock]);
+        expect(setColsSpy).toHaveBeenCalledWith([rowDetailColumnMock, rowMoveColumnMock, rowCheckboxColumnMock, ...columnsWithoutCheckboxMock]);
         expect(autoSizeSpy).toHaveBeenCalled();
         expect(resizeByContentSpy).not.toHaveBeenCalled();
       });
