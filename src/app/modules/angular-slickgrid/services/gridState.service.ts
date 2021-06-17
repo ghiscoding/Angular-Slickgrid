@@ -178,24 +178,29 @@ export class GridStateService {
    */
   changeColumnsArrangement(definedColumns: CurrentColumn[], triggerAutoSizeColumns = true, triggerColumnsFullResizeByContent = false) {
     if (Array.isArray(definedColumns) && definedColumns.length > 0) {
-      const gridColumns: Column[] = this.getAssociatedGridColumns(this._grid, definedColumns);
+      const newArrangedColumns: Column[] = this.getAssociatedGridColumns(this._grid, definedColumns);
 
-      if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
+      if (newArrangedColumns && Array.isArray(newArrangedColumns) && newArrangedColumns.length > 0) {
         // make sure that the checkbox selector is still visible in the list when it is enabled
-        if (this._gridOptions.enableCheckboxSelector) {
-          const checkboxColumn = (Array.isArray(this.sharedService.allColumns) && this.sharedService.allColumns.length > 0) ? this.sharedService.allColumns[0] : null;
-          if (checkboxColumn?.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
-            gridColumns.unshift(checkboxColumn);
+        if (Array.isArray(this.sharedService.allColumns)) {
+          if (this._gridOptions.enableCheckboxSelector) {
+            this.addColumnDynamicWhenFeatureEnabled('_checkbox_selector', this.sharedService.allColumns, newArrangedColumns);
+          }
+          if (this._gridOptions.enableRowDetailView) {
+            this.addColumnDynamicWhenFeatureEnabled('_detail_selector', this.sharedService.allColumns, newArrangedColumns);
+          }
+          if (this._gridOptions.enableRowMoveManager) {
+            this.addColumnDynamicWhenFeatureEnabled('_move', this.sharedService.allColumns, newArrangedColumns);
           }
         }
 
         // keep copy the original optional `width` properties optionally provided by the user.
         // We will use this when doing a resize by cell content, if user provided a `width` it won't override it.
-        gridColumns.forEach(col => col.originalWidth = col.width || col.originalWidth);
+        newArrangedColumns.forEach(col => col.originalWidth = col.width || col.originalWidth);
 
         // finally set the new presets columns (including checkbox selector if need be)
-        this._grid.setColumns(gridColumns);
-        this.sharedService.visibleColumns = gridColumns;
+        this._grid.setColumns(newArrangedColumns);
+        this.sharedService.visibleColumns = newArrangedColumns;
 
         // resize the columns to fit the grid canvas
         if (triggerAutoSizeColumns) {
@@ -468,6 +473,24 @@ export class GridStateService {
   // --
   // private methods
   // ------------------
+
+  /**
+   * Add certain column(s), when the feature is/are enabled, to an output column definitions array (by reference).
+   * Basically some features (for example: Row Selection, Row Detail, Row Move) will be added as column(s) dynamically and internally by the lib,
+   * we just ask the developer to enable the feature, via flags, and internally the lib will create the necessary column.
+   * So specifically for these column(s) and feature(s), we need to re-add them internally when the user calls the `changeColumnsArrangement()` method.
+   * @param {String} dynamicColumnName - the column name that will be re-added (if it wasn't already found in the output array) dynamically
+   * @param {Array<Column>} fullColumnDefinitions - full column definitions array that includes every columns (including Row Selection, Row Detail, Row Move when enabled)
+   * @param {Array<Column>} newArrangedColumns - output array that will be use to show in the UI (it could have less columns than fullColumnDefinitions array since user might hide some columns)
+   */
+  addColumnDynamicWhenFeatureEnabled(dynamicColumnName: string, fullColumnDefinitions: Column[], newArrangedColumns: Column[]) {
+    const checkboxColumnIdx = fullColumnDefinitions.findIndex(col => col.id === dynamicColumnName);
+    const associatedGridCheckboxColumnIdx = newArrangedColumns.findIndex(col => col.id === dynamicColumnName);
+    if (checkboxColumnIdx >= 0 && associatedGridCheckboxColumnIdx === -1) {
+      const checkboxColumn = fullColumnDefinitions[checkboxColumnIdx];
+      checkboxColumnIdx === 0 ? newArrangedColumns.unshift(checkboxColumn) : newArrangedColumns.splice(checkboxColumnIdx, 0, checkboxColumn);
+    }
+  }
 
   /**
    * Bind a SlickGrid Extension Event to a Grid State change event
