@@ -42,6 +42,7 @@ const gridStub = {
   getSelectedRows: jest.fn(),
   getUID: () => gridUid,
   registerPlugin: jest.fn(),
+  scrollColumnIntoView: jest.fn(),
   setColumns: jest.fn(),
   setOptions: jest.fn(),
   setHeaderRowVisibility: jest.fn(),
@@ -734,7 +735,8 @@ describe('gridMenuExtension', () => {
 
       it('should call the grid "setHeaderRowVisibility" method when the command triggered is "toggle-filter"', () => {
         gridOptionsMock.showHeaderRow = false;
-        const gridSpy = jest.spyOn(SharedService.prototype.grid, 'setHeaderRowVisibility');
+        const setHeaderSpy = jest.spyOn(gridStub, 'setHeaderRowVisibility');
+        const scrollSpy = jest.spyOn(gridStub, 'scrollColumnIntoView');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu as GridMenu, 'onCommand');
         const setColumnSpy = jest.spyOn(SharedService.prototype.grid, 'setColumns');
 
@@ -742,14 +744,15 @@ describe('gridMenuExtension', () => {
         instance.onCommand.notify({ grid: gridStub, command: 'toggle-filter' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(gridSpy).toHaveBeenCalledWith(true);
+        expect(setHeaderSpy).toHaveBeenCalledWith(true);
+        expect(scrollSpy).toHaveBeenCalledWith(0);
         expect(setColumnSpy).toHaveBeenCalledTimes(1);
 
         gridOptionsMock.showHeaderRow = true;
         instance.onCommand.notify({ grid: gridStub, command: 'toggle-filter' }, new Slick.EventData(), gridStub);
 
         expect(onCommandSpy).toHaveBeenCalled();
-        expect(gridSpy).toHaveBeenCalledWith(false);
+        expect(setHeaderSpy).toHaveBeenCalledWith(false);
         expect(setColumnSpy).toHaveBeenCalledTimes(1); // same as before, so count won't increase
       });
 
