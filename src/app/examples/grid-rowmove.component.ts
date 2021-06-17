@@ -70,6 +70,8 @@ export class GridRowMoveComponent implements OnInit {
       enableFiltering: true,
       enableCheckboxSelector: true,
       checkboxSelector: {
+        columnIndexPosition: 1,
+
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
         hideInColumnTitleRow: true
@@ -95,7 +97,7 @@ export class GridRowMoveComponent implements OnInit {
         // you can change the move icon position of any extension (RowMove, RowDetail or RowSelector icon)
         // note that you might have to play with the position when using multiple extension
         // since it really depends on which extension get created first to know what their real position are
-        // columnIndexPosition: 1,
+        columnIndexPosition: 0,
 
         // you can also override the usability of the rows, for example make every 2nd row the only moveable rows,
         // usabilityOverride: (row, dataContext, grid) => dataContext.id % 2 === 1

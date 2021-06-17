@@ -59,6 +59,11 @@ const extensionCellMenuStub = {
   ...extensionStub,
   translateCellMenu: jest.fn()
 };
+const extensionCheckboxSelectorStub = {
+  ...extensionStub,
+  selectRows: jest.fn(),
+  deSelectRows: jest.fn(),
+};
 const extensionContextMenuStub = {
   ...extensionStub,
   translateContextMenu: jest.fn()
@@ -70,6 +75,11 @@ const extensionHeaderButtonStub = {
 const extensionHeaderMenuStub = {
   ...extensionStub,
   translateHeaderMenu: jest.fn()
+};
+const extensionRowMoveStub = {
+  ...extensionStub,
+  onBeforeMoveRows: jest.fn(),
+  onMoveRows: jest.fn()
 };
 
 describe('ExtensionService', () => {
@@ -91,7 +101,7 @@ describe('ExtensionService', () => {
           { provide: ColumnPickerExtension, useValue: extensionColumnPickerStub },
           { provide: CellExternalCopyManagerExtension, useValue: extensionStub },
           { provide: CellMenuExtension, useValue: extensionCellMenuStub },
-          { provide: CheckboxSelectorExtension, useValue: extensionStub },
+          { provide: CheckboxSelectorExtension, useValue: extensionCheckboxSelectorStub },
           { provide: ContextMenuExtension, useValue: extensionContextMenuStub },
           { provide: DraggableGroupingExtension, useValue: extensionStub },
           { provide: GridMenuExtension, useValue: extensionGridMenuStub },
@@ -99,7 +109,7 @@ describe('ExtensionService', () => {
           { provide: HeaderButtonExtension, useValue: extensionHeaderButtonStub },
           { provide: HeaderMenuExtension, useValue: extensionHeaderMenuStub },
           { provide: RowDetailViewExtension, useValue: extensionStub },
-          { provide: RowMoveManagerExtension, useValue: extensionStub },
+          { provide: RowMoveManagerExtension, useValue: extensionRowMoveStub },
           { provide: RowSelectionExtension, useValue: extensionStub },
         ],
         imports: [TranslateModule.forRoot()]
@@ -279,8 +289,8 @@ describe('ExtensionService', () => {
       it('should register the CheckboxSelector addon when "enableCheckboxSelector" is set in the grid options', () => {
         const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
         const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
-        const extCreateSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
-        const extRegisterSpy = jest.spyOn(extensionStub, 'register');
+        const extCreateSpy = jest.spyOn(extensionCheckboxSelectorStub, 'create').mockReturnValue(instanceMock);
+        const extRegisterSpy = jest.spyOn(extensionCheckboxSelectorStub, 'register');
         const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
 
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
@@ -292,7 +302,7 @@ describe('ExtensionService', () => {
         expect(extCreateSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
         expect(extRegisterSpy).toHaveBeenCalled();
         expect(rowSelectionInstance).not.toBeNull();
-        expect(output).toEqual({ name: ExtensionName.checkboxSelector, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
+        expect(output).toEqual({ name: ExtensionName.checkboxSelector, addon: instanceMock, instance: instanceMock, class: extensionCheckboxSelectorStub } as ExtensionModel);
       });
 
       it('should register the RowDetailView addon when "enableRowDetailView" is set in the grid options', () => {
@@ -317,8 +327,8 @@ describe('ExtensionService', () => {
       it('should register the RowMoveManager addon when "enableRowMoveManager" is set in the grid options', () => {
         const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
         const gridOptionsMock = { enableRowMoveManager: true } as GridOption;
-        const extCreateSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
-        const extRegisterSpy = jest.spyOn(extensionStub, 'register');
+        const extCreateSpy = jest.spyOn(extensionRowMoveStub, 'create').mockReturnValue(instanceMock);
+        const extRegisterSpy = jest.spyOn(extensionRowMoveStub, 'register');
         const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
 
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
@@ -330,7 +340,7 @@ describe('ExtensionService', () => {
         expect(extCreateSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
         expect(rowSelectionInstance).not.toBeNull();
         expect(extRegisterSpy).toHaveBeenCalled();
-        expect(output).toEqual({ name: ExtensionName.rowMoveManager, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
+        expect(output).toEqual({ name: ExtensionName.rowMoveManager, addon: instanceMock, instance: instanceMock, class: extensionRowMoveStub } as ExtensionModel);
       });
 
       it('should register the RowSelection addon when "enableCheckboxSelector" (false) and "enableRowSelection" (true) are set in the grid options', () => {
@@ -482,6 +492,28 @@ describe('ExtensionService', () => {
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
 
         expect(extSpy).toHaveBeenCalledWith(gridOptionsMock);
+      });
+
+      it('should register the RowSelection & RowMoveManager addons with specific "columnIndexPosition" and expect these orders to be respected regardless of when the feature is enabled/created', () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }, { id: 'field2', field: 'field2', width: 50, }] as Column[];
+        const gridOptionsMock = {
+          enableCheckboxSelector: true, enableRowSelection: true,
+          checkboxSelector: { columnIndexPosition: 1 },
+          enableRowMoveManager: true,
+          rowMoveManager: { columnIndexPosition: 0 }
+        } as GridOption;
+        const checkboxInstanceMock = { selectRows: jest.fn(), deSelectRows: jest.fn() };
+        const rowMoveInstanceMock = { onBeforeMoveRows: jest.fn(), onMoveRows: jest.fn() };
+        const extCheckboxSpy = jest.spyOn(extensionCheckboxSelectorStub, 'create').mockReturnValue(checkboxInstanceMock);
+        const extRowMoveSpy = jest.spyOn(extensionRowMoveStub, 'create').mockReturnValue(rowMoveInstanceMock);
+
+        service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
+
+        expect(extRowMoveSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
+        expect(extCheckboxSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
+        // expect(extensionRowMoveStub.create).toHaveBeenCalledBefore(extensionCheckboxSelectorStub.create);
+        expect(extRowMoveSpy.mock.invocationCallOrder[0]).toBeLessThan(extCheckboxSpy.mock.invocationCallOrder[1]);
+        expect(columnsMock).toEqual([{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }, { id: 'field2', field: 'field2', width: 50, }]);
       });
     });
 
