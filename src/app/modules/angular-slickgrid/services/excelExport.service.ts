@@ -461,7 +461,10 @@ export class ExcelExportService {
     // loop through all the grid rows of data
     for (let rowNumber = 0; rowNumber < lineCount; rowNumber++) {
       const itemObj = this._dataView.getItem(rowNumber);
-      if (itemObj) {
+
+      // make sure we have a filled object AND that the item doesn't include the "getItem" method
+      // this happen could happen with an opened Row Detail as it seems to include an empty Slick DataView (we'll just skip those lines)
+      if (itemObj && !itemObj.hasOwnProperty('getItem')) {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj[this.datasetIdName] !== null && itemObj[this.datasetIdName] !== undefined) {
           // get regular row item data
