@@ -206,6 +206,9 @@
 
   .slick-column-name {
     text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: #{$header-row-count};
   }
 
   .slick-resizable-handle {
