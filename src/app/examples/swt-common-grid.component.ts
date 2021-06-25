@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   AngularSlickgridComponent, Column, FieldType,
   GridOption, BackendService,
-  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination
+  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, Pagination
 } from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -73,7 +73,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   @Output() onFilterChanged: EventEmitter<FilterChangedArgs> = new EventEmitter<FilterChangedArgs>();
   @Output() onPaginationChanged: EventEmitter<PaginationChangedArgs> = new EventEmitter<PaginationChangedArgs>();
-  @Output() onSortChanged: EventEmitter<SortChangedArgs> = new EventEmitter<SortChangedArgs>();
+  @Output() onSortChanged: EventEmitter<any> = new EventEmitter<any>();
 
   sortedGridColumn = '';
   currentPage = 1;
@@ -94,8 +94,8 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     asyncEditorLoading: false,
     autoEdit: this.isAutoEdit,
     autoResize: {
-      containerId: 'common-grid-container',
-      sidePadding: 10
+      container: '#common-grid-container',
+      rightPadding: 10
     },
     // locale: 'fr',
     enableColumnPicker: true,
@@ -130,6 +130,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         postProcess: () => { }
       } as any;
       this._paginationComponent.gridPaginationOptions = this.gridOptions;
+      // @ts-ignore
       this.angularSlickGrid.createBackendApiInternalPostProcessCallback(this.gridOptions);
     }
     this.logger!.info('method [pagination] - START');
@@ -329,7 +330,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): Promise<string> | string {
+  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): string {
     this.logger.info('method [onFilterChanged] - START', args);
     this.filteredGridColumns = '';
     let timing = 0;
@@ -379,7 +380,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnSortChanged(event: Event | undefined, args: SortChangedArgs) {
+  processOnSortChanged(event: Event | undefined, args: any) {
     this.logger.info('method [onSortChanged] - START');
     this.sortedGridColumn = '';
     const sortDirection = '|' + args!.sortCols![0].sortAsc + '|';

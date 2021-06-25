@@ -1,3 +1,4 @@
+import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, } from '@slickgrid-universal/graphql';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -6,9 +7,6 @@ import {
   FieldType,
   Filters,
   Formatters,
-  GraphqlPaginatedResult,
-  GraphqlService,
-  GraphqlServiceApi,
   GridOption,
   GridStateChange,
   Metrics,
@@ -146,6 +144,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         onCommand: (e, args) => {
           if (args.command === 'reset-grid') {
+            // @ts-ignore
             this.angularGrid.gridService.resetGrid(this.columnDefinitions);
             localStorage[LOCAL_STORAGE_KEY] = null;
           }
@@ -182,6 +181,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         pagination: { pageNumber: 2, pageSize: defaultPageSize }
       },
+      // @ts-ignore
       backendServiceApi: {
         service: new GraphqlService(),
         options: {
@@ -210,7 +210,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.subscriptions.push(
-      this.angularGrid.gridStateService.onGridStateChanged.subscribe((data) => console.log(data))
+      // this.angularGrid.gridStateService.onGridStateChanged.subscribe((data) => console.log(data))
     );
   }
 
@@ -249,11 +249,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   goToFirstPage() {
-    this.angularGrid.paginationService.goToFirstPage();
+    this.angularGrid.paginationService!.goToFirstPage();
   }
 
   goToLastPage() {
-    this.angularGrid.paginationService.goToLastPage();
+    this.angularGrid.paginationService!.goToLastPage();
   }
 
   /** Dispatched event of a Grid State Changed event */

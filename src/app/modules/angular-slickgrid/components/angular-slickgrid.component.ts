@@ -9,72 +9,138 @@ import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.groupitemmetadataprovider';
 
 // ...then everything else...
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional, ApplicationRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { isObservable, Observable, Subscription } from 'rxjs';
 
-import { Constants } from '../constants';
-import { GlobalGridOptions } from './../global-grid-options';
-import { TranslaterService } from '../services/translater.service';
-import { emptyElement, titleCase, unsubscribeAllObservables } from './../services/utilities';
-import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
-  AngularGridInstance,
+  // interfaces/types
+  AutoCompleteEditor,
   BackendServiceApi,
   BackendServiceOption,
   Column,
   ColumnEditor,
   CustomFooterOption,
   DataViewOption,
-  GraphqlPaginatedResult,
-  GraphqlResult,
-  GridOption,
-  GridStateChange,
+  EventSubscription,
+  ExtensionList,
+  ExternalResource,
+  GetSlickEventType,
   GridStateType,
   Locale,
   Metrics,
   Pagination,
+  SelectEditor,
   ServicePagination,
+  SlickDataView,
   SlickEventHandler,
+  SlickGrid,
+  SlickNamespace,
+
+  // services
+  BackendUtilityService,
+  CollectionService,
+  EventNamingStyle,
+  ExtensionService,
+  FilterFactory,
+  FilterService,
+  GridEventService,
+  GridService,
+  GridStateService,
+  GroupingAndColspanService,
+  // Observable,
+  PaginationService,
+  RxJsFacade,
+  SharedService,
+  SlickgridConfig,
+  SortService,
+  TreeDataService,
+
+  // extensions
+  AutoTooltipExtension,
+  CheckboxSelectorExtension,
+  CellExternalCopyManagerExtension,
+  CellMenuExtension,
+  ColumnPickerExtension,
+  ContextMenuExtension,
+  DraggableGroupingExtension,
+  ExtensionUtility,
+  GridMenuExtension,
+  GroupItemMetaProviderExtension,
+  HeaderMenuExtension,
+  HeaderButtonExtension,
+  RowSelectionExtension,
+  RowMoveManagerExtension,
+
+  // utilities
+  emptyElement,
+  titleCase,
+} from '@slickgrid-universal/common';
+import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
+
+import { Constants } from '../constants';
+import { EventPubSubService } from '../services/eventPubSub.service';
+import { GlobalGridOptions } from './../global-grid-options';
+import { TranslaterService } from '../services/translater.service';
+import { unsubscribeAllObservables } from './../services/utilities';
+import {
+  AngularGridInstance,
+  // BackendServiceApi,
+  // BackendServiceOption,
+  // Column,
+  // ColumnEditor,
+  // CustomFooterOption,
+  // DataViewOption,
+  // GraphqlPaginatedResult,
+  // GraphqlResult,
+  GridOption,
+  // GridStateChange,
+  // GridStateType,
+  // Locale,
+  // Metrics,
+  // Pagination,
+  // ServicePagination,
+  // SlickEventHandler,
 } from './../models/index';
-import { FilterFactory } from '../filters/filterFactory';
+// import { FilterFactory } from '../filters/filterFactory';
 import { autoAddEditorFormatterToColumnsWithEditor } from './slick-vanilla-utilities';
-import { SlickgridConfig } from '../slickgrid-config';
-import { SlickEmptyWarningComponent } from './slick-empty-warning.component';
+// import { SlickgridConfig } from '../slickgrid-config';
+// import { SlickEmptyWarningComponent } from './slick-empty-warning.component';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
-import { ExcelExportService } from '../services/excelExport.service';
-import { ExportService } from './../services/export.service';
-import { ExtensionService } from '../services/extension.service';
-import { ExtensionUtility } from '../extensions/extensionUtility';
-import { FilterService } from './../services/filter.service';
-import { GraphqlService } from './../services/graphql.service';
-import { GridEventService } from './../services/gridEvent.service';
-import { GridService } from './../services/grid.service';
-import { GridStateService } from './../services/gridState.service';
-import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
-import { PaginationService } from '../services/pagination.service';
+// import { ExcelExportService } from '../services/excelExport.service';
+// import { ExportService } from './../services/export.service';
+// import { ExtensionService } from '../services/extension.service';
+// import { ExtensionUtility } from '../extensions/extensionUtility';
+// import { FilterService } from './../services/filter.service';
+// import { GraphqlService } from './../services/graphql.service';
+// import { GridEventService } from './../services/gridEvent.service';
+// import { GridService } from './../services/grid.service';
+// import { GridStateService } from './../services/gridState.service';
+// import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
+// import { PaginationService } from '../services/pagination.service';
 import { ResizerService } from './../services/resizer.service';
-import { SharedService } from '../services/shared.service';
-import { SortService } from './../services/sort.service';
-import { TreeDataService } from './../services/treeData.service';
+// import { SharedService } from '../services/shared.service';
+// import { SortService } from './../services/sort.service';
+// import { TreeDataService } from './../services/treeData.service';
 
 // Extensions (SlickGrid Controls & Plugins)
-import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
-import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
-import { CellMenuExtension } from '../extensions/cellMenuExtension';
-import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
-import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
-import { ContextMenuExtension } from '../extensions/contextMenuExtension';
-import { DraggableGroupingExtension } from '../extensions/draggableGroupingExtension';
-import { GridMenuExtension } from '../extensions/gridMenuExtension';
-import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
-import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
-import { HeaderMenuExtension } from '../extensions/headerMenuExtension';
+// import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
+// import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
+// import { CellMenuExtension } from '../extensions/cellMenuExtension';
+// import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
+// import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
+// import { ContextMenuExtension } from '../extensions/contextMenuExtension';
+// import { DraggableGroupingExtension } from '../extensions/draggableGroupingExtension';
+// import { GridMenuExtension } from '../extensions/gridMenuExtension';
+// import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
+// import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
+// import { HeaderMenuExtension } from '../extensions/headerMenuExtension';
 import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
-import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
-import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
+import { ContainerService } from '../services/container.service';
+// import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
+// import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 
 // using external non-typed js libraries
 declare const Slick: any;
@@ -88,38 +154,40 @@ const slickgridEventPrefix = 'sg';
   providers: [
     // make everything transient (non-singleton)
     AngularUtilService,
-    AutoTooltipExtension,
-    CellExternalCopyManagerExtension,
-    CellMenuExtension,
-    CheckboxSelectorExtension,
-    ColumnPickerExtension,
-    ContextMenuExtension,
-    DraggableGroupingExtension,
-    ExcelExportService,
-    ExtensionService,
-    ExportService,
-    ExtensionUtility,
-    FilterFactory,
-    FilterService,
-    GraphqlService,
-    GridEventService,
-    GridMenuExtension,
-    GridService,
-    GridStateService,
-    GroupingAndColspanService,
-    GroupItemMetaProviderExtension,
-    HeaderButtonExtension,
-    HeaderMenuExtension,
-    PaginationService,
+    ApplicationRef,
+    // ContainerService,
+    // AutoTooltipExtension,
+    // CellExternalCopyManagerExtension,
+    // CellMenuExtension,
+    // CheckboxSelectorExtension,
+    // ColumnPickerExtension,
+    // ContextMenuExtension,
+    // DraggableGroupingExtension,
+    // ExcelExportService,
+    // ExtensionService,
+    // ExportService,
+    // ExtensionUtility,
+    // FilterFactory,
+    // FilterService,
+    // GraphqlService,
+    // GridEventService,
+    // GridMenuExtension,
+    // GridService,
+    // GridStateService,
+    // GroupingAndColspanService,
+    // GroupItemMetaProviderExtension,
+    // HeaderButtonExtension,
+    // HeaderMenuExtension,
+    // PaginationService,
     ResizerService,
     RowDetailViewExtension,
-    RowMoveManagerExtension,
-    RowSelectionExtension,
-    SharedService,
-    SortService,
-    SlickgridConfig,
+    // RowMoveManagerExtension,
+    // RowSelectionExtension,
+    // SharedService,
+    // SortService,
+    // SlickgridConfig,
     TranslaterService,
-    TreeDataService,
+    // TreeDataService,
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
@@ -127,6 +195,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions!: Column[];
   private _currentDatasetLength = 0;
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
+  private _eventPubSubService!: EventPubSubService;
   private _angularGridInstances: AngularGridInstance | undefined;
   private _fixedHeight?: number | null;
   private _fixedWidth?: number | null;
@@ -140,7 +209,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _isLocalGrid = true;
   private _paginationOptions: Pagination | undefined;
   private _selectedRowCount = 0;
-  private slickEmptyWarning: SlickEmptyWarningComponent;
+  private slickEmptyWarning?: SlickEmptyWarningComponent;
   dataView: any | null;
   grid: any | null;
   gridHeightString?: string;
@@ -153,24 +222,45 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   metrics?: Metrics;
   showCustomFooter = false;
   showPagination = false;
+  serviceList: any[] = [];
   totalItems = 0;
   paginationData?: {
     gridOptions: GridOption;
+    paginationService: PaginationService;
   };
   subscriptions: Subscription[] = [];
 
+  // extensions
+  extensionUtility: ExtensionUtility;
+
+  // services
+  backendUtilityService!: BackendUtilityService;
+  collectionService: CollectionService;
+  extensionService: ExtensionService;
+  filterFactory!: FilterFactory;
+  filterService: FilterService;
+  gridEventService: GridEventService;
+  gridService: GridService;
+  gridStateService: GridStateService;
+  groupingService: GroupingAndColspanService;
+  paginationService: PaginationService;
+  rxjs?: RxJsFacade;
+  sharedService: SharedService;
+  sortService: SortService;
+  treeDataService: TreeDataService;
+
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
-  @Output() onDataviewCreated = new EventEmitter<any>();
-  @Output() onGridCreated = new EventEmitter<any>();
-  @Output() onGridInitialized = new EventEmitter<any>();
-  @Output() onBeforeGridCreate = new EventEmitter<boolean>();
-  @Output() onBeforeGridDestroy = new EventEmitter<any>();
-  @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
-  @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
-  @Output() onGridBeforeExportToFile = this.exportService.onGridBeforeExportToFile;
-  @Output() onGridAfterExportToFile = this.exportService.onGridAfterExportToFile;
-  @Output() onGridBeforeExportToExcel = this.excelExportService.onGridBeforeExportToExcel;
-  @Output() onGridAfterExportToExcel = this.excelExportService.onGridAfterExportToExcel;
+  // @Output() onDataviewCreated = new EventEmitter<any>();
+  // @Output() onGridCreated = new EventEmitter<any>();
+  // @Output() onGridInitialized = new EventEmitter<any>();
+  // @Output() onBeforeGridCreate = new EventEmitter<boolean>();
+  // @Output() onBeforeGridDestroy = new EventEmitter<any>();
+  // @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
+  // @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
+  // @Output() onGridBeforeExportToFile = this.exportService.onGridBeforeExportToFile;
+  // @Output() onGridAfterExportToFile = this.exportService.onGridAfterExportToFile;
+  // @Output() onGridBeforeExportToExcel = this.excelExportService.onGridBeforeExportToExcel;
+  // @Output() onGridAfterExportToExcel = this.excelExportService.onGridAfterExportToExcel;
   @Input() customDataView: any;
   @Input() gridId: string = '';
   @Input() gridOptions!: GridOption;
@@ -179,14 +269,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   get paginationOptions(): Pagination | undefined {
     return this._paginationOptions;
   }
-  set paginationOptions(options: Pagination | undefined) {
-    if (options && this._paginationOptions) {
-      this._paginationOptions = { ...this._paginationOptions, ...options };
+  set paginationOptions(newPaginationOptions: Pagination | undefined) {
+    if (newPaginationOptions && this._paginationOptions) {
+      this._paginationOptions = { ...this._paginationOptions, ...newPaginationOptions };
     } else {
-      this._paginationOptions = options;
+      this._paginationOptions = newPaginationOptions;
     }
     this.gridOptions.pagination = this._paginationOptions;
-    this.paginationService.updateTotalItems(options && options.totalItems || 0, true);
+    this.paginationService.updateTotalItems(newPaginationOptions?.totalItems ?? 0, true);
   }
 
   @Input()
@@ -265,27 +355,120 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
+    private readonly angularUtilService: AngularUtilService,
+    private readonly appRef: ApplicationRef,
     private readonly cd: ChangeDetectorRef,
+    private readonly containerService: ContainerService,
     private readonly elm: ElementRef,
-    private readonly excelExportService: ExcelExportService,
-    private readonly exportService: ExportService,
-    private readonly extensionService: ExtensionService,
-    private readonly extensionUtility: ExtensionUtility,
-    private readonly filterService: FilterService,
-    private readonly gridEventService: GridEventService,
-    private readonly gridService: GridService,
-    private readonly gridStateService: GridStateService,
-    private readonly groupingAndColspanService: GroupingAndColspanService,
-    private readonly paginationService: PaginationService,
-    private readonly resizer: ResizerService,
-    private readonly sharedService: SharedService,
-    private readonly sortService: SortService,
-    private readonly treeDataService: TreeDataService,
+    private readonly resizerService: ResizerService,
     @Optional() private readonly translate: TranslateService,
     @Optional() private readonly translaterService: TranslaterService,
-    @Inject('config') private forRootConfig: GridOption
+    @Inject('config') private forRootConfig: GridOption,
+    @Inject('externalService') externalServices: {
+      backendUtilityService?: BackendUtilityService,
+      collectionService?: CollectionService,
+      eventPubSubService?: EventPubSubService,
+      extensionService?: ExtensionService,
+      extensionUtility?: ExtensionUtility,
+      filterService?: FilterService,
+      gridEventService?: GridEventService,
+      gridService?: GridService,
+      gridStateService?: GridStateService,
+      groupingAndColspanService?: GroupingAndColspanService,
+      paginationService?: PaginationService,
+      rxjs?: RxJsFacade,
+      sharedService?: SharedService,
+      sortService?: SortService,
+      treeDataService?: TreeDataService,
+    }
   ) {
-    this.slickEmptyWarning = new SlickEmptyWarningComponent(this.translaterService);
+    const slickgridConfig = new SlickgridConfig();
+
+    // initialize and assign all Service Dependencies
+    this._eventPubSubService = externalServices?.eventPubSubService ?? new EventPubSubService(this.elm.nativeElement);
+    this._eventPubSubService.eventNamingStyle = EventNamingStyle.kebabCase;
+
+    this.backendUtilityService = externalServices?.backendUtilityService ?? new BackendUtilityService();
+    this.gridEventService = externalServices?.gridEventService ?? new GridEventService();
+    this.sharedService = externalServices?.sharedService ?? new SharedService();
+    this.collectionService = externalServices?.collectionService ?? new CollectionService(this.translaterService);
+    this.extensionUtility = externalServices?.extensionUtility ?? new ExtensionUtility(this.sharedService, this.translaterService);
+    this.filterFactory = new FilterFactory(slickgridConfig, this.translaterService, this.collectionService);
+    this.filterService = externalServices?.filterService ?? new FilterService(this.filterFactory as any, this._eventPubSubService, this.sharedService, this.backendUtilityService);
+    this.sortService = externalServices?.sortService ?? new SortService(this.sharedService, this._eventPubSubService, this.backendUtilityService);
+    this.treeDataService = externalServices?.treeDataService ?? new TreeDataService(this._eventPubSubService, this.sharedService, this.sortService);
+    this.paginationService = externalServices?.paginationService ?? new PaginationService(this._eventPubSubService, this.sharedService, this.backendUtilityService);
+
+    // extensions
+    const autoTooltipExtension = new AutoTooltipExtension(this.sharedService);
+    const cellExternalCopyManagerExtension = new CellExternalCopyManagerExtension(this.extensionUtility, this.sharedService);
+    const cellMenuExtension = new CellMenuExtension(this.extensionUtility, this.sharedService, this.translaterService);
+    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this.sharedService, this.treeDataService, this.translaterService);
+    const columnPickerExtension = new ColumnPickerExtension(this.extensionUtility, this.sharedService);
+    const checkboxExtension = new CheckboxSelectorExtension(this.sharedService);
+    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this.sharedService);
+    const gridMenuExtension = new GridMenuExtension(this.extensionUtility, this.filterService, this.sharedService, this.sortService, this.backendUtilityService, this.translaterService);
+    const groupItemMetaProviderExtension = new GroupItemMetaProviderExtension(this.sharedService);
+    const headerButtonExtension = new HeaderButtonExtension(this.extensionUtility, this.sharedService);
+    const headerMenuExtension = new HeaderMenuExtension(this.extensionUtility, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.translaterService);
+    const rowDetailViewExtension = new RowDetailViewExtension(this.angularUtilService, this.appRef, this.extensionUtility, this.filterService, this.sharedService, this.rxjs);
+    const rowMoveManagerExtension = new RowMoveManagerExtension(this.sharedService);
+    const rowSelectionExtension = new RowSelectionExtension(this.sharedService);
+
+    this.extensionService = externalServices?.extensionService ?? new ExtensionService(
+      autoTooltipExtension,
+      cellExternalCopyManagerExtension,
+      cellMenuExtension,
+      checkboxExtension,
+      columnPickerExtension,
+      contextMenuExtension,
+      draggableGroupingExtension,
+      gridMenuExtension,
+      groupItemMetaProviderExtension,
+      headerButtonExtension,
+      headerMenuExtension,
+      // @ts-ignore
+      rowDetailViewExtension,
+      rowMoveManagerExtension,
+      rowSelectionExtension,
+      this.sharedService,
+      this.translaterService,
+    );
+
+    this.gridStateService = externalServices?.gridStateService ?? new GridStateService(this.extensionService, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.treeDataService);
+    this.gridService = externalServices?.gridService ?? new GridService(this.gridStateService, this.filterService, this._eventPubSubService, this.paginationService, this.sharedService, this.sortService, this.treeDataService);
+    this.groupingService = externalServices?.groupingAndColspanService ?? new GroupingAndColspanService(this.extensionUtility, this.extensionService, this._eventPubSubService);
+
+    this.serviceList = [
+      this.extensionService,
+      this.filterService,
+      this.gridEventService,
+      this.gridService,
+      this.gridStateService,
+      this.groupingService,
+      this.paginationService,
+      this.resizerService,
+      this.sortService,
+      this.treeDataService,
+    ];
+
+    // register all Service instances in the container
+    this.containerService.registerInstance('ExtensionUtility', this.extensionUtility);
+    this.containerService.registerInstance('FilterService', this.filterService);
+    this.containerService.registerInstance('CollectionService', this.collectionService);
+    this.containerService.registerInstance('ExtensionService', this.extensionService);
+    this.containerService.registerInstance('GridEventService', this.gridEventService);
+    this.containerService.registerInstance('GridService', this.gridService);
+    this.containerService.registerInstance('GridStateService', this.gridStateService);
+    this.containerService.registerInstance('GroupingAndColspanService', this.groupingService);
+    this.containerService.registerInstance('PaginationService', this.paginationService);
+    this.containerService.registerInstance('ResizerService', this.resizerService);
+    this.containerService.registerInstance('SharedService', this.sharedService);
+    this.containerService.registerInstance('SortService', this.sortService);
+    this.containerService.registerInstance('EventPubSubService', this._eventPubSubService);
+    this.containerService.registerInstance('PubSubService', this._eventPubSubService);
+    this.containerService.registerInstance('TranslaterService', this.translaterService);
+    this.containerService.registerInstance('TreeDataService', this.treeDataService);
   }
 
   ngAfterViewInit() {
@@ -308,7 +491,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnInit(): void {
-    this.onBeforeGridCreate.emit(true);
+    // this.onBeforeGridCreate.emit(true);
     if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
       this.gridHeightString = `${this._fixedHeight}px`;
       this.gridWidthString = `${this._fixedWidth}px`;
@@ -316,25 +499,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngOnDestroy(): void {
-    this.onBeforeGridDestroy.emit(this.grid);
+    // this.onBeforeGridDestroy.emit(this.grid);
     this.destroy();
-    this.onAfterGridDestroyed.emit(true);
+    // this.onAfterGridDestroyed.emit(true);
   }
 
   destroy(shouldEmptyDomElementContainer = false) {
-    this.extensionService.dispose();
-    this.filterService.dispose();
-    this.gridEventService.dispose();
-    this.gridStateService.dispose();
-    this.gridService.dispose();
-    this.groupingAndColspanService.dispose();
-    this.paginationService.dispose();
-    this.resizer.dispose();
-    this.sortService.dispose();
-    this.treeDataService.dispose();
-
-    // dispose the Components
-    this.slickEmptyWarning.dispose();
+    // dispose of all Services
+    this.serviceList.forEach((service: any) => {
+      if (service && service.dispose) {
+        service.dispose();
+      }
+    });
+    this.serviceList = [];
 
     if (this._eventHandler?.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
@@ -402,13 +579,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
     const backendApi = gridOptions && gridOptions.backendServiceApi;
     if (backendApi && backendApi.service) {
+      const backendApiService = backendApi.service;
+
       // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is of that type
-      if (backendApi.service instanceof GraphqlService || typeof backendApi.service.getDatasetName === 'function') {
-        backendApi.internalPostProcess = (processResult: GraphqlResult | GraphqlPaginatedResult) => {
-          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          if (processResult && processResult.data && processResult.data[datasetName]) {
-            const data = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
-            const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as GraphqlPaginatedResult).data[datasetName].totalCount : (processResult as GraphqlResult).data[datasetName].length;
+      if (typeof backendApiService.getDatasetName === 'function') {
+        backendApi.internalPostProcess = (processResult: any) => {
+          const datasetName = (backendApi && backendApiService && typeof backendApiService.getDatasetName === 'function') ? backendApiService.getDatasetName() : '';
+          if (processResult?.data[datasetName]) {
+            const data = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as any).data[datasetName].nodes : (processResult as any).data[datasetName];
+            const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as any).data[datasetName].totalCount : (processResult as any).data[datasetName].length;
             this.refreshGridData(data, totalCount || 0);
           }
         };
@@ -432,10 +611,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.sharedService.currentPagination = { pageNumber: pageNumber as number, pageSize: pageSize as number };
       }
     }
-    this.gridStateService.onGridStateChanged.next({
-      change: { newValues: { pageNumber: pageNumber as number, pageSize: pageSize as number }, type: GridStateType.pagination },
-      gridState: this.gridStateService.getCurrentGridState()
-    });
+    // this.gridStateService.onGridStateChanged.next({
+    //   change: { newValues: { pageNumber: pageNumber as number, pageSize: pageSize as number }, type: GridStateType.pagination },
+    //   gridState: this.gridStateService.getCurrentGridState()
+    // });
   }
 
   /**
@@ -493,7 +672,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
       if (this.grid && this.gridOptions.enableAutoResize) {
         const delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
-        this.resizer.resizeGrid(delay || 10);
+        this.resizerService.resizeGrid(delay || 10);
       }
     }
   }
@@ -527,8 +706,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (this.gridOptions?.enableAutoSizeColumns) {
       this.grid.autosizeColumns();
-    } else if (this.gridOptions?.enableAutoResizeColumnsByCellContent && this.resizer?.resizeColumnsByCellContent) {
-      this.resizer.resizeColumnsByCellContent();
+    } else if (this.gridOptions?.enableAutoResizeColumnsByCellContent && this.resizerService?.resizeColumnsByCellContent) {
+      this.resizerService.resizeColumnsByCellContent();
     }
   }
 
@@ -557,7 +736,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private displayEmptyDataWarning(showWarning = true) {
-    this.slickEmptyWarning.grid = this.grid;
+    // this.slickEmptyWarning.grid = this.grid;
     this.slickEmptyWarning && this.slickEmptyWarning.showEmptyDataMessage(showWarning);
   }
 
@@ -584,7 +763,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.translateColumnHeaderTitleKeys();
             this.translateColumnGroupKeys();
             if (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping) {
-              this.groupingAndColspanService.translateGroupingAndColSpan();
+              this.groupingService.translateGroupingAndColSpan();
             }
           }
         })
@@ -624,6 +803,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       const backendApi = gridOptions.backendServiceApi;
 
       if (backendApi && backendApi.service && backendApi.service.init) {
+        // @ts-ignore
         backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid, this.sharedService);
       }
     }
@@ -647,16 +827,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // expose GridState Service changes event through dispatch
-    this.subscriptions.push(
-      this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
-        this.onGridStateChanged.emit(gridStateChange);
-      })
-    );
-
+    // this.subscriptions.push(
+    //   this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
+    //     this.onGridStateChanged.emit(gridStateChange);
+    //   })
+    // );
 
     // on cell click, mainly used with the columnDef.action callback
-    this.gridEventService.bindOnCellChange(grid, dataView);
-    this.gridEventService.bindOnClick(grid, dataView);
+    this.gridEventService.bindOnCellChange(grid);
+    this.gridEventService.bindOnClick(grid);
 
     if (dataView && grid) {
       // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
@@ -670,7 +849,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
         if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
-          this.resizer.resizeColumnsByCellContent(!this.gridOptions?.resizeByContentOnlyOnFirstLoad);
+          this.resizerService.resizeColumnsByCellContent(!this.gridOptions?.resizeByContentOnlyOnFirstLoad);
         }
       });
 
@@ -733,6 +912,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       } else {
         const columnFilters = this.filterService.getColumnFilters();
         if (columnFilters && backendApiService.updateFilters) {
+          // @ts-ignore
           backendApiService.updateFilters(columnFilters, false);
         }
       }
@@ -744,7 +924,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
         setTimeout(() => {
-          // keep start time & end timestamps then return these metrics after the process execution
+          const backendUtilityService = this.backendUtilityService as BackendUtilityService;
+
+          // keep start time & end timestamps & return it after process execution
           const startTime = new Date();
 
           // run any pre-process, if defined, for example a spinner
@@ -752,16 +934,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             backendApi.preProcess();
           }
 
-          // the processes can be Promises or Observables (like Angular HttpClient)
-          const totalItems = this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems;
-          if (process instanceof Promise && process.then) {
-            process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
-              .catch((error: any) => onBackendError(error, backendApi));
-          } else if (isObservable(process)) {
+          // the processes can be a Promise (like Http)
+          const totalItems = this.gridOptions?.pagination?.totalItems ?? 0;
+          if (process instanceof Promise) {
+            process
+              .then((processResult: any) => backendUtilityService.executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
+              .catch((error) => backendUtilityService.onBackendError(error, backendApi));
+          } else if (process && this.rxjs?.isObservable(process)) {
             this.subscriptions.push(
-              process.subscribe(
-                (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
-                (error: any) => onBackendError(error, backendApi)
+              (process as Observable<any>).subscribe(
+                (processResult: any) => backendUtilityService.executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
+                (error: any) => backendUtilityService.onBackendError(error, backendApi)
               )
             );
           }
@@ -782,12 +965,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // auto-resize grid on browser resize
     if (this._fixedHeight || this._fixedWidth) {
-      this.resizer.init(grid, { height: this._fixedHeight as number, width: this._fixedWidth as number });
+      this.resizerService.init(grid, { height: this._fixedHeight as number, width: this._fixedWidth as number });
     } else {
-      this.resizer.init(grid);
+      this.resizerService.init(grid);
     }
     if (options.enableAutoResize) {
-      this.resizer.bindAutoResizeDataGrid();
+      this.resizerService.bindAutoResizeDataGrid();
       if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
         grid.autosizeColumns();
       }
@@ -825,18 +1008,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions) {
       this.paginationData = {
         gridOptions: this.gridOptions,
+        paginationService: this.paginationService,
       };
       this.paginationService.totalItems = this.totalItems;
-      this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
-      this.subscriptions.push(
-        this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes)),
-        this.paginationService.onPaginationVisibilityChanged.subscribe((visibility: { visible: boolean }) => {
-          this.showPagination = visibility && visibility.visible || false;
-          if (this.gridOptions && this.gridOptions.backendServiceApi) {
-            refreshBackendDataset();
-          }
-        })
-      );
+      this.paginationService.init(this.grid, paginationOptions, this.backendServiceApi);
+      // this.subscriptions.push(
+      //   this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes)),
+      //   this.paginationService.onPaginationVisibilityChanged.subscribe((visibility: { visible: boolean }) => {
+      //     this.showPagination = visibility && visibility.visible || false;
+      //     if (this.gridOptions && this.gridOptions.backendServiceApi) {
+      //       refreshBackendDataset();
+      //     }
+      //   })
+      // );
       this._isPaginationInitialized = true;
     }
     this.cd.detectChanges();
@@ -856,6 +1040,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this._paginationOptions = this.gridOptions.pagination;
     this.locales = this.gridOptions?.locales ?? Constants.locales;
+    // @ts-ignore
     this.backendServiceApi = this.gridOptions?.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
     this._isLocalGrid = !this.backendServiceApi; // considered a local grid if it doesn't have a backend service set
@@ -881,6 +1066,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // if the user wants to automatically add a Custom Editor Formatter, we need to call the auto add function again
     if (this.gridOptions.autoAddCustomEditorFormatter) {
+      // @ts-ignore
       autoAddEditorFormatterToColumnsWithEditor(this._columnDefinitions, this.gridOptions.autoAddCustomEditorFormatter);
     }
 
@@ -888,6 +1074,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // save reference for all columns before they optionally become hidden/visible
     this.sharedService.allColumns = this._columnDefinitions;
     this.sharedService.visibleColumns = this._columnDefinitions;
+    // @ts-ignore
     this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
     // if user entered some Pinning/Frozen "presets", we need to apply them in the grid options
@@ -899,13 +1086,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
 
     this.sharedService.dataView = this.dataView;
-    this.sharedService.grid = this.grid;
+    this.sharedService.slickGrid = this.grid;
 
     this.extensionService.bindDifferentExtensions();
     this.bindDifferentHooks(this.grid, this.gridOptions, this.dataView);
 
     // emit the Grid & DataView object to make them available in parent component
-    this.onGridCreated.emit(this.grid);
+    // this.onGridCreated.emit(this.grid);
 
     // when it's a frozen grid, we need to keep the frozen column id for reference if we ever show/hide column from ColumnPicker/GridMenu afterward
     const frozenColumnIndex = this.gridOptions.frozenColumn !== undefined ? this.gridOptions.frozenColumn : -1;
@@ -918,7 +1105,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // initialized the resizer service only after SlickGrid is initialized
     // if we don't we end up binding our resize to a grid element that doesn't yet exist in the DOM and the resizer service will fail silently (because it has a try/catch that unbinds the resize without throwing back)
-    this.resizer.init(this.grid);
+    this.resizerService.init(this.grid);
 
     // when using Tree Data View
     if (this.gridOptions.enableTreeData) {
@@ -927,7 +1114,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
       const initialDataset = this.gridOptions?.enableTreeData ? this.sortTreeDataset(this._dataset) : this._dataset;
-      this.onDataviewCreated.emit(this.dataView);
+      // this.onDataviewCreated.emit(this.dataView);
       this.dataView.beginUpdate();
       this.dataView.setItems(initialDataset || [], this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
@@ -981,11 +1168,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // bind & initialize grouping and header grouping colspan service
     if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
-      this.groupingAndColspanService.init(this.grid, this.dataView);
+      this.groupingService.init(this.grid);
     }
 
     // bind & initialize the grid service
-    this.gridService.init(this.grid, this.dataView);
+    this.gridService.init(this.grid);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
     if (this.gridOptions.enableTranslate) {
@@ -993,17 +1180,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // if Export is enabled, initialize the service with the necessary grid and other objects
-    if (this.gridOptions.enableExport) {
-      this.exportService.init(this.grid, this.dataView);
-    }
+    // if (this.gridOptions.enableExport) {
+    //   this.textExportService.init(this.grid);
+    // }
 
     // if Excel Export is enabled, initialize the service with the necessary grid and other objects
-    if (this.gridOptions.enableExcelExport && this.sharedService) {
-      this.excelExportService.init(this.grid, this.dataView);
-    }
+    // if (this.gridOptions.enableExcelExport && this.sharedService) {
+    //   this.excelExportService.init(this.grid);
+    // }
 
     // once all hooks are in placed and the grid is initialized, we can emit an event
-    this.onGridInitialized.emit(this.grid);
+    // this.onGridInitialized.emit(this.grid);
 
     // bind the Backend Service API callback functions only after the grid is initialized
     // because the preProcess() and onInit() might get triggered
@@ -1011,7 +1198,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.bindBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid, this.dataView);
+    this.gridStateService.init(this.grid);
 
     // local grid, check if we need to show the Pagination
     // if so then also check if there's any presets and finally initialize the PaginationService
@@ -1025,28 +1212,23 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // Slick Grid & DataView objects
       dataView: this.dataView,
       slickGrid: this.grid,
-      extensions: this.extensionService && this.extensionService.extensionList,
 
       // public methods
       destroy: this.destroy.bind(this),
 
       // return all available Services (non-singleton)
-      backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
-      excelExportService: this.excelExportService,
-      exportService: this.exportService,
-      extensionService: this.extensionService,
+      // @ts-ignore
+      backendService: this.gridOptions?.backendServiceApi?.service,
       filterService: this.filterService,
       gridEventService: this.gridEventService,
       gridStateService: this.gridStateService,
       gridService: this.gridService,
-      groupingService: this.groupingAndColspanService,
+      groupingService: this.groupingService,
+      extensionService: this.extensionService,
       paginationService: this.paginationService,
-      resizerService: this.resizer,
+      resizerService: this.resizerService,
       sortService: this.sortService,
       treeDataService: this.treeDataService,
-
-      /** @deprecated please use "extensionService" instead */
-      pluginService: this.extensionService,
     }
 
     // all instances (SlickGrid, DataView & all Services)
@@ -1252,12 +1434,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     } else if (Array.isArray(flatDatasetInput) && flatDatasetInput.length > 0) {
       if (this.gridOptions?.treeDataOptions?.initialSort) {
         // else we need to first convert the flat dataset to a hierarchical dataset and then sort
+        // @ts-ignore
         sortedDatasetResult = this.treeDataService.convertFlatParentChildToTreeDatasetAndSort(flatDatasetInput, this._columnDefinitions, this.gridOptions);
         this.sharedService.hierarchicalDataset = sortedDatasetResult.hierarchical;
         flatDatasetOutput = sortedDatasetResult.flat;
       } else {
         // else we assume that the user provided an array that is already sorted (user's responsability)
         // and so we can simply convert the array to a tree structure and we're done, no need to sort
+        // @ts-ignore
         this.sharedService.hierarchicalDataset = this.treeDataService.convertFlatParentChildToTreeDataset(flatDatasetInput, this.gridOptions);
         flatDatasetOutput = flatDatasetInput || [];
       }

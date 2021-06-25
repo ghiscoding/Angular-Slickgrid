@@ -108,10 +108,12 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
   }
 
   get cellMenuInstance(): any {
+    // @ts-ignore
     return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.cellMenu) || {};
   }
 
   get contextMenuInstance(): any {
+    // @ts-ignore
     return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.contextMenu) || {};
   }
 
@@ -257,8 +259,8 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableCellNavigation: true,
       enableFiltering: true,

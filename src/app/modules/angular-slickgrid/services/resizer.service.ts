@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { parseFormatterWhenExist } from '@slickgrid-universal/common';
+import { Column, FieldType, parseFormatterWhenExist, ResizeByContentOption, sanitizeHtmlToText, SlickEventHandler } from '@slickgrid-universal/common';
 import { Subject } from 'rxjs';
 
-import { Column, FieldType, GridOption, ResizeByContentOption, SlickEventHandler } from './../models/index';
-import { sanitizeHtmlToText } from './utilities';
+import { GridOption, } from './../models/index';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -75,7 +74,7 @@ export class ResizerService {
     const containerNode = grid && grid.getContainerNode && grid.getContainerNode() || '';
     this._gridDomElm = $(containerNode);
     const autoResizeOptions = this._gridOptions && this._gridOptions.autoResize || {};
-    this._gridContainerElm = (autoResizeOptions && autoResizeOptions.containerId) ? $(`#${autoResizeOptions.containerId}`) : $(`#${this._gridOptions.gridContainerId}`);
+    this._gridContainerElm = (autoResizeOptions && autoResizeOptions.container) ? $(`${autoResizeOptions.container}`) : $(`${this._gridOptions.gridContainerId}`);
 
     if (fixedDimensions) {
       this._fixedHeight = fixedDimensions.height;
@@ -106,7 +105,7 @@ export class ResizerService {
   }
 
   handleResizeGrid(newSizes?: GridDimension, event?: Event) {
-    this.onGridBeforeResize.next(event);
+    // this.onGridBeforeResize.next(event);
     if (!this._resizePaused) {
       // for some yet unknown reason, calling the resize twice removes any stuttering/flickering
       // when changing the height and makes it much smoother experience
@@ -134,7 +133,8 @@ export class ResizerService {
 
     // optionally show a custom footer with the data metrics (dataset length and last updated timestamp)
     if (bottomPadding && gridOptions.showCustomFooter) {
-      bottomPadding += gridOptions?.customFooterOptions?.footerHeight ?? DATAGRID_FOOTER_HEIGHT;
+      const footerHeight: string | number = this._gridOptions?.customFooterOptions?.footerHeight ?? DATAGRID_FOOTER_HEIGHT;
+      bottomPadding += parseInt(`${footerHeight}`, 10);
     }
 
     let gridHeight = 0;
@@ -159,7 +159,7 @@ export class ResizerService {
     const minWidth = (autoResizeOptions && autoResizeOptions.minWidth !== undefined) ? autoResizeOptions.minWidth : DATAGRID_MIN_WIDTH;
 
     let newHeight = availableHeight;
-    let newWidth = (autoResizeOptions && autoResizeOptions.sidePadding) ? availableWidth - autoResizeOptions.sidePadding : availableWidth;
+    let newWidth = (autoResizeOptions && autoResizeOptions.rightPadding) ? availableWidth - autoResizeOptions.rightPadding : availableWidth;
 
     // optionally (when defined), make sure that grid height & width are within their thresholds
     if (newHeight < minHeight) {
@@ -237,7 +237,7 @@ export class ResizerService {
 
   resizeGridCallback(newSizes?: GridDimension) {
     const lastDimensions = this.resizeGridWithDimensions(newSizes);
-    this.onGridAfterResize.next(lastDimensions);
+    // this.onGridAfterResize.next(lastDimensions);
     return lastDimensions;
   }
 

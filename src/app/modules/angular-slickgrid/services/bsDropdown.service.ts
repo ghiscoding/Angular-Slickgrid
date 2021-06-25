@@ -95,7 +95,7 @@ export class BsDropDownService {
               this._domElement.css('position', 'absolute');
               this._domElement.css('top', topPos);
               this._domElement.css('left', leftPos);
-              $(`#${myDropId}`).addClass('open');
+              $(`#${myDropId}`).addClass('show');
               $(`#${dropDownToggleId}`).hide();
 
               // check if it should drop Up or Down

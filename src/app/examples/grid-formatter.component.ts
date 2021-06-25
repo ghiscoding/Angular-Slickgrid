@@ -78,8 +78,8 @@ export class GridFormatterComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableAutoResize: true,
       enableCellNavigation: true,

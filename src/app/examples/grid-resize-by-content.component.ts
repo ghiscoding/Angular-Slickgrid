@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, Sorters } from '../modules/angular-slickgrid';
+import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, SortComparers } from '../modules/angular-slickgrid';
 
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
 declare const Slick: any;
@@ -204,7 +204,7 @@ export class GridResizeByContentComponent implements OnInit {
         formatter: Formatters.complexObject,
         exportCustomFormatter: Formatters.complex, // without the Editing cell Formatter
         type: FieldType.object,
-        sorter: Sorters.objectString,
+        sortComparer: SortComparers.objectString,
         editor: {
           model: Editors.autoComplete,
           alwaysSaveOnEnterKey: true,
@@ -240,7 +240,7 @@ export class GridResizeByContentComponent implements OnInit {
         dataKey: 'code',
         labelKey: 'name',
         type: FieldType.object,
-        sorter: Sorters.objectString,
+        sortComparer: SortComparers.objectString,
         filterable: true,
         sortable: true,
         minWidth: 100,
@@ -299,8 +299,8 @@ export class GridResizeByContentComponent implements OnInit {
       autoEdit: true,
       autoCommitEdit: true,
       autoResize: {
-        containerId: 'smaller-container',
-        sidePadding: 10
+        container: '#smaller-container',
+        rightPadding: 10
       },
       enableAutoResize: true,
 

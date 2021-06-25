@@ -139,8 +139,8 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
     ];
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableAutoResize: true,
       enableExcelCopyBuffer: true,
@@ -252,18 +252,18 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService!.exportToExcel({
-      filename: 'Export',
-      format: FileType.xlsx
-    });
+    // this.angularGrid.excelExportService!.exportToExcel({
+    //   filename: 'Export',
+    //   format: FileType.xlsx
+    // });
   }
 
   exportToFile(type = 'csv') {
-    this.angularGrid.exportService.exportToFile({
-      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-      filename: 'myExport',
-      format: (type === 'csv') ? FileType.csv : FileType.txt
-    });
+    // this.angularGrid.exportService.exportToFile({
+    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+    //   filename: 'myExport',
+    //   format: (type === 'csv') ? FileType.csv : FileType.txt
+    // });
   }
 
   /** Dispatched event of a Grid State Changed event */

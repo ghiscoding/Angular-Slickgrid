@@ -45,6 +45,7 @@ export class GridAddItemComponent implements OnInit {
     this.angularGrid = angularGrid;
     this.dataView = angularGrid.dataView;
     this.grid = angularGrid.slickGrid;
+    // @ts-ignore
     this.gridService = angularGrid.gridService;
 
     // if you want to change background color of Duration over 50 right after page load,
@@ -130,8 +131,8 @@ export class GridAddItemComponent implements OnInit {
     this.gridOptions = {
       asyncEditorLoading: false,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       editable: true,
       enableColumnPicker: true,

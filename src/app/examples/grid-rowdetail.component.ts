@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
+  ExtensionList,
   FieldType,
   Filters,
   Formatters,
@@ -30,6 +31,8 @@ export class GridRowDetailComponent implements OnInit {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
+  // @ts-ignore
+  extensions!: ExtensionList<any, any>;
   detailViewRowCount = 9;
   message = '';
   flashAlertType = 'info';
@@ -44,7 +47,7 @@ export class GridRowDetailComponent implements OnInit {
     // you can get the SlickGrid RowDetail plugin (addon) instance via 2 ways
 
     // option 1
-    return this.angularGrid.extensions.rowDetailView.instance || {};
+    return this.extensions.rowDetailView.instance || {};
 
     // OR options 2
     // return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowDetailView) || {};
@@ -82,8 +85,8 @@ export class GridRowDetailComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableFiltering: true,
       enableRowDetailView: true,

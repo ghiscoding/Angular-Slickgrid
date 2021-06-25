@@ -79,8 +79,8 @@ export class GridMenuComponent implements OnInit, OnDestroy {
       enableAutoResize: true,
       enableGridMenu: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableFiltering: true,
       enableCellNavigation: true,
@@ -217,6 +217,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
 
   toggleGridMenu(e: Event) {
     if (this.angularGrid && this.angularGrid.extensionService) {
+      // @ts-ignore
       const gridMenuInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.gridMenu);
       gridMenuInstance.showGridMenu(e);
     }

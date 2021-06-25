@@ -33,6 +33,7 @@ export class GridRowMoveComponent implements OnInit {
   }
 
   get rowMoveInstance(): any {
+    // @ts-ignore
     return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowMoveManager) || {};
   }
 
@@ -64,8 +65,8 @@ export class GridRowMoveComponent implements OnInit {
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -155,7 +156,7 @@ export class GridRowMoveComponent implements OnInit {
     // when moving rows, we need to cancel any sorting that might happen
     // we can do this by providing an undefined sort comparer
     // which basically destroys the current sort comparer without resorting the dataset, it basically keeps the previous sorting
-    this.angularGrid.dataView.sort(undefined, true);
+    this.angularGrid.dataView.sort(undefined as any, true);
 
     // the dataset might be filtered/sorted,
     // so we need to get the same dataset as the one that the SlickGrid DataView uses
@@ -176,14 +177,18 @@ export class GridRowMoveComponent implements OnInit {
     // we need to resort with
     rows.sort((a: number, b: number) => a - b);
     for (const filteredRow of filteredRows) {
-      extractedRows.push(tmpDataset[filteredRow]);
+      if (filteredRow) {
+        extractedRows.push(tmpDataset[filteredRow]);
+      }
     }
     filteredRows.reverse();
     for (const row of filteredRows) {
-      if (row < insertBeforeFilteredIdx) {
-        left.splice(row, 1);
-      } else {
-        right.splice(row - insertBeforeFilteredIdx, 1);
+      if (row !== undefined && insertBeforeFilteredIdx !== undefined) {
+        if (row < insertBeforeFilteredIdx) {
+          left.splice(row, 1);
+        } else {
+          right.splice(row - insertBeforeFilteredIdx, 1);
+        }
       }
     }
 

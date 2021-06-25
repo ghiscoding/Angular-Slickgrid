@@ -145,8 +145,8 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       // to avoid passing the same options over and over in each grids of your App
       enableAutoResize: true,
       autoResize: {
-        containerId: 'grid-container',
-        sidePadding: 10
+        container: '#grid-container',
+        rightPadding: 10
       }
     })
   ],

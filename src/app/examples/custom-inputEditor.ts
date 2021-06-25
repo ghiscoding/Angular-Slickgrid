@@ -1,4 +1,4 @@
-import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../modules/angular-slickgrid';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidationResult, KeyCode } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -110,7 +110,7 @@ export class CustomInputEditor implements Editor {
     }
   }
 
-  validate(inputValue?: any): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidationResult {
     if (this.validator) {
       const value = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
       return this.validator(value, this.args);

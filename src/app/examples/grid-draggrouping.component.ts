@@ -3,9 +3,7 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
-  DelimiterType,
   FieldType,
-  FileType,
   Filters,
   Formatters,
   GridOption,
@@ -13,7 +11,7 @@ import {
   GroupingGetterFunction,
   GroupTotalFormatters,
   SortDirectionNumber,
-  Sorters,
+  SortComparers,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -95,7 +93,7 @@ export class GridDraggableGroupingComponent implements OnInit {
           getter: 'duration',
           formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
           comparer: (a, b) => {
-            return this.durationOrderByCount ? (a.count - b.count) : Sorters.numeric(a.value, b.value, SortDirectionNumber.asc);
+            return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
           aggregators: [
             new Aggregators.Sum('cost')
@@ -206,8 +204,8 @@ export class GridDraggableGroupingComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableDraggableGrouping: true,
       createPreHeaderPanel: true,
@@ -289,18 +287,18 @@ export class GridDraggableGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService!.exportToExcel({
-      filename: 'Export',
-      format: FileType.xlsx
-    });
+    // this.angularGrid.excelExportService!.exportToExcel({
+    //   filename: 'Export',
+    //   format: FileType.xlsx
+    // });
   }
 
   exportToCsv(type = 'csv') {
-    this.angularGrid.exportService.exportToFile({
-      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-      filename: 'myExport',
-      format: (type === 'csv') ? FileType.csv : FileType.txt
-    });
+    // this.angularGrid.exportService.exportToFile({
+    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+    //   filename: 'myExport',
+    //   format: (type === 'csv') ? FileType.csv : FileType.txt
+    // });
   }
 
   groupByDuration() {

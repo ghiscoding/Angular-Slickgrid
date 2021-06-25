@@ -20,7 +20,7 @@ const gridOptionMock = {
     containerId,
     maxHeight: 800,
     maxWidth: 1200,
-    sidePadding: 10,
+    rightPadding: 10,
   },
   enableAutoResize: true
 } as GridOption;

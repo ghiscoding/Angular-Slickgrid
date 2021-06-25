@@ -1,3 +1,4 @@
+import { GridOdataService, OdataServiceApi, OdataOption } from '@slickgrid-universal/odata';
 import { Component, OnInit, } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -5,12 +6,9 @@ import {
   Column,
   FieldType,
   Filters,
-  GridOdataService,
   GridOption,
   GridStateChange,
   Metrics,
-  OdataOption,
-  OdataServiceApi,
   OperatorType,
   Pagination,
 } from './../modules/angular-slickgrid';
@@ -80,8 +78,8 @@ export class GridOdataComponent implements OnInit {
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       checkboxSelector: {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
@@ -109,6 +107,7 @@ export class GridOdataComponent implements OnInit {
         ],
         pagination: { pageNumber: 2, pageSize: defaultPageSize }
       },
+      // @ts-ignore
       backendServiceApi: {
         service: new GridOdataService(),
         options: {
@@ -157,11 +156,11 @@ export class GridOdataComponent implements OnInit {
   }
 
   goToFirstPage() {
-    this.angularGrid.paginationService.goToFirstPage();
+    this.angularGrid.paginationService!.goToFirstPage();
   }
 
   goToLastPage() {
-    this.angularGrid.paginationService.goToLastPage();
+    this.angularGrid.paginationService!.goToLastPage();
   }
 
   setFiltersDynamically() {
@@ -309,6 +308,7 @@ export class GridOdataComponent implements OnInit {
 
   changeCountEnableFlag() {
     this.isCountEnabled = !this.isCountEnabled;
+    // @ts-ignore
     const odataService = this.gridOptions.backendServiceApi!.service as GridOdataService;
     odataService.updateOptions({ enableCount: this.isCountEnabled } as OdataOption);
     odataService.clearFilters();
@@ -318,6 +318,7 @@ export class GridOdataComponent implements OnInit {
 
   setOdataVersion(version: number) {
     this.odataVersion = version;
+    // @ts-ignore
     const odataService = this.gridOptions.backendServiceApi!.service as GridOdataService;
     odataService.updateOptions({ version: this.odataVersion } as OdataOption);
     odataService.clearFilters();

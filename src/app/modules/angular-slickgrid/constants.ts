@@ -1,14 +1,18 @@
-import { Locale } from './models/locale.interface';
+import { Locale } from '@slickgrid-universal/common';
 
 export class Constants {
   // English Locale texts when using only 1 Locale instead of I18N
   static readonly locales: Locale = {
     TEXT_ALL_SELECTED: 'All Selected',
+    TEXT_ALL_X_RECORDS_SELECTED: 'All {{x}} records selected',
+    TEXT_APPLY_MASS_UPDATE: 'Apply Mass Update',
+    TEXT_APPLY_TO_SELECTION: 'Update Selection',
     TEXT_CANCEL: 'Cancel',
     TEXT_CLEAR_ALL_FILTERS: 'Clear all Filters',
     TEXT_CLEAR_ALL_GROUPING: 'Clear all Grouping',
     TEXT_CLEAR_ALL_SORTING: 'Clear all Sorting',
     TEXT_CLEAR_PINNING: 'Unfreeze Columns/Rows',
+    TEXT_CLONE: 'Clone',
     TEXT_COLLAPSE_ALL_GROUPS: 'Collapse all Groups',
     TEXT_CONTAINS: 'Contains',
     TEXT_COLUMNS: 'Columns',
@@ -18,10 +22,18 @@ export class Constants {
     TEXT_EQUALS: 'Equals',
     TEXT_EQUAL_TO: 'Equal to',
     TEXT_ENDS_WITH: 'Ends With',
+    TEXT_ERROR_EDITABLE_GRID_REQUIRED: 'Your grid must be editable in order to use the Composite Editor Modal.',
+    TEXT_ERROR_ENABLE_CELL_NAVIGATION_REQUIRED: 'Composite Editor requires the flag "enableCellNavigation" to be set to True in your Grid Options.',
+    TEXT_ERROR_NO_CHANGES_DETECTED: 'Sorry we could not detect any changes.',
+    TEXT_ERROR_NO_EDITOR_FOUND: 'We could not find any Editor in your Column Definition.',
+    TEXT_ERROR_NO_RECORD_FOUND: 'No records selected for edit or clone operation.',
+    TEXT_ERROR_ROW_NOT_EDITABLE: 'Current row is not editable.',
+    TEXT_ERROR_ROW_SELECTION_REQUIRED: 'You must select some rows before trying to apply new value(s).',
     TEXT_EXPAND_ALL_GROUPS: 'Expand all Groups',
     TEXT_EXPORT_TO_CSV: 'Export in CSV format',
     TEXT_EXPORT_TO_TEXT_FORMAT: 'Export in Text format (Tab delimited)',
     TEXT_EXPORT_TO_EXCEL: 'Export to Excel',
+    TEXT_EXPORT_TO_TAB_DELIMITED: 'Export in Text format (Tab delimited)',
     TEXT_FORCE_FIT_COLUMNS: 'Force fit columns',
     TEXT_FREEZE_COLUMNS: 'Freeze Columns',
     TEXT_GREATER_THAN: 'Greater than',
@@ -51,6 +63,7 @@ export class Constants {
     TEXT_TOGGLE_FILTER_ROW: 'Toggle Filter Row',
     TEXT_TOGGLE_PRE_HEADER_ROW: 'Toggle Pre-Header Row',
     TEXT_X_OF_Y_SELECTED: '# of % selected',
+    TEXT_X_OF_Y_MASS_SELECTED: '{{x}} of {{y}} selected',
   };
 
   static readonly treeDataProperties = {
@@ -81,4 +94,30 @@ export class Constants {
   static readonly VALIDATION_EDITOR_TEXT_MAX_LENGTH_INCLUSIVE = 'Please make sure your text is less than or equal to {{maxLength}} characters';
   static readonly VALIDATION_EDITOR_TEXT_MIN_LENGTH = 'Please make sure your text is more than {{minLength}} character(s)';
   static readonly VALIDATION_EDITOR_TEXT_MIN_LENGTH_INCLUSIVE = 'Please make sure your text is at least {{minLength}} character(s)';
+
+  // some of the Events from the Event Aggregator (and internal PubSubService) should be exposed to the outside
+  // we simply call a dispatch events to re-expose from internal to the outside
+  static readonly exposedEvents = [
+    'onBeforeExportToExcel',
+    'onAfterExportToExcel',
+    'onBeforeExportToTextFile',
+    'onAfterExportToTextFile',
+    'onGridStateChanged',
+    'onHeaderMenuColumnResizeByContent',
+    'onPaginationChanged',
+    'onItemAdded',
+    'onItemDeleted',
+    'onItemUpdated',
+    'onItemUpserted',
+    'onGridBeforeResize',
+    'onGridAfterResize',
+    'onBeforeFilterChange',
+    'onFilterChanged',
+    'onBeforeFilterClear',
+    'onFilterCleared',
+    'onBeforeSortChange',
+    'onSortChanged',
+    'onBeforeToggleTreeCollapse',
+    'onToggleTreeCollapsed',
+  ];
 }

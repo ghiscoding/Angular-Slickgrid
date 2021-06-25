@@ -3,16 +3,14 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
-  DelimiterType,
   FieldType,
-  FileType,
   Filters,
   Formatters,
   GridOption,
   Grouping,
   GroupTotalFormatters,
   SortDirectionNumber,
-  Sorters,
+  SortComparers,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -130,8 +128,8 @@ export class GridGroupingComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableExcelExport: true,
       enableFiltering: true,
@@ -196,18 +194,18 @@ export class GridGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService!.exportToExcel({
-      filename: 'Export',
-      format: FileType.xlsx
-    });
+    // this.angularGrid.excelExportService!.exportToExcel({
+    //   filename: 'Export',
+    //   format: FileType.xlsx
+    // });
   }
 
   exportToCsv(type = 'csv') {
-    this.angularGrid.exportService.exportToFile({
-      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-      filename: 'myExport',
-      format: (type === 'csv') ? FileType.csv : FileType.txt
-    });
+    // this.angularGrid.exportService.exportToFile({
+    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+    //   filename: 'myExport',
+    //   format: (type === 'csv') ? FileType.csv : FileType.txt
+    // });
   }
 
   groupByDuration() {
@@ -218,7 +216,7 @@ export class GridGroupingComponent implements OnInit {
         new Aggregators.Avg('percentComplete'),
         new Aggregators.Sum('cost')
       ],
-      comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+      comparer: (a, b) => SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc),
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
     } as Grouping);

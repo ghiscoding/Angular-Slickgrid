@@ -1,6 +1,6 @@
-import { Formatters } from '@slickgrid-universal/common';
+import { Column, Formatters } from '@slickgrid-universal/common';
 
-import { Column, Formatter } from '../models/index';
+import { Formatter } from '../models/index';
 
 /**
  * Automatically add a Custom Formatter on all column definitions that have an Editor.

@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Formatter } from '@slickgrid-universal/common';
 
 import {
   AngularGridInstance,
@@ -26,23 +25,6 @@ declare const Slick: any;
 declare const $: any;
 
 const NB_ITEMS = 100;
-
-// @ts-ignore
-export const bsDropdownFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
-  const columnParams = columnDef && columnDef.params || {};
-  const label = columnParams.label || columnParams.formatterLabel;
-
-  if (!label) {
-    throw new Error(`You must provide the "label" or "formatterLabel" via the generic "params" options (e.g.: { formatter: Formatters.bsDropdown, params: { formatterLabel: 'Label' }}`);
-  }
-
-  return `<div id="myDrop-r${row}-c${cell}" class="dropdown pointer">
-    <a class="dropdown-toggle">
-      ${label}
-      <span class="caret"></span>
-    </a>
-  </div>`;
-};
 
 @Component({
   templateUrl: './grid-angular.component.html',
@@ -245,7 +227,7 @@ export class GridAngularComponent implements OnInit {
         id: 'action',
         name: 'Action',
         field: 'id',
-        formatter: bsDropdownFormatter,
+        formatter: Formatters.bsDropdown,
         params: { label: 'Action' },
         onCellClick: (e: Event, args: OnEventArgs) => {
           this.bsDropdown.render({
@@ -264,8 +246,8 @@ export class GridAngularComponent implements OnInit {
       autoEdit: this.isAutoEdit,
       autoCommitEdit: false,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       headerRowHeight: 45,
       rowHeight: 45, // increase row height so that the ng-select fits in the cell

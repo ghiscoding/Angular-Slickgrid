@@ -1105,7 +1105,7 @@
 
   $.fn.multipleSelect.defaults = {
     domElmFilterHeight: 32,
-    domElmSelectSidePadding: 26,
+    domElmSelectrightPadding: 26,
     domElmOkButtonHeight: 26,
     domElmSelectAllHeight: 39,
     adjustHeightPadding: 10,

@@ -1,5 +1,5 @@
-import { Column, DelimiterType, FileType, GridOption, OperatorType, TreeDataOption } from './models/index';
-import { Filters } from './filters/filters.index';
+import { Column, DelimiterType, EventNamingStyle, FileType, Filters, GridAutosizeColsMode, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
+import { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */
 export const GlobalGridOptions: Partial<GridOption> = {
@@ -8,11 +8,12 @@ export const GlobalGridOptions: Partial<GridOption> = {
   asyncEditorLoading: false,
   autoFitColumnsOnFirstLoad: true,
   autoResize: {
+    applyResizeToContainer: true,
     calculateAvailableSizeBy: 'window',
     bottomPadding: 20,
     minHeight: 180,
     minWidth: 300,
-    sidePadding: 0
+    rightPadding: 0
   },
   cellHighlightCssClass: 'slick-cell-modified',
   checkboxSelector: {
