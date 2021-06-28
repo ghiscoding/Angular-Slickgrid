@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { EventNamingStyle, EventSubscription, PubSubService, titleCase, toKebabCase } from '@slickgrid-universal/common';
 
 interface PubSubEvent {

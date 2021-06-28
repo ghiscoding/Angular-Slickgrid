@@ -31,7 +31,6 @@ export class GridRowDetailComponent implements OnInit {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
-  // @ts-ignore
   extensions!: ExtensionList<any, any>;
   detailViewRowCount = 9;
   message = '';
@@ -47,7 +46,7 @@ export class GridRowDetailComponent implements OnInit {
     // you can get the SlickGrid RowDetail plugin (addon) instance via 2 ways
 
     // option 1
-    return this.extensions.rowDetailView.instance || {};
+    return this.angularGrid.extensions.rowDetailView.instance || {};
 
     // OR options 2
     // return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowDetailView) || {};

@@ -69,10 +69,10 @@ export class Logger {
       additional,
       timestamp: this._timestamp()
     }, { headers })
-      .subscribe(
-        res => null,
-        error => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER')
-      );
+      .subscribe({
+        next: res => null,
+        error: error => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER')
+      });
   }
 
   private _logIE(level: LoggerLevel, message: string, additional: any[]) {

@@ -23,8 +23,8 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
   template: `<angular-slickgrid gridId='common-grid'
                       #angularSlickGrid
                       [gridHeight]="200"
-                      (onDataviewCreated)="dataviewReady($event)"
-                      (onGridCreated)="gridReady($event)"
+                      (onDataviewCreated)="dataviewReady($event.detai)"
+                      (onGridCreated)="gridReady($event.detail)"
                       [columnDefinitions]="columnDefinitions"
                       [gridOptions]="gridOptions"
                       [dataset]="dataset">

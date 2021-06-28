@@ -79,10 +79,10 @@
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
                        [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event)"
-                       (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
-                       (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
-                       (sgOnValidationError)="onValidationError($event.detail.eventData, $event.detail.args)">
+                       (onAngularGridCreated)="angularGridReady($event.detail)"
+                       (onCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
+                       (onClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
+                       (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)">
     </angular-slickgrid>
   </div>
 </div>

@@ -71,12 +71,12 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     locationInitialized.then(() => {
       const langToSet = 'en';
       translate.setDefaultLang('en');
-      translate.use(langToSet).subscribe(() => {
-        // console.info(`Successfully initialized '${langToSet}' language.'`);
-      }, err => {
-        console.error(`Problem with '${langToSet}' language initialization.'`);
-      }, () => {
-        resolve(null);
+      translate.use(langToSet).subscribe({
+        next: () => {
+          // console.info(`Successfully initialized '${langToSet}' language.'`);
+        },
+        error: () => console.error(`Problem with '${langToSet}' language initialization.'`),
+        complete: () => resolve(null)
       });
     });
   });

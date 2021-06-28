@@ -7,7 +7,6 @@ import {
   castObservableToPromise,
   Column,
   ExtensionUtility,
-  FilterService,
   RowDetailViewExtension as UniversalRowDetailViewExtension,
   RxJsFacade,
   SharedService,
@@ -23,6 +22,7 @@ const DOMPurify = DOMPurify_; // patch to fix rollup to work
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { unsubscribeAllObservables } from '../services/utilities';
+import { EventPubSubService } from '../services';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
@@ -51,8 +51,8 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
   constructor(
     private readonly angularUtilService: AngularUtilService,
     private readonly appRef: ApplicationRef,
+    private readonly eventPubSubService: EventPubSubService,
     private readonly extensionUtility: ExtensionUtility,
-    private readonly filterService: FilterService,
     private readonly sharedService: SharedService,
     private rxjs?: RxJsFacade,
   ) {
@@ -243,7 +243,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
 
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
-          // this.filterService.onFilterChanged.subscribe(this.redrawAllViewComponents.bind(this))
+          this.eventPubSubService.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this))
         );
       }
       return this._addon;

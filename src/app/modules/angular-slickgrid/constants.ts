@@ -94,30 +94,4 @@ export class Constants {
   static readonly VALIDATION_EDITOR_TEXT_MAX_LENGTH_INCLUSIVE = 'Please make sure your text is less than or equal to {{maxLength}} characters';
   static readonly VALIDATION_EDITOR_TEXT_MIN_LENGTH = 'Please make sure your text is more than {{minLength}} character(s)';
   static readonly VALIDATION_EDITOR_TEXT_MIN_LENGTH_INCLUSIVE = 'Please make sure your text is at least {{minLength}} character(s)';
-
-  // some of the Events from the Event Aggregator (and internal PubSubService) should be exposed to the outside
-  // we simply call a dispatch events to re-expose from internal to the outside
-  static readonly exposedEvents = [
-    'onBeforeExportToExcel',
-    'onAfterExportToExcel',
-    'onBeforeExportToTextFile',
-    'onAfterExportToTextFile',
-    'onGridStateChanged',
-    'onHeaderMenuColumnResizeByContent',
-    'onPaginationChanged',
-    'onItemAdded',
-    'onItemDeleted',
-    'onItemUpdated',
-    'onItemUpserted',
-    'onGridBeforeResize',
-    'onGridAfterResize',
-    'onBeforeFilterChange',
-    'onFilterChanged',
-    'onBeforeFilterClear',
-    'onFilterCleared',
-    'onBeforeSortChange',
-    'onSortChanged',
-    'onBeforeToggleTreeCollapse',
-    'onToggleTreeCollapsed',
-  ];
 }

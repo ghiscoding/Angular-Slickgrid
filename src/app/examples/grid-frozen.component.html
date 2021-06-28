@@ -57,7 +57,7 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (sgOnValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

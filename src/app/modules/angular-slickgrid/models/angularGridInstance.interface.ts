@@ -1,5 +1,6 @@
 import {
   BackendService,
+  ExtensionList,
   ExtensionService,
   FilterService,
   GridEventService,
@@ -8,11 +9,11 @@ import {
   GroupingAndColspanService,
   PaginationService,
   SlickDataView,
+  SlickGrid,
   SortService,
   TreeDataService
 } from '@slickgrid-universal/common';
 
-import { SlickGrid } from '../models/index';
 import { ResizerService } from '../services/index';
 
 export interface AngularGridInstance {
@@ -21,6 +22,9 @@ export interface AngularGridInstance {
 
   /** Slick Grid object */
   slickGrid: SlickGrid;
+
+  /** SlickGrid extensions (external controls/plugins) */
+  extensions: ExtensionList<any, any>;
 
   // --
   // Methods

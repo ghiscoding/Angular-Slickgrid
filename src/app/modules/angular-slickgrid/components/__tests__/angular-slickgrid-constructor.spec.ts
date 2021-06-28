@@ -609,7 +609,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions = { dataView: { syncGridSelection: true }, enableRowSelection: true } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, true);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, true);
       });
 
       it('should call the DataView "syncGridSelection" method with 2nd argument as False when the "dataView.syncGridSelection" grid option is disabled', () => {
@@ -619,7 +619,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions = { dataView: { syncGridSelection: false }, enableRowSelection: true } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, false);
       });
 
       it('should call the DataView "syncGridSelection" method with 3 arguments when the "dataView" grid option is provided as an object', () => {
@@ -632,7 +632,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, true, false);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, true, false);
       });
 
       it('should call the DataView "syncGridSelection" method when using BackendServiceApi and "syncGridSelectionWithBackendService" when the "dataView.syncGridSelection" grid option is enabled as well', () => {
@@ -649,7 +649,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, true);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, true);
       });
 
       it('should call the DataView "syncGridSelection" method with false as 2nd argument when using BackendServiceApi and "syncGridSelectionWithBackendService" BUT the "dataView.syncGridSelection" grid option is disabled', () => {
@@ -666,7 +666,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, false);
       });
 
       it('should call the DataView "syncGridSelection" method with false as 2nd argument when using BackendServiceApi and "syncGridSelectionWithBackendService" disabled and the "dataView.syncGridSelection" grid option is enabled', () => {
@@ -683,7 +683,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         } as GridOption;
         component.ngAfterViewInit();
 
-        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
+        expect(syncSpy).toHaveBeenCalledWith(component.slickGrid, false);
       });
 
       it('should destroy customElement and its DOM element when requested', () => {

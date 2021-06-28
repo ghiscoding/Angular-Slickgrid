@@ -1,6 +1,4 @@
-import { Column, Formatters } from '@slickgrid-universal/common';
-
-import { Formatter } from '../models/index';
+import { Column, Formatter, Formatters } from '@slickgrid-universal/common';
 
 /**
  * Automatically add a Custom Formatter on all column definitions that have an Editor.
@@ -12,15 +10,16 @@ export function autoAddEditorFormatterToColumnsWithEditor(columnDefinitions: Col
   if (Array.isArray(columnDefinitions)) {
     for (const columnDef of columnDefinitions) {
       if (columnDef.editor) {
-        if (columnDef.formatter && columnDef.formatter !== Formatters.multiple) {
+        if (columnDef.formatter && columnDef.formatter !== Formatters.multiple && columnDef.formatter !== customEditableFormatter) {
           const prevFormatter = columnDef.formatter;
-          // @ts-ignore
           columnDef.formatter = Formatters.multiple;
           columnDef.params = { ...columnDef.params, formatters: [prevFormatter, customEditableFormatter] };
         } else if (columnDef.formatter && columnDef.formatter === Formatters.multiple && columnDef.params) {
-          columnDef.params.formatters = [...columnDef.params.formatters, customEditableFormatter];
+          // before adding the formatter, make sure it's not yet in the params.formatters list, we wouldn't want to add it multiple times
+          if (columnDef.params.formatters.findIndex((formatter: Formatter) => formatter === customEditableFormatter) === -1) {
+            columnDef.params.formatters = [...columnDef.params.formatters, customEditableFormatter];
+          }
         } else {
-          // @ts-ignore
           columnDef.formatter = customEditableFormatter;
         }
       }

@@ -217,7 +217,6 @@ export class GridMenuComponent implements OnInit, OnDestroy {
 
   toggleGridMenu(e: Event) {
     if (this.angularGrid && this.angularGrid.extensionService) {
-      // @ts-ignore
       const gridMenuInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.gridMenu);
       gridMenuInstance.showGridMenu(e);
     }

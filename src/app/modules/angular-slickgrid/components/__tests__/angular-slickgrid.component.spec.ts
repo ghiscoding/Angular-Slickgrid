@@ -273,28 +273,28 @@ describe('App Component', () => {
     expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize"');
   });
 
-  it('should trigger a SlickGrid (sgOnRendered) event & DataView (sgOnRowsChanged) event when dataset changed', async () => {
+  it('should trigger a SlickGrid (onRendered) event & DataView (onRowsChanged) event when dataset changed', async () => {
     const mockDataset = [{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }];
     const onBeforeGridCreateSpy = jest.spyOn(component.onBeforeGridCreate, 'emit');
     const onDataviewCreatedSpy = jest.spyOn(component.onDataviewCreated, 'emit');
     const onGridCreatedSpy = jest.spyOn(component.onGridCreated, 'emit');
 
     fixture.detectChanges();
-    const gridSpy = jest.spyOn(component.grid, 'render');
+    const gridSpy = jest.spyOn(component.slickGrid, 'render');
     const dispatchSpy = jest.spyOn(component.elementRef.nativeElement, 'dispatchEvent');
     const dispatchCustomSpy = jest.spyOn(component, 'dispatchCustomEvent');
     component.dataset = mockDataset;
 
-    expect(component.grid).toBeTruthy();
+    expect(component.slickGrid).toBeTruthy();
     expect(onBeforeGridCreateSpy).toHaveBeenCalledWith(true);
     expect(onDataviewCreatedSpy).toHaveBeenCalledWith(expect.any(Object));
     expect(onGridCreatedSpy).toHaveBeenCalledWith(expect.any(Object));
     setTimeout(() => {
       expect(gridSpy).toHaveBeenCalled();
-      expect(dispatchSpy).toHaveBeenCalledWith(new CustomEvent('sgOnRendered', expect.any(Object)));
-      expect(dispatchSpy).toHaveBeenCalledWith(new CustomEvent('sgOnRowsChanged', expect.any(Object)));
-      expect(dispatchCustomSpy).toHaveBeenCalledWith('sgOnRendered', expect.any(Object));
-      expect(dispatchCustomSpy).toHaveBeenCalledWith('sgOnRowsChanged', expect.any(Object));
+      expect(dispatchSpy).toHaveBeenCalledWith(new CustomEvent('onRendered', expect.any(Object)));
+      expect(dispatchSpy).toHaveBeenCalledWith(new CustomEvent('onRowsChanged', expect.any(Object)));
+      expect(dispatchCustomSpy).toHaveBeenCalledWith('onRendered', expect.any(Object));
+      expect(dispatchCustomSpy).toHaveBeenCalledWith('onRowsChanged', expect.any(Object));
     }, 10);
   });
 
@@ -304,7 +304,7 @@ describe('App Component', () => {
     const newVisibleColumns = [{ id: 'lastName', field: 'lastName' }, { id: 'fristName', field: 'fristName' }];
 
     fixture.detectChanges();
-    component.grid.onColumnsReordered.notify({ impactedColumns: newVisibleColumns });
+    component.slickGrid.onColumnsReordered.notify({ impactedColumns: newVisibleColumns });
 
     expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
     expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
@@ -352,8 +352,8 @@ describe('App Component', () => {
         } as GridOption;
         fixture.detectChanges();
         component.columnDefinitions = mockColDefs;
-        component.grid.setSelectionModel(new Slick.CellSelectionModel());
-        component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+        component.slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+        component.slickGrid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
         fixture.detectChanges();
 
         const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
@@ -383,8 +383,8 @@ describe('App Component', () => {
         } as GridOption;
         fixture.detectChanges();
         component.columnDefinitions = mockColDefs;
-        component.grid.setSelectionModel(new Slick.CellSelectionModel());
-        component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+        component.slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+        component.slickGrid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
         fixture.detectChanges();
 
         const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;
@@ -401,7 +401,7 @@ describe('App Component', () => {
         expect(component.gridOptions.customFooterOptions!.leftFooterText).toBe('1 éléments sélectionnés');
         expect(leftFooterElm.innerHTML).toContain('1 éléments sélectionnés');
 
-        component.grid.onSelectedRowsChanged.notify({ rows: [1, 2, 3, 4, 5], previousSelectedRows: [] });
+        component.slickGrid.onSelectedRowsChanged.notify({ rows: [1, 2, 3, 4, 5], previousSelectedRows: [] });
         fixture.detectChanges();
         leftFooterElm = document.querySelector('div.slick-custom-footer > div.left-footer') as HTMLSpanElement;
 
@@ -423,8 +423,8 @@ describe('App Component', () => {
         } as GridOption;
         fixture.detectChanges();
         component.columnDefinitions = mockColDefs;
-        component.grid.setSelectionModel(new Slick.CellSelectionModel());
-        component.grid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
+        component.slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+        component.slickGrid.onSelectedRowsChanged.notify({ rows: [1], previousSelectedRows: [] });
         fixture.detectChanges();
 
         const gridContainerElm = document.querySelector('.slickgrid-container') as HTMLDivElement;

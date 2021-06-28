@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { Column, FieldType, parseFormatterWhenExist, ResizeByContentOption, sanitizeHtmlToText, SlickEventHandler } from '@slickgrid-universal/common';
+import { Column, FieldType, GetSlickEventType, parseFormatterWhenExist, ResizeByContentOption, sanitizeHtmlToText, SlickEventHandler } from '@slickgrid-universal/common';
 import { Subject } from 'rxjs';
 
 import { GridOption, } from './../models/index';
+import { EventPubSubService } from './eventPubSub.service';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -52,14 +53,14 @@ export class ResizerService {
   }
 
   private get _gridUid(): string {
-    return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions && this._gridOptions.gridId;
+    return this._grid?.getUID?.() ?? this._gridOptions?.gridId ?? '';
   }
 
   get resizeByContentOptions(): ResizeByContentOption {
     return this._gridOptions?.resizeByContentOptions ?? {};
   }
 
-  constructor() {
+  constructor(private eventPubSubService: EventPubSubService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -81,9 +82,18 @@ export class ResizerService {
       this._fixedWidth = fixedDimensions.width;
     }
 
-    this._eventHandler?.subscribe?.(this._grid.onColumnsResizeDblClick, (_e: Event, args: { triggeredByColumn: string; }) => {
-      this.handleSingleColumnResizeByContent(args.triggeredByColumn);
-    });
+    // on double-click resize, should we resize the cell by its cell content?
+    // the same action can be called from a double-click and/or from column header menu
+    if (this._gridOptions?.enableColumnResizeOnDoubleClick) {
+      this.eventPubSubService.subscribe('onHeaderMenuColumnResizeByContent', (data => {
+        this.handleSingleColumnResizeByContent(data.columnId);
+      }));
+
+      const onColumnsResizeDblClickHandler = this._grid.onColumnsResizeDblClick;
+      (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onColumnsResizeDblClickHandler>>).subscribe(onColumnsResizeDblClickHandler, (_e, args) => {
+        this.handleSingleColumnResizeByContent(args.triggeredByColumn);
+      });
+    }
   }
 
   /** Bind an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space

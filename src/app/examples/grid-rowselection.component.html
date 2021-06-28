@@ -31,9 +31,9 @@
 
   <angular-slickgrid gridId="grid1" gridHeight="225" gridWidth="800" [columnDefinitions]="columnDefinitions1"
                      [gridOptions]="gridOptions1" [dataset]="dataset1"
-                     (onAngularGridCreated)="angularGridReady1($event)"
-                     (onGridStateChanged)="grid1StateChanged($event)"
-                     (sgOnSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
+                     (onAngularGridCreated)="angularGridReady1($event.detail)"
+                     (onGridStateChanged)="grid1StateChanged($event.detail)"
+                     (onSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 
   <hr>
@@ -65,7 +65,7 @@
                      [columnDefinitions]="columnDefinitions2"
                      [gridOptions]="gridOptions2"
                      [dataset]="dataset2"
-                     (onAngularGridCreated)="angularGridReady2($event)"
-                     (onGridStateChanged)="grid2StateChanged($event)">
+                     (onAngularGridCreated)="angularGridReady2($event.detail)"
+                     (onGridStateChanged)="grid2StateChanged($event.detail)">
   </angular-slickgrid>
 </div>
