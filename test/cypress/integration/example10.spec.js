@@ -757,6 +757,27 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'] }], type: 'filter' });
       });
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+      
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('3');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('5');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('179');
     });
   });
 });
