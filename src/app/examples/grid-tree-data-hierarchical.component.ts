@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Formatter } from '@slickgrid-universal/common';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import {
   AngularGridInstance,
@@ -90,6 +91,9 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       headerRowHeight: 35,
       rowHeight: 33,
       showCustomFooter: true,
+      enableExcelExport: true,
+      excelExportOptions: { exportWithFormatter: true, sanitizeDataExport: true },
+      registerExternalResources: [new ExcelExportService()],
 
       // use Material Design SVG icons
       contextMenu: {

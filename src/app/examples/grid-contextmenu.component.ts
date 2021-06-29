@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Formatter } from '@slickgrid-universal/common';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Subscription } from 'rxjs';
+
 import {
   AngularGridInstance,
   Column,
@@ -266,6 +268,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       enableFiltering: true,
       enableSorting: true,
       enableTranslate: true,
+      enableExcelExport: true,
       excelExportOptions: {
         exportWithFormatter: true,
         customColumnWidth: 15,
@@ -274,6 +277,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         columnHeaderStyle: { font: { bold: true, italic: true } }
       },
       i18n: this.translate,
+      registerExternalResources: [new ExcelExportService()],
 
       enableContextMenu: true,
       enableCellMenu: true,

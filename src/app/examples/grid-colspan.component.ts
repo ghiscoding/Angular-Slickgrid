@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+
 import { AngularGridInstance, Column, FieldType, GridOption, ItemMetadata } from './../modules/angular-slickgrid';
 
 @Component({
@@ -54,13 +56,17 @@ export class GridColspanComponent implements OnInit {
     this.gridOptions1 = {
       enableAutoResize: false,
       enableCellNavigation: true,
-      enableExport: true,
       enableSorting: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,
       explicitInitialization: true,
       colspanCallback: this.renderDifferentColspan,
+      enableExcelExport: true,
+      excelExportOptions: {
+        exportWithFormatter: false
+      },
+      registerExternalResources: [new ExcelExportService()],
     };
 
     this.dataset1 = this.getData(500);
@@ -85,7 +91,12 @@ export class GridColspanComponent implements OnInit {
       explicitInitialization: true,
       frozenColumn: 2,
       gridMenu: { hideClearFrozenColumnsCommand: false },
-      headerMenu: { hideFreezeColumnsCommand: false }
+      headerMenu: { hideFreezeColumnsCommand: false },
+      enableExcelExport: true,
+      excelExportOptions: {
+        exportWithFormatter: false
+      },
+      registerExternalResources: [new ExcelExportService()],
     };
 
     this.dataset2 = this.getData(500);

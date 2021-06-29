@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
+
 import {
   AngularGridInstance,
   Aggregators,
@@ -44,6 +47,8 @@ export class GridDraggableGroupingComponent implements OnInit {
   gridOptions!: GridOption;
   processing = false;
   selectedGroupingFields: Array<string | GroupingGetterFunction> = ['', '', ''];
+  excelExportService = new ExcelExportService();
+  textExportService = new TextExportService();
 
   constructor() {
     // define the grid options & columns and then create the grid itself
@@ -232,7 +237,12 @@ export class GridDraggableGroupingComponent implements OnInit {
         deleteIconCssClass: 'fa fa-times',
         onGroupChanged: (e, args) => this.onGroupChanged(args),
         onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
-      }
+      },
+      enableTextExport: true,
+      enableExcelExport: true,
+      excelExportOptions: { sanitizeDataExport: true },
+      textExportOptions: { sanitizeDataExport: true },
+      registerExternalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(500);

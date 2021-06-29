@@ -1,9 +1,14 @@
 import { Component, OnInit, } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
+
 import {
   AngularGridInstance,
   Aggregators,
   Column,
+  DelimiterType,
   FieldType,
+  FileType,
   Filters,
   Formatters,
   GridOption,
@@ -35,6 +40,8 @@ export class GridGroupingComponent implements OnInit {
   gridObj: any;
   dataviewObj: any;
   processing = false;
+  excelExportService = new ExcelExportService();
+  textExportService = new TextExportService();
 
   constructor() { }
 
@@ -137,15 +144,12 @@ export class GridGroupingComponent implements OnInit {
       // filterTypingDebounce: 250,
       enableGrouping: true,
       enableExport: true,
-      exportOptions: {
-        sanitizeDataExport: true
-      },
-      excelExportOptions: {
-        sanitizeDataExport: true
-      },
       gridMenu: {
         hideExportTextDelimitedCommand: false
-      }
+      },
+      excelExportOptions: { sanitizeDataExport: true },
+      textExportOptions: { sanitizeDataExport: true },
+      registerExternalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(500);
@@ -194,18 +198,18 @@ export class GridGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    // this.angularGrid.excelExportService!.exportToExcel({
-    //   filename: 'Export',
-    //   format: FileType.xlsx
-    // });
+    this.excelExportService.exportToExcel({
+      filename: 'Export',
+      format: FileType.xlsx
+    });
   }
 
-  exportToCsv(type = 'csv') {
-    // this.angularGrid.exportService.exportToFile({
-    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-    //   filename: 'myExport',
-    //   format: (type === 'csv') ? FileType.csv : FileType.txt
-    // });
+  exportToFile(type = 'csv') {
+    this.textExportService.exportToFile({
+      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+      filename: 'myExport',
+      format: (type === 'csv') ? FileType.csv : FileType.txt
+    });
   }
 
   groupByDuration() {

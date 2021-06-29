@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, SortComparers } from '../modules/angular-slickgrid';
 
@@ -322,6 +323,7 @@ export class GridResizeByContentComponent implements OnInit {
       excelExportOptions: {
         exportWithFormatter: false
       },
+      registerExternalResources: [new ExcelExportService()],
       enableFiltering: true,
       enableRowSelection: true,
       enableCheckboxSelector: true,

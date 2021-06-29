@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Formatter } from '@slickgrid-universal/common';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
 import { Subscription } from 'rxjs';
 
 import {
@@ -10,6 +11,7 @@ import {
   FieldType,
   FileType,
   Filters,
+  Formatter,
   Formatters,
   GridOption,
   GridStateChange,
@@ -65,6 +67,8 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
   gridObj: any;
+  excelExportService = new ExcelExportService();
+  textExportService = new TextExportService();
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -144,8 +148,6 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
       },
       enableAutoResize: true,
       enableExcelCopyBuffer: true,
-      enableExcelExport: true,
-      enableExport: true,
       enableFiltering: true,
       enableTranslate: true,
       i18n: this.translate,
@@ -203,7 +205,15 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
       gridMenu: {
         hideExportCsvCommand: false,           // false by default, so it's optional
         hideExportTextDelimitedCommand: false  // true by default, so if you want it, you will need to disable the flag
-      }
+      },
+      enableExcelExport: true,
+      enableTextExport: true,
+      textExportOptions: {
+        // set at the grid option level, meaning all column will evaluate the Formatter (when it has a Formatter defined)
+        exportWithFormatter: true,
+        sanitizeDataExport: true
+      },
+      registerExternalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(NB_ITEMS);
@@ -252,18 +262,18 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   }
 
   exportToExcel() {
-    // this.angularGrid.excelExportService!.exportToExcel({
-    //   filename: 'Export',
-    //   format: FileType.xlsx
-    // });
+    this.excelExportService.exportToExcel({
+      filename: 'Export',
+      format: FileType.xlsx
+    });
   }
 
   exportToFile(type = 'csv') {
-    // this.angularGrid.exportService.exportToFile({
-    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-    //   filename: 'myExport',
-    //   format: (type === 'csv') ? FileType.csv : FileType.txt
-    // });
+    this.textExportService.exportToFile({
+      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+      filename: 'myExport',
+      format: (type === 'csv') ? FileType.csv : FileType.txt
+    });
   }
 
   /** Dispatched event of a Grid State Changed event */
