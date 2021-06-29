@@ -23,8 +23,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **tests:** upgrade `jest-preset-angular` with Jest 27 ([c68a5e6](https://github.com/ghiscoding/angular-slickgrid/commit/c68a5e61d9bad28920f7648260165a88bc585046))
 * **tests:** upgrade jest-preset-angular with Jest 27 ([e2447ba](https://github.com/ghiscoding/angular-slickgrid/commit/e2447ba63cbf0ffee6fd9a7c08ee0a133e682557))
 * **tree:** add Tree Collapse Grid State/Preset ([87d5c2a](https://github.com/ghiscoding/angular-slickgrid/commit/87d5c2a41fab6fce8825fd5fc8b73269e876a24d))
-* add new Input Password Editor which uses common inputEditor ([66535fd](https://github.com/ghiscoding/angular-slickgrid/commit/66535fd9ea2602838c1d53c14134ea23749815c6))
-* convert jQuery to native element on few more filters ([331accf](https://github.com/ghiscoding/angular-slickgrid/commit/331accffe94aa3286e5e540e96e6f06f7a5e7349))
+* **editors:**  add new Input Password Editor which uses common inputEditor ([66535fd](https://github.com/ghiscoding/angular-slickgrid/commit/66535fd9ea2602838c1d53c14134ea23749815c6))
+* **filters:**  convert jQuery to native element on few more filters ([331accf](https://github.com/ghiscoding/angular-slickgrid/commit/331accffe94aa3286e5e540e96e6f06f7a5e7349))
 
 
 ### Bug Fixes
@@ -45,11 +45,11 @@ All notable changes to this project will be documented in this file. See [standa
 * **state:** Grid View/Columns dynamically work w/row move/detail ([d0bf315](https://github.com/ghiscoding/angular-slickgrid/commit/d0bf315aedcd45f4f67e47831eda2b4ee6c00e37))
 * **styling:** header title should show ellipsis if too long ([50c7078](https://github.com/ghiscoding/angular-slickgrid/commit/50c7078c660dcfb21ae8f46c8a140e1da9f92d2c))
 * **tree:** using `initiallyCollapsed` change internal toggled state ([91c48a2](https://github.com/ghiscoding/angular-slickgrid/commit/91c48a2c550db4c94d0a349777efdd071170ee3f))
-* initial grid state should also include toggled presets ([2c0cec8](https://github.com/ghiscoding/angular-slickgrid/commit/2c0cec87749bd2e1a8f52e404727454717b16d2b))
+* **tree:**  initial grid state should also include toggled presets ([2c0cec8](https://github.com/ghiscoding/angular-slickgrid/commit/2c0cec87749bd2e1a8f52e404727454717b16d2b))
 * **tree:** calling updateItems should not lose the Tree collapsing icon ([399f770](https://github.com/ghiscoding/angular-slickgrid/commit/399f77039a4d4387cc959df8c176626a3b288f23))
-* don't use nodejs type to avoid build issue ([177b68f](https://github.com/ghiscoding/angular-slickgrid/commit/177b68fd9d139959c47a86bc97126f28a485621e))
-* make sure new dataset is an array before getting length ([1d7fd03](https://github.com/ghiscoding/angular-slickgrid/commit/1d7fd03b22f6c64b23500a94ff92fe6948c74641))
-* toggle enablePagination flag only after setPagingOptions called ([67c4f9e](https://github.com/ghiscoding/angular-slickgrid/commit/67c4f9ec776046ed68a6b84e7abf7070350ab1f7))
+* **editors:**  don't use nodejs type to avoid build issue ([177b68f](https://github.com/ghiscoding/angular-slickgrid/commit/177b68fd9d139959c47a86bc97126f28a485621e))
+* **core:**  make sure new dataset is an array before getting length ([1d7fd03](https://github.com/ghiscoding/angular-slickgrid/commit/1d7fd03b22f6c64b23500a94ff92fe6948c74641))
+* **pagination:**  toggle enablePagination flag only after setPagingOptions called ([67c4f9e](https://github.com/ghiscoding/angular-slickgrid/commit/67c4f9ec776046ed68a6b84e7abf7070350ab1f7))
 
 ### [2.29.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.29.0...v2.29.1) (2021-05-21)
 
