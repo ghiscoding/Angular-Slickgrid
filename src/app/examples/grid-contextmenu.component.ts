@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Formatter } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Subscription } from 'rxjs';
 
@@ -11,6 +10,7 @@ import {
   ExtensionName,
   FieldType,
   Filters,
+  Formatter,
   Formatters,
   GridOption,
   unsubscribeAllObservables,

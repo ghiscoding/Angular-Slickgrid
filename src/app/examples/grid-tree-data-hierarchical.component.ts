@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Formatter } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import {
@@ -7,6 +6,7 @@ import {
   Column,
   FieldType,
   Filters,
+  Formatter,
   Formatters,
   GridOption,
   findItemInTreeStructure,

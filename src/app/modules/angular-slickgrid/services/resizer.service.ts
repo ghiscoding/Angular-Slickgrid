@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Column, FieldType, GetSlickEventType, parseFormatterWhenExist, ResizeByContentOption, sanitizeHtmlToText, SlickEventHandler } from '@slickgrid-universal/common';
+import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { Subject } from 'rxjs';
 
 import { GridOption, } from './../models/index';
-import { EventPubSubService } from './eventPubSub.service';
 
 // using external non-typed js libraries
 declare const $: any;

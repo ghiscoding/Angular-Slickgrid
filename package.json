@@ -104,6 +104,7 @@
   "dependencies": {
     "@slickgrid-universal/common": "^0.14.1",
     "@slickgrid-universal/empty-warning-component": "^0.14.1",
+    "@slickgrid-universal/event-pub-sub": "^0.14.1",
     "@slickgrid-universal/rxjs-observable": "^0.14.1",
     "@types/jquery": "^3.5.5",
     "dequal": "^2.0.2",

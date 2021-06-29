@@ -68,14 +68,15 @@ import {
   RowMoveManagerExtension,
 
   // utilities
+  autoAddEditorFormatterToColumnsWithEditor,
   emptyElement,
   GetSlickEventType,
   GridStateType,
 } from '@slickgrid-universal/common';
+import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
 
 import { Constants } from '../constants';
-import { EventPubSubService } from '../services/eventPubSub.service';
 import { GlobalGridOptions } from './../global-grid-options';
 import { TranslaterService } from '../services/translater.service';
 import { unsubscribeAllObservables } from './../services/utilities';
@@ -83,7 +84,6 @@ import {
   AngularGridInstance,
   GridOption,
 } from './../models/index';
-import { autoAddEditorFormatterToColumnsWithEditor } from './slick-vanilla-utilities';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
