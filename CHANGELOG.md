@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.30.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.29.1...v2.30.0) (2021-06-29)
+
+
+### Features
+
+* **deps:** migrate from TSLint to ESLint ([a60432b](https://github.com/ghiscoding/angular-slickgrid/commit/a60432bc3754cfe909d8fe38e23b1dbac7ab5414))
+* **editors:** convert jQuery to native element for few Editors ([f1a8c60](https://github.com/ghiscoding/angular-slickgrid/commit/f1a8c60a0ad3d1c188801cc215705c0e2771e4d9))
+* **editors:** convert jQuery to native element on longText Editor ([cd3bf5e](https://github.com/ghiscoding/angular-slickgrid/commit/cd3bf5eebf167bb54edec10f0ec8f202b69568a7))
+* **editors:** convert jQuery to native element on slider editor ([871f86b](https://github.com/ghiscoding/angular-slickgrid/commit/871f86bbd708c6a96aaadc0b6e911af8e9f36e58))
+* **editors:** replace jQuery with native element on date editor ([149c05f](https://github.com/ghiscoding/angular-slickgrid/commit/149c05f9772181f12ba1da2e2061aefcc2af061c))
+* **editors:** use class inheritance to extend main input editor ([9478692](https://github.com/ghiscoding/angular-slickgrid/commit/947869204f1e64d133494464edca483384b83eef))
+* **filters:** build multiple-select options from native dom elements ([92813b3](https://github.com/ghiscoding/angular-slickgrid/commit/92813b3ea62e1088580624c64a69714c5314a6d6))
+* **filters:** convert jQuery to native element on compound filter ([fa8c174](https://github.com/ghiscoding/angular-slickgrid/commit/fa8c1745248be7c8debbf6dfe78d12b1a60dff31))
+* **filters:** convert jQuery to native element on date filters ([67840e3](https://github.com/ghiscoding/angular-slickgrid/commit/67840e3946662893b071e6998891b6262be336bb))
+* **filters:** convert jQuery to native element on more filters ([fd064cf](https://github.com/ghiscoding/angular-slickgrid/commit/fd064cf411a44e01ac5e71c54fe5cd94ca0c5525))
+* **services:** convert jQuery to native elements ([fc2132f](https://github.com/ghiscoding/angular-slickgrid/commit/fc2132f487e05dacc1c6d1f51ea157dc2820ee41))
+* **tests:** upgrade `jest-preset-angular` with Jest 27 ([c68a5e6](https://github.com/ghiscoding/angular-slickgrid/commit/c68a5e61d9bad28920f7648260165a88bc585046))
+* **tests:** upgrade jest-preset-angular with Jest 27 ([e2447ba](https://github.com/ghiscoding/angular-slickgrid/commit/e2447ba63cbf0ffee6fd9a7c08ee0a133e682557))
+* **tree:** add Tree Collapse Grid State/Preset ([87d5c2a](https://github.com/ghiscoding/angular-slickgrid/commit/87d5c2a41fab6fce8825fd5fc8b73269e876a24d))
+* add new Input Password Editor which uses common inputEditor ([66535fd](https://github.com/ghiscoding/angular-slickgrid/commit/66535fd9ea2602838c1d53c14134ea23749815c6))
+* convert jQuery to native element on few more filters ([331accf](https://github.com/ghiscoding/angular-slickgrid/commit/331accffe94aa3286e5e540e96e6f06f7a5e7349))
+
+
+### Bug Fixes
+
+* **addon:** providing columnIndexPosition should always work ([4ff9935](https://github.com/ghiscoding/angular-slickgrid/commit/4ff9935cec586009d08a224c7c1b58270c767033))
+* **demo:** we should be able to move row(s) and keep selections ([50e235c](https://github.com/ghiscoding/angular-slickgrid/commit/50e235c38224cd3260e790874974991b6a62df69))
+* **editors:** longText Editor (textarea) was scrolling to page bottom ([e6d3a31](https://github.com/ghiscoding/angular-slickgrid/commit/e6d3a3169f9009ebbab3a82cbeb603aade8edc61))
+* **editors:** select dropdown value is undefined it shouldn't call save ([17555f2](https://github.com/ghiscoding/angular-slickgrid/commit/17555f24943cc880e35a8fe8bf29cc28417c253c))
+* **export:** expanded Row Detail shouldn't be exported ([b6299e4](https://github.com/ghiscoding/angular-slickgrid/commit/b6299e43a0741e95cdb61cb2fd2104ca044ae7c7))
+* **filters:** filtering with IN_CONTAINS should also work with spaces ([579e13f](https://github.com/ghiscoding/angular-slickgrid/commit/579e13fcddc455a84ff9c533a7e9260c588945bd))
+* **formatters:** shouldn't auto-add editor formatter multiple times ([6c0cf5f](https://github.com/ghiscoding/angular-slickgrid/commit/6c0cf5fa4fae380ed18e9abb4f86fcfb031a68ad))
+* **frozen:** in some occasion column pinning changes column positions ([0764013](https://github.com/ghiscoding/angular-slickgrid/commit/07640132079efca63f359107b7a86b28f348a75c))
+* **menu:** toggle filter bar could be out of sync w/horizontal scroll ([5ed2ea9](https://github.com/ghiscoding/angular-slickgrid/commit/5ed2ea90047958397b5d5e5fad3c9d61621e5ff0))
+* **pagination:** should be able to toggle Pagination ([4272b18](https://github.com/ghiscoding/angular-slickgrid/commit/4272b18301beb7d62a527f2393d65f32351bdf83))
+* **plugin:** row move shouldn't go further when onBefore returns false ([97c5f59](https://github.com/ghiscoding/angular-slickgrid/commit/97c5f59363675634732d03e8953bbaaa40eaddcd))
+* **state:** changeColumnsArrangement should work w/columnIndexPosition ([831773b](https://github.com/ghiscoding/angular-slickgrid/commit/831773b8070ea766dd13a37f1ff8a4b1c2018d08))
+* **state:** Grid View/Columns dynamically should work w/row selection ([65bf5dc](https://github.com/ghiscoding/angular-slickgrid/commit/65bf5dc9791797088715d704b2aa64feae0d5be4))
+* **state:** Grid View/Columns dynamically work w/row move/detail ([d0bf315](https://github.com/ghiscoding/angular-slickgrid/commit/d0bf315aedcd45f4f67e47831eda2b4ee6c00e37))
+* **styling:** header title should show ellipsis if too long ([50c7078](https://github.com/ghiscoding/angular-slickgrid/commit/50c7078c660dcfb21ae8f46c8a140e1da9f92d2c))
+* **tree:** using `initiallyCollapsed` change internal toggled state ([91c48a2](https://github.com/ghiscoding/angular-slickgrid/commit/91c48a2c550db4c94d0a349777efdd071170ee3f))
+* initial grid state should also include toggled presets ([2c0cec8](https://github.com/ghiscoding/angular-slickgrid/commit/2c0cec87749bd2e1a8f52e404727454717b16d2b))
+* **tree:** calling updateItems should not lose the Tree collapsing icon ([399f770](https://github.com/ghiscoding/angular-slickgrid/commit/399f77039a4d4387cc959df8c176626a3b288f23))
+* don't use nodejs type to avoid build issue ([177b68f](https://github.com/ghiscoding/angular-slickgrid/commit/177b68fd9d139959c47a86bc97126f28a485621e))
+* make sure new dataset is an array before getting length ([1d7fd03](https://github.com/ghiscoding/angular-slickgrid/commit/1d7fd03b22f6c64b23500a94ff92fe6948c74641))
+* toggle enablePagination flag only after setPagingOptions called ([67c4f9e](https://github.com/ghiscoding/angular-slickgrid/commit/67c4f9ec776046ed68a6b84e7abf7070350ab1f7))
+
 ### [2.29.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.29.0...v2.29.1) (2021-05-21)
 
 
