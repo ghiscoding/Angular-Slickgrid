@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.30.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.1...v2.30.2) (2021-06-30)
+
+
+### Bug Fixes
+
+* **editors:** date editor close button not showing ([61bc6ca](https://github.com/ghiscoding/angular-slickgrid/commit/61bc6ca1a9d71f3fe50811ee9234ddd4968e19ea))
+
 ### [2.30.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.0...v2.30.1) (2021-06-29)
 
 ## [2.30.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.29.1...v2.30.0) (2021-06-29)
