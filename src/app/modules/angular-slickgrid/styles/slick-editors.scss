@@ -43,6 +43,7 @@
   }
 
   .flatpickr.input-group {
+    height: $date-editor-height;
     .input-group-btn {
       .btn {
         background-color: #eeeeee;
@@ -52,7 +53,7 @@
         border-bottom-right-radius: $text-editor-border-radius;
         cursor: pointer;
         height: $date-editor-height;
-        &.icon-close:before {
+        &.icon-clear:before {
           font-family: $icon-font-family;
           font-size: $date-editor-clear-button-icon-size;
           content: $date-editor-clear-button-icon;
