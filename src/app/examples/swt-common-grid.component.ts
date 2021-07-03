@@ -22,7 +22,6 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
   selector: 'swt-common-grid',
   template: `<angular-slickgrid gridId='common-grid'
                       #angularSlickGrid
-                      [gridHeight]="200"
                       (onDataviewCreated)="dataviewReady($event.detai)"
                       (onGridCreated)="gridReady($event.detail)"
                       [columnDefinitions]="columnDefinitions"
@@ -97,7 +96,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
       container: '#common-grid-container',
       rightPadding: 10
     },
-    // locale: 'fr',
+    gridHeight: 200,
     enableColumnPicker: true,
     enableCellNavigation: true,
     enableRowSelection: true,

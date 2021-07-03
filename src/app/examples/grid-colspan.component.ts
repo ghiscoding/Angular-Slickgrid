@@ -54,6 +54,8 @@ export class GridColspanComponent implements OnInit {
     ];
 
     this.gridOptions1 = {
+      gridHeight: 275,
+      gridWidth: 800,
       enableAutoResize: false,
       enableCellNavigation: true,
       enableSorting: true,
@@ -84,6 +86,8 @@ export class GridColspanComponent implements OnInit {
     ];
 
     this.gridOptions2 = {
+      gridHeight: 275,
+      gridWidth: 800,
       enableCellNavigation: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,

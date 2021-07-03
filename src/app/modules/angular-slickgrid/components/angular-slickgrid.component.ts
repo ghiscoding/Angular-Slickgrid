@@ -9,7 +9,7 @@ import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.groupitemmetadataprovider';
 
 // ...then everything else...
-import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, OnInit, Optional, } from '@angular/core';
+import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 
@@ -45,6 +45,7 @@ import {
   GridStateService,
   GroupingAndColspanService,
   PaginationService,
+  ResizerService,
   RxJsFacade,
   SharedService,
   SlickgridConfig,
@@ -77,17 +78,13 @@ import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
 
 import { Constants } from '../constants';
+import { AngularGridInstance, GridOption, } from './../models/index';
 import { GlobalGridOptions } from './../global-grid-options';
 import { TranslaterService } from '../services/translater.service';
 import { unsubscribeAllObservables } from './../services/utilities';
-import {
-  AngularGridInstance,
-  GridOption,
-} from './../models/index';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
-import { ResizerService } from './../services/resizer.service';
 import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
 import { ContainerService } from '../services/container.service';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
@@ -108,15 +105,13 @@ const slickgridEventPrefix = 'sg';
     TranslaterService,
   ]
 })
-export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
+export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   private _dataset?: any[] | null;
   private _columnDefinitions!: Column[];
   private _currentDatasetLength = 0;
   private _eventHandler: SlickEventHandler = new Slick.EventHandler();
   private _eventPubSubService!: EventPubSubService;
   private _angularGridInstances: AngularGridInstance | undefined;
-  private _fixedHeight?: number | null;
-  private _fixedWidth?: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
   private _isDatasetInitialized = false;
@@ -131,8 +126,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private slickEmptyWarning?: SlickEmptyWarningComponent;
   dataView!: SlickDataView;
   slickGrid!: SlickGrid;
-  gridHeightString?: string;
-  gridWidthString?: string;
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
   backendServiceApi?: BackendServiceApi;
@@ -183,19 +176,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     } else {
       this._paginationOptions = newPaginationOptions;
     }
-    // if (this._paginationOptions) {
     this.gridOptions.pagination = this._paginationOptions;
-    // }
     this.paginationService.updateTotalItems(newPaginationOptions?.totalItems ?? 0, true);
-  }
-
-  @Input()
-  set gridHeight(height: number) {
-    this._fixedHeight = height;
-  }
-  @Input()
-  set gridWidth(width: number) {
-    this._fixedWidth = width;
   }
 
   @Input()
@@ -390,9 +372,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._isGridInitialized = true;
 
     // user must provide a "gridHeight" or use "autoResize: true" in the grid options
-    if (!this._fixedHeight && !this.gridOptions.enableAutoResize) {
+    if (!this.gridOptions.gridHeight && !this.gridOptions.enableAutoResize) {
       throw new Error(
-        `[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize" grid option to be enabled.
+        `[Angular-Slickgrid] requires a "gridHeight" or the "enableAutoResize" grid option to be enabled.
         Without that the grid will seem empty while in fact it just does not have any height define.`
       );
     }
@@ -401,13 +383,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
       const finalTotalCount = this.dataset.length;
       this.displayEmptyDataWarning(finalTotalCount < 1);
-    }
-  }
-
-  ngOnInit(): void {
-    if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
-      this.gridHeightString = `${this._fixedHeight}px`;
-      this.gridWidthString = `${this._fixedWidth}px`;
     }
   }
 
@@ -482,7 +457,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   emptyGridContainerElm() {
     const gridContainerId = this.gridOptions?.gridContainerId ?? 'grid1';
-    const gridContainerElm = document.querySelector(gridContainerId);
+    const gridContainerElm = document.querySelector(`#${gridContainerId}`);
     emptyElement(gridContainerElm);
   }
 
@@ -736,7 +711,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
           const gridEventHandler = (grid as any)[prop];
           (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof gridEventHandler>>).subscribe(gridEventHandler, (event, args) => {
-            return this._eventPubSubService.dispatchCustomEvent(prop, { eventData: event, args });
+            const gridEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, this.gridOptions?.defaultSlickgridEventPrefix || '');
+            return this._eventPubSubService.dispatchCustomEvent(gridEventName, { eventData: event, args });
           });
         }
       }
@@ -746,7 +722,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
           const dataViewEventHandler = (dataView as any)[prop];
           (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof dataViewEventHandler>>).subscribe(dataViewEventHandler, (event, args) => {
-            return this._eventPubSubService.dispatchCustomEvent(prop, { eventData: event, args });
+            const dataViewEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, this.gridOptions?.defaultSlickgridEventPrefix || '');
+            return this._eventPubSubService.dispatchCustomEvent(dataViewEventName, { eventData: event, args });
           });
         }
       }
@@ -882,10 +859,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // auto-resize grid on browser resize
-    if (this._fixedHeight || this._fixedWidth) {
-      this.resizerService.init(grid, { height: this._fixedHeight as number, width: this._fixedWidth as number });
+    if (options.gridHeight || options.gridWidth) {
+      this.resizerService.resizeGrid(0, { height: options.gridHeight, width: options.gridWidth });
     } else {
-      this.resizerService.init(grid);
+      this.resizerService.resizeGrid();
     }
     if (options.enableAutoResize) {
       this.resizerService.bindAutoResizeDataGrid();
@@ -1029,7 +1006,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // initialized the resizer service only after SlickGrid is initialized
     // if we don't we end up binding our resize to a grid element that doesn't yet exist in the DOM and the resizer service will fail silently (because it has a try/catch that unbinds the resize without throwing back)
-    this.resizerService.init(this.slickGrid);
+    const gridContainerElm = document.querySelector(`#${this.gridOptions.gridContainerId || ''}`);
+    if (gridContainerElm) {
+      this.resizerService.init(this.slickGrid, gridContainerElm as HTMLDivElement);
+    }
 
     // when using Tree Data View
     if (this.gridOptions.enableTreeData) {

@@ -109,6 +109,8 @@ export class GridRowSelectionComponent implements OnInit {
     ];
 
     this.gridOptions1 = {
+      gridHeight: 225,
+      gridWidth: 800,
       enableAutoResize: false,
       enableCellNavigation: true,
       enableRowSelection: true,
@@ -148,6 +150,8 @@ export class GridRowSelectionComponent implements OnInit {
     };
 
     this.gridOptions2 = {
+      gridHeight: 255,
+      gridWidth: 800,
       enableAutoResize: false,
       enableCellNavigation: true,
       enableFiltering: true,

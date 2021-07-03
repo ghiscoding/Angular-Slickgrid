@@ -124,6 +124,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
     this.gridOptions = {
+      gridHeight: 200,
+      gridWidth: 900,
       enableFiltering: true,
       enableCellNavigation: true,
       enableTranslate: true,
