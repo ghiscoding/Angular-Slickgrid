@@ -103,6 +103,7 @@
   },
   "dependencies": {
     "@slickgrid-universal/common": "^0.14.1",
+    "@slickgrid-universal/custom-footer-component": "^0.14.1",
     "@slickgrid-universal/empty-warning-component": "^0.14.1",
     "@slickgrid-universal/event-pub-sub": "^0.14.1",
     "@slickgrid-universal/rxjs-observable": "^0.14.1",

@@ -53,7 +53,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     width: 200,
   },
   customFooterOptions: {
-    dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
+    dateFormat: 'YYYY-MM-DD, hh:mm a',
     hideRowSelectionCount: false,
     hideTotalItemCount: false,
     hideLastUpdateTimestamp: true,
@@ -202,7 +202,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     totalItems: 0
   },
   // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
-  // @ts-ignore
   rowDetailView: {
     cssClass: 'detail-view-toggle',
     panelRows: 1,
@@ -210,7 +209,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     useRowClick: false,
     useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
-  },
+  } as RowDetailView,
   rowHeight: 35,
   topPanelHeight: 35,
   translationNamespaceSeparator: ':',

@@ -100,7 +100,6 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
       },
       {
         id: 'cost', name: 'Cost | Duration', field: 'cost',
-        // @ts-ignore
         formatter: this.costDurationFormatter.bind(this),
         minWidth: 150, width: 170,
         sortable: true,

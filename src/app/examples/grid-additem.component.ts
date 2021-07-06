@@ -45,7 +45,6 @@ export class GridAddItemComponent implements OnInit {
     this.angularGrid = angularGrid;
     this.dataView = angularGrid.dataView;
     this.grid = angularGrid.slickGrid;
-    // @ts-ignore
     this.gridService = angularGrid.gridService;
 
     // if you want to change background color of Duration over 50 right after page load,

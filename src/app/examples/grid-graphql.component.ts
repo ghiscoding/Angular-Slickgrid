@@ -146,7 +146,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         onCommand: (e, args) => {
           if (args.command === 'reset-grid') {
-            // @ts-ignore
             this.angularGrid.gridService.resetGrid(this.columnDefinitions);
             localStorage[LOCAL_STORAGE_KEY] = null;
           }

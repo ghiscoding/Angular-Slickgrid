@@ -67,8 +67,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
   }
 
   get gridOptions(): GridOption {
-    // @ts-ignore
-    return this.sharedService?.gridOptions ?? {};
+    return (this.sharedService?.gridOptions ?? {}) as GridOption;
   }
 
   get rowDetailViewOptions(): RowDetailView | undefined {
@@ -105,7 +104,6 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
    * Create the plugin before the Grid creation, else it will behave oddly.
    * Mostly because the column definitions might change after the grid creation
    */
-  // @ts-ignore
   create(columnDefinitions: Column[], gridOptions: GridOption): SlickRowDetailView | null {
     if (columnDefinitions && gridOptions) {
       if (!gridOptions.rowDetailView) {

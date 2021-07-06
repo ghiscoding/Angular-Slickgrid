@@ -129,7 +129,6 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         postProcess: () => { }
       } as any;
       this._paginationComponent.gridPaginationOptions = this.gridOptions;
-      // @ts-ignore
       this.angularSlickGrid.createBackendApiInternalPostProcessCallback(this.gridOptions);
     }
     this.logger!.info('method [pagination] - START');

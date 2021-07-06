@@ -20,7 +20,6 @@ import {
   BackendServiceOption,
   Column,
   ColumnEditor,
-  CustomFooterOption,
   DataViewOption,
   ExternalResource,
   Locale,
@@ -74,6 +73,7 @@ import {
   GetSlickEventType,
   GridStateType,
 } from '@slickgrid-universal/common';
+import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
 
@@ -116,23 +116,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   private _isGridInitialized = false;
   private _isDatasetInitialized = false;
   private _isDatasetHierarchicalInitialized = false;
-  private _isLeftFooterOriginallyEmpty = false;
-  private _isLeftFooterDisplayingSelectionRowCount = false;
   private _isPaginationInitialized = false;
   private _isLocalGrid = true;
   private _paginationOptions: Pagination | undefined;
   private _registeredResources: ExternalResource[] = [];
-  private _selectedRowCount = 0;
-  private slickEmptyWarning?: SlickEmptyWarningComponent;
   dataView!: SlickDataView;
   slickGrid!: SlickGrid;
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
   backendServiceApi?: BackendServiceApi;
-  customFooterOptions?: CustomFooterOption;
   locales!: Locale;
   metrics?: Metrics;
-  showCustomFooter = false;
   showPagination = false;
   serviceList: any[] = [];
   totalItems = 0;
@@ -141,6 +135,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     paginationService: PaginationService;
   };
   subscriptions: Subscription[] = [];
+
+  // components
+  slickEmptyWarning?: SlickEmptyWarningComponent;
+  slickFooter: SlickFooterComponent | undefined;
 
   // extensions
   extensionUtility: ExtensionUtility;
@@ -412,6 +410,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       this._registeredResources = [];
     }
 
+    // dispose the Components
+    this.slickFooter?.dispose();
+
     if (this._eventHandler?.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
@@ -580,7 +581,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
    * if there are then load them in the paginationOptions object
    */
   setPaginationOptionsWhenPresetDefined(gridOptions: GridOption, paginationOptions: Pagination): Pagination {
-    if (gridOptions.presets && gridOptions.presets.pagination && gridOptions.pagination && !this._isPaginationInitialized) {
+    if (gridOptions.presets?.pagination && gridOptions.pagination && !this._isPaginationInitialized) {
       paginationOptions.pageSize = gridOptions.presets.pagination.pageSize;
       paginationOptions.pageNumber = gridOptions.presets.pagination.pageNumber;
     }
@@ -892,9 +893,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       itemCount: currentPageRowItemCount,
       totalItemCount
     };
+    // if custom footer is enabled, then we'll update its metrics
+    if (this.slickFooter) {
+      this.slickFooter.metrics = this.metrics;
+    }
 
     // when using local (in-memory) dataset, we'll display a warning message when filtered data is empty
-    if (this._isLocalGrid && this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage) {
+    if (this._isLocalGrid && this.gridOptions?.enableEmptyDataWarningMessage) {
       this.displayEmptyDataWarning(currentPageRowItemCount === 0);
     }
   }
@@ -942,7 +947,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.locales = this.gridOptions?.locales ?? Constants.locales;
     this.backendServiceApi = this.gridOptions?.backendServiceApi;
     this._isLocalGrid = !this.backendServiceApi; // considered a local grid if it doesn't have a backend service set
-    this._isLeftFooterOriginallyEmpty = !(this.gridOptions.customFooterOptions?.leftFooterText);
 
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
@@ -1011,9 +1015,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       this.resizerService.init(this.slickGrid, gridContainerElm as HTMLDivElement);
     }
 
-    // when using Tree Data View
-    if (this.gridOptions.enableTreeData) {
-      this.treeDataService.init(this.slickGrid);
+    // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
+    if (!this.gridOptions.enablePagination && this.gridOptions.showCustomFooter && this.gridOptions.customFooterOptions && gridContainerElm) {
+      this.slickFooter = new SlickFooterComponent(this.slickGrid, this.gridOptions.customFooterOptions, this.translaterService);
+      this.slickFooter.renderFooter(gridContainerElm as HTMLDivElement);
     }
 
     if (!this.customDataView && this.dataView) {
@@ -1110,9 +1115,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       sortService: this.sortService,
       treeDataService: this.treeDataService,
     }
-
-    // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
-    this.optionallyShowCustomFooterWithMetrics();
 
     // all instances (SlickGrid, DataView & all Services)
     this._eventPubSubService.publish('onAngularGridCreated', this._angularGridInstances);
@@ -1253,35 +1255,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     return options;
   }
 
-  /**
-   * We could optionally display a custom footer below the grid to show some metrics (last update, item count with/without filters)
-   * It's an opt-in, user has to enable "showCustomFooter" and it cannot be used when there's already a Pagination since they display the same kind of info
-   */
-  private optionallyShowCustomFooterWithMetrics() {
-    if (this.gridOptions) {
-      const customFooterOptions = this.gridOptions.customFooterOptions;
-      this.registerOnSelectedRowsChangedWhenEnabled(customFooterOptions);
-
-      if (this.gridOptions.enableTranslate) {
-        this.translateCustomFooterTexts();
-      } else if (customFooterOptions) {
-        customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
-        customFooterOptions.metricTexts.lastUpdate = customFooterOptions.metricTexts.lastUpdate || this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
-        customFooterOptions.metricTexts.items = customFooterOptions.metricTexts.items || this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
-        customFooterOptions.metricTexts.itemsSelected = customFooterOptions.metricTexts.itemsSelected || this.locales && this.locales.TEXT_ITEMS_SELECTED || 'TEXT_ITEMS_SELECTED';
-        customFooterOptions.metricTexts.of = customFooterOptions.metricTexts.of || this.locales && this.locales.TEXT_OF || 'TEXT_OF';
-      }
-      this.registerOnSelectedRowsChangedWhenEnabled(this.gridOptions.customFooterOptions);
-
-      // we will display the custom footer only when there's no Pagination
-      if (!this.gridOptions.enablePagination && !this._isPaginationInitialized) {
-        this.showCustomFooter = (this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false) as boolean;
-        this.customFooterOptions = this.gridOptions.customFooterOptions || {};
-      }
-      this.cd.detectChanges();
-    }
-  }
-
   /** Pre-Register any Resource that don't require SlickGrid to be instantiated (for example RxJS Resource) */
   private preRegisterResources() {
     this._registeredResources = this.gridOptions.registerExternalResources || [];
@@ -1341,26 +1314,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * When user has row selections enabled and does not have any custom text shown on the left side footer,
-   * we will show the row selection count on the bottom left side of the footer (by subscribing to the SlickGrid `onSelectedRowsChanged` event).
-   * @param customFooterOptions
-   */
-  private registerOnSelectedRowsChangedWhenEnabled(customFooterOptions?: CustomFooterOption) {
-    const isRowSelectionEnabled = this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection;
-    if (isRowSelectionEnabled && customFooterOptions && (!customFooterOptions.hideRowSelectionCount && this._isLeftFooterOriginallyEmpty)) {
-      this._isLeftFooterDisplayingSelectionRowCount = true;
-      const selectedCountText = customFooterOptions.metricTexts?.itemsSelected ?? this.locales?.TEXT_ITEMS_SELECTED ?? 'TEXT_ITEMS_SELECTED';
-      customFooterOptions.leftFooterText = `0 ${selectedCountText}`;
-
-      this._eventHandler.subscribe(this.slickGrid.onSelectedRowsChanged, (_e: any, args: { rows: number[]; previousSelectedRows: number[]; }) => {
-        this._selectedRowCount = args.rows.length;
-        const selectedCountText2 = customFooterOptions.metricTexts?.itemsSelected ?? this.locales?.TEXT_ITEMS_SELECTED ?? 'TEXT_ITEMS_SELECTED';
-        customFooterOptions.leftFooterText = `${this._selectedRowCount} ${selectedCountText2}`;
-      });
-    }
-  }
-
-  /**
    * Takes a flat dataset with parent/child relationship, sort it (via its tree structure) and return the sorted flat array
    * @returns {Array<Object>} sort flat parent/child dataset
    */
@@ -1417,20 +1370,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   /** Translate all Custom Footer Texts (footer with metrics) */
   private translateCustomFooterTexts() {
-    if (this.translate && this.translate.instant && this.translate.currentLang) {
-      const customFooterOptions = this.gridOptions && this.gridOptions.customFooterOptions || {};
-      customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
-      for (const propName of Object.keys(customFooterOptions.metricTexts)) {
-        if (propName.lastIndexOf('Key') > 0) {
-          const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));
-          (customFooterOptions.metricTexts as any)[propNameWithoutKey] = this.translate.instant((customFooterOptions.metricTexts as any)[propName] || ' ');
-        }
-      }
-
-      // when we're display row selection count on left footer, we also need to translate that text with its count
-      if (this._isLeftFooterDisplayingSelectionRowCount) {
-        customFooterOptions.leftFooterText = `${this._selectedRowCount} ${customFooterOptions.metricTexts!.itemsSelected}`;
-      }
+    if (this.slickFooter && this.translaterService?.translate) {
+      this.slickFooter?.translateCustomFooterTexts();
     }
   }
 
