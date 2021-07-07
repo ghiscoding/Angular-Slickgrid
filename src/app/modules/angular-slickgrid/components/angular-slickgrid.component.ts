@@ -138,7 +138,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   // components
   slickEmptyWarning?: SlickEmptyWarningComponent;
-  slickFooter: SlickFooterComponent | undefined;
+  slickFooter?: SlickFooterComponent;
 
   // extensions
   extensionUtility: ExtensionUtility;
@@ -242,6 +242,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   get elementRef(): ElementRef {
     return this.elm;
+  }
+
+  get gridContainerElement(): HTMLElement | null {
+    return document.querySelector(`#${this.gridOptions.gridContainerId || ''}`);
   }
 
   get registeredResources(): ExternalResource[] {
@@ -412,6 +416,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // dispose the Components
     this.slickFooter?.dispose();
+    this.slickEmptyWarning?.dispose();
 
     if (this._eventHandler?.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
@@ -581,7 +586,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
    * if there are then load them in the paginationOptions object
    */
   setPaginationOptionsWhenPresetDefined(gridOptions: GridOption, paginationOptions: Pagination): Pagination {
-    if (gridOptions.presets?.pagination && gridOptions.pagination && !this._isPaginationInitialized) {
+    if (gridOptions.presets?.pagination && paginationOptions && !this._isPaginationInitialized) {
       paginationOptions.pageSize = gridOptions.presets.pagination.pageSize;
       paginationOptions.pageNumber = gridOptions.presets.pagination.pageNumber;
     }
@@ -635,8 +640,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
 
   private displayEmptyDataWarning(showWarning = true) {
-    // this.slickEmptyWarning.grid = this.grid;
-    this.slickEmptyWarning && this.slickEmptyWarning.showEmptyDataMessage(showWarning);
+    this.slickEmptyWarning?.showEmptyDataMessage(showWarning);
   }
 
   private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
@@ -1010,15 +1014,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // initialized the resizer service only after SlickGrid is initialized
     // if we don't we end up binding our resize to a grid element that doesn't yet exist in the DOM and the resizer service will fail silently (because it has a try/catch that unbinds the resize without throwing back)
-    const gridContainerElm = document.querySelector(`#${this.gridOptions.gridContainerId || ''}`);
-    if (gridContainerElm) {
-      this.resizerService.init(this.slickGrid, gridContainerElm as HTMLDivElement);
+    if (this.gridContainerElement) {
+      this.resizerService.init(this.slickGrid, this.gridContainerElement as HTMLDivElement);
     }
 
     // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
-    if (!this.gridOptions.enablePagination && this.gridOptions.showCustomFooter && this.gridOptions.customFooterOptions && gridContainerElm) {
+    if (!this.gridOptions.enablePagination && this.gridOptions.showCustomFooter && this.gridOptions.customFooterOptions && this.gridContainerElement) {
       this.slickFooter = new SlickFooterComponent(this.slickGrid, this.gridOptions.customFooterOptions, this.translaterService);
-      this.slickFooter.renderFooter(gridContainerElm as HTMLDivElement);
+      this.slickFooter.renderFooter(this.gridContainerElement);
     }
 
     if (!this.customDataView && this.dataView) {
