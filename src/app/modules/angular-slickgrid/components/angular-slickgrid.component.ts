@@ -80,7 +80,7 @@ import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
 
 import { Constants } from '../constants';
-import { AngularGridInstance, GridOption, } from './../models/index';
+import { AngularGridInstance, ExternalTestingDependencies, GridOption, } from './../models/index';
 import { GlobalGridOptions } from './../global-grid-options';
 import { TranslaterService } from '../services/translater.service';
 import { unsubscribeAllObservables } from './../services/utilities';
@@ -280,24 +280,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     @Optional() private readonly translate: TranslateService,
     @Optional() private readonly translaterService: TranslaterService,
     @Inject('config') private forRootConfig: GridOption,
-    @Inject('externalService') externalServices: {
-      backendUtilityService?: BackendUtilityService,
-      collectionService?: CollectionService,
-      eventPubSubService?: EventPubSubService,
-      extensionService?: ExtensionService,
-      extensionUtility?: ExtensionUtility,
-      filterService?: FilterService,
-      gridEventService?: GridEventService,
-      gridService?: GridService,
-      gridStateService?: GridStateService,
-      groupingAndColspanService?: GroupingAndColspanService,
-      paginationService?: PaginationService,
-      resizerService?: ResizerService,
-      rxjs?: RxJsFacade,
-      sharedService?: SharedService,
-      sortService?: SortService,
-      treeDataService?: TreeDataService,
-    }
+    @Inject('externalService') externalServices: ExternalTestingDependencies
   ) {
     const slickgridConfig = new SlickgridConfig();
 
