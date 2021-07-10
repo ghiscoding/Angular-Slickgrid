@@ -1,11 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { PaginationService, ServicePagination } from '@slickgrid-universal/common';
 
+import { GridOption } from '../../models';
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { GridOption, ServicePagination } from '../../models';
-import { PaginationService } from '../../services';
 
 const paginationServiceStub = {
   dataFrom: 5,
@@ -25,15 +24,12 @@ const paginationServiceStub = {
   changeItemPerPage: jest.fn(),
   dispose: jest.fn(),
   init: jest.fn(),
-  onShowPaginationChanged: new Subject<boolean>(),
-  onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 
 describe('App Component', () => {
   let fixture: ComponentFixture<SlickPaginationComponent>;
   let component: SlickPaginationComponent;
   let translate: TranslateService;
-  let mockServicePagination: ServicePagination;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -41,7 +37,6 @@ describe('App Component', () => {
         SlickPaginationComponent
       ],
       providers: [
-        { provide: PaginationService, useValue: paginationServiceStub },
         TranslateService,
       ],
       imports: [
@@ -52,6 +47,7 @@ describe('App Component', () => {
     // create the component
     fixture = TestBed.createComponent(SlickPaginationComponent);
     component = fixture.debugElement.componentInstance;
+    component.paginationService = paginationServiceStub;
     translate = TestBed.inject(TranslateService);
 
     translate.setTranslation('fr', {
@@ -80,18 +76,9 @@ describe('App Component', () => {
 
   describe('Integration Tests', () => {
     beforeEach(() => {
-      mockServicePagination = {
-        dataFrom: 5,
-        dataTo: 10,
-        pageSize: 5,
-        pageCount: 1,
-        pageNumber: 2,
-        pageSizes: [5, 10, 15, 20],
-        totalItems: 100,
-      };
       component.gridOptions = { enableTranslate: true } as GridOption;
+      component.paginationService = paginationServiceStub;
       component.ngOnInit();
-      paginationServiceStub.onPaginationChanged.next(mockServicePagination);
       fixture.detectChanges();
     });
 

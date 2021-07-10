@@ -3,8 +3,8 @@ import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { GridOption, ServicePagination } from '../../models';
-import { PaginationService } from '../../services';
+import { GridOption } from '../../models';
+import { PaginationService, ServicePagination } from '@slickgrid-universal/common';
 
 const paginationServiceStub = {
   dataFrom: 5,
@@ -31,34 +31,22 @@ const paginationServiceStub = {
 describe('without ngx-translate', () => {
   let fixture: ComponentFixture<SlickPaginationComponent>;
   let component: SlickPaginationComponent;
-  let mockServicePagination: ServicePagination;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         SlickPaginationComponent
       ],
-      providers: [
-        { provide: PaginationService, useValue: paginationServiceStub },
-      ],
+      providers: [],
     }).compileComponents();
 
     // create the component
     fixture = TestBed.createComponent(SlickPaginationComponent);
     component = fixture.debugElement.componentInstance;
+    component.paginationService = paginationServiceStub;
 
-    mockServicePagination = {
-      dataFrom: 5,
-      dataTo: 10,
-      pageSize: 5,
-      pageCount: 1,
-      pageNumber: 2,
-      pageSizes: [5, 10, 15, 20],
-      totalItems: 100,
-    };
     component.gridOptions = { enableTranslate: false } as GridOption;
 
-    paginationServiceStub.onPaginationChanged.next(mockServicePagination);
     fixture.detectChanges();
   });
 

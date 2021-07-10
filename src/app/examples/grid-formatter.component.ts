@@ -46,7 +46,7 @@ export class GridFormatterComponent implements OnInit {
     </ul>
   `;
 
-  columnDefinitions!: Column[];
+  columnDefinitions: Column<DataItem>[] = [];
   gridOptions!: GridOption;
   dataset!: any[];
   angularGrid!: AngularGridInstance;

@@ -57,7 +57,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     hideRowSelectionCount: false,
     hideTotalItemCount: false,
     hideLastUpdateTimestamp: true,
-    footerHeight: 20,
+    footerHeight: 25,
     leftContainerClass: 'col-xs-12 col-sm-5',
     rightContainerClass: 'col-xs-6 col-sm-7',
     metricSeparator: '|',

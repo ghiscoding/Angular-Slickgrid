@@ -6,7 +6,6 @@ import {
   addToArrayWhenNotExists,
   castObservableToPromise,
   Column,
-  ExtensionUtility,
   RowDetailViewExtension as UniversalRowDetailViewExtension,
   RxJsFacade,
   SharedService,
@@ -51,7 +50,6 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
     private readonly angularUtilService: AngularUtilService,
     private readonly appRef: ApplicationRef,
     private readonly eventPubSubService: EventPubSubService,
-    private readonly extensionUtility: ExtensionUtility,
     private readonly sharedService: SharedService,
     private rxjs?: RxJsFacade,
   ) {
@@ -86,7 +84,6 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
-    this.extensionUtility.nullifyFunctionNameStartingWithOn(this._addonOptions);
     this._addonOptions = null;
 
     // also unsubscribe all RxJS subscriptions
@@ -310,10 +307,12 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
   // ------------------
 
   private disposeViewComponent(expandedView: CreatedView) {
-    const compRef = expandedView && expandedView.componentRef;
+    const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
-      compRef.destroy();
+      if (compRef?.destroy) {
+        compRef.destroy();
+      }
       return expandedView;
     }
     return null;
