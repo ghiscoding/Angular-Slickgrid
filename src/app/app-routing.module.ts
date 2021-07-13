@@ -5,6 +5,7 @@ import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
+import { GridCompositeEditorComponent } from './examples/grid-composite-editor.component';
 import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
@@ -41,6 +42,7 @@ const routes: Routes = [
   { path: 'autoheight', component: GridAutoHeightComponent },
   { path: 'basic', component: GridBasicComponent },
   { path: 'colspan', component: GridColspanComponent },
+  { path: 'composite-editor', component: GridCompositeEditorComponent },
   { path: 'context', component: GridContextMenuComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'formatter', component: GridFormatterComponent },

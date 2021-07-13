@@ -1,11 +1,35 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 
-import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, SortComparers } from '../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  AutocompleteOption,
+  Column,
+  CompositeEditorModalType,
+  EditCommand,
+  Editors,
+  FieldType,
+  Filters,
+  formatNumber,
+  Formatter,
+  Formatters,
+  GridOption,
+  GridStateChange,
+  LongTextEditorOption,
+  OnCompositeEditorChangeEventArgs,
+  SlickGrid,
+  SlickNamespace,
+  SortComparers,
+} from '../modules/angular-slickgrid';
+import './grid-composite-editor.component.scss';
 
+const NB_ITEMS = 500;
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-declare const Slick: any;
+
+// using external SlickGrid JS libraries
+declare const Slick: SlickNamespace;
 
 /**
  * Check if the current item (cell) is editable or not
@@ -14,7 +38,7 @@ declare const Slick: any;
  * @param {*} grid - slickgrid grid object
  * @returns {boolean} isEditable
  */
-function checkItemIsEditable(dataContext: any, columnDef: Column, grid: any) {
+function checkItemIsEditable(dataContext: any, columnDef: Column, grid: SlickGrid) {
   const gridOptions = grid && grid.getOptions && grid.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;
@@ -23,12 +47,21 @@ function checkItemIsEditable(dataContext: any, columnDef: Column, grid: any) {
   if (dataContext && columnDef && gridOptions && gridOptions.editable) {
     switch (columnDef.id) {
       case 'finish':
+        // case 'percentComplete':
         isEditable = !!dataContext?.completed;
         break;
+      // case 'completed':
+      // case 'duration':
+      // case 'title':
+      // case 'product':
+      // case 'origin':
+      // isEditable = dataContext.percentComplete < 50;
+      // break;
     }
   }
   return isEditable;
 }
+
 
 const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, _dataContext, grid) => {
   const gridOptions = grid && grid.getOptions && grid.getOptions();
@@ -49,21 +82,22 @@ const myCustomTitleValidator = (value: any, args: any) => {
 };
 
 @Component({
-  templateUrl: './grid-resize-by-content.component.html',
-  styleUrls: ['./grid-resize-by-content.component.scss'],
+  templateUrl: './grid-composite-editor.component.html',
+  styleUrls: ['./grid-composite-editor.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GridResizeByContentComponent implements OnInit {
-  title = 'Example 31: Columns Resize by Content';
-  subTitle = `The grid below uses the optional resize by cell content (with a fixed 950px for demo purposes), you can click on the 2 buttons to see the difference. The "autosizeColumns" is really the default option used by Angular-SlickGrid, the resize by cell content is optional because it requires to read the first thousand rows and do extra width calculation.`;
+export class GridCompositeEditorComponent implements OnInit {
+  title = 'Example 30: Composite Editor Modal';
+  subTitle = `Composite Editor allows you to Create, Clone, Edit, Mass Update & Mass Selection Changes inside a nice Modal Window.
+  <br>The modal is simply populated by looping through your column definition list and also uses a lot of the same logic as inline editing (see <a href="https://github.com/ghiscoding/aurelia-slickgrid/wiki/Composite-Editor-Modal" target="_blank">Composite Editor - Wiki</a>.)`;
 
   angularGrid!: AngularGridInstance;
+  compositeEditorInstance!: SlickCompositeEditorComponent;
   gridOptions!: GridOption;
   columnDefinitions: Column[] = [];
   dataset: any[] = [];
   editQueue: any[] = [];
   editedItems: any = {};
-  isUsingDefaultResize = false;
   isGridEditable = true;
   isCompositeDisabled = false;
   isMassSelectionDisabled = true;
@@ -75,32 +109,30 @@ export class GridResizeByContentComponent implements OnInit {
     { value: 4, label: 'Very Complex' },
   ];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.compositeEditorInstance = new SlickCompositeEditorComponent();
+  }
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 
   ngOnInit(): void {
-    this.defineGrid();
-    this.dataset = this.loadData(5000);
+    this.prepareGrid();
+
+    // mock a dataset
+    this.dataset = this.loadData(NB_ITEMS);
   }
 
-  // Grid2 definition
-  defineGrid() {
+  prepareGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 65,
-        // you can adjust the resize calculation via multiple options
-        resizeExtraWidthPadding: 4,
-        resizeCharWidthInPx: 7.6,
-        resizeCalcWidthRatio: 1,
-        resizeMaxWidthThreshold: 200,
+        id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
         filterable: true, columnGroup: 'Common Factor',
         filter: { model: Filters.compoundInputText },
         formatter: Formatters.multiple, params: { formatters: [Formatters.uppercase, Formatters.bold] },
         editor: {
-          model: Editors.longText, required: true, alwaysSaveOnEnterKey: true,
+          model: Editors.longText, massUpdate: false, required: true, alwaysSaveOnEnterKey: true,
           maxLength: 12,
           editorOptions: {
             cols: 45,
@@ -114,7 +146,7 @@ export class GridResizeByContentComponent implements OnInit {
         },
       },
       {
-        id: 'duration', name: 'Duration', field: 'duration', sortable: true, filterable: true, minWidth: 65,
+        id: 'duration', name: 'Duration', field: 'duration', sortable: true, filterable: true, minWidth: 75,
         type: FieldType.number, columnGroup: 'Common Factor',
         formatter: (_row, _cell, value) => {
           if (value === null || value === undefined || value === '') {
@@ -122,10 +154,10 @@ export class GridResizeByContentComponent implements OnInit {
           }
           return value > 1 ? `${value} days` : `${value} day`;
         },
-        editor: { model: Editors.float, decimal: 2, valueStep: 1, minValue: 0, maxValue: 10000, alwaysSaveOnEnterKey: true, required: true },
+        editor: { model: Editors.float, massUpdate: true, decimal: 2, valueStep: 1, minValue: 0, maxValue: 10000, alwaysSaveOnEnterKey: true, required: true },
       },
       {
-        id: 'cost', name: 'Cost', field: 'cost', minWidth: 65,
+        id: 'cost', name: 'Cost', field: 'cost', width: 90, minWidth: 70,
         sortable: true, filterable: true, type: FieldType.number, columnGroup: 'Analysis',
         filter: { model: Filters.compoundInputNumber },
         formatter: Formatters.dollar,
@@ -137,12 +169,37 @@ export class GridResizeByContentComponent implements OnInit {
         filter: { model: Filters.compoundSlider, operator: '>=' },
         editor: {
           model: Editors.slider,
-          minValue: 0, maxValue: 100,
+          massUpdate: true, minValue: 0, maxValue: 100,
         },
       },
+      // {
+      //   id: 'percentComplete2', name: '% Complete', field: 'analysis.percentComplete', minWidth: 100,
+      //   type: FieldType.number,
+      //   sortable: true, filterable: true, columnGroup: 'Analysis',
+      //   // filter: { model: Filters.compoundSlider, operator: '>=' },
+      //   formatter: Formatters.complex,
+      //   exportCustomFormatter: Formatters.complex, // without the Editing cell Formatter
+      //   editor: {
+      //     model: Editors.singleSelect,
+      //     serializeComplexValueFormat: 'flat', // if we keep "object" as the default it will apply { value: 2, label: 2 } which is not what we want in this case
+      //     collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+      //     collectionOptions: {
+      //       addCustomFirstEntry: { value: '', label: '--none--' }
+      //     },
+      //     collectionOverride: (_collectionInput, args) => {
+      //       const originalCollection = args.originalCollections || [];
+      //       const duration = args?.dataContext?.duration ?? args?.compositeEditorOptions?.formValues?.duration;
+      //       if (duration === 10) {
+      //         return originalCollection.filter(itemCollection => +itemCollection.value !== 1);
+      //       }
+      //       return originalCollection;
+      //     },
+      //     massUpdate: true, minValue: 0, maxValue: 100,
+      //   },
+      // },
       {
-        id: 'complexity', name: 'Complexity', field: 'complexity',
-        resizeCalcWidthRatio: 0.82, // default calc ratio is 1 or 0.95 for field type of string
+        id: 'complexity', name: 'Complexity', field: 'complexity', minWidth: 100,
+        type: FieldType.number,
         sortable: true, filterable: true, columnGroup: 'Analysis',
         formatter: (_row, _cell, value) => this.complexityLevelList[value].label,
         exportCustomFormatter: (_row, _cell, value) => this.complexityLevelList[value].label,
@@ -153,15 +210,16 @@ export class GridResizeByContentComponent implements OnInit {
         editor: {
           model: Editors.singleSelect,
           collection: this.complexityLevelList,
+          massUpdate: true
         },
       },
       {
-        id: 'start', name: 'Start', field: 'start', sortable: true,
+        id: 'start', name: 'Start', field: 'start', sortable: true, minWidth: 100,
         formatter: Formatters.dateUs, columnGroup: 'Period',
         exportCustomFormatter: Formatters.dateUs,
         type: FieldType.date, outputType: FieldType.dateUs, saveOutputType: FieldType.dateUtc,
         filterable: true, filter: { model: Filters.compoundDate },
-        editor: { model: Editors.date, params: { hideClearButton: false } },
+        editor: { model: Editors.date, massUpdate: true, params: { hideClearButton: false } },
       },
       {
         id: 'completed', name: 'Completed', field: 'completed', width: 80, minWidth: 75, maxWidth: 100,
@@ -173,11 +231,11 @@ export class GridResizeByContentComponent implements OnInit {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
           model: Filters.singleSelect
         },
-        editor: { model: Editors.checkbox, },
+        editor: { model: Editors.checkbox, massUpdate: true, },
         // editor: { model: Editors.singleSelect, collection: [{ value: true, label: 'Yes' }, { value: false, label: 'No' }], },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish', sortable: true,
+        id: 'finish', name: 'Finish', field: 'finish', sortable: true, minWidth: 100,
         formatter: Formatters.dateUs, columnGroup: 'Period',
         type: FieldType.date, outputType: FieldType.dateUs, saveOutputType: FieldType.dateUtc,
         filterable: true, filter: { model: Filters.compoundDate },
@@ -185,6 +243,7 @@ export class GridResizeByContentComponent implements OnInit {
         editor: {
           model: Editors.date,
           editorOptions: { minDate: 'today' },
+          massUpdate: true,
           validator: (value, args) => {
             const dataContext = args && args.item;
             if (dataContext && (dataContext.completed && !value)) {
@@ -198,7 +257,6 @@ export class GridResizeByContentComponent implements OnInit {
         id: 'product', name: 'Product', field: 'product',
         filterable: true, columnGroup: 'Item',
         minWidth: 100,
-        resizeCharWidthInPx: 8,
         exportWithFormatter: true,
         dataKey: 'id',
         labelKey: 'itemName',
@@ -209,6 +267,7 @@ export class GridResizeByContentComponent implements OnInit {
         editor: {
           model: Editors.autoComplete,
           alwaysSaveOnEnterKey: true,
+          massUpdate: true,
 
           // example with a Remote API call
           editorOptions: {
@@ -247,12 +306,13 @@ export class GridResizeByContentComponent implements OnInit {
         minWidth: 100,
         editor: {
           model: Editors.autoComplete,
+          massUpdate: true,
           customStructure: { label: 'name', value: 'code' },
           collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
         },
         filter: {
           model: Filters.inputText,
-          type: FieldType.string,
+          type: 'string',
           queryField: 'origin.name',
         }
       },
@@ -266,11 +326,18 @@ export class GridResizeByContentComponent implements OnInit {
           commandTitle: 'Commands',
           commandItems: [
             {
-              command: 'help',
-              title: 'Help!',
-              iconCssClass: 'fa fa-question-circle',
+              command: 'edit',
+              title: 'Edit Row',
+              iconCssClass: 'fa fa-pencil',
               positionOrder: 66,
-              action: () => alert('Please Help!'),
+              action: () => this.openCompositeModal('edit'),
+            },
+            {
+              command: 'clone',
+              title: 'Clone Row',
+              iconCssClass: 'fa fa-clone',
+              positionOrder: 66,
+              action: () => this.openCompositeModal('clone'),
             },
             'divider',
             {
@@ -294,43 +361,31 @@ export class GridResizeByContentComponent implements OnInit {
     ];
 
     this.gridOptions = {
-      editable: true,
-      autoAddCustomEditorFormatter: customEditableInputFormatter,
+      enableAddRow: true, // <-- this flag is required to work with the (create & clone) modal types
       enableCellNavigation: true,
+      asyncEditorLoading: false,
       autoEdit: true,
       autoCommitEdit: true,
+      editable: true,
+      autoAddCustomEditorFormatter: customEditableInputFormatter,
       autoResize: {
-        container: '#smaller-container',
+        container: '#demo-container',
         rightPadding: 10
       },
+      enableAutoSizeColumns: true,
       enableAutoResize: true,
-
-      // resizing by cell content is opt-in
-      // we first need to disable the 2 default flags to autoFit/autosize
-      autoFitColumnsOnFirstLoad: false,
-      enableAutoSizeColumns: false,
-      // then enable resize by content with these 2 flags
-      autosizeColumnsByCellContentOnFirstLoad: true,
-      enableAutoResizeColumnsByCellContent: true,
-
-      resizeByContentOptions: {
-        // optional resize calculation options
-        defaultRatioForStringType: 0.92,
-        formatterPaddingWidthInPx: 8, // optional editor formatter padding for resize calculation
+      showCustomFooter: true,
+      enablePagination: true,
+      pagination: {
+        pageSize: 10,
+        pageSizes: [10, 200, 250, 500, 5000]
       },
-
       enableExcelExport: true,
       excelExportOptions: {
         exportWithFormatter: false
       },
-      registerExternalResources: [new ExcelExportService()],
+      registerExternalResources: [new ExcelExportService(), this.compositeEditorInstance],
       enableFiltering: true,
-      enableRowSelection: true,
-      enableCheckboxSelector: true,
-      checkboxSelector: {
-        hideInFilterHeaderRow: false,
-        hideInColumnTitleRow: true,
-      },
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false
@@ -338,8 +393,14 @@ export class GridResizeByContentComponent implements OnInit {
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,
-      rowHeight: 33,
-      headerRowHeight: 35,
+      enableCheckboxSelector: true,
+      enableRowSelection: true,
+      multiSelect: false,
+      checkboxSelector: {
+        hideInFilterHeaderRow: false,
+        hideInColumnTitleRow: true,
+      },
+      enableCompositeEditor: true,
       editCommandHandler: (item, column, editCommand) => {
         // composite editors values are saved as array, so let's convert to array in any case and we'll loop through these values
         const prevSerializedValues = Array.isArray(editCommand.prevSerializedValue) ? editCommand.prevSerializedValue : [editCommand.prevSerializedValue];
@@ -412,6 +473,10 @@ export class GridResizeByContentComponent implements OnInit {
     return tmpArray;
   }
 
+  // --
+  // event handlers
+  // ---------------
+
   handleValidationError(_e: Event, args: any) {
     if (args.validationResults) {
       let errorMsg = args.validationResults.msg || '';
@@ -440,11 +505,11 @@ export class GridResizeByContentComponent implements OnInit {
 
     if (column && item) {
       if (!checkItemIsEditable(item, column, grid)) {
-        // event.preventDefault();
         e.stopImmediatePropagation();
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   handleOnCellChange(_e: Event, args: any) {
@@ -457,23 +522,116 @@ export class GridResizeByContentComponent implements OnInit {
     }
   }
 
+  handleOnCellClicked(e: Event, args: any) {
+    console.log(e, args);
+    // if (eventData.target.classList.contains('fa-question-circle-o')) {
+    //   alert('please HELP!!!');
+    // } else if (eventData.target.classList.contains('fa-chevron-down')) {
+    //   alert('do something else...');
+    // }
+  }
+
+  handleOnCompositeEditorChange(_e: Event, args: OnCompositeEditorChangeEventArgs) {
+    const columnDef = args.column;
+    const formValues = args.formValues;
+
+    // you can dynamically change a select dropdown collection,
+    // if you need to re-render the editor for the list to be reflected
+    // if (columnDef.id === 'duration') {
+    //   const editor = this.compositeEditorInstance.editors['percentComplete2'] as SelectEditor;
+    //   const newCollection = editor.finalCollection;
+    //   editor.renderDomElement(newCollection);
+    // }
+
+    // you can change any other form input values when certain conditions are met
+    if (columnDef.id === 'percentComplete' && formValues.percentComplete === 100) {
+      this.compositeEditorInstance.changeFormInputValue('completed', true);
+      this.compositeEditorInstance.changeFormInputValue('finish', new Date());
+      // this.compositeEditorInstance.changeFormInputValue('product', { id: 0, itemName: 'Sleek Metal Computer' });
+
+      // you can even change a value that is not part of the form (but is part of the grid)
+      // but you will have to bypass the error thrown by providing `true` as the 3rd argument
+      // this.compositeEditorInstance.changeFormInputValue('cost', 9999.99, true);
+    }
+
+    // you can also change some editor options (not all Editors supports this functionality, so far only these Editors AutoComplete, Date MultipleSelect & SingleSelect)
+    /*
+    if (columnDef.id === 'completed') {
+      this.compositeEditorInstance.changeFormEditorOption('percentComplete', 'filter', formValues.completed);
+      this.compositeEditorInstance.changeFormEditorOption('product', 'minLength', 3);
+    }
+    */
+  }
+
   handlePaginationChanged() {
     this.removeAllUnsavedStylingFromCell();
     this.renderUnsavedStylingOnAllVisibleCells();
   }
 
-  handleDefaultResizeColumns() {
-    // just for demo purposes, set it back to its original width
-    const columns = this.angularGrid.slickGrid.getColumns() as Column[];
-    columns.forEach(col => col.width = col.originalWidth);
-    this.angularGrid.slickGrid.setColumns(columns);
-    this.angularGrid.slickGrid.autosizeColumns();
-    this.isUsingDefaultResize = true;
+  handleOnGridStateChanged(gridStateChanges: GridStateChange) {
+    if (Array.isArray(gridStateChanges.gridState?.rowSelection?.dataContextIds)) {
+      this.isMassSelectionDisabled = gridStateChanges.gridState?.rowSelection?.dataContextIds.length === 0;
+    }
   }
 
-  handleNewResizeColumns() {
-    this.angularGrid.resizerService.resizeColumnsByCellContent(true);
-    this.isUsingDefaultResize = false;
+  openCompositeModal(modalType: CompositeEditorModalType) {
+    // open the editor modal and we can also provide a header title with optional parsing pulled from the dataContext, via template {{ }}
+    // for example {{title}} => display the item title, or even complex object works {{product.itemName}} => display item product name
+
+    let modalTitle = '';
+    switch (modalType) {
+      case 'create':
+        modalTitle = 'Inserting New Task';
+        break;
+      case 'clone':
+        modalTitle = 'Clone - {{title}}';
+        break;
+      case 'edit':
+        modalTitle = 'Editing - {{title}} (<span class="text-muted">id:</span> <span class="text-primary">{{id}}</span>)'; // 'Editing - {{title}} ({{product.itemName}})'
+        break;
+      case 'mass-update':
+        modalTitle = 'Mass Update All Records';
+        break;
+      case 'mass-selection':
+        modalTitle = 'Update Selected Records';
+        break;
+    }
+
+    this.compositeEditorInstance?.openDetails({
+      headerTitle: modalTitle,
+      modalType,
+      insertOptions: { highlightRow: false }, // disable highlight to avoid flaky tests in Cypress
+      // showCloseButtonOutside: true,
+      // backdrop: null,
+      // viewColumnLayout: 2, // responsive layout, choose from 'auto', 1, 2, or 3 (defaults to 'auto')
+      showFormResetButton: true,
+      // showResetButtonOnEachEditor: true,
+      onClose: () => Promise.resolve(confirm('You have unsaved changes, are you sure you want to close this window?')),
+      onError: (error) => alert(error.message),
+      onSave: (formValues, _selection, dataContext) => {
+        const serverResponseDelay = 50;
+
+        // simulate a backend server call which will reject if the "% Complete" is below 50%
+        // when processing a mass update or mass selection
+        if (modalType === 'mass-update' || modalType === 'mass-selection') {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (formValues.percentComplete >= 50) {
+                resolve(true);
+              } else {
+                reject('Unfortunately we only accept a minimum of 50% Completion...');
+              }
+            }, serverResponseDelay);
+          });
+        } else {
+          // also simulate a server cal for any other modal type (create/clone/edit)
+          // we'll just apply the change without any rejection from the server and
+          // note that we also have access to the "dataContext" which is only available for these modal
+          console.log(`${modalType} item data context`, dataContext);
+          return new Promise(resolve => setTimeout(() => resolve(true), serverResponseDelay));
+        }
+      }
+    });
   }
 
   toggleGridEditReadonly() {
@@ -530,7 +688,6 @@ export class GridResizeByContentComponent implements OnInit {
     }
   }
 
-
   saveAll() {
     // Edit Queue (array increases every time a cell is changed, regardless of item object)
     console.log(this.editQueue);
@@ -563,7 +720,7 @@ export class GridResizeByContentComponent implements OnInit {
 
       // optionally open the last cell editor associated
       if (showLastEditor) {
-        this.angularGrid?.slickGrid.gotoCell(lastEditCommand.row, lastEditCommand.cell, false);
+        this.angularGrid.slickGrid.gotoCell(lastEditCommand.row, lastEditCommand.cell, false);
       }
     }
   }
@@ -593,7 +750,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 2100.23,
         itemTypeName: 'I',
         image: 'http://i.stack.imgur.com/pC1Tv.jpg',
-        icon: `mdi ${this.getRandomIcon(0)}`,
+        icon: `fa ${this.getRandomIcon(0)}`,
       },
       {
         id: 1,
@@ -602,7 +759,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 3200.12,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/Fnm7j6h.jpg',
-        icon: `mdi ${this.getRandomIcon(1)}`,
+        icon: `fa ${this.getRandomIcon(1)}`,
       },
       {
         id: 2,
@@ -611,7 +768,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 15.00,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/RaVJuLr.jpg',
-        icon: `mdi ${this.getRandomIcon(2)}`,
+        icon: `fa ${this.getRandomIcon(2)}`,
       },
       {
         id: 3,
@@ -620,7 +777,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 25.76,
         itemTypeName: 'I',
         image: 'http://i.stack.imgur.com/pC1Tv.jpg',
-        icon: `mdi ${this.getRandomIcon(3)}`,
+        icon: `fa ${this.getRandomIcon(3)}`,
       },
       {
         id: 4,
@@ -629,7 +786,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 13.35,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/Fnm7j6h.jpg',
-        icon: `mdi ${this.getRandomIcon(4)}`,
+        icon: `fa ${this.getRandomIcon(4)}`,
       },
       {
         id: 5,
@@ -638,7 +795,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 23.33,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/RaVJuLr.jpg',
-        icon: `mdi ${this.getRandomIcon(5)}`,
+        icon: `fa ${this.getRandomIcon(5)}`,
       },
       {
         id: 6,
@@ -647,7 +804,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 71.21,
         itemTypeName: 'I',
         image: 'http://i.stack.imgur.com/pC1Tv.jpg',
-        icon: `mdi ${this.getRandomIcon(6)}`,
+        icon: `fa ${this.getRandomIcon(6)}`,
       },
       {
         id: 7,
@@ -656,7 +813,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 2.43,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/Fnm7j6h.jpg',
-        icon: `mdi ${this.getRandomIcon(7)}`,
+        icon: `fa ${this.getRandomIcon(7)}`,
       },
       {
         id: 8,
@@ -665,7 +822,7 @@ export class GridResizeByContentComponent implements OnInit {
         listPrice: 31288.39,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/RaVJuLr.jpg',
-        icon: `mdi ${this.getRandomIcon(8)}`,
+        icon: `fa ${this.getRandomIcon(8)}`,
       },
     ];
   }
