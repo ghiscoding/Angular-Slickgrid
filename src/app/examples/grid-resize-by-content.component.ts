@@ -2,10 +2,10 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
-import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, SortComparers } from '../modules/angular-slickgrid';
+import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleteOption, EditCommand, formatNumber, SortComparers, SlickGrid, SlickNamespace } from '../modules/angular-slickgrid';
 
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-declare const Slick: any;
+declare const Slick: SlickNamespace;
 
 /**
  * Check if the current item (cell) is editable or not
@@ -14,7 +14,7 @@ declare const Slick: any;
  * @param {*} grid - slickgrid grid object
  * @returns {boolean} isEditable
  */
-function checkItemIsEditable(dataContext: any, columnDef: Column, grid: any) {
+function checkItemIsEditable(dataContext: any, columnDef: Column, grid: SlickGrid) {
   const gridOptions = grid && grid.getOptions && grid.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;

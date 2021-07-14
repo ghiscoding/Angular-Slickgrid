@@ -50,7 +50,10 @@
     "type": "git",
     "url": "http://github.com/ghiscoding/angular-slickgrid"
   },
-  "main": "src/app/modules/angular-slickgrid/index",
+  "main": "bundles/angular-slickgrid.umd.js",
+  "es2015": "fesm2015/angular-slickgrid.js",
+  "esm2015": "esm2015/angular-slickgrid.js",
+  "fesm2015": "fesm2015/angular-slickgrid.js",
   "private": false,
   "ngPackage": {
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",

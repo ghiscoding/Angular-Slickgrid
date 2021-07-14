@@ -10,6 +10,7 @@ import {
   RxJsFacade,
   SharedService,
   SlickEventHandler,
+  SlickGrid,
   SlickNamespace,
   SlickRowDetailView,
 } from '@slickgrid-universal/common';
@@ -176,12 +177,12 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
         if (this.rowDetailViewOptions.onExtensionRegistered) {
           this.rowDetailViewOptions.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onAsyncResponse, (e: any, args: { item: any; detailView: any }) => {
+        this._eventHandler.subscribe(this._addon.onAsyncResponse, (e: any, args: { item: any; detailView: RowDetailView }) => {
           if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAsyncResponse === 'function') {
             this.rowDetailViewOptions.onAsyncResponse(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onAsyncEndUpdate, (e: any, args: { grid: any; item: any; }) => {
+        this._eventHandler.subscribe(this._addon.onAsyncEndUpdate, (e: any, args: { grid: SlickGrid; item: any; }) => {
           // triggers after backend called "onAsyncResponse.notify()"
           this.renderViewModel(args && args.item);
 
@@ -189,7 +190,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
             this.rowDetailViewOptions.onAsyncEndUpdate(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onAfterRowDetailToggle, (e: any, args: { grid: any; item: any; expandedRows: number[]; }) => {
+        this._eventHandler.subscribe(this._addon.onAfterRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; expandedRows: number[]; }) => {
           // display preload template & re-render all the other Detail Views after toggling
           // the preload View will eventually go away once the data gets loaded after the "onAsyncEndUpdate" event
           this.renderPreloadView();
@@ -199,7 +200,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
             this.rowDetailViewOptions.onAfterRowDetailToggle(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onBeforeRowDetailToggle, (e: any, args: { grid: any; item: any; }) => {
+        this._eventHandler.subscribe(this._addon.onBeforeRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; }) => {
           // before toggling row detail, we need to create View Component if it doesn't exist
           this.onBeforeRowDetailToggle(e, args);
 
@@ -207,7 +208,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
             this.rowDetailViewOptions.onBeforeRowDetailToggle(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onRowBackToViewportRange, (e: any, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+        this._eventHandler.subscribe(this._addon.onRowBackToViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
           // when row is back to viewport range, we will re-render the View Component(s)
           this.onRowBackToViewportRange(e, args);
 
@@ -215,7 +216,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
             this.rowDetailViewOptions.onRowBackToViewportRange(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onRowOutOfViewportRange, (e: any, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+        this._eventHandler.subscribe(this._addon.onRowOutOfViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
           if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowOutOfViewportRange === 'function') {
             this.rowDetailViewOptions.onRowOutOfViewportRange(e, args);
           }
@@ -363,7 +364,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
    * if it's expanding we will add it to our View Components reference array if we don't already have it
    * or if it's collapsing we will remove it from our View Components reference array
    */
-  private onBeforeRowDetailToggle(e: Event, args: { grid: any; item: any; }) {
+  private onBeforeRowDetailToggle(e: Event, args: { grid: SlickGrid; item: any; }) {
     // expanding
     if (args && args.item && args.item.__collapsed) {
       // expanding row detail
@@ -388,7 +389,7 @@ export class RowDetailViewExtension implements UniversalRowDetailViewExtension {
   }
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
-  private onRowBackToViewportRange(e: Event, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
+  private onRowBackToViewportRange(e: Event, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
     if (args && args.item) {
       this._views.forEach((view) => {
         if (view.id === args.item[this.datasetIdPropName]) {

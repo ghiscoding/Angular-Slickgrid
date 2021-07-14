@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs, SlickDataView, SlickGrid } from './../modules/angular-slickgrid';
 
 @Component({
   styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
@@ -28,9 +28,9 @@ export class GridAddItemComponent implements OnInit {
   `;
 
   angularGrid!: AngularGridInstance;
-  grid: any;
+  grid!: SlickGrid;
   gridService!: GridService;
-  dataView: any;
+  dataView!: SlickDataView;
   columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
   dataset: any[];
@@ -44,7 +44,7 @@ export class GridAddItemComponent implements OnInit {
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.dataView = angularGrid.dataView;
-    this.grid = angularGrid.slickGrid;
+    this.grid = angularGrid.slickGrid as SlickGrid;
     this.gridService = angularGrid.gridService;
 
     // if you want to change background color of Duration over 50 right after page load,

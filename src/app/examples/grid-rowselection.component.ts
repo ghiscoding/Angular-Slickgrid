@@ -125,7 +125,7 @@ export class GridRowSelectionComponent implements OnInit {
 
         // you can override the logic for showing (or not) the expand icon
         // for example, display the expand icon only on every 2nd row
-        // selectableOverride: (row: number, dataContext: any, grid: any) => (dataContext.id % 2 === 1)
+        // selectableOverride: (row: number, dataContext: any, grid: SlickGrid) => (dataContext.id % 2 === 1)
       },
       multiSelect: false,
       rowSelectionOptions: {

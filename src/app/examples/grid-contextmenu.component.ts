@@ -50,8 +50,8 @@ const priorityExportFormatter: Formatter = (row, cell, value, columnDef, dataCon
   return translate && translate.instant && translate.instant(key);
 };
 
-const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
-  const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  const gridOptions = grid?.getOptions?.() as GridOption;
   const translate = gridOptions.i18n;
 
   return translate && translate.instant && translate.instant('TASK_X', { x: value });

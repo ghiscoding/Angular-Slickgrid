@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslaterService as UniversalTranslateService } from '@slickgrid-universal/common';
 
@@ -8,14 +8,14 @@ import { TranslaterService as UniversalTranslateService } from '@slickgrid-unive
  */
 @Injectable()
 export class TranslaterService implements UniversalTranslateService {
-  constructor(private readonly translateService: TranslateService) { }
+  constructor(@Optional() private readonly translateService: TranslateService) { }
 
   /**
    * Method to return the current language used by the App
    * @return {string} current language
    */
   getCurrentLanguage(): string {
-    return this.translateService.currentLang;
+    return this.translateService?.currentLang ?? '';
   }
 
   /**
@@ -24,7 +24,7 @@ export class TranslaterService implements UniversalTranslateService {
    * @return {Promise} output
    */
   async use(newLang: string): Promise<any> {
-    return this.translateService.use(newLang);
+    return this.translateService?.use?.(newLang);
   }
 
   /**
@@ -33,6 +33,6 @@ export class TranslaterService implements UniversalTranslateService {
    * @return {string} translated value
    */
   translate(translationKey: string): string {
-    return this.translateService.instant(translationKey || ' ') as string;
+    return this.translateService?.instant?.(translationKey || ' ') as string;
   }
 }

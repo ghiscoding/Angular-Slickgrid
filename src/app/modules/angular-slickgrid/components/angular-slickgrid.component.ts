@@ -819,7 +819,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.slickEmptyWarning?.showEmptyDataMessage(showWarning);
   }
 
-  private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
+  private bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: SlickDataView) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate?.onLangChange) {
       // translate some of them on first load, then on each language change
@@ -887,12 +887,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     if (dataView && grid) {
+      const slickgridEventPrefix = this.gridOptions?.defaultSlickgridEventPrefix ?? '';
+
       // expose all Slick Grid Events through dispatch
       for (const prop in grid) {
         if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
           const gridEventHandler = (grid as any)[prop];
+          const gridEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
           (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof gridEventHandler>>).subscribe(gridEventHandler, (event, args) => {
-            const gridEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, this.gridOptions?.defaultSlickgridEventPrefix ?? '');
             return this._eventPubSubService.dispatchCustomEvent(gridEventName, { eventData: event, args });
           });
         }
@@ -903,7 +905,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
           const dataViewEventHandler = (dataView as any)[prop];
           (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof dataViewEventHandler>>).subscribe(dataViewEventHandler, (event, args) => {
-            const dataViewEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, this.gridOptions?.defaultSlickgridEventPrefix ?? '');
+            const dataViewEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
             return this._eventPubSubService.dispatchCustomEvent(dataViewEventName, { eventData: event, args });
           });
         }
@@ -1025,7 +1027,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private bindResizeHook(grid: any, options: GridOption) {
+  private bindResizeHook(grid: SlickGrid, options: GridOption) {
     if ((options.autoFitColumnsOnFirstLoad && options.autosizeColumnsByCellContentOnFirstLoad) || (options.enableAutoSizeColumns && options.enableAutoResizeColumnsByCellContent)) {
       throw new Error(`[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use. You can enable these 2 options ("autoFitColumnsOnFirstLoad" and "enableAutoSizeColumns") OR these other 2 options ("autosizeColumnsByCellContentOnFirstLoad" and "enableAutoResizeColumnsByCellContent").`);
     }

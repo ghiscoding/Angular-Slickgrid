@@ -6,7 +6,9 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
+  DelimiterType,
   FieldType,
+  FileType,
   Filters,
   Formatters,
   GridOption,
@@ -297,18 +299,18 @@ export class GridDraggableGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    // this.angularGrid.excelExportService!.exportToExcel({
-    //   filename: 'Export',
-    //   format: FileType.xlsx
-    // });
+    this.excelExportService.exportToExcel({
+      filename: 'Export',
+      format: FileType.xlsx
+    });
   }
 
   exportToCsv(type = 'csv') {
-    // this.angularGrid.exportService.exportToFile({
-    //   delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-    //   filename: 'myExport',
-    //   format: (type === 'csv') ? FileType.csv : FileType.txt
-    // });
+    this.textExportService.exportToFile({
+      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+      filename: 'myExport',
+      format: (type === 'csv') ? FileType.csv : FileType.txt
+    });
   }
 
   groupByDuration() {

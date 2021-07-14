@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   AngularSlickgridComponent, Column, FieldType,
   GridOption, BackendService,
-  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, Pagination
+  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, Pagination, SlickGrid, SlickDataView
 } from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -287,13 +287,13 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     return this.dataset;
   }
 
-  gridReady(grid: any) {
+  gridReady(grid: SlickGrid) {
     this.logger.info('method [gridReady] - START');
     this.gridObj = grid;
     this.logger.info('method [gridReady] - END');
   }
 
-  dataviewReady(dataview: any) {
+  dataviewReady(dataview: SlickDataView) {
     this.logger.info('method [dataviewReady] - START/END', dataview);
     this.dataviewObj = dataview;
   }

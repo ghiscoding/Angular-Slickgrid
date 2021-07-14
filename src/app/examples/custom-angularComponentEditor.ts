@@ -8,6 +8,7 @@ import {
   EditorValidator,
   EditorValidationResult,
   GridOption,
+  SlickGrid,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -28,7 +29,7 @@ export class CustomAngularComponentEditor implements Editor {
   defaultItem: any;
 
   /** SlickGrid grid object */
-  grid: any;
+  grid: SlickGrid;
 
   constructor(private args: any) {
     this.grid = args && args.grid;
@@ -61,7 +62,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    return this.grid?.getOptions?.() as GridOption;
   }
 
   get hasAutoCommitEdit(): boolean {
