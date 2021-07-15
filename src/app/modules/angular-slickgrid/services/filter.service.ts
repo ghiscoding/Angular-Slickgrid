@@ -686,7 +686,9 @@ export class FilterService {
       });
 
       // when we have a Filter Presets on a Tree Data View grid, we need to call the pre-filtering of tree data
-      this.refreshTreeDataFilters();
+      if (this._gridOptions?.enableTreeData) {
+        this.refreshTreeDataFilters();
+      }
     }
     return this._columnDefinitions;
   }
@@ -697,7 +699,7 @@ export class FilterService {
    * @param {Array<Object>} [items] - optional flat array of parent/child items to use while redoing the full sort & refresh
    */
   refreshTreeDataFilters(items?: any[]) {
-    const inputItems = items ?? this._dataView.getItems() ?? [];
+    const inputItems = items ?? this._dataView?.getItems?.() ?? [];
 
     if (this._dataView && this._gridOptions?.enableTreeData && inputItems.length > 0) {
       this._tmpPreFilteredData = this.preFilterTreeData(inputItems, this._columnFilters);
@@ -874,7 +876,9 @@ export class FilterService {
         });
 
         // when using Tree Data, we also need to refresh the filters because of the tree structure with recursion
-        this.refreshTreeDataFilters();
+        if (this._gridOptions?.enableTreeData) {
+          this.refreshTreeDataFilters();
+        }
 
         this._dataView.refresh();
       }
