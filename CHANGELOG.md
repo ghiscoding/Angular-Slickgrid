@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.30.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.2...v2.30.3) (2021-07-15)
+
+
+### Bug Fixes
+
+* **filter:** refreshTreeDataFilters only when Tree is enabled fixes [#806](https://github.com/ghiscoding/angular-slickgrid/issues/806) ([4f826e2](https://github.com/ghiscoding/angular-slickgrid/commit/4f826e22e40cb57a553c0f365810e2788cf1d398))
+
+### [2.30.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.2...v2.30.3) (2021-07-15)
+
+
+### Bug Fixes
+
+* **filter:** refreshTreeDataFilters only when Tree is enabled fixes [#806](https://github.com/ghiscoding/angular-slickgrid/issues/806) ([4f826e2](https://github.com/ghiscoding/angular-slickgrid/commit/4f826e22e40cb57a553c0f365810e2788cf1d398))
+
 ### [2.30.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.1...v2.30.2) (2021-06-30)
 
 
