@@ -164,7 +164,7 @@ describe('bsdropdown-service', () => {
 
         service.domElement.trigger('hidden.bs.dropdown');
 
-        expect(service.domElement[0].style.marginTop).toBe('-40px');
+        expect(service.domElement[0].style.marginTop).toBe('0px');
         expect(compSpy).toHaveBeenCalledWith(TestComponent);
         expect(service.domElement).toBeTruthy();
         expect(disposeSpy).toHaveBeenCalledTimes(1);

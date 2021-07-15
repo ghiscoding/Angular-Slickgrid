@@ -194,7 +194,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   get dataset(): any[] {
-    return this.dataView.getItems();
+    return this.customDataView ? this.slickGrid.getData() : this.dataView.getItems();
   }
   set dataset(newDataset: any[]) {
     const prevDatasetLn = this._currentDatasetLength;
