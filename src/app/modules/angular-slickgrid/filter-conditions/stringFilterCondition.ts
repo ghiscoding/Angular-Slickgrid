@@ -65,9 +65,9 @@ export function getFilterParsedText(inputSearchTerms: SearchTerm[] | undefined):
 
 /** Execute the filter string test condition, returns a boolean */
 function testStringCondition(operator: OperatorType | OperatorString, cellValue: string, searchValue: string, searchInputLastChar?: string): boolean {
-  if (operator === '*' || operator === OperatorType.endsWith) {
+  if (operator === '*' || operator === OperatorType.endsWith || operator === '*z') {
     return cellValue.endsWith(searchValue);
-  } else if ((operator === '' && searchInputLastChar === '*') || operator === OperatorType.startsWith) {
+  } else if ((operator === '' && searchInputLastChar === '*') || operator === OperatorType.startsWith || operator === 'a*') {
     return cellValue.startsWith(searchValue);
   } else if (operator === '' || operator === OperatorType.contains) {
     return (cellValue.indexOf(searchValue) > -1);
