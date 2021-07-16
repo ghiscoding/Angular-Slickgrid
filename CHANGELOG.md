@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.30.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.3...v2.30.4) (2021-07-16)
+
+
+### Bug Fixes
+
+* **filters:** startsWith/endsWith operator should work, fixes [#811](https://github.com/ghiscoding/angular-slickgrid/issues/811) ([bf57acd](https://github.com/ghiscoding/angular-slickgrid/commit/bf57acd106da2595d7e7f0f3287de3b7242f36c2))
+
 ### [2.30.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.2...v2.30.3) (2021-07-15)
 
 
