@@ -95,12 +95,12 @@ export class BsDropDownService {
               this._domElement.css('position', 'absolute');
               this._domElement.css('top', topPos);
               this._domElement.css('left', leftPos);
-              $(`#${myDropId}`).addClass('show dropdown-menu');
+              $(`#${myDropId}`).addClass('open');
               $(`#${dropDownToggleId}`).hide();
 
               // check if it should drop Up or Down
               const offset = 35;
-              const iElement = $('ul.dropdown-menu');
+              const iElement = $('.dropdown-menu');
               const iElementWrapper = iElement.parent();
               const iElementWrapperOffset = iElementWrapper.offset() || {};
               const iElementWrapperOffsetTop = iElementWrapperOffset.top || iElementWrapper && iElementWrapper.length > 0 && iElementWrapper[0].offsetTop;

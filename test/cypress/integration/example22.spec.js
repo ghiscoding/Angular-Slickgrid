@@ -32,11 +32,15 @@ describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
       });
 
     cy.get('#grid22')
-      .find('#myDrop-r1-c6')
+      .find('.slick-row:nth(1) .slick-cell:nth(6)')
+      .contains('Action')
       .click({ force: true });
 
-    cy.contains('Delete Row')
-      .click({ force: true });
+    cy.get('.slick-cell-menu .slick-cell-menu-command-list')
+      .find('.slick-cell-menu-item.red')
+      .should('exist')
+      .contains('Delete Row')
+      .click();
 
     // after deleting the row
     cy.get('#grid22')
