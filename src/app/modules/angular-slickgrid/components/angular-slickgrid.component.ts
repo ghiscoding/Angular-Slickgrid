@@ -78,6 +78,8 @@ import {
 import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
+import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
+import { dequal } from 'dequal/lite';
 
 import { Constants } from '../constants';
 import { AngularGridInstance, ExternalTestingDependencies, GridOption, } from './../models/index';
@@ -89,7 +91,6 @@ import { unsubscribeAllObservables } from './../services/utilities';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
 import { ContainerService } from '../services/container.service';
-import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
@@ -194,16 +195,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   get dataset(): any[] {
-    return this.customDataView ? this.slickGrid.getData() : this.dataView.getItems();
+    return (this.customDataView ? this.slickGrid?.getData?.() : this.dataView?.getItems?.()) || [];
   }
   set dataset(newDataset: any[]) {
     const prevDatasetLn = this._currentDatasetLength;
+    const isDatasetEqual = dequal(newDataset, this._dataset || []);
     let data = newDataset;
 
-    // when Tree Data is enabled and we don't yet have the hierarchical dataset filled, we can force a convert & sort of the array
-    if (this.slickGrid && this.gridOptions?.enableTreeData && Array.isArray(newDataset) && (newDataset.length > 0 || newDataset.length !== prevDatasetLn)) {
+    // when Tree Data is enabled and we don't yet have the hierarchical dataset filled, we can force a convert+sort of the array
+    if (this.slickGrid && this.gridOptions?.enableTreeData && Array.isArray(newDataset) && (newDataset.length > 0 || newDataset.length !== prevDatasetLn || !isDatasetEqual)) {
       this._isDatasetHierarchicalInitialized = false;
-      data = this.sortTreeDataset(newDataset);
+      data = this.sortTreeDataset(newDataset, !isDatasetEqual); // if dataset changed, then force a refresh anyway
     }
     this._dataset = data;
     this.refreshGridData(data || []);
@@ -221,6 +223,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     return this.sharedService.hierarchicalDataset;
   }
   set datasetHierarchical(newHierarchicalDataset: any[] | undefined) {
+    const isDatasetEqual = dequal(newHierarchicalDataset, this.sharedService?.hierarchicalDataset ?? []);
     const prevFlatDatasetLn = this._currentDatasetLength;
     this.sharedService.hierarchicalDataset = newHierarchicalDataset;
 
@@ -237,7 +240,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       // however we need 1 cpu cycle before having the DataView refreshed, so we need to wrap this check in a setTimeout
       setTimeout(() => {
         const flatDatasetLn = this.dataView.getItemCount();
-        if (flatDatasetLn !== prevFlatDatasetLn && flatDatasetLn > 0) {
+        if (flatDatasetLn > 0 && (flatDatasetLn !== prevFlatDatasetLn || !isDatasetEqual)) {
           this.filterService.refreshTreeDataFilters();
         }
       });
@@ -1309,9 +1312,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Takes a flat dataset with parent/child relationship, sort it (via its tree structure) and return the sorted flat array
+   * @param {Array<Object>} flatDatasetInput - flat dataset input
+   * @param {Boolean} forceGridRefresh - optionally force a full grid refresh
    * @returns {Array<Object>} sort flat parent/child dataset
    */
-  private sortTreeDataset<T>(flatDatasetInput: T[]): T[] {
+  private sortTreeDataset<T>(flatDatasetInput: T[], forceGridRefresh = false): T[] {
     const prevDatasetLn = this._currentDatasetLength;
     let sortedDatasetResult;
     let flatDatasetOutput: any[] = [];
@@ -1335,7 +1340,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     // if we add/remove item(s) from the dataset, we need to also refresh our tree data filters
-    if (flatDatasetInput.length > 0 && flatDatasetInput.length !== prevDatasetLn) {
+    if (flatDatasetInput.length > 0 && (forceGridRefresh || flatDatasetInput.length !== prevDatasetLn)) {
       this.filterService.refreshTreeDataFilters(flatDatasetOutput);
     }
 
