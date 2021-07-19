@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+
 import {
   AngularGridInstance,
   Column,
@@ -9,7 +11,6 @@ import {
   GridStateChange,
   GridStateType,
   TreeToggledItem,
-  TreeToggleStateChange,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 500;
@@ -99,14 +100,14 @@ export class GridTreeDataParentChildComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       enableExcelExport: true,
-      exportOptions: { exportWithFormatter: true },
-      excelExportOptions: { exportWithFormatter: true },
+      excelExportOptions: { exportWithFormatter: true, sanitizeDataExport: true },
+      registerExternalResources: [new ExcelExportService()],
       enableFiltering: true,
       showCustomFooter: true, // display some metrics in the bottom custom footer
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
@@ -138,6 +139,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
         filters: [{ columnId: 'percentComplete', searchTerms: [25], operator: '>=' }],
         treeData: { toggledItems: [{ itemId: 1, isCollapsed: false }] },
       },
+
       // change header/cell row height for material design theme
       headerRowHeight: 45,
       rowHeight: 40,

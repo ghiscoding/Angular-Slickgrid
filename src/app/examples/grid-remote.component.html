@@ -30,8 +30,8 @@
 
   <angular-slickgrid gridId="grid18" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
                      [dataset]="dataset" [customDataView]="customDataView"
-                     (onAngularGridCreated)="angularGridReady($event)"
-                     (sgOnViewportChanged)="onViewportChanged($event.detail.eventData, $event.detail.args)"
-                     (sgOnSort)="onSort($event.detail.eventData, $event.detail.args)">
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onViewportChanged)="onViewportChanged($event.detail.eventData, $event.detail.args)"
+                     (onSort)="onSort($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>

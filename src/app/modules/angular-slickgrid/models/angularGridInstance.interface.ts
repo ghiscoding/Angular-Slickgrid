@@ -1,34 +1,33 @@
-import { BackendService } from './index';
 import {
-  ExcelExportService,
-  ExportService,
+  BackendService,
+  ExtensionList,
   ExtensionService,
   FilterService,
-  GridService,
   GridEventService,
+  GridService,
   GridStateService,
   GroupingAndColspanService,
   PaginationService,
   ResizerService,
+  SlickDataView,
+  SlickGrid,
   SortService,
-  TreeDataService,
-} from '../services';
-import { ExtensionList } from './extensionList.type';
+  TreeDataService
+} from '@slickgrid-universal/common';
 
 export interface AngularGridInstance {
   /** Slick DataView object */
-  dataView: any;
+  dataView: SlickDataView;
 
   /** Slick Grid object */
-  slickGrid: any;
+  slickGrid: SlickGrid;
 
   /** SlickGrid extensions (external controls/plugins) */
-  extensions: ExtensionList;
+  extensions: ExtensionList<any, any>;
 
   // --
   // Methods
-
-  /** Destroy the grid and optionally empty the DOM element grid container as well */
+  /** Dispose of the grid and optionally empty the DOM element grid container as well */
   destroy: (emptyDomElementContainer?: boolean) => void;
 
   // --
@@ -37,17 +36,8 @@ export interface AngularGridInstance {
   /** Backend Service, when available */
   backendService?: BackendService;
 
-  /** Extension (Controls & Plugins) Service */
+  /** Extension (Plugins & Controls) Service */
   extensionService: ExtensionService;
-
-  /** @deprecated, use `extensionService` instead. Plugin and Control Service */
-  pluginService: ExtensionService;
-
-  /** Excel Export Service */
-  excelExportService?: ExcelExportService;
-
-  /** Export Service */
-  exportService: ExportService;
 
   /** Filter Service */
   filterService: FilterService;
@@ -65,7 +55,7 @@ export interface AngularGridInstance {
   groupingService: GroupingAndColspanService;
 
   /** Pagination Service (allows you to programmatically go to first/last page, etc...) */
-  paginationService: PaginationService;
+  paginationService?: PaginationService;
 
   /** Resizer Service (including auto-resize) */
   resizerService: ResizerService;

@@ -6,11 +6,11 @@ import { AngularGridInstance, Column, Formatter, GridOption } from './../modules
 
 declare const Slick: any;
 
-const brandFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+const brandFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) => {
   return dataContext && dataContext.brand && dataContext.brand.name || '';
 };
 
-const mpnFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+const mpnFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) => {
   let link = '';
   if (dataContext && dataContext.octopart_url && dataContext.mpn) {
     link = `<a href="${dataContext.octopart_url}" target="_blank">${dataContext.mpn}</a>`;
@@ -97,8 +97,8 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableCellNavigation: true,
       enableColumnReorder: false,

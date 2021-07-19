@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   AngularSlickgridComponent, Column, FieldType,
   GridOption, BackendService,
-  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination
+  BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, Pagination, SlickGrid, SlickDataView
 } from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -22,9 +22,8 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
   selector: 'swt-common-grid',
   template: `<angular-slickgrid gridId='common-grid'
                       #angularSlickGrid
-                      [gridHeight]="200"
-                      (onDataviewCreated)="dataviewReady($event)"
-                      (onGridCreated)="gridReady($event)"
+                      (onDataviewCreated)="dataviewReady($event.detai)"
+                      (onGridCreated)="gridReady($event.detail)"
                       [columnDefinitions]="columnDefinitions"
                       [gridOptions]="gridOptions"
                       [dataset]="dataset">
@@ -73,7 +72,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   @Output() onFilterChanged: EventEmitter<FilterChangedArgs> = new EventEmitter<FilterChangedArgs>();
   @Output() onPaginationChanged: EventEmitter<PaginationChangedArgs> = new EventEmitter<PaginationChangedArgs>();
-  @Output() onSortChanged: EventEmitter<SortChangedArgs> = new EventEmitter<SortChangedArgs>();
+  @Output() onSortChanged: EventEmitter<any> = new EventEmitter<any>();
 
   sortedGridColumn = '';
   currentPage = 1;
@@ -94,10 +93,10 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     asyncEditorLoading: false,
     autoEdit: this.isAutoEdit,
     autoResize: {
-      containerId: 'common-grid-container',
-      sidePadding: 10
+      container: '#common-grid-container',
+      rightPadding: 10
     },
-    // locale: 'fr',
+    gridHeight: 200,
     enableColumnPicker: true,
     enableCellNavigation: true,
     enableRowSelection: true,
@@ -288,13 +287,13 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     return this.dataset;
   }
 
-  gridReady(grid: any) {
+  gridReady(grid: SlickGrid) {
     this.logger.info('method [gridReady] - START');
     this.gridObj = grid;
     this.logger.info('method [gridReady] - END');
   }
 
-  dataviewReady(dataview: any) {
+  dataviewReady(dataview: SlickDataView) {
     this.logger.info('method [dataviewReady] - START/END', dataview);
     this.dataviewObj = dataview;
   }
@@ -329,7 +328,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): Promise<string> | string {
+  processOnFilterChanged(event: Event | undefined, args: FilterChangedArgs): string {
     this.logger.info('method [onFilterChanged] - START', args);
     this.filteredGridColumns = '';
     let timing = 0;
@@ -379,7 +378,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
    * @param event
    * @param args
    */
-  processOnSortChanged(event: Event | undefined, args: SortChangedArgs) {
+  processOnSortChanged(event: Event | undefined, args: any) {
     this.logger.info('method [onSortChanged] - START');
     this.sortedGridColumn = '';
     const sortDirection = '|' + args!.sortCols![0].sortAsc + '|';

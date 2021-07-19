@@ -144,7 +144,7 @@ describe('bsdropdown-service', () => {
       });
 
       it('should drop up when window height is below parent div offset top', async () => {
-        const divDropdown = document.createElement('div');
+        const divDropdown = document.createElement('ul');
         divDropdown.className = 'dropdown-menu';
         divDropdown.style.height = '200px';
         div.appendChild(divDropdown);
@@ -152,7 +152,7 @@ describe('bsdropdown-service', () => {
         const disposeSpy = jest.spyOn(service, 'dispose');
         const showSpy = jest.spyOn(service, 'dropContainerShow');
 
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 100 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 184 });
         Object.defineProperty(div, 'offsetTop', { writable: true, configurable: true, value: 150 });
         window.dispatchEvent(new Event('resize'));
         div.dispatchEvent(new Event('resize'));

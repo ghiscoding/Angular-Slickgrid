@@ -11,30 +11,31 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="row row-cols-lg-auto g-3 align-items-center">
-    <div class="col-12">
+  <div class="row row-cols-lg-auto g-1 align-items-center">
+    <div class="col">
       <label for="columnSelect">Single Search:</label>
     </div>
-    <div class="col-12">
+    <div class="col">
       <select class="form-select" class="form-select" data-test="search-column-list" name="selectedColumn"
               [(ngModel)]="selectedColumn"
               (ngModelChange)="updateFilter()">
         <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
       </select>
     </div>
-    <div class="col-12">
+    <div class="col">
       <select class="form-select" data-test="search-operator-list" name="selectedOperator"
               [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
         <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
       </select>
     </div>
-    <div class="col-12">
+
+    <div class="col">
       <div class="input-group">
         <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
                placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
         <button class="btn btn-outline-secondary d-flex align-items-center pl-2 pr-2" data-test="clear-search-value"
                 (click)="cleargridSearchInput()">
-          <span class="icon fa fa-times"></span>
+          <span class="fa fa-times"></span>
         </button>
       </div>
     </div>
@@ -46,6 +47,6 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

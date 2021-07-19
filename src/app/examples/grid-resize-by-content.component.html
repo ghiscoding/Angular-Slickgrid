@@ -52,11 +52,11 @@
   </div>
 
   <div id="smaller-container" style="width: 950px">
-    <angular-slickgrid gridId="grid30"
+    <angular-slickgrid gridId="grid31"
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
                        [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event)">
+                       (onAngularGridCreated)="angularGridReady($event.detail)">
     </angular-slickgrid>
   </div>
 </div>

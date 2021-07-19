@@ -762,7 +762,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
         .find('[data-test=page-number-input]')
         .invoke('val')
         .then(pageNumber => expect(pageNumber).to.eq('1'));
-      
+
       cy.get('@grid2')
         .find('[data-test=page-count]')
         .contains('3');

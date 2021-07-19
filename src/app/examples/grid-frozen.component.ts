@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption, SlickNamespace } from './../modules/angular-slickgrid';
 
-declare const Slick: any;
+declare const Slick: SlickNamespace;
 
 @Component({
   templateUrl: './grid-frozen.component.html',
@@ -209,8 +209,8 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableExcelCopyBuffer: true,
       enableCellNavigation: true,
@@ -269,7 +269,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
     }
   }
 
-  costDurationFormatter(row: number, cell: number, value: any, columnDef: Column, dataContext: any) {
+  costDurationFormatter(_row: number, _cell: number, _value: any, _columnDef: Column, dataContext: any) {
     const costText = this.isNullUndefinedOrEmpty(dataContext.cost) ? 'n/a' : formatNumber(dataContext.cost, 0, 2, false, '$', '', '.', ',');
     let durationText = 'n/a';
     if (!this.isNullUndefinedOrEmpty(dataContext.duration) && dataContext.duration >= 0) {

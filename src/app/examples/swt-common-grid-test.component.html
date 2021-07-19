@@ -23,7 +23,8 @@
     </div>
   </div>
   <swt-common-grid #commonGrid1
-                   (onFilterChanged)="filterChanged($event)"
-                   (onPaginationChanged)="paginationChanged($event)"
-                   (onSortChanged)="sortChanged($event)"></swt-common-grid>
+                   (onFilterChanged)="filterChanged($event.detail)"
+                   (onPaginationChanged)="paginationChanged($event.detail)"
+                   (onSortChanged)="sortChanged($event.detail)">
+  </swt-common-grid>
 </div>

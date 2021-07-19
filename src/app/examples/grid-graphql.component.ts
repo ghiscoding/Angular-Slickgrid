@@ -1,4 +1,5 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, } from '@slickgrid-universal/graphql';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -6,9 +7,6 @@ import {
   FieldType,
   Filters,
   Formatters,
-  GraphqlPaginatedResult,
-  GraphqlService,
-  GraphqlServiceApi,
   GridOption,
   GridStateChange,
   Metrics,
@@ -56,7 +54,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   isWithCursor = false;
   selectedLanguage: string;
 
-  constructor(private translate: TranslateService) {
+  constructor(private readonly cd: ChangeDetectorRef, private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
     const defaultLang = 'en';
     this.translate.use(defaultLang);
@@ -126,6 +124,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
     this.gridOptions = {
+      gridHeight: 200,
+      gridWidth: 900,
       enableFiltering: true,
       enableCellNavigation: true,
       enableTranslate: true,
@@ -202,6 +202,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         postProcess: (result: GraphqlPaginatedResult) => {
           this.metrics = result.metrics as Metrics;
           this.displaySpinner(false);
+          this.cd.detectChanges();
         }
       } as GraphqlServiceApi
     };
@@ -209,9 +210,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
-    this.subscriptions.push(
-      this.angularGrid.gridStateService.onGridStateChanged.subscribe((data) => console.log(data))
-    );
   }
 
   displaySpinner(isProcessing: boolean) {
@@ -240,7 +238,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       }
     };
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService!.buildQuery();
         resolve(mockedResult);
@@ -249,21 +247,21 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   goToFirstPage() {
-    this.angularGrid.paginationService.goToFirstPage();
+    this.angularGrid.paginationService!.goToFirstPage();
   }
 
   goToLastPage() {
-    this.angularGrid.paginationService.goToLastPage();
+    this.angularGrid.paginationService!.goToLastPage();
   }
 
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridStateChanges: GridStateChange) {
-    console.log('Client sample, Grid State changed:: ', gridStateChanges);
+    console.log('GraphQL Example, Grid State changed:: ', gridStateChanges);
     localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(gridStateChanges.gridState);
   }
 
   clearAllFiltersAndSorts() {
-    if (this.angularGrid && this.angularGrid.gridService) {
+    if (this.angularGrid?.gridService) {
       this.angularGrid.gridService.clearAllFiltersAndSorts();
     }
   }

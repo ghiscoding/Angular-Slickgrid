@@ -1,16 +1,14 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { GridOdataService, OdataServiceApi, OdataOption } from '@slickgrid-universal/odata';
+import { ChangeDetectorRef, Component, OnInit, } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AngularGridInstance,
   Column,
   FieldType,
   Filters,
-  GridOdataService,
   GridOption,
   GridStateChange,
   Metrics,
-  OdataOption,
-  OdataServiceApi,
   OperatorType,
   Pagination,
 } from './../modules/angular-slickgrid';
@@ -51,7 +49,7 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly cd: ChangeDetectorRef, private http: HttpClient) { }
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
@@ -80,8 +78,8 @@ export class GridOdataComponent implements OnInit {
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       checkboxSelector: {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
@@ -121,6 +119,7 @@ export class GridOdataComponent implements OnInit {
           this.metrics = response.metrics;
           this.displaySpinner(false);
           this.getCustomerCallback(response);
+          this.cd.detectChanges();
         }
       } as OdataServiceApi
     };
@@ -140,7 +139,6 @@ export class GridOdataComponent implements OnInit {
     if (this.isCountEnabled) {
       countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
     }
-    this.paginationOptions = { ...this.gridOptions.pagination as Pagination, totalItems: data[countPropName] as number };
     if (this.metrics) {
       this.metrics.totalItemCount = data[countPropName];
     }
@@ -148,6 +146,7 @@ export class GridOdataComponent implements OnInit {
     // once pagination totalItems is filled, we can update the dataset
     this.dataset = data['items'];
     this.odataQuery = data['query'];
+    this.paginationOptions = { ...this.gridOptions.pagination as Pagination, totalItems: data[countPropName] as number };
   }
 
   getCustomerApiCall(query: string) {
@@ -157,11 +156,11 @@ export class GridOdataComponent implements OnInit {
   }
 
   goToFirstPage() {
-    this.angularGrid.paginationService.goToFirstPage();
+    this.angularGrid.paginationService!.goToFirstPage();
   }
 
   goToLastPage() {
-    this.angularGrid.paginationService.goToLastPage();
+    this.angularGrid.paginationService!.goToLastPage();
   }
 
   setFiltersDynamically() {

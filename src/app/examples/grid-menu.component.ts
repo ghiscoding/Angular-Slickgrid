@@ -1,4 +1,4 @@
-import { Component, Injectable, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularGridInstance, Column, ExtensionName, FieldType, Filters, Formatters, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -79,8 +79,8 @@ export class GridMenuComponent implements OnInit, OnDestroy {
       enableAutoResize: true,
       enableGridMenu: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableFiltering: true,
       enableCellNavigation: true,

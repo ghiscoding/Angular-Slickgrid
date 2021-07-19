@@ -12,47 +12,49 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <br />
+
   <span *ngIf="metrics" style="margin-right: 10px">
     <b>Metrics:</b> {{metrics.startTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.itemCount}} of
     {{metrics.totalItemCount}} items
   </span>
 
-  <form class="row row-cols-lg-auto g-3 align-items-center">
-    <div class="col-12">
+  <form class="row row-cols-lg-auto g-1 align-items-center">
+    <div class="col">
       <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters" (click)="clearFilters()">
         Clear Filters
       </button>
     </div>
-    <div class="col-12">
+    <div class="col">
       <button class="btn btn-outline-secondary btn-sm" data-test="clear-sorting"
               (click)="angularGrid.sortService.clearSorting()">
         Clear Sorting
       </button>
     </div>
-    <div class="col-12">
+    <div class="col">
       <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
         Set Filters Dynamically
       </button>
     </div>
-    <div class="col-12">
+    <div class="col">
       <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
               (click)="setSortingDynamically()">
         Set Sorting Dynamically
       </button>
     </div>
-    <div class="col-12">
+    <div class="col">
       <label for="selectedFilter" style="margin-left: 10px">Predefined Filters</label>
     </div>
-    <div class="col-12">
+    <div class="col">
       <select name="selectedFilter" class="form-select" [(ngModel)]="selectedPredefinedFilter"
               data-test="select-dynamic-filter" (ngModelChange)="usePredefinedFilter($event)">
         <option [ngValue]="filter.value" *ngFor="let filter of filterList">{{filter.label}}</option>
       </select>
     </div>
   </form>
-  <div class="row">
-    <div class="col-12">
-      <button class="btn btn-outline-secondary btn-sm" (click)="switchLanguage()" data-test="language">
+
+  <div class="row mt-2">
+    <div class="col">
+      <button class="btn btn-outline-secondary btn-sm" data-test="language" (click)="switchLanguage()">
         <i class="fa fa-language"></i>
         Switch Language
       </button>
@@ -64,9 +66,9 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onGridStateChanged)="gridStateChanged($event.detail)"
                      (onBeforeGridDestroy)="saveCurrentGridState()"
-                     (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
+                     (onRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>

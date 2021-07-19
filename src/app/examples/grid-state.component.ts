@@ -74,7 +74,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
   clearGridStateFromLocalStorage() {
     localStorage[LOCAL_STORAGE_KEY] = null;
     this.angularGrid.gridService.resetGrid(this.columnDefinitions);
-    this.angularGrid.paginationService.changeItemPerPage(DEFAULT_PAGE_SIZE);
+    this.angularGrid.paginationService!.changeItemPerPage(DEFAULT_PAGE_SIZE);
   }
 
   /* Define grid Options and Columns */
@@ -146,8 +146,8 @@ export class GridStateComponent implements OnInit, OnDestroy {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableCheckboxSelector: true,
       enableFiltering: true,

@@ -1,0 +1,79 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    {{title}}
+    <span class="float-right">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-composite-editor.component.ts">
+        <span class="fa fa-link"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <div class="mb-2">
+    <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
+      <button type="button" class="btn btn-outline-secondary" data-test="toggle-readonly-btn"
+              (click)="toggleGridEditReadonly()">
+        <i class="fa fa-table"></i> Toggle Edit/Readonly Grid
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="undo-last-edit-btn"
+              (click)="undoLastEdit()">
+        <i class="fa fa-undo"></i> Undo Last Edit
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="undo-open-editor-btn"
+              (click)="undoLastEdit(true)">
+        <i class="fa fa-undo"></i> Undo Last Edit &amp; Open Editor
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="undo-all-edits-btn"
+              (click)="undoAllEdits()">
+        <i class="fa fa-history"></i> Undo All Edits
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="save-all-btn"
+              (click)="saveAll()">
+        <i class="fa fa-save"></i> Save All
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-create-btn"
+              (click)="openCompositeModal('create')" [disabled]="isCompositeDisabled">
+        <i class="fa fa-plus"></i> Item Create
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-clone-btn"
+              (click)="openCompositeModal('clone')" [disabled]="isCompositeDisabled">
+        <i class="fa fa-clone"></i> Item Clone
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-edit-btn"
+              (click)="openCompositeModal('edit')" [disabled]="isCompositeDisabled">
+        <i class="fa fa-pencil"></i> Item Edit
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-mass-update-btn"
+              (click)="openCompositeModal('mass-update')" [disabled]="isCompositeDisabled">
+        <i class="fa fa-pencil-square-o"></i> Mass Update
+      </button>
+      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-mass-selection-btn"
+              (click)="openCompositeModal('mass-selection')" [disabled]="isMassSelectionDisabled">
+        <i class="fa fa-check-square-o"></i> Update Selected
+      </button>
+    </div>
+  </div>
+
+
+  <angular-slickgrid gridId="grid30"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onBeforeEditCell)="handleOnBeforeEditCell($event.detail.eventData, $event.detail.args)"
+                     (onCellChange)="handleOnCellChange($event.detail.eventData, $event.detail.args)"
+                     (onClick)="handleOnCellClicked($event.detail.eventData, $event.detail.args)"
+                     (onCompositeEditorChange)="handleOnCompositeEditorChange($event.detail.eventData, $event.detail.args)"
+                     (onItemDeleted)="handleItemDeleted($event.detail.eventData, $event.detail.args)"
+                     (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
+                     (onPaginationChanged)="handlePaginationChanged()"
+                     (onValidationError)="handleValidationError($event.detail.eventData, $event.detail.args)">
+  </angular-slickgrid>
+</div>

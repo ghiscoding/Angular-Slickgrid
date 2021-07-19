@@ -16,8 +16,8 @@
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
                        [dataset]="dataset"
-                       (onDataviewCreated)="dataviewReady($event)"
-                       (onGridCreated)="gridReady($event)">
+                       (onDataviewCreated)="dataviewReady($event.detail)"
+                       (onGridCreated)="gridReady($event.detail)">
     </angular-slickgrid>
   </div>
 </div>

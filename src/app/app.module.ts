@@ -10,7 +10,6 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
-import { CustomActionFormatterComponent } from './examples/custom-actionFormatter.component';
 import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.component';
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
@@ -20,6 +19,7 @@ import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
+import { GridCompositeEditorComponent } from './examples/grid-composite-editor.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridAngularComponent } from './examples/grid-angular.component';
@@ -71,12 +71,12 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     locationInitialized.then(() => {
       const langToSet = 'en';
       translate.setDefaultLang('en');
-      translate.use(langToSet).subscribe(() => {
-        // console.info(`Successfully initialized '${langToSet}' language.'`);
-      }, err => {
-        console.error(`Problem with '${langToSet}' language initialization.'`);
-      }, () => {
-        resolve(null);
+      translate.use(langToSet).subscribe({
+        next: () => {
+          // console.info(`Successfully initialized '${langToSet}' language.'`);
+        },
+        error: () => console.error(`Problem with '${langToSet}' language initialization.'`),
+        complete: () => resolve(null)
       });
     });
   });
@@ -86,7 +86,6 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
 @NgModule({
   declarations: [
     AppComponent,
-    CustomActionFormatterComponent,
     CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,
@@ -96,6 +95,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,
+    GridCompositeEditorComponent,
     GridContextMenuComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
@@ -145,14 +145,13 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       // to avoid passing the same options over and over in each grids of your App
       enableAutoResize: true,
       autoResize: {
-        containerId: 'grid-container',
-        sidePadding: 10
+        container: '#grid-container',
+        rightPadding: 10
       }
     })
   ],
   entryComponents: [
     // dynamically created components
-    CustomActionFormatterComponent,
     CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,

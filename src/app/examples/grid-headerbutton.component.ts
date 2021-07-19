@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, Formatter, GridOption } from './../modules/angular-slickgrid';
+
+import { Column, Formatter, GridOption, SlickDataView, SlickGrid } from './../modules/angular-slickgrid';
 
 // create a custom Formatter to highlight negative values in red
 let columnsWithHighlightingById = {};
@@ -48,8 +49,8 @@ export class GridHeaderButtonComponent implements OnInit {
       enableHeaderButton: true,
       enableHeaderMenu: false,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableFiltering: false,
       enableCellNavigation: true,
@@ -176,10 +177,10 @@ export class GridHeaderButtonComponent implements OnInit {
     this.dataset = mockDataset;
   }
 
-  gridReady(grid: any) {
+  gridReady(grid: SlickGrid) {
     this.gridObj = grid;
   }
-  dataviewReady(dataview: any) {
+  dataviewReady(dataview: SlickDataView) {
     this.dataviewObj = dataview;
   }
 }

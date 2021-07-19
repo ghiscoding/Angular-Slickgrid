@@ -72,7 +72,7 @@
                      [gridOptions]="gridOptions"
                      [paginationOptions]="paginationOptions"
                      [dataset]="dataset"
-                     (onGridStateChanged)="gridStateChanged($event)"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onGridStateChanged)="gridStateChanged($event.detail)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

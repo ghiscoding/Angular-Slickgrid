@@ -77,13 +77,11 @@
 
   <hr />
   <angular-slickgrid gridId="grid6"
-                     [gridHeight]="200"
-                     [gridWidth]="900"
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onGridStateChanged)="gridStateChanged($event.detail)"
                      (onBeforeGridDestroy)="saveCurrentGridState()">
   </angular-slickgrid>
 </div>

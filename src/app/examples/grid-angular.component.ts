@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import {
   AngularGridInstance,
   AngularUtilService,
@@ -11,16 +12,16 @@ import {
   Formatters,
   GridOption,
   OnEventArgs,
+  SlickNamespace,
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
-import { CustomActionFormatterComponent } from './custom-actionFormatter.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 import { FilterNgSelectComponent } from './filter-ng-select.component';
 
 // using external non-typed js libraries
-declare const Slick: any;
+declare const Slick: SlickNamespace;
 declare const $: any;
 
 const NB_ITEMS = 100;
@@ -226,16 +227,24 @@ export class GridAngularComponent implements OnInit {
         id: 'action',
         name: 'Action',
         field: 'id',
-        formatter: Formatters.bsDropdown,
-        params: { label: 'Action' },
-        onCellClick: (e: Event, args: OnEventArgs) => {
-          this.bsDropdown.render({
-            component: CustomActionFormatterComponent,
-            args,
-            offsetLeft: 92,
-            offsetDropupBottom: 15,
-            parent: this, // provide this object to the child component so we can call a method from here if we wish
-          });
+        formatter: () => `<div class="fake-hyperlink">Action <i class="fa fa-caret-down"></i></div>`,
+        cellMenu: {
+          width: 175,
+          commandTitle: 'Commands',
+          commandItems: [
+            {
+              command: 'help',
+              title: 'Help',
+              iconCssClass: 'fa fa-question-circle text-info',
+              positionOrder: 66,
+              action: () => alert('Please Help!'),
+            },
+            {
+              command: 'delete-row', title: 'Delete Row', positionOrder: 64,
+              iconCssClass: 'fa fa-times color-danger', cssClass: 'red', textCssClass: 'text-italic color-danger-light',
+              action: (_event, args) => this.angularGrid.gridService.deleteItemById(args.dataContext.id)
+            },
+          ]
         }
       }
     ];
@@ -245,8 +254,8 @@ export class GridAngularComponent implements OnInit {
       autoEdit: this.isAutoEdit,
       autoCommitEdit: false,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       headerRowHeight: 45,
       rowHeight: 45, // increase row height so that the ng-select fits in the cell
@@ -261,6 +270,7 @@ export class GridAngularComponent implements OnInit {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
+      enableCellMenu: true,
       i18n: this.translate,
       params: {
         angularUtilService: this.angularUtilService // provide the service to all at once (Editor, Filter, AsyncPostRender)

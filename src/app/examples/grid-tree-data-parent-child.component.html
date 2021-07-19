@@ -74,7 +74,7 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (onGridStateChanged)="handleOnGridStateChanged($event)"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

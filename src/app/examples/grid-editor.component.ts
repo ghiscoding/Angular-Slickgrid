@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
@@ -18,15 +18,15 @@ import {
   LongTextEditorOption,
   OnEventArgs,
   OperatorType,
-  Sorters,
+  SortComparers,
+  SlickNamespace,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
-declare const Slick: any;
-declare const $: any;
+declare const Slick: SlickNamespace;
 
 const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
@@ -37,7 +37,7 @@ const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArgs) => {
   // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
   const grid = args && args.grid;
-  const gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
+  const gridOptions = (grid?.getOptions?.() ?? {}) as GridOption;
   const translate = gridOptions.i18n;
 
   // to get the editor object, you'll need to use "internalColumnEditor"
@@ -379,7 +379,7 @@ export class GridEditorComponent implements OnInit {
         dataKey: 'code',
         labelKey: 'name',
         type: FieldType.object,
-        sorter: Sorters.objectString, // this sorter requires the dataKey and assume that obj1[dataKey] will be a string so it can sort it that way
+        sortComparer: SortComparers.objectString, // this sorter requires the dataKey and assume that obj1[dataKey] will be a string so it can sort it that way
         filterable: true,
         sortable: true,
         minWidth: 100,
@@ -479,8 +479,8 @@ export class GridEditorComponent implements OnInit {
       autoEdit: this.isAutoEdit,
       autoCommitEdit: false,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       editable: true,
       enableCellNavigation: true,

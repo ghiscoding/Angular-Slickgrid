@@ -1,5 +1,5 @@
-import { Column, DelimiterType, FileType, GridOption, OperatorType, TreeDataOption } from './models/index';
-import { Filters } from './filters/filters.index';
+import { Column, DelimiterType, EventNamingStyle, FileType, Filters, GridAutosizeColsMode, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
+import { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */
 export const GlobalGridOptions: Partial<GridOption> = {
@@ -8,11 +8,12 @@ export const GlobalGridOptions: Partial<GridOption> = {
   asyncEditorLoading: false,
   autoFitColumnsOnFirstLoad: true,
   autoResize: {
+    applyResizeToContainer: true,
     calculateAvailableSizeBy: 'window',
     bottomPadding: 20,
     minHeight: 180,
     minWidth: 300,
-    sidePadding: 0
+    rightPadding: 0
   },
   cellHighlightCssClass: 'slick-cell-modified',
   checkboxSelector: {
@@ -52,11 +53,11 @@ export const GlobalGridOptions: Partial<GridOption> = {
     width: 200,
   },
   customFooterOptions: {
-    dateFormat: 'yyyy-MM-dd, hh:mm aaaaa\'m\'',
+    dateFormat: 'YYYY-MM-DD, hh:mm a',
     hideRowSelectionCount: false,
     hideTotalItemCount: false,
     hideLastUpdateTimestamp: true,
-    footerHeight: 20,
+    footerHeight: 25,
     leftContainerClass: 'col-xs-12 col-sm-5',
     rightContainerClass: 'col-xs-6 col-sm-7',
     metricSeparator: '|',
@@ -107,6 +108,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   enableMouseHoverHighlightRow: true,
   enableSorting: true,
   enableTextSelectionOnCells: true,
+  eventNamingStyle: EventNamingStyle.camelCase,
   explicitInitialization: true,
   excelExportOptions: {
     addGroupIndentation: true,
@@ -200,7 +202,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     totalItems: 0
   },
   // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
-  // @ts-ignore
   rowDetailView: {
     cssClass: 'detail-view-toggle',
     panelRows: 1,
@@ -208,7 +209,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     useRowClick: false,
     useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
-  },
+  } as RowDetailView,
   rowHeight: 35,
   topPanelHeight: 35,
   translationNamespaceSeparator: ':',

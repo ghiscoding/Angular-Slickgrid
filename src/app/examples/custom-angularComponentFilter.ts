@@ -11,6 +11,7 @@ import {
   OperatorType,
   OperatorString,
   SearchTerm,
+  SlickGrid,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -24,7 +25,7 @@ export class CustomAngularComponentFilter implements Filter {
   /** Angular Component Reference */
   componentRef!: ComponentRef<any>;
 
-  grid: any;
+  grid!: SlickGrid;
   searchTerms: SearchTerm[] = [];
   columnDef!: Column;
   callback!: FilterCallback;
@@ -53,14 +54,14 @@ export class CustomAngularComponentFilter implements Filter {
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    return this.grid?.getOptions?.() as GridOption;
   }
 
   /**
    * Initialize the Filter
    */
   init(args: FilterArguments) {
-    this.grid = args.grid;
+    this.grid = args.grid as SlickGrid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
     this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];

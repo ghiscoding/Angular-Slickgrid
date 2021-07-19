@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, } from '@angular/core';
 import { SwtCommonGridComponent } from './swt-common-grid.component';
 import { Logger } from './swt-logger.service';
 import { HttpClient } from '@angular/common/http';

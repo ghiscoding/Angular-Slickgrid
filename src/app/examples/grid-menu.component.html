@@ -11,7 +11,8 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <button class="btn btn-outline-secondary btn-sm" data-test="external-gridmenu" (click)="toggleGridMenu($event)">
+  <button class="btn btn-outline-secondary btn-sm" data-test="external-gridmenu"
+          (click)="toggleGridMenu($event)">
     <i class="fa fa-bars"></i>
     Grid Menu
   </button>
@@ -27,10 +28,10 @@
 
   <div class="col-sm-12">
     <angular-slickgrid gridId="grid9"
-                       (onAngularGridCreated)="angularGridReady($event)"
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
-                       [dataset]="dataset">
+                       [dataset]="dataset"
+                       (onAngularGridCreated)="angularGridReady($event.detail)">
     </angular-slickgrid>
   </div>
 </div>

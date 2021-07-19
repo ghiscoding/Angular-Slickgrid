@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   Component,
   ComponentFactoryResolver,
-  Injectable,
   OnInit,
   ViewChild,
   ViewContainerRef,
@@ -11,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { SwtCommonGridComponent } from './swt-common-grid.component';
 import { SwtCommonGridPaginationComponent } from './swt-common-grid-pagination.component';
-import { FilterChangedArgs, PaginationChangedArgs, SortChangedArgs } from '../modules/angular-slickgrid';
+import { FilterChangedArgs, PaginationChangedArgs } from '../modules/angular-slickgrid';
 
 import { Logger } from './swt-logger.service';
 /**
@@ -88,7 +87,7 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     this.updateGridData();
   }
 
-  sortChanged(event: SortChangedArgs) {
+  sortChanged(event: any) {
     this.commonGridPag.processing = true;
     this.updateGridData();
   }

@@ -1,4 +1,7 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
+
 import {
   AngularGridInstance,
   Aggregators,
@@ -13,7 +16,7 @@ import {
   GroupingGetterFunction,
   GroupTotalFormatters,
   SortDirectionNumber,
-  Sorters,
+  SortComparers,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -46,6 +49,8 @@ export class GridDraggableGroupingComponent implements OnInit {
   gridOptions!: GridOption;
   processing = false;
   selectedGroupingFields: Array<string | GroupingGetterFunction> = ['', '', ''];
+  excelExportService = new ExcelExportService();
+  textExportService = new TextExportService();
 
   constructor() {
     // define the grid options & columns and then create the grid itself
@@ -95,7 +100,7 @@ export class GridDraggableGroupingComponent implements OnInit {
           getter: 'duration',
           formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
           comparer: (a, b) => {
-            return this.durationOrderByCount ? (a.count - b.count) : Sorters.numeric(a.value, b.value, SortDirectionNumber.asc);
+            return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
           aggregators: [
             new Aggregators.Sum('cost')
@@ -206,8 +211,8 @@ export class GridDraggableGroupingComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableDraggableGrouping: true,
       createPreHeaderPanel: true,
@@ -234,7 +239,12 @@ export class GridDraggableGroupingComponent implements OnInit {
         deleteIconCssClass: 'fa fa-times',
         onGroupChanged: (e, args) => this.onGroupChanged(args),
         onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
-      }
+      },
+      enableTextExport: true,
+      enableExcelExport: true,
+      excelExportOptions: { sanitizeDataExport: true },
+      textExportOptions: { sanitizeDataExport: true },
+      registerExternalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(500);
@@ -289,14 +299,14 @@ export class GridDraggableGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService!.exportToExcel({
+    this.excelExportService.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
     });
   }
 
   exportToCsv(type = 'csv') {
-    this.angularGrid.exportService.exportToFile({
+    this.textExportService.exportToFile({
       delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
       filename: 'myExport',
       format: (type === 'csv') ? FileType.csv : FileType.txt

@@ -71,10 +71,10 @@
                      [dataset]="dataset"
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
-                     (onGridBeforeExportToFile)="processing = true"
-                     (onGridAfterExportToFile)="processing = false"
-                     (onGridBeforeExportToExcel)="processing = true"
-                     (onGridAfterExportToExcel)="processing = false"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onBeforeExportToTextFile)="processing = true"
+                     (onAfterExportToTextFile)="processing = false"
+                     (onBeforeExportToExcel)="processing = true"
+                     (onAfterExportToExcel)="processing = false"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

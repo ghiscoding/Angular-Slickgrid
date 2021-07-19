@@ -11,28 +11,30 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <br>
-
-  <div class="row mb-1">
-    <div class="col-sm-12">
-      <span>
-        <label for="">Pinned Rows: </label>
-        <input type="number" [(ngModel)]="frozenRowCount">
-        <button class="btn btn-outline-secondary btn-xs" (click)="changeFrozenRowCount()">
-          Set
-        </button>
-      </span>
-      <span style="margin-left: 10px">
-        <label for="">Pinned Columns: </label>
-        <input type="number" [(ngModel)]="frozenColumnCount">
-        <button class="btn btn-outline-secondary btn-xs" (click)="changeFrozenColumnCount()">
-          Set
-        </button>
-      </span>
+  <div class="row gx-2 mb-2 align-items-end">
+    <div class="col-2">
+      <label for="pinned-rows">Pinned Rows: </label>
+      <input id="pinned-rows" class="form-control" type="number" [(ngModel)]="frozenRowCount">
+    </div>
+    <div class="col-auto gr-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="changeFrozenRowCount()">
+        Set
+      </button>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-2">
+      <label for="pinned-columns">Pinned Columns: </label>
+      <input id="pinned-columns" class="form-control" type="number" [(ngModel)]="frozenColumnCount">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary btn-sm" (click)="changeFrozenColumnCount()">
+        Set
+      </button>
     </div>
   </div>
+
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-12">
       <button class="btn btn-outline-secondary btn-sm" (click)="setFrozenColumns(-1)"
               data-test="remove-frozen-column-button">
         <i class="fa fa-times fa-lg"></i> Remove Frozen Columns
@@ -57,7 +59,7 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (sgOnValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
-                     (onAngularGridCreated)="angularGridReady($event)">
+                     (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>

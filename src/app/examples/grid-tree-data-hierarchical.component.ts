@@ -1,13 +1,15 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+
 import {
   AngularGridInstance,
   Column,
   FieldType,
   Filters,
+  Formatter,
   Formatters,
   GridOption,
   findItemInTreeStructure,
-  Formatter,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -67,8 +69,8 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableAutoSizeColumns: true,
       enableAutoResize: true,
@@ -89,6 +91,9 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       headerRowHeight: 35,
       rowHeight: 33,
       showCustomFooter: true,
+      enableExcelExport: true,
+      excelExportOptions: { exportWithFormatter: true, sanitizeDataExport: true },
+      registerExternalResources: [new ExcelExportService()],
 
       // use Material Design SVG icons
       contextMenu: {
@@ -140,7 +145,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     this.angularGrid.filterService.updateFilters([{ columnId: 'file', searchTerms: [this.searchString] }], true, false, true);
   }
 
-  treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  treeFormatter: Formatter = (_row, _cell, value, _columnDef, dataContext, grid) => {
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
@@ -149,7 +154,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     const dataView = grid.getData();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
-    const idx = dataView.getIdxById(dataContext[identifierPropName]);
+    const idx = dataView.getIdxById(dataContext[identifierPropName]) as number;
     const prefix = this.getFileIcon(value);
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

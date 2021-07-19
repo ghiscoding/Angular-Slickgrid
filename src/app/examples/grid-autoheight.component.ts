@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -6,6 +6,8 @@ import {
   Formatters,
   GridOption,
   OperatorString,
+  SlickDataView,
+  SlickGrid,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -25,8 +27,8 @@ export class GridAutoHeightComponent implements OnInit {
   `;
 
   angularGrid!: AngularGridInstance;
-  grid: any;
-  dataView: any;
+  grid!: SlickGrid;
+  dataView!: SlickDataView;
   columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
   dataset!: any[];
@@ -89,8 +91,8 @@ export class GridAutoHeightComponent implements OnInit {
 
       autoHeight: true,
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
 
       // enable the filtering but hide the user filter row since we use our own single filter

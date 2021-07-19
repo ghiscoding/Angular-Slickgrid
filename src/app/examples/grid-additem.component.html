@@ -32,7 +32,7 @@
       <button class="btn btn-sm btn-outline-secondary" data-test="highlight-row5-btn"
               (click)="highlighFifthRow()">Highlight 5th Row</button>
       <button class="btn btn-sm btn-outline-secondary" data-test="highlight-duration40-btn"
-              (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over 50</button>
+              (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over 40</button>
     </span>
     <hr />
   </div>
@@ -42,7 +42,7 @@
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
                        [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event)">
+                       (onAngularGridCreated)="angularGridReady($event.detail)">
     </angular-slickgrid>
   </div>
 </div>

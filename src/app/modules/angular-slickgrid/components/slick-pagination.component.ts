@@ -1,11 +1,11 @@
 import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { getTranslationPrefix, Locale, PaginationService } from '@slickgrid-universal/common';
 import { Subscription } from 'rxjs';
 
 import { Constants } from '../constants';
-import { GridOption, Locale } from './../models/index';
-import { PaginationService } from '../services/pagination.service';
-import { getTranslationPrefix, unsubscribeAllObservables } from '../services/utilities';
+import { GridOption, } from './../models/index';
+import { unsubscribeAllObservables } from '../services/utilities';
 
 @Component({
   selector: 'slick-pagination',
@@ -13,6 +13,7 @@ import { getTranslationPrefix, unsubscribeAllObservables } from '../services/uti
 })
 export class SlickPaginationComponent implements OnDestroy, OnInit {
   @Input() gridOptions!: GridOption;
+  @Input() paginationService!: PaginationService;
 
   private subscriptions: Subscription[] = [];
   private _enableTranslate = false;
@@ -26,7 +27,7 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   textPage = 'Page';
 
   /** Constructor */
-  constructor(private readonly paginationService: PaginationService, @Optional() private readonly translate: TranslateService) { }
+  constructor(@Optional() private readonly translate: TranslateService) { }
 
   get availablePageSizes(): number[] {
     return this.paginationService.availablePageSizes;

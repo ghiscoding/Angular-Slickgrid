@@ -1,4 +1,7 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, } from '@angular/core';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
+
 import {
   AngularGridInstance,
   Aggregators,
@@ -12,7 +15,7 @@ import {
   Grouping,
   GroupTotalFormatters,
   SortDirectionNumber,
-  Sorters,
+  SortComparers,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -37,6 +40,8 @@ export class GridGroupingComponent implements OnInit {
   gridObj: any;
   dataviewObj: any;
   processing = false;
+  excelExportService = new ExcelExportService();
+  textExportService = new TextExportService();
 
   constructor() { }
 
@@ -130,8 +135,8 @@ export class GridGroupingComponent implements OnInit {
 
     this.gridOptions = {
       autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 10
+        container: '#demo-container',
+        rightPadding: 10
       },
       enableExcelExport: true,
       enableFiltering: true,
@@ -139,15 +144,12 @@ export class GridGroupingComponent implements OnInit {
       // filterTypingDebounce: 250,
       enableGrouping: true,
       enableExport: true,
-      exportOptions: {
-        sanitizeDataExport: true
-      },
-      excelExportOptions: {
-        sanitizeDataExport: true
-      },
       gridMenu: {
         hideExportTextDelimitedCommand: false
-      }
+      },
+      excelExportOptions: { sanitizeDataExport: true },
+      textExportOptions: { sanitizeDataExport: true },
+      registerExternalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(500);
@@ -196,14 +198,14 @@ export class GridGroupingComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.angularGrid.excelExportService!.exportToExcel({
+    this.excelExportService.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
     });
   }
 
-  exportToCsv(type = 'csv') {
-    this.angularGrid.exportService.exportToFile({
+  exportToFile(type = 'csv') {
+    this.textExportService.exportToFile({
       delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
       filename: 'myExport',
       format: (type === 'csv') ? FileType.csv : FileType.txt
@@ -218,7 +220,7 @@ export class GridGroupingComponent implements OnInit {
         new Aggregators.Avg('percentComplete'),
         new Aggregators.Sum('cost')
       ],
-      comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
+      comparer: (a, b) => SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc),
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
     } as Grouping);
