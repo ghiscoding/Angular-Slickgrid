@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.0...v3.0.1) (2021-07-20)
+
+
+### Bug Fixes
+
+* **build:** revert to previous ng-packgr build config ([34890ca](https://github.com/ghiscoding/angular-slickgrid/commit/34890cadea255dd9ed033e0e6714b695f8193d02))
+
 ## [3.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.2...v3.0.0) (2021-07-20)
 
 
