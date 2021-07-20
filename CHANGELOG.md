@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.2...v3.0.0) (2021-07-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* use Slickgrid-Universal monorepo next major 3.0
+
+### Features
+
+* add Composite Editor Modal example ([3e2a4a2](https://github.com/ghiscoding/angular-slickgrid/commit/3e2a4a2ab2ff9915929e506412a5270ff77d1389))
+* **core:** use Slickgrid-Universal Aggregators ([86a4e32](https://github.com/ghiscoding/angular-slickgrid/commit/86a4e32a357a20361897b72553fd7b254ff19eeb))
+* **core:** use Slickgrid-Universal Editors ([a57edf8](https://github.com/ghiscoding/angular-slickgrid/commit/a57edf8252703a5e4a962216326ec0751d50f0df))
+* **core:** use Slickgrid-Universal Formatters and Grouping Formatters ([8648a88](https://github.com/ghiscoding/angular-slickgrid/commit/8648a88fb5b6354e63640476f6d8799ffabc2e19))
+* **footer:** reuse Footer Component from Slickgrid-Universal ([3932032](https://github.com/ghiscoding/angular-slickgrid/commit/393203249c0820fe21eb774b751fb570fdd6da9e))
+
+
+### Bug Fixes
+
+* **tree:** same dataset length but w/different prop should refresh Tree ([1798a48](https://github.com/ghiscoding/angular-slickgrid/commit/1798a487413130becf3b6a87feaa7fac4ceef1ea))
+
+
+* Merge pull request #803 from ghiscoding/feat/version-next-universal ([dae384c](https://github.com/ghiscoding/angular-slickgrid/commit/dae384c5d0b9fda5a71ffc4c9b70ee073355563d)), closes [#803](https://github.com/ghiscoding/angular-slickgrid/issues/803)
+
 ### [2.30.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.1...v2.30.2) (2021-06-30)
 
 
