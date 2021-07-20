@@ -43,6 +43,9 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
    - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` package. 
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
+- version `3.x.x` for Angular 12+ and RxJS 7+
+  - build `target` got bumper to `ES2018` for modern browser **only**
+  - IE11 is reashing EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
@@ -64,9 +67,11 @@ module.exports = {
   packages: {
     'angular-slickgrid': {
       ignorableDeepImportMatchers: [
+        /assign-deep/,
         /slickgrid\//,
         /flatpickr/,
-        /jquery-ui-dist\//,
+        /dequal/,
+        /jquery-ui\//,
       ]
     },
   }
@@ -104,7 +109,10 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```
   "options": {
     "allowedCommonJsDependencies": [
-      "angular-slickgrid", "stream"
+      "assign-deep",
+      "excel-builder-webpacker",
+      "jquery-ui",
+      "stream"
     ],
 ```
 
@@ -179,3 +187,6 @@ _Note that the styling changed a bit, the best is to simply head over to the [Li
 #### Comes with OData & GraphQL support (you can implement custom ones too)
 
 ![Slickgrid Server Side](/screenshots/pagination.png)
+
+### Composite Editor Modal Windows
+![Composite Editor Modal](/screenshots/composite-editor.png)
