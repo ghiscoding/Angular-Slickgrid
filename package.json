@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -81,6 +81,7 @@
     "@slickgrid-universal/empty-warning-component": "^0.16.1",
     "@slickgrid-universal/event-pub-sub": "^0.16.1",
     "@slickgrid-universal/rxjs-observable": "^0.16.1",
+    "@types/dompurify": "^2.2.3",
     "@types/jquery": "^3.5.6",
     "dequal": "^2.0.2",
     "dompurify": "^2.3.0",
@@ -122,7 +123,6 @@
     "@slickgrid-universal/graphql": "^0.16.1",
     "@slickgrid-universal/odata": "^0.16.1",
     "@slickgrid-universal/text-export": "^0.16.1",
-    "@types/dompurify": "^2.2.3",
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^26.0.24",
     "@types/moment": "^2.13.0",
