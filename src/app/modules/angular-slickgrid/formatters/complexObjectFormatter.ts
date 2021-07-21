@@ -25,7 +25,7 @@ export const complexObjectFormatter: Formatter = (row: number, cell: number, cel
   // however we also need to make sure that the complex objet exist, else we'll return the cell value (original value)
   if (typeof complexFieldLabel === 'string' && complexFieldLabel.indexOf('.') > 0) {
     let outputValue = complexFieldLabel.split('.').reduce((obj, i) => (obj && obj.hasOwnProperty(i) ? obj[i] : ''), dataContext);
-    if (typeof outputValue === 'object' && Object.entries(outputValue).length === 0) {
+    if (outputValue === undefined || outputValue === null || (typeof outputValue === 'object' && Object.entries(outputValue).length === 0)) {
       outputValue = ''; // return empty string when value ends up being an empty object
     }
     return outputValue;

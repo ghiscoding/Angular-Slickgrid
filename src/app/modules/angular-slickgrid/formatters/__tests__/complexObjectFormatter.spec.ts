@@ -2,7 +2,7 @@ import { Column } from '../../models';
 import { complexObjectFormatter } from '../complexObjectFormatter';
 
 describe('the ComplexObject Formatter', () => {
-  const allRoles = [{ roleId: 0, name: 'Administrator' }, { roleId: 1, name: 'Regular User', empty: {} }];
+  const allRoles = [{ roleId: 0, name: 'Administrator' }, { roleId: 1, name: 'Regular User', empty: {}, nullable: null }];
 
   const dataset = [
     { id: 0, firstName: 'John', lastName: 'Smith', email: 'john.smith@movie.com', role: allRoles[0] },
@@ -16,7 +16,7 @@ describe('the ComplexObject Formatter', () => {
   });
 
   it('should return empty string when no column definition is provided', () => {
-    const result = complexObjectFormatter(0, 0, 'anything', null as Column, {}, {} as any);
+    const result = complexObjectFormatter(0, 0, 'anything', null as any, {}, {} as any);
     expect(result).toBe('');
   });
 
@@ -48,9 +48,15 @@ describe('the ComplexObject Formatter', () => {
     expect(result).toBe(expectedOutput);
   });
 
-  it('should return an empty string when the value from the complex object when "field" has dot notation and the empty returned from it is an empty object', () => {
+  it('should return an empty string when the value from the complex object when "field" has dot notation and the property returned from it is an empty object', () => {
     const expectedOutput = '';
     const result = complexObjectFormatter(0, 0, 'anything', { field: 'role.empty' } as Column, dataset[1], {} as any);
+    expect(result).toBe(expectedOutput);
+  });
+
+  it('should return an empty string when the value from the complex object when "field" has dot notation and the property returned from it is a null value', () => {
+    const expectedOutput = '';
+    const result = complexObjectFormatter(0, 0, 'anything', { field: 'role.nullable' } as Column, dataset[1], {} as any);
     expect(result).toBe(expectedOutput);
   });
 
