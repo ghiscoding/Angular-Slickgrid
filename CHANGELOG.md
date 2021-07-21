@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.30.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.4...v2.30.5) (2021-07-21)
+
+
+### Bug Fixes
+
+* **formatters:** Complex Object Formatter shouldn't throw with null data ([295f29d](https://github.com/ghiscoding/angular-slickgrid/commit/295f29d0486c0a663b207bcede44324dc5ca4f5d))
+
 ### [2.30.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.30.3...v2.30.4) (2021-07-16)
 
 
