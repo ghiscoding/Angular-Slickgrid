@@ -20,7 +20,7 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ### Like it? :star: it
-You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:
+You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:👷‍♀️
 
 ### Like my work?
 If you like my work, you can also support me with caffeine. I certainly drank many coffees to build and keep adding features for this great library.
@@ -43,14 +43,14 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `2.x.x` for Angular 7+ 
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 - version `3.x.x` for Angular 12+ and RxJS 7+
-  - build `target` got bumper to `ES2018` for modern browser **only**
-  - IE11 is reashing EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
+  - build `target` got bumped to `ES2018` for modern browser **only**
+  - IE11 is reaching EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
 ### ngx-translate Compatibility
 
-If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even if you just use a single Locale, because it is a `peerDependency` of Angular-Slickgrid. We use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should be removed by tree shaking process after a running a build. See their version compatibility table below
+If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even when using a single Locale, that is because it is a `peerDependency` of Angular-Slickgrid. The reason is because, we use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should still be removed by the tree shaking process after a running a production build. See their version compatibility table below
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
@@ -88,7 +88,7 @@ Since Angular 12 switched to WebPack 5, you might get some new errors and you wi
 
 #### The error you might get
 
-```shell
+```text
 BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
 This is no longer the case. Verify if you need this module and configure a polyfill for it.
 ```
@@ -116,7 +116,7 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Angular-Slickgrid reached **100%** Unit Test Coverage, we are talking about +10,000 lines of code (+2,800 unit tests) that are now fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over 400+ Cypress E2E tests.
+Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +13,000 lines of code (+3,000 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +450 Cypress E2E tests.
 
 ## Installation
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
@@ -128,10 +128,10 @@ Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
-There are also 2 new Themes, Material & Salesforce that are available as well and if you wish to use SVG then take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
+There are also 2 new styling Themes, Material & Salesforce are also available and you could also use SVG icons if so take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
 
 #### Working Demo
-For a complete and working local demo, you can (should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used to update the GitHub demo pages for the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete and working local demo (with +30 examples), you can (should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used to update the GitHub demo pages for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
 cd bootstrap4-demo-with-translate
@@ -140,7 +140,7 @@ npm start
 ```
 
 #### How to load data with `HttpClient`?
-You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
+You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call it and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
