@@ -45,6 +45,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `3.x.x` for Angular 12+ and RxJS 7+
   - build `target` got bumped to `ES2018` for modern browser **only**
   - IE11 is reaching EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
+  - uses [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
