@@ -927,6 +927,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         });
         const onSetItemsCalledHandler = dataView.onSetItemsCalled;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onSetItemsCalledHandler>>).subscribe(onSetItemsCalledHandler, (_e, args) => {
+          grid.invalidate();
           this.handleOnItemCountChanged(dataView.getLength(), args.itemCount);
 
           // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
