@@ -414,18 +414,6 @@ export class GridResizeByContentComponent implements OnInit {
 
   handleValidationError(_e: Event, args: any) {
     if (args.validationResults) {
-      let errorMsg = args.validationResults.msg || '';
-      if (args.editor && (args.editor instanceof Slick.CompositeEditor)) {
-        if (args.validationResults.errors) {
-          errorMsg += '\n';
-          for (const error of args.validationResults.errors) {
-            const columnName = error.editor.args.column.name;
-            errorMsg += `${columnName.toUpperCase()}: ${error.msg}`;
-          }
-        }
-        console.log(errorMsg);
-      }
-    } else {
       alert(args.validationResults.msg);
     }
     return false;
