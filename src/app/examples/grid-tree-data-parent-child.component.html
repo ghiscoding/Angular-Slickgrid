@@ -35,6 +35,21 @@
         <span class="icon mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
       </button>
+      <button (click)="collapseAllWithoutEvent()" class="btn btn-outline-secondary btn-sm"
+              data-test="collapse-all-noevent-btn">
+        <span class="mdi mdi-arrow-collapse"></span>
+        <span>Collapse All (without triggering event)</span>
+      </button>
+      <button (click)="dynamicallyToggledFirstParent()" class="btn btn-outline-secondary btn-sm"
+              data-test="dynamically-toggle-first-parent-btn">
+        <span>Dynamically Toggle First Parent</span>
+      </button>
+      <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
+              class="btn btn-outline-secondary btn-sm"
+              disabled.bind="hasNoExpandCollapseChanged">
+        <span class="mdi mdi-history"></span>
+        <span>Reapply Previous Toggled Items</span>
+      </button>
       <div class.bind="loadingClass"></div>
     </div>
   </div>
@@ -75,6 +90,17 @@
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
                      (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onBeforeFilterChange)="showSpinner()"
+                     (onFilterChanged)="hideSpinner()"
+                     (onBeforeFilterClear)="showSpinner()"
+                     (onFilterCleared)="hideSpinner()"
+                     (onBeforeSortChange)="showSpinner()"
+                     (onSortChanged)="hideSpinner()"
+                     (onBeforeToggleTreeCollapse)="showSpinner()"
+                     (onToggle-tree-collapsed)="hideSpinner()"
+                     (onTree-full-toggle-start)="showSpinner()"
+                     (onTree-full-toggle-end)="handleOnTreeFullToggleEnd($event.detail)"
+                     (onTree-item-toggled)="handleOnTreeItemToggled($event.detail)">
   </angular-slickgrid>
 </div>
