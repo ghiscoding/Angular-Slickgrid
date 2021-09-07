@@ -7,7 +7,7 @@ import {
   AutocompleteOption,
   Column,
   Editors,
-  EditorArgs,
+  EditorArguments,
   EditorValidator,
   FieldType,
   Filters,
@@ -34,7 +34,7 @@ const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
 const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArgs) => {
+const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArguments) => {
   // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
   const grid = args && args.grid;
   const gridOptions = (grid?.getOptions?.() ?? {}) as GridOption;
