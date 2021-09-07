@@ -923,11 +923,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         const onRowCountChangedHandler = dataView.onRowCountChanged;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onRowCountChangedHandler>>).subscribe(onRowCountChangedHandler, (_e, args) => {
           grid.invalidate();
-          this.handleOnItemCountChanged(args.current || 0, dataView.getItemCount());
+          this.handleOnItemCountChanged(this.dataView.getFilteredItemCount() || 0, dataView.getItemCount());
         });
         const onSetItemsCalledHandler = dataView.onSetItemsCalled;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onSetItemsCalledHandler>>).subscribe(onSetItemsCalledHandler, (_e, args) => {
-          this.handleOnItemCountChanged(dataView.getLength(), args.itemCount);
+          this.handleOnItemCountChanged(this.dataView.getFilteredItemCount() || 0, args.itemCount);
 
           // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
           if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
