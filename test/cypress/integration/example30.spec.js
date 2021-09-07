@@ -262,6 +262,10 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(7)`).find('.fa.fa-check.checkmark-icon').should('have.length', 1);
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(8)`).should('not.be.empty');
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(9)`).should('contain', 'Tasty Granite Table');
+
+    // next few rows Title should be unchanged
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(1)`).should('contain', 'TASK 0');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).should('contain', 'TASK 1111');
   });
 
   it('should open the Composite Editor (Edit Item) and expect all form inputs to be filled with TASK 8888 data of previous create item', () => {
@@ -292,6 +296,10 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(7)`).find('.fa.fa-check.checkmark-icon').should('not.exist');
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(8)`).should('be.empty');
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(9)`).should('contain', 'Tasty Granite Table');
+
+    // next few rows Title should be unchanged
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(1)`).should('contain', 'TASK 0');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).should('contain', 'TASK 1111');
   });
 
   it('should open the Composite Editor (Mass Update) and be able to change some of the inputs in the form', () => {
