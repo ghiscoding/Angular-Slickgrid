@@ -307,10 +307,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     const autoTooltipExtension = new AutoTooltipExtension(this.sharedService);
     const cellExternalCopyManagerExtension = new CellExternalCopyManagerExtension(this.extensionUtility, this.sharedService);
     const cellMenuExtension = new CellMenuExtension(this.extensionUtility, this.sharedService, this.translaterService);
-    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this.sharedService, this.treeDataService, this.translaterService);
+    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this._eventPubSubService, this.sharedService, this.treeDataService, this.translaterService);
     const columnPickerExtension = new ColumnPickerExtension(this.extensionUtility, this.sharedService);
     const checkboxExtension = new CheckboxSelectorExtension(this.sharedService);
-    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this.sharedService);
+    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this._eventPubSubService, this.sharedService);
     const gridMenuExtension = new GridMenuExtension(this.extensionUtility, this.filterService, this.sharedService, this.sortService, this.backendUtilityService, this.translaterService);
     const groupItemMetaProviderExtension = new GroupItemMetaProviderExtension(this.sharedService);
     const headerButtonExtension = new HeaderButtonExtension(this.extensionUtility, this.sharedService);
