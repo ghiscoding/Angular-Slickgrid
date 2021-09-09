@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.5...v3.1.0) (2021-09-09)
+
+
+### Features
+
+* **backend:** rollback on error & add cancellable events ([d3f31d7](https://github.com/ghiscoding/angular-slickgrid/commit/d3f31d773322e51b667164826ddde1dbd62de4e3))
+* **tree:** add `dynamicallyToggledItemState` method to toggle parent(s) ([afb61cf](https://github.com/ghiscoding/angular-slickgrid/commit/afb61cf9caee78f6620550c1e6f00a841c9a1d83))
+
+
+### Bug Fixes
+
+* **composite:** calling Edit change shouldn't affect Mass-Update ([b25d56d](https://github.com/ghiscoding/angular-slickgrid/commit/b25d56d4a52785de186f03d2d8db481b07af7925))
+* custom pagination should work & also fix Cypress test ([2d8bf08](https://github.com/ghiscoding/angular-slickgrid/commit/2d8bf081df693a0daced0a3138399fb72725be66))
+* **footer): usefix(footer:** use `getFilteredItemCount` to show correct item count ([fbee1a1](https://github.com/ghiscoding/angular-slickgrid/commit/fbee1a12f321f0020c8f68cfddd934de5bf7b5ca)), closes [#469](https://github.com/ghiscoding/angular-slickgrid/issues/469) [#469](https://github.com/ghiscoding/angular-slickgrid/issues/469) [#469](https://github.com/ghiscoding/angular-slickgrid/issues/469)
+* **grid:** invalidate grid after setItems to re-render grid ([4feebc8](https://github.com/ghiscoding/angular-slickgrid/commit/4feebc877acaa2e2781bd09e8694db4f52a3123e)), closes [#820](https://github.com/ghiscoding/angular-slickgrid/issues/820)
+* **grouping:** Draggable Grouping should clear preheader when called ([8621c67](https://github.com/ghiscoding/angular-slickgrid/commit/8621c678a80bcdb4c45522788ad9b6f32b6f115b))
+
 ### [3.0.5](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.4...v3.0.5) (2021-07-23)
 
 ### [3.0.4](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.3...v3.0.4) (2021-07-20)
