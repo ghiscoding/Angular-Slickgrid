@@ -307,10 +307,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     const autoTooltipExtension = new AutoTooltipExtension(this.sharedService);
     const cellExternalCopyManagerExtension = new CellExternalCopyManagerExtension(this.extensionUtility, this.sharedService);
     const cellMenuExtension = new CellMenuExtension(this.extensionUtility, this.sharedService, this.translaterService);
-    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this.sharedService, this.treeDataService, this.translaterService);
+    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this._eventPubSubService, this.sharedService, this.treeDataService, this.translaterService);
     const columnPickerExtension = new ColumnPickerExtension(this.extensionUtility, this.sharedService);
     const checkboxExtension = new CheckboxSelectorExtension(this.sharedService);
-    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this.sharedService);
+    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this._eventPubSubService, this.sharedService);
     const gridMenuExtension = new GridMenuExtension(this.extensionUtility, this.filterService, this.sharedService, this.sortService, this.backendUtilityService, this.translaterService);
     const groupItemMetaProviderExtension = new GroupItemMetaProviderExtension(this.sharedService);
     const headerButtonExtension = new HeaderButtonExtension(this.extensionUtility, this.sharedService);
@@ -921,11 +921,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         const onRowCountChangedHandler = dataView.onRowCountChanged;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onRowCountChangedHandler>>).subscribe(onRowCountChangedHandler, (_e, args) => {
           grid.invalidate();
-          this.handleOnItemCountChanged(args.current || 0, dataView.getItemCount());
+          this.handleOnItemCountChanged(this.dataView.getFilteredItemCount() || 0, dataView.getItemCount());
         });
         const onSetItemsCalledHandler = dataView.onSetItemsCalled;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onSetItemsCalledHandler>>).subscribe(onSetItemsCalledHandler, (_e, args) => {
-          this.handleOnItemCountChanged(dataView.getLength(), args.itemCount);
+          grid.invalidate();
+          this.handleOnItemCountChanged(this.dataView.getFilteredItemCount(), args.itemCount);
 
           // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
           if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
