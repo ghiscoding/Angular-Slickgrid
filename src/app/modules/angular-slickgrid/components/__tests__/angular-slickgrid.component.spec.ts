@@ -209,6 +209,7 @@ const mockDataView = {
   destroy: jest.fn(),
   beginUpdate: jest.fn(),
   endUpdate: jest.fn(),
+  getFilteredItemCount: jest.fn(),
   getItem: jest.fn(),
   getItems: jest.fn(),
   getItemCount: jest.fn(),
@@ -1839,6 +1840,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           totalItemCount: 2
         };
         jest.spyOn(mockDataView, 'getItemCount').mockReturnValue(mockData.length);
+        jest.spyOn(mockDataView, 'getFilteredItemCount').mockReturnValue(mockData.length);
 
         component.gridOptions = { enablePagination: false, showCustomFooter: true };
         component.initialization(slickEventHandler);
@@ -1854,10 +1856,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const expectation = {
           startTime: expect.toBeDate(),
           endTime: expect.toBeDate(),
-          itemCount: 2,
+          itemCount: 0,
           totalItemCount: 0
         };
-        jest.spyOn(mockDataView, 'getLength').mockReturnValue(2);
+        jest.spyOn(mockDataView, 'getFilteredItemCount').mockReturnValue(0);
 
         component.gridOptions = { enablePagination: false, showCustomFooter: true };
         component.initialization(slickEventHandler);
@@ -1885,6 +1887,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         component.gridOptions.enableCheckboxSelector = true;
         component.gridOptions.presets = { rowSelection: { dataContextIds: selectedRowIds } };
+        component.isDatasetInitialized = false;
         component.initialization(slickEventHandler);
         component.dataset = mockData;
 
