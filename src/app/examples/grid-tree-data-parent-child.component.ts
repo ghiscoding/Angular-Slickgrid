@@ -11,6 +11,7 @@ import {
   GridStateChange,
   GridStateType,
   TreeToggledItem,
+  TreeToggleStateChange,
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 500;
@@ -72,7 +73,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
         id: 'percentComplete', name: '% Complete', field: 'percentComplete',
         minWidth: 120, maxWidth: 200, exportWithFormatter: false,
         sortable: true, filterable: true, filter: { model: Filters.compoundSlider, operator: '>=' },
-        formatter: Formatters.percentCompleteBar, type: FieldType.number,
+        formatter: Formatters.percentCompleteBarWithText, type: FieldType.number,
       },
       {
         id: 'start', name: 'Start', field: 'start', minWidth: 60,
@@ -137,7 +138,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       presets: {
         filters: [{ columnId: 'percentComplete', searchTerms: [25], operator: '>=' }],
-        treeData: { toggledItems: [{ itemId: 1, isCollapsed: false }] },
+        // treeData: { toggledItems: [{ itemId: 1, isCollapsed: false }] },
       },
 
       // change header/cell row height for material design theme
@@ -255,7 +256,6 @@ export class GridTreeDataParentChildComponent implements OnInit {
     let indent = 0;
     const parents = [];
     const data = [];
-
     // prepare the data
     for (let i = 0; i < rowCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
@@ -286,7 +286,6 @@ export class GridTreeDataParentChildComponent implements OnInit {
         indent--;
         parents.pop();
       }
-
       if (parents.length > 0) {
         parentId = parents[parents.length - 1];
       } else {
@@ -306,18 +305,43 @@ export class GridTreeDataParentChildComponent implements OnInit {
     return data;
   }
 
-  /** Dispatched event of a Grid State Changed event */
+  handleOnTreeFullToggleEnd(treeToggleExecution: TreeToggleStateChange) {
+    console.log('Tree Data changes', treeToggleExecution);
+    this.hideSpinner();
+  }
+
+  /** Whenever a parent is being toggled, we'll keep a reference of all of these changes so that we can reapply them whenever we want */
+  handleOnTreeItemToggled(treeToggleExecution: TreeToggleStateChange) {
+    this.hasNoExpandCollapseChanged = false;
+    this.treeToggleItems = treeToggleExecution.toggledItems as TreeToggledItem[];
+    console.log('Tree Data changes', treeToggleExecution);
+  }
+
   handleOnGridStateChanged(gridStateChange: GridStateChange) {
     this.hasNoExpandCollapseChanged = false;
 
-    if (gridStateChange.change!.type === GridStateType.treeData) {
-      console.log('Tree Data gridStateChange', gridStateChange.gridState!.treeData);
-      this.treeToggleItems = gridStateChange.gridState!.treeData!.toggledItems as TreeToggledItem[];
+    if (gridStateChange?.change?.type === GridStateType.treeData) {
+      console.log('Tree Data gridStateChange', gridStateChange?.gridState?.treeData);
+      this.treeToggleItems = gridStateChange?.gridState?.treeData?.toggledItems as TreeToggledItem[];
     }
   }
 
   logTreeDataToggledItems() {
     console.log(this.angularGrid.treeDataService.getToggledItems());
+  }
+
+  dynamicallyToggledFirstParent() {
+    const parentPropName = 'parentId';
+    const treeLevelPropName = 'treeLevel'; // if undefined in your options, the default prop name is "__treeLevel"
+    const newTreeLevel = 1;
+
+    // find first parent object and toggle it
+    const childItemFound = this.dataset.find((item) => item[treeLevelPropName] === newTreeLevel);
+    const parentItemFound = this.angularGrid.dataView.getItemByIdx(childItemFound[parentPropName]);
+
+    if (childItemFound && parentItemFound) {
+      this.angularGrid.treeDataService.dynamicallyToggleItemState([{ itemId: parentItemFound.id, isCollapsed: !parentItemFound.__collapsed }]);
+    }
   }
 
   reapplyToggledItems() {
