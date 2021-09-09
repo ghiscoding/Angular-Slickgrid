@@ -75,10 +75,9 @@ export const GlobalGridOptions: Partial<GridOption> = {
     syncGridSelectionWithBackendService: false, // but disable it when using backend services
   },
   datasetIdPropertyName: 'id',
-  defaultColumnSortFieldId: 'id',
   defaultFilter: Filters.input,
   defaultBackendServiceFilterTypingDebounce: 500,
-  enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
+  defaultColumnSortFieldId: 'id',
   defaultFilterPlaceholder: '🔎︎',
   defaultFilterRangeOperator: OperatorType.rangeInclusive,
   editable: false,
@@ -91,6 +90,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   enableContextMenu: true,
   enableExcelExport: true, // Excel Export is the new default,
   enableExport: false, // CSV/Text with Tab Delimited
+  enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
   enableGridMenu: true,
   enableHeaderMenu: true,
   enableEmptyDataWarningMessage: true,
@@ -213,6 +213,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   rowHeight: 35,
   topPanelHeight: 35,
   translationNamespaceSeparator: ':',
+  resetFilterSearchValueAfterOnBeforeCancellation: true,
   resizeByContentOnlyOnFirstLoad: true,
   resizeByContentOptions: {
     alwaysRecalculateColumnWidth: false,

@@ -171,12 +171,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
   set paginationOptions(newPaginationOptions: Pagination | undefined) {
     if (newPaginationOptions && this._paginationOptions) {
-      this._paginationOptions = { ...this._paginationOptions, ...newPaginationOptions };
+      this._paginationOptions = { ...this.gridOptions.pagination, ...this._paginationOptions, ...newPaginationOptions };
     } else {
       this._paginationOptions = newPaginationOptions;
     }
-    this.gridOptions.pagination = this._paginationOptions;
-    this.paginationService.updateTotalItems(newPaginationOptions?.totalItems ?? 0, true);
+    this.gridOptions.pagination = this._paginationOptions ?? this.gridOptions.pagination;
+    this.paginationService.updateTotalItems(this.gridOptions.pagination?.totalItems ?? 0, true);
   }
 
   @Input()
@@ -851,34 +851,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         })
       );
     }
-    if (!this.customDataView) {
-      // bind external sorting (backend) when available or default onSort (dataView)
-      if (gridOptions.enableSorting) {
-        // bind external sorting (backend) unless specified to use the local one
-        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
-          this.sortService.bindBackendOnSort(grid);
-        } else {
-          this.sortService.bindLocalOnSort(grid);
-        }
-      }
-
-      // bind external filter (backend) when available or default onFilter (dataView)
-      if (gridOptions.enableFiltering) {
-        this.filterService.init(grid);
-
-        // bind external filter (backend) unless specified to use the local one
-        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-          this.filterService.bindBackendOnFilter(grid);
-        } else {
-          this.filterService.bindLocalOnFilter(grid);
-        }
-      }
-
-      // load any presets if any (after dataset is initialized)
-      this.loadColumnPresetsWhenDatasetInitialized();
-      this.loadFilterPresetsWhenDatasetInitialized();
-    }
-
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
     if (gridOptions.backendServiceApi) {
@@ -919,6 +891,32 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       this.gridEventService.bindOnClick(grid);
 
       if (dataView && grid) {
+        // bind external sorting (backend) when available or default onSort (dataView)
+        if (gridOptions.enableSorting) {
+          // bind external sorting (backend) unless specified to use the local one
+          if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+            this.sortService.bindBackendOnSort(grid);
+          } else {
+            this.sortService.bindLocalOnSort(grid);
+          }
+        }
+
+        // bind external filter (backend) when available or default onFilter (dataView)
+        if (gridOptions.enableFiltering) {
+          this.filterService.init(grid);
+
+          // bind external filter (backend) unless specified to use the local one
+          if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+            this.filterService.bindBackendOnFilter(grid);
+          } else {
+            this.filterService.bindLocalOnFilter(grid);
+          }
+        }
+
+        // load any presets if any (after dataset is initialized)
+        this.loadColumnPresetsWhenDatasetInitialized();
+        this.loadFilterPresetsWhenDatasetInitialized();
+
         // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
         const onRowCountChangedHandler = dataView.onRowCountChanged;
         (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onRowCountChangedHandler>>).subscribe(onRowCountChangedHandler, (_e, args) => {
@@ -951,7 +949,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    // does the user have a colspan callback?
+    // did the user add a colspan callback? If so, hook it into the DataView getItemMetadata
     if (gridOptions && gridOptions.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
       dataView.getItemMetadata = (rowNumber: number) => {
         let callbackResult = null;
