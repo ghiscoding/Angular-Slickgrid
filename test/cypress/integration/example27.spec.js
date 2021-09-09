@@ -161,4 +161,49 @@ describe('Example 27 - GraphQL Basic API without Pagination', { retries: 1 }, ()
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(9)`).should('contain', 'South America');
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(10)`).should('contain', 'SA');
   });
+
+  it('should Clear all Filters and expect all rows to be back', () => {
+    cy.get('#grid27')
+      .find('button.slick-gridmenu-button')
+      .trigger('click')
+      .click();
+
+    cy.get(`.slick-gridmenu:visible`)
+      .find('.slick-gridmenu-item')
+      .first()
+      .find('span')
+      .contains('Clear all Filters')
+      .click();
+
+    cy.get('.right-footer.metrics')
+      .contains('250 of 250 items');
+  });
+
+  it('should filter Language Native with "French" language and expect only 40 rows in the grid', () => {
+    cy.get('div.ms-filter.filter-languageName')
+      .trigger('click');
+
+    cy.get('.ms-search:visible')
+      .type('French');
+
+    cy.get('.ms-drop:visible')
+      .contains('French')
+      .click();
+
+    cy.get('.ms-ok-button:visible')
+      .click();
+
+    cy.get('.right-footer.metrics')
+      .contains('44 of 250 items');
+
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(1)`).should('contain', 'Belgium');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(6)`).should('contain', 'Dutch, French, German');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(8)`).should('contain', 'nl, fr, de');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(9)`).should('contain', 'Europe');
+
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(1)`).should('contain', 'Benin');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(6)`).should('contain', 'French');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(8)`).should('contain', 'fr');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(9)`).should('contain', 'Africa');
+  });
 });
