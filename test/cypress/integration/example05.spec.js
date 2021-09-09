@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 describe('Example 5 - OData Grid', () => {
+  const GRID_ROW_HEIGHT = 35;
   beforeEach(() => {
     // create a console.log spy for later use
     cy.window().then((win) => {

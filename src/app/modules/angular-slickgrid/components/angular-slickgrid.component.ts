@@ -171,12 +171,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
   set paginationOptions(newPaginationOptions: Pagination | undefined) {
     if (newPaginationOptions && this._paginationOptions) {
-      this._paginationOptions = { ...this._paginationOptions, ...newPaginationOptions };
+      this._paginationOptions = { ...this.gridOptions.pagination, ...this._paginationOptions, ...newPaginationOptions };
     } else {
       this._paginationOptions = newPaginationOptions;
     }
-    this.gridOptions.pagination = this._paginationOptions;
-    this.paginationService.updateTotalItems(newPaginationOptions?.totalItems ?? 0, true);
+    this.gridOptions.pagination = this._paginationOptions ?? this.gridOptions.pagination;
+    this.paginationService.updateTotalItems(this.gridOptions.pagination?.totalItems ?? 0, true);
   }
 
   @Input()
