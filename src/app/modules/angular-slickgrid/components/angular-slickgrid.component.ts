@@ -1046,7 +1046,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       this.resizerService.resizeGrid();
     }
     if (options.enableAutoResize) {
-      this.resizerService.bindAutoResizeDataGrid();
       if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
         grid.autosizeColumns();
       }
