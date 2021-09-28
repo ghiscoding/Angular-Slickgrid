@@ -315,11 +315,11 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
-        .should('not.exist');
+        .should('not.be.visible');
 
       cy.get('@grid1')
         .find('[data-test=item-to]')
-        .should('not.exist');
+        .should('not.be.visible');
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
@@ -613,7 +613,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('[data-test=toggle-pagination-grid2]')
         .click();
 
-      cy.get('#slickPagingContainer-grid2')
+      cy.get('#slickGridContainer-grid2 .slick-pagination')
         .should('not.exist');
 
       cy.window().then((win) => {
@@ -698,7 +698,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('[data-test=toggle-pagination-grid2]')
         .click();
 
-      cy.get('#slickPagingContainer-grid2')
+      cy.get('#slickGridContainer-grid2 .slick-pagination')
         .should('exist');
 
       cy.get('@grid2')

@@ -80,6 +80,7 @@
     "@slickgrid-universal/custom-footer-component": "^0.17.0",
     "@slickgrid-universal/empty-warning-component": "^0.17.0",
     "@slickgrid-universal/event-pub-sub": "^0.17.0",
+    "@slickgrid-universal/pagination-component": "^0.17.0",
     "@slickgrid-universal/rxjs-observable": "^0.17.0",
     "@types/dompurify": "^2.2.3",
     "@types/jquery": "^3.5.6",
