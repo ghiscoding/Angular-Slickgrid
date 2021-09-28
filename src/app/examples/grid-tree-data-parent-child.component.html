@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <h2>
     <span [innerHTML]="title"></span>
-    <span class="float-right">
+    <span class="float-end">
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-parent-child.component.ts">
@@ -71,10 +71,12 @@
       <button (click)="logTreeDataToggledItems()" class="btn btn-outline-secondary btn-sm">
         <span>Log Tree Toggled Items</span>
       </button>
-      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm">
+      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm"
+              title="console.log of the Flat dataset">
         <span>Log Flat Structure</span>
       </button>
-      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm">
+      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm"
+              title="console.log of the Hierarchical Tree dataset">
         <span>Log Hierarchical Structure</span>
       </button>
       <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-sm">
