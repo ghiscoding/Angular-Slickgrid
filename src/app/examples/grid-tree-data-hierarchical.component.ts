@@ -18,7 +18,7 @@ import {
   encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataHierarchicalComponent implements OnInit {
-  title = 'Example 29: Tree Data <small>(from a Hierarchical Dataset)</small>';
+  title = 'Example 29: Tree Data <small> <span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset - <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Tree-Data-Grid" target="_blank">Wiki</a>)</small>';
   subTitle = `<ul>
     <li><b>NOTE:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
     <li><b>Styling - Salesforce Theme</b></li>

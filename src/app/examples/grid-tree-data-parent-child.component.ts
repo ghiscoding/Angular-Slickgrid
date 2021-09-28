@@ -22,7 +22,7 @@ const NB_ITEMS = 500;
   encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataParentChildComponent implements OnInit {
-  title = 'Example 28: Tree Data <small>(from a flat dataset with <code>parentId</code> references)</small>';
+  title = 'Example 28: Tree Data <small> <span class="mdi mdi-file-tree mdi-27px"></span> (from a flat dataset with <code>parentId</code> references - <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Tree-Data-Grid" target="_blank">Wiki</a>)</small>';
   subTitle = `<ul>
     <li>It is assumed that your dataset will have Parent/Child references AND also Tree Level (indent) property.</li>
     <ul>
