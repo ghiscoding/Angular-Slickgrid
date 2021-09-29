@@ -85,7 +85,7 @@
     "@types/dompurify": "^2.3.0",
     "@types/jquery": "^3.5.6",
     "dequal": "^2.0.2",
-    "dompurify": "^2.3.1",
+    "dompurify": "^2.3.3",
     "font-awesome": "^4.7.0",
     "jquery": "~3.5.1",
     "jquery-ui-dist": "^1.12.1",
