@@ -43,9 +43,11 @@ jobs:
         run: yarn build
 
       - name: Run Jest unit tests
+        if: "!contains(github.event.head_commit.message, 'chore(release)')"
         run: yarn jest:ci
 
       - name: Upload Jest coverage to Codecov
+        if: "!contains(github.event.head_commit.message, 'chore(release)')"
         run: bash <(curl -s https://codecov.io/bash)
 
       - name: Start server in the background

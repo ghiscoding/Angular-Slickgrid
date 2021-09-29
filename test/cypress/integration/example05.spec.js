@@ -528,10 +528,10 @@ describe('Example 5 - OData Grid', () => {
         .contains('0');
 
       cy.get('[data-test=item-from]')
-        .should('not.exist');
+        .should('not.be.visible');
 
       cy.get('[data-test=item-to]')
-        .should('not.exist');
+        .should('not.be.visible');
 
       cy.get('[data-test=total-items]')
         .contains('0');

@@ -156,6 +156,7 @@ const paginationServiceStub = {
   addRxJsResource: jest.fn(),
   init: jest.fn(),
   dispose: jest.fn(),
+  getFullPagination: jest.fn(),
   updateTotalItems: jest.fn(),
 } as unknown as PaginationService;
 
@@ -590,7 +591,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         try {
           component.ngAfterViewInit();
           component.dataset = mockData;
-        } catch (e) {
+        } catch (e: any) {
           expect(e.toString()).toContain('[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use.');
           component.destroy();
           done();
@@ -606,7 +607,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         try {
           component.ngAfterViewInit();
           component.dataset = mockData;
-        } catch (e) {
+        } catch (e: any) {
           expect(e.toString()).toContain('[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use.');
           component.destroy();
           done();
@@ -1312,7 +1313,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         component.gridOptions = { enableTranslate: true, createPreHeaderPanel: false, enableDraggableGrouping: false, showCustomFooter: true } as unknown as GridOption;
         component.initialization(slickEventHandler);
-        const transCustomFooterSpy = jest.spyOn(component.slickFooter as SlickFooterComponent, 'translateCustomFooterTexts'); // footer gets created after init
 
         translate.use('fr');
 
@@ -1325,7 +1325,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(transContextMenuSpy).toHaveBeenCalled();
           expect(transGridMenuSpy).toHaveBeenCalled();
           expect(transHeaderMenuSpy).toHaveBeenCalled();
-          expect(transCustomFooterSpy).toHaveBeenCalled();
           done();
         });
       });

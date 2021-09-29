@@ -370,8 +370,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
 
     cy.get('#grid16')
       .find('button.slick-gridmenu-button')
-      .trigger('click')
-      .click();
+      .click({ force: true });
 
     cy.get('.slick-gridmenu')
       .find('.slick-gridmenu-list')
@@ -397,7 +396,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
 
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(5)')
-      .trigger('mouseover')
+      .trigger('mouseover', { force: true })
       .children('.slick-header-menubutton')
       .should('be.hidden')
       .invoke('show')

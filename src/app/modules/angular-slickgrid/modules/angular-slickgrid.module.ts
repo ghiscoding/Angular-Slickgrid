@@ -4,7 +4,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
 import { GridOption } from './../models/gridOption.interface';
-import { SlickPaginationComponent } from './../components/slick-pagination.component';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { BsDropDownService } from '../services/bsDropdown.service';
 import { ContainerService } from '../services/container.service';
@@ -16,11 +15,9 @@ import { ContainerService } from '../services/container.service';
   ],
   declarations: [
     AngularSlickgridComponent,
-    SlickPaginationComponent
   ],
   exports: [
     AngularSlickgridComponent,
-    SlickPaginationComponent
   ],
   entryComponents: [AngularSlickgridComponent]
 })
