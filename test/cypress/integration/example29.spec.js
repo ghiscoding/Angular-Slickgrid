@@ -2,16 +2,19 @@
 
 describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 33;
-  const titles = ['Files', 'Date Modified', 'Size'];
+  const titles = ['Files', 'Date Modified', 'Description', 'Size'];
   // const defaultSortAscList = ['bucket-list.txt', 'documents', 'misc', 'todo.txt', 'pdf', 'internet-bill.pdf', 'map.pdf', 'map2.pdf', 'phone-bill.pdf', 'txt', 'todo.txt', 'xls', 'compilation.xls', 'music', 'mp3', 'pop', 'song.mp3', 'theme.mp3', 'rock', 'soft.mp3', 'something.txt'];
   // const defaultSortDescList = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt', 'pdf', 'phone-bill.pdf', 'map2.pdf', 'map.pdf', 'internet-bill.pdf', 'misc', 'todo.txt', 'bucket-list.txt'];
+  const defaultGridPresetWithoutPdfDocs = ['bucket-list.txt', 'documents', 'misc', 'todo.txt', 'pdf', 'txt', 'todo.txt', 'xls', 'compilation.xls'];
   const defaultSortAscList = ['bucket-list.txt', 'documents', 'misc', 'todo.txt', 'pdf', 'internet-bill.pdf', 'map.pdf', 'map2.pdf', 'phone-bill.pdf'];
   const defaultSortDescList = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt'];
-  const defaultSortDescListWithExtraSongs = ['something.txt', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'pop-122.mp3', 'pop-121.mp3', 'documents', 'xls', 'compilation.xls', 'txt', 'todo.txt'];
+  const defaultSortDescListWithExtraSongs = ['something.txt', 'recipes', 'coffee-cake', 'chocolate-cake', 'cheesecake', 'music', 'mp3', 'rock', 'soft.mp3', 'pop', 'theme.mp3', 'song.mp3', 'pop-126.mp3', 'pop-125.mp3', 'documents', 'xls'];
+  const popMusicWith3ExtraSongs = ['music', 'mp3', 'pop', 'pop-125.mp3', 'pop-126.mp3', 'pop-127.mp3', 'song.mp3', 'theme.mp3',];
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/tree-data-hierarchical`);
-    cy.get('h2').should('contain', 'Example 29: Tree Data (from a Hierarchical Dataset)');
+    cy.get('h2').should('contain', 'Example 29: Tree Data');
+    cy.get('h2').should('contain', 'from a Hierarchical Dataset');
   });
 
   it('should have exact column titles on 1st grid', () => {
@@ -21,17 +24,32 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .each(($child, index) => expect($child.text()).to.eq(titles[index]));
   });
 
+  it('should expect the "pdf" folder to be closed by the collapsed items grid preset', () => {
+    cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * 4}px"] > .slick-cell:nth(0)`).should('contain', 'pdf');
+    cy.get(`.slick-group-toggle.collapsed`).should('have.length', 1);
+
+    defaultGridPresetWithoutPdfDocs.forEach((_colName, rowIdx) => {
+      if (rowIdx < defaultGridPresetWithoutPdfDocs.length - 1) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultGridPresetWithoutPdfDocs[rowIdx]);
+      }
+    });
+  });
+
+  it('should expand "pdf" folder and expect all folders to be expanded', () => {
+    cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * 4}px"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`)
+      .click();
+
+    cy.get('.slick-viewport-top.slick-viewport-left')
+      .scrollTo('top', { force: true });
+  });
+
   it('should have default Files list', () => {
-    cy.get('#slickGridContainer-grid29')
-      .find('.slick-row')
-      .each(($row, index) => {
-        if (index > defaultSortAscList.length - 1) {
-          return;
-        }
-        cy.wrap($row).children('.slick-cell')
-          .first()
-          .should('contain', defaultSortAscList[index]);
-      });
+    defaultSortAscList.forEach((_colName, rowIdx) => {
+      if (rowIdx > defaultSortAscList.length - 1) {
+        return;
+      }
+      cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortAscList[rowIdx]);
+    });
   });
 
   it('should be able to add 2 new pop songs into the Music folder', () => {
@@ -42,11 +60,11 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
 
     cy.get('.slick-group-toggle[level=3]')
       .get('.slick-cell')
-      .contains('pop-121.mp3');
+      .contains('pop-125.mp3');
 
     cy.get('.slick-group-toggle[level=3]')
       .get('.slick-cell')
-      .contains('pop-122.mp3');
+      .contains('pop-126.mp3');
   });
 
   it('should filter the Files column with the word "map" and expect only 4 rows left', () => {
@@ -60,11 +78,11 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .find('.slick-row')
       .each(($row, index) => {
         cy.wrap($row).children('.slick-cell:nth(0)').should('contain', filteredFiles[index]);
-        cy.wrap($row).children('.slick-cell:nth(2)').should('contain', filteredSizes[index]);
+        cy.wrap($row).children('.slick-cell:nth(3)').should('contain', filteredSizes[index]);
       });
   });
 
-  it('should add filter with Size <3 and expect 3 rows left', () => {
+  it('should add filter with "Size < 3" and expect 3 rows left', () => {
     const filteredFiles = ['documents', 'pdf', 'map2.pdf'];
 
     cy.get('.search-filter.filter-size')
@@ -128,10 +146,9 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .click();
 
     defaultSortAscList.forEach((_colName, rowIdx) => {
-      if (rowIdx > defaultSortAscList.length - 1) {
-        return;
+      if (rowIdx < defaultSortAscList.length - 1) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortAscList[rowIdx]);
       }
-      cy.get(`#grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortAscList[rowIdx]);
     });
   });
 
@@ -140,10 +157,9 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .click();
 
     defaultSortDescListWithExtraSongs.forEach((_colName, rowIdx) => {
-      if (rowIdx > defaultSortDescListWithExtraSongs.length - 1) {
-        return;
+      if (rowIdx < defaultSortDescListWithExtraSongs.length - 1) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortDescListWithExtraSongs[rowIdx]);
       }
-      cy.get(`#grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortDescListWithExtraSongs[rowIdx]);
     });
   });
 
@@ -170,10 +186,9 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .click();
 
     defaultSortDescListWithExtraSongs.forEach((_colName, rowIdx) => {
-      if (rowIdx > defaultSortDescListWithExtraSongs.length - 1) {
-        return;
+      if (rowIdx < defaultSortDescListWithExtraSongs.length - 1) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortDescListWithExtraSongs[rowIdx]);
       }
-      cy.get(`#grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', defaultSortDescListWithExtraSongs[rowIdx]);
     });
   });
 
@@ -184,10 +199,100 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
 
     cy.get('.slick-group-toggle[level=3]')
       .get('.slick-cell')
-      .contains('pop-123.mp3');
+      .contains('pop-127.mp3');
 
     cy.get('.slick-group-toggle[level=3]')
       .get('.slick-cell')
-      .contains('pop-123.mp3');
+      .contains('pop-127.mp3');
+  });
+
+  it('should return 8 rows when filtering the word "pop" music without excluding children', () => {
+    cy.get('.search-filter.filter-file')
+      .type('pop');
+
+    cy.get('.right-footer .item-count')
+      .contains('8');
+
+    popMusicWith3ExtraSongs.forEach((_colName, rowIdx) => {
+      if (rowIdx < popMusicWith3ExtraSongs.length - 1) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', popMusicWith3ExtraSongs[rowIdx]);
+      }
+    });
+  });
+
+  it('should return 6 rows when using same filter "pop" music AND selecting checkbox to "Exclude Children when Filtering Tree"', () => {
+    cy.get('[data-test="exclude-child-when-filtering"]')
+      .check();
+
+    cy.get('.right-footer .item-count')
+      .contains('6');
+
+    popMusicWith3ExtraSongs.forEach((_colName, rowIdx) => {
+      if (rowIdx < popMusicWith3ExtraSongs.length - 3) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', popMusicWith3ExtraSongs[rowIdx]);
+      }
+    });
+  });
+
+  it('should change filter to the word "music" and expect only 1 row (the music folder) to show up when still Excluding Children from the Tree', () => {
+    cy.get('[data-test=clear-search-string]')
+      .click();
+
+    cy.get('.search-filter.filter-file')
+      .type('music');
+
+    cy.get('.right-footer .item-count')
+      .contains('1');
+
+    cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0)`).should('contain', 'music');
+  });
+
+  it('should use same filter "music" and now expect to see 10 rows (entire music folder content) to show up when "Exclude Children when Filtering Tree" becomes uncheck', () => {
+    cy.get('[data-test="exclude-child-when-filtering"]')
+      .uncheck();
+
+    cy.get('.right-footer .item-count')
+      .contains('10');
+
+    const allMusic = [...popMusicWith3ExtraSongs, 'rock', 'soft.mp3'];
+
+    allMusic.forEach((_colName, rowIdx) => {
+      if (rowIdx < allMusic.length - 3) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', allMusic[rowIdx]);
+      }
+    });
+  });
+
+  it('should use same filter "music" and add extra filter of "size >= 50" and expect 1+ songs (>=6 rows) to show up in the grid when "Exclude Children when Filtering Tree" is unchecked and "Skip Other Criteria..." is checked', () => {
+
+    cy.get('.search-filter.filter-size')
+      .find('input')
+      .type('50');
+
+    cy.get('.search-filter.filter-size')
+      .find('.input-group-addon.operator select')
+      .select('>=');
+
+    cy.wait(50)
+      .get('.right-footer .item-count')
+      .then($row => {
+        expect(+$row.text()).to.be.at.least(6);
+      });
+
+    const expectedFiles = ['music', 'mp3', 'pop', 'pop-125.mp3', 'rock', 'soft.mp3'];
+
+    expectedFiles.forEach((_colName, rowIdx) => {
+      if (rowIdx < expectedFiles.length - 3) {
+        cy.get(`#slickGridContainer-grid29 [style="top:${GRID_ROW_HEIGHT * rowIdx}px"] > .slick-cell:nth(0)`).should('contain', expectedFiles[rowIdx]);
+      }
+    });
+  });
+
+  it('should use same filter "music" and "size > 70" then uncked "Skip Other Criteria..." and now expect 0 rows in the grid because there 0 rows having these 2 filters criteria', () => {
+    cy.get('[data-test="auto-approve-parent-item"]')
+      .uncheck();
+
+    cy.get('.right-footer .item-count')
+      .contains('0');
   });
 });

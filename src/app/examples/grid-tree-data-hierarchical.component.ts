@@ -18,7 +18,7 @@ import {
   encapsulation: ViewEncapsulation.None
 })
 export class GridTreeDataHierarchicalComponent implements OnInit {
-  title = 'Example 29: Tree Data <small>(from a Hierarchical Dataset)</small>';
+  title = 'Example 29: Tree Data <small> <span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset - <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Tree-Data-Grid" target="_blank">Wiki</a>)</small>';
   subTitle = `<ul>
     <li><b>NOTE:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
     <li><b>Styling - Salesforce Theme</b></li>
@@ -35,6 +35,8 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   gridOptions!: GridOption;
   columnDefinitions!: Column[];
   datasetHierarchical: any[] = [];
+  isExcludingChildWhenFiltering = false;
+  isAutoApproveParentItemWhenTreeColumnIsValid = true;
   searchString = '';
 
   constructor() { }
@@ -60,6 +62,10 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         exportWithFormatter: true, filterable: true, filter: { model: Filters.compoundDate }
       },
       {
+        id: 'description', name: 'Description', field: 'description', minWidth: 90,
+        filterable: true, sortable: true,
+      },
+      {
         id: 'size', name: 'Size', field: 'size', minWidth: 90,
         type: FieldType.number, exportWithFormatter: true,
         filterable: true, filter: { model: Filters.compoundInputNumber },
@@ -74,27 +80,40 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       },
       enableAutoSizeColumns: true,
       enableAutoResize: true,
-      enableExport: true,
+      enableExcelExport: true,
+      excelExportOptions: {
+        exportWithFormatter: true,
+        sanitizeDataExport: true
+      },
+      registerExternalResources: [new ExcelExportService()],
       enableFiltering: true,
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
+      multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       treeDataOptions: {
         columnId: 'file',
         childrenPropName: 'files',
-        // you can optionally sort by a different column and/or sort direction
+        excludeChildrenWhenFilteringTree: this.isExcludingChildWhenFiltering, // defaults to false
+
+        // skip any other filter criteria(s) if the column holding the Tree (file) passes its own filter criteria
+        // (e.g. filtering with "Files = music AND Size > 7", the row "Music" and children will only show up when this flag is enabled
+        // this flag only works with the other flag set to `excludeChildrenWhenFilteringTree: false`
+        autoApproveParentItemWhenTreeColumnIsValid: this.isAutoApproveParentItemWhenTreeColumnIsValid,
+
+        // you can also optionally sort by a different column and/or change sort direction
         // initialSort: {
         //   columnId: 'file',
         //   direction: 'DESC'
         // }
       },
-      multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       // change header/cell row height for salesforce theme
       headerRowHeight: 35,
       rowHeight: 33,
       showCustomFooter: true,
-      enableExcelExport: true,
-      excelExportOptions: { exportWithFormatter: true, sanitizeDataExport: true },
-      registerExternalResources: [new ExcelExportService()],
 
+      // we can also preset collapsed items via Grid Presets (parentId: 4 => is the "pdf" folder)
+      presets: {
+        treeData: { toggledItems: [{ itemId: 4, isCollapsed: true }] },
+      },
       // use Material Design SVG icons
       contextMenu: {
         iconCollapseAllGroupsCommand: 'mdi mdi-arrow-collapse',
@@ -130,6 +149,22 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid;
     this.dataViewObj = angularGrid.dataView;
+  }
+
+  changeAutoApproveParentItem() {
+    this.isAutoApproveParentItemWhenTreeColumnIsValid = !this.isAutoApproveParentItemWhenTreeColumnIsValid;
+    this.gridOptions.treeDataOptions!.autoApproveParentItemWhenTreeColumnIsValid = this.isAutoApproveParentItemWhenTreeColumnIsValid;
+    this.angularGrid.slickGrid.setOptions(this.gridOptions);
+    this.angularGrid.filterService.refreshTreeDataFilters();
+    return true;
+  }
+
+  changeExcludeChildWhenFiltering() {
+    this.isExcludingChildWhenFiltering = !this.isExcludingChildWhenFiltering;
+    this.gridOptions.treeDataOptions!.excludeChildrenWhenFilteringTree = this.isExcludingChildWhenFiltering;
+    this.angularGrid.slickGrid.setOptions(this.gridOptions);
+    this.angularGrid.filterService.refreshTreeDataFilters();
+    return true;
   }
 
   clearSearch() {
@@ -202,7 +237,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         id: newId,
         file: `pop-${newId}.mp3`,
         dateModified: new Date(),
-        size: Math.round(Math.random() * 100),
+        size: Math.floor(Math.random() * 100) + 50,
       });
 
       // overwrite hierarchical dataset which will also trigger a grid sort and rendering
@@ -238,7 +273,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       { id: 18, file: 'something.txt', dateModified: '2015-03-03T03:50:00.123Z', size: 90 },
       {
         id: 21, file: 'documents', files: [
-          { id: 2, file: 'txt', files: [{ id: 3, file: 'todo.txt', dateModified: '2015-05-12T14:50:00.123Z', size: 0.7, }] },
+          { id: 2, file: 'txt', files: [{ id: 3, file: 'todo.txt', description: 'things to do someday maybe', dateModified: '2015-05-12T14:50:00.123Z', size: 0.7, }] },
           {
             id: 4, file: 'pdf', files: [
               { id: 22, file: 'map2.pdf', dateModified: '2015-07-21T08:22:00.123Z', size: 2.9, },
@@ -248,7 +283,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
             ]
           },
           { id: 9, file: 'misc', files: [{ id: 10, file: 'todo.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4, }] },
-          { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
+          { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', description: 'movie compilation', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
         ]
       },
       {
@@ -257,12 +292,19 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
             { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13T13:50:00Z', size: 98, }] },
             {
               id: 14, file: 'pop', files: [
-                { id: 15, file: 'theme.mp3', dateModified: '2015-03-01T17:05:00Z', size: 47, },
-                { id: 25, file: 'song.mp3', dateModified: '2016-10-04T06:33:44Z', size: 6.3, }
+                { id: 15, file: 'theme.mp3', description: 'Movie Theme Song', dateModified: '2015-03-01T17:05:00Z', size: 47, },
+                { id: 25, file: 'song.mp3', description: 'it is a song...', dateModified: '2016-10-04T06:33:44Z', size: 6.3, }
               ]
             },
           ]
         }]
+      },
+      {
+        id: 26, file: 'recipes', description: 'Cake Recipes', dateModified: '2012-03-05T12:44:00.123Z', files: [
+          { id: 29, file: 'cheesecake', description: 'strawberry cheesecake', dateModified: '2012-04-04T13:52:00.123Z', size: 0.2 },
+          { id: 30, file: 'chocolate-cake', description: 'tasty sweet chocolate cake', dateModified: '2012-05-05T09:22:00.123Z', size: 0.2 },
+          { id: 31, file: 'coffee-cake', description: 'chocolate coffee cake', dateModified: '2012-01-01T08:08:48.123Z', size: 0.2 },
+        ]
       },
     ];
   }

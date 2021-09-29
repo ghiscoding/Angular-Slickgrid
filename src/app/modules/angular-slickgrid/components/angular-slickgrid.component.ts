@@ -235,9 +235,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // when a hierarchical dataset is set afterward, we can reset the flat dataset and call a tree data sort that will overwrite the flat dataset
     if (newHierarchicalDataset && this.slickGrid && this.sortService?.processTreeDataInitialSort) {
-      this.dataView.setItems([], this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems([], this.gridOptions.datasetIdPropertyName ?? 'id');
       this.sortService.processTreeDataInitialSort();
-      this.sortTreeDataset([]);
+
       // we also need to reset/refresh the Tree Data filters because if we inserted new item(s) then it might not show up without doing this refresh
       // however we need 1 cpu cycle before having the DataView refreshed, so we need to wrap this check in a setTimeout
       setTimeout(() => {
@@ -246,9 +246,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           this.filterService.refreshTreeDataFilters();
         }
       });
+      this._isDatasetHierarchicalInitialized = true;
     }
-
-    this._isDatasetHierarchicalInitialized = true;
   }
 
   get elementRef(): ElementRef {
@@ -270,6 +269,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   /** SETTER to change if dataset was initialized or not (stringly used for unit testing purposes) */
   set isDatasetInitialized(isInitialized: boolean) {
     this._isDatasetInitialized = isInitialized;
+  }
+  set isDatasetHierarchicalInitialized(isInitialized: boolean) {
+    this._isDatasetHierarchicalInitialized = isInitialized;
   }
 
   get registeredResources(): ExternalResource[] {
@@ -583,9 +585,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     if (!this.customDataView && this.dataView) {
+      // load the data in the DataView (unless it's a hierarchical dataset, if so it will be loaded after the initial tree sort)
       const initialDataset = this.gridOptions?.enableTreeData ? this.sortTreeDataset(this._dataset) : this._dataset;
       this.dataView.beginUpdate();
-      this.dataView.setItems(initialDataset || [], this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems(initialDataset || [], this.gridOptions.datasetIdPropertyName ?? 'id');
       this.dataView.endUpdate();
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
@@ -714,7 +717,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     if (Array.isArray(dataset) && this.slickGrid && this.dataView?.setItems) {
-      this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
+      this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName ?? 'id');
       if (!this.gridOptions.backendServiceApi && !this.gridOptions.enableTreeData) {
         this.dataView.reSort();
       }
