@@ -13,7 +13,8 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/tree-data-hierarchical`);
-    cy.get('h2').should('contain', 'Example 29: Tree Data (from a Hierarchical Dataset)');
+    cy.get('h2').should('contain', 'Example 29: Tree Data');
+    cy.get('h2').should('contain', 'from a Hierarchical Dataset');
   });
 
   it('should have exact column titles on 1st grid', () => {

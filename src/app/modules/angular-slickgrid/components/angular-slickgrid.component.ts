@@ -247,6 +247,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         }
       });
       this._isDatasetHierarchicalInitialized = true;
+      this.slickGrid.invalidate();
     }
   }
 
