@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.1.0...v3.2.0) (2021-09-29)
+
+
+### Features
+
+* **core:** use Slickgrid-Universal Pagination reusable component ([9c47112](https://github.com/ghiscoding/angular-slickgrid/commit/9c471125a6111d41582bcc7e514ac28d2a82704f))
+* **tree:** demo new `excludeChildrenWhenFilteringTree` flag ([7aa3d84](https://github.com/ghiscoding/angular-slickgrid/commit/7aa3d848355dbb69e118dbd5854c12d51e2a1916))
+
 ## [3.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.5...v3.1.0) (2021-09-09)
 
 
