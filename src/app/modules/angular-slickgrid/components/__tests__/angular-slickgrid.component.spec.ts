@@ -2066,7 +2066,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.destroy();
         component.gridOptions = { enableTreeData: true, treeDataOptions: { columnId: 'file', initialSort: { columndId: 'file', direction: 'ASC' } } } as unknown as GridOption;
         component.datasetHierarchical = mockHierarchical;
-        component.datasetHierarchical = mockHierarchical;
+        component.isDatasetHierarchicalInitialized = true;
         component.initialization(slickEventHandler);
 
         expect(hierarchicalSpy).toHaveBeenCalledWith(mockHierarchical);

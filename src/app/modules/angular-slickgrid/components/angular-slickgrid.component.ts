@@ -247,7 +247,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         }
       });
       this._isDatasetHierarchicalInitialized = true;
-      this.slickGrid.invalidate();
     }
   }
 
@@ -270,6 +269,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   /** SETTER to change if dataset was initialized or not (stringly used for unit testing purposes) */
   set isDatasetInitialized(isInitialized: boolean) {
     this._isDatasetInitialized = isInitialized;
+  }
+  set isDatasetHierarchicalInitialized(isInitialized: boolean) {
+    this._isDatasetHierarchicalInitialized = isInitialized;
   }
 
   get registeredResources(): ExternalResource[] {
