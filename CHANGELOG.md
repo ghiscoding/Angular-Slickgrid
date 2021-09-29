@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **core:** use Slickgrid-Universal Pagination reusable component ([9c47112](https://github.com/ghiscoding/angular-slickgrid/commit/9c471125a6111d41582bcc7e514ac28d2a82704f))
 * **tree:** demo new `excludeChildrenWhenFilteringTree` flag ([7aa3d84](https://github.com/ghiscoding/angular-slickgrid/commit/7aa3d848355dbb69e118dbd5854c12d51e2a1916))
+* **resizer:** remove redundant bindAutoResizeDataGrid call ([#839](https://github.com/ghiscoding/angular-slickgrid/issues/839)) ([cee71c8](https://github.com/ghiscoding/Angular-Slickgrid/commit/cee71c884a6325222bd856c07171e82a005c4b25))
 
 ## [3.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.0.5...v3.1.0) (2021-09-09)
 
