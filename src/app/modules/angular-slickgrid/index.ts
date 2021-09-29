@@ -7,6 +7,5 @@ export { RowDetailViewExtension } from './extensions/index';
 
 // components & module
 export { SlickgridConfig } from './slickgrid-config';
-export { SlickPaginationComponent } from './components/slick-pagination.component';
 export { AngularSlickgridComponent } from './components/angular-slickgrid.component';
 export { AngularSlickgridModule } from './modules/angular-slickgrid.module';

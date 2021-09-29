@@ -75,9 +75,10 @@ import {
   GetSlickEventType,
   GridStateType,
 } from '@slickgrid-universal/common';
-import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
+import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
+import { SlickPaginationComponent } from '@slickgrid-universal/pagination-component';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
 import { dequal } from 'dequal/lite';
 
@@ -140,6 +141,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   // components
   slickEmptyWarning?: SlickEmptyWarningComponent;
   slickFooter?: SlickFooterComponent;
+  slickPagination?: SlickPaginationComponent;
 
   // extensions
   extensionUtility: ExtensionUtility;
@@ -412,8 +414,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     // dispose the Components
-    this.slickFooter?.dispose();
     this.slickEmptyWarning?.dispose();
+    this.slickFooter?.dispose();
+    this.slickPagination?.dispose();
 
     if (this._eventHandler?.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
@@ -575,7 +578,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
     if (!this.gridOptions.enablePagination && this.gridOptions.showCustomFooter && this.gridOptions.customFooterOptions && this.gridContainerElement) {
-      this.slickFooter = new SlickFooterComponent(this.slickGrid, this.gridOptions.customFooterOptions, this.translaterService);
+      this.slickFooter = new SlickFooterComponent(this.slickGrid, this.gridOptions.customFooterOptions, this._eventPubSubService, this.translaterService);
       this.slickFooter.renderFooter(this.gridContainerElement);
     }
 
@@ -829,11 +832,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       if (gridOptions.enableTranslate) {
         this.translateColumnHeaderTitleKeys();
         this.translateColumnGroupKeys();
-        this.translateCustomFooterTexts();
       }
 
       this.subscriptions.push(
         this.translate.onLangChange.subscribe(() => {
+          // publish event of the same name that Slickgrid-Universal uses on a language change event
+          this._eventPubSubService.publish('onLanguageChange');
+
           if (gridOptions.enableTranslate) {
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
@@ -841,7 +846,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
             this.extensionService.translateContextMenu();
             this.extensionService.translateGridMenu();
             this.extensionService.translateHeaderMenu();
-            this.translateCustomFooterTexts();
             this.translateColumnHeaderTitleKeys();
             this.translateColumnGroupKeys();
             if (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping) {
@@ -1100,8 +1104,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           if (this.gridOptions?.backendServiceApi) {
             this.backendUtilityService?.refreshBackendDataset(this.gridOptions);
           }
+          this.renderPagination(this.showPagination);
         })
       );
+      // also initialize (render) the pagination component
+      this.renderPagination();
       this._isPaginationInitialized = true;
     }
     this.cd.detectChanges();
@@ -1309,6 +1316,25 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Render (or dispose) the Pagination Component, user can optionally provide False (to not show it) which will in term dispose of the Pagination,
+   * also while disposing we can choose to omit the disposable of the Pagination Service (if we are simply toggling the Pagination, we want to keep the Service alive)
+   * @param {Boolean} showPagination - show (new render) or not (dispose) the Pagination
+   * @param {Boolean} shouldDisposePaginationService - when disposing the Pagination, do we also want to dispose of the Pagination Service? (defaults to True)
+   */
+  private renderPagination(showPagination = true) {
+    if (this.gridOptions?.enablePagination && !this._isPaginationInitialized && showPagination) {
+      this.slickPagination = new SlickPaginationComponent(this.paginationService, this._eventPubSubService, this.sharedService, this.translaterService);
+      this.slickPagination.renderPagination(this.gridContainerElement as HTMLElement);
+      this._isPaginationInitialized = true;
+    } else if (!showPagination) {
+      if (this.slickPagination) {
+        this.slickPagination.dispose();
+      }
+      this._isPaginationInitialized = false;
+    }
+  }
+
+  /**
    * Takes a flat dataset with parent/child relationship, sort it (via its tree structure) and return the sorted flat array
    * @param {Array<Object>} flatDatasetInput - flat dataset input
    * @param {Boolean} forceGridRefresh - optionally force a full grid refresh
@@ -1363,13 +1389,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };
     });
-  }
-
-  /** Translate all Custom Footer Texts (footer with metrics) */
-  private translateCustomFooterTexts() {
-    if (this.slickFooter && this.translaterService?.translate) {
-      this.slickFooter?.translateCustomFooterTexts();
-    }
   }
 
   private translateColumnHeaderTitleKeys() {
