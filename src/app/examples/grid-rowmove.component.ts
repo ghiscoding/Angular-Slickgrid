@@ -178,7 +178,7 @@ export class GridRowMoveComponent implements OnInit {
     // we need to resort with
     rows.sort((a: number, b: number) => a - b);
     for (const filteredRow of filteredRows) {
-      if (filteredRow) {
+      if (filteredRow != null) {
         extractedRows.push(tmpDataset[filteredRow]);
       }
     }
