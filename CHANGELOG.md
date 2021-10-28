@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.2.0...v3.3.0) (2021-10-28)
+
+
+### Features
+
+* **plugin:** add example for new Custom Tooltip plugin ([44dd1cd](https://github.com/ghiscoding/angular-slickgrid/commit/44dd1cdccf82d9ff1c4ffd164ba2120fdbca01be))
+* **plugin:** add row move shadow item while moving/dragging row ([9cf714f](https://github.com/ghiscoding/angular-slickgrid/commit/9cf714f99ec25ac880da8b9662a16e0de55e619c))
+
 ## [3.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.1.0...v3.2.0) (2021-09-29)
 
 
