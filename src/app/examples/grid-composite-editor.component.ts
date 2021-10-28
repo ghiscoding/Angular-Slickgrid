@@ -23,7 +23,6 @@ import {
   SlickNamespace,
   SortComparers,
 } from '../modules/angular-slickgrid';
-import './grid-composite-editor.component.scss';
 
 const NB_ITEMS = 500;
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';

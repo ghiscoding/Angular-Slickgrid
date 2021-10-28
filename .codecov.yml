@@ -13,3 +13,5 @@ coverage:
     patch:
       default:
         threshold: 5%
+github_checks:
+  annotations: false

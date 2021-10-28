@@ -42,7 +42,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   This demo shows how to use Filters with Range of Search Values (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Range-Filters" target="_blank">Wiki docs</a>)
   <br/>
     <ul class="small">
-      <li>All input filters support the following operators: (>, >=, <, <=, <>, !=, =, ==, *) and now also the (..) for an input range
+      <li>All input filters support the following operators: (>, >=, <, <=, <>, !=, =, ==, *) and now also the (..) for an input range</li>
       <li>All filters (which support ranges) can be defined via the 2 dots (..) which represents a range, this also works for dates and slider in the "presets"</li>
       <ul>
         <li>For a numeric range defined in an input filter (must be of type text), you can use 2 dots (..) to represent a range</li>
