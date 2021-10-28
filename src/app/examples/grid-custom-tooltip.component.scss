@@ -1,0 +1,58 @@
+@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+
+// --
+// Custom Tooltips CSS Variables (or SASS equivalent)
+// ----------------------------------------------------
+// :root {
+//   --slick-tooltip-background-color:         #363636;
+//   --slick-tooltip-border-color:             #252525;
+//   --slick-tooltip-border:                   2px solid #252525;
+//   --slick-tooltip-color:                    #ffffff;
+
+//   --slick-tooltip-arrow-color:              var(--slick-tooltip-border-color);
+//   --slick-tooltip-arrow-size:               10px;
+//   --slick-tooltip-arrow-side-margin:        15px;
+// }
+
+.header-tooltip-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+.headerrow-tooltip-title {
+  color: #AD0041;
+  font-style: italic;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+// it's preferable to use CSS Variables (or SASS) but if you want to change colors of your tooltip for 1 column in particular you can do it this way
+// e.g. change css of 5th column 4 (zero index: l4)
+.l4 .header-tooltip-title,
+.l4 .headerrow-tooltip-title {
+  color: #ffffff;
+}
+.l4.slick-custom-tooltip {
+  color: #ffffff;
+  background-color: #363636;
+  border: 2px solid #252525;
+}
+.l4.slick-custom-tooltip.arrow-down::after,
+.l4.slick-custom-tooltip.arrow-up::after {
+  border-width: 10px; // arrow size
+}
+.l4.slick-custom-tooltip.arrow-down::after {
+  border-top-color: #252525; // arrow down color
+}
+.l4.slick-custom-tooltip.arrow-up::after {
+  top: -20px; // arrow size * 2
+  border-bottom-color: #252525; // arrow up color
+}
+.l4.slick-custom-tooltip.arrow-left-align::after {
+  margin-left: 15px;
+}
+.l4.slick-custom-tooltip.arrow-right-align::after {
+  margin-left: calc(100% - 20px - 15px); // 20px is (arrow size * 2), 15px is your extra side margin
+}
+.l6.slick-custom-tooltip.arrow-left-align::after {
+  margin-left: 4px;
+}

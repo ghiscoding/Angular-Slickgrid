@@ -7,6 +7,7 @@ import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridCompositeEditorComponent } from './examples/grid-composite-editor.component';
 import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
+import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
@@ -44,6 +45,7 @@ const routes: Routes = [
   { path: 'colspan', component: GridColspanComponent },
   { path: 'composite-editor', component: GridCompositeEditorComponent },
   { path: 'context', component: GridContextMenuComponent },
+  { path: 'custom-tooltip', component: GridCustomTooltipComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'frozen', component: GridFrozenComponent },

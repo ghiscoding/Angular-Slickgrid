@@ -117,7 +117,7 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +13,000 lines of code (+3,000 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +450 Cypress E2E tests.
+Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +13,000 lines of code (+3,000 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over 500 Cypress E2E tests.
 
 ## Installation
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
