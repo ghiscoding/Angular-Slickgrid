@@ -53,7 +53,7 @@ module.exports = {
   ],
   preset: 'jest-preset-angular',
   setupFiles: ['<rootDir>/test/jest-pretest.ts'],
-  setupFilesAfterEnv: ['jest-extended', '<rootDir>/test/setup-jest.ts'],
+  setupFilesAfterEnv: ['jest-extended/all', '<rootDir>/test/setup-jest.ts'],
   transform: {
     '^.+\\.(ts|html)$': 'jest-preset-angular',
   },
