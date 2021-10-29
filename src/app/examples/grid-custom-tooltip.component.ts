@@ -266,7 +266,7 @@ export class GridCustomTooltipComponent implements OnInit {
       },
       {
         id: 'action', name: 'Action', field: 'action', width: 70, minWidth: 70, maxWidth: 70,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px; margin-top: -1px;"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto" style="width: 35px;"><span class="fa fa-chevron-down text-primary"></span></div>`,
         excludeFromExport: true,
         cellMenu: {
           hideCloseButton: false,

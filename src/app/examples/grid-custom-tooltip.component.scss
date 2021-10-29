@@ -1,3 +1,4 @@
+$button-border-color: #ababab !default;
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
 
 // --
@@ -13,6 +14,24 @@
 //   --slick-tooltip-arrow-size:               10px;
 //   --slick-tooltip-arrow-side-margin:        15px;
 // }
+
+.editable-field {
+  background-color: rgba(227, 240, 251, 0.569) !important;
+}
+.unsaved-editable-field {
+  background-color: #fbfdd1 !important;
+}
+.button-style {
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #{$button-border-color};
+  border-radius: 2px;
+  justify-content: center;
+  text-align: center;
+  &:hover {
+    border-color: darken($button-border-color, 10%);
+  }
+}
 
 .header-tooltip-title {
   font-weight: bold;
