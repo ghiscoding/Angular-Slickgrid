@@ -25,7 +25,7 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
 #### Working Demo
-For a complete and working local demo (with +30 examples), you can (and should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository to get started. That repo is updated frequently and is used to update the GitHub demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete & working local demo (30+ examples), you can (and should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository to get started. That repo is updated frequently and is used to update the GitHub demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
 cd bootstrap4-demo-with-translate # or any of the 4 demos
