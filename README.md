@@ -11,13 +11,27 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, it is the most active fork since the original author @mleibman stopped working on his original repo. Also worth knowing that I have contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid) and a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and that also means jQuery is a dependency.
+One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, it is the most active fork since the original author @mleibman stopped working on his original repo. Also worth knowing that I have contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid... also a reminder, this is a wrapper of a jQuery lib (SlickGrid) and a big portion of the lib (like Editors, Filters and others) are written in jQuery/JavaScript, so just keep that in mind and it also mean that jQuery is a dependency.
+
+### License
+[MIT License](LICENSE)
 
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
-### License
-[MIT License](LICENSE)
+### Demo page
+`Angular-Slickgrid` works with `Bootstrap 4` and even latest `Bootstrap 5` version, you can see a demo of each one below. There are also 2 new styling Themes, Material & Salesforce are also available and you could also use SVG icons if so take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
+- [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
+- [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
+
+#### Working Demo
+For a complete and working local demo (with +30 examples), you can (and should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository to get started. That repo is updated frequently and is used to update the GitHub demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+```bash
+git clone https://github.com/ghiscoding/angular-slickgrid-demos
+cd bootstrap4-demo-with-translate # or any of the 4 demos
+npm install
+npm start
+```
 
 ### Like it? :star: it
 You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:👷‍♀️
@@ -39,9 +53,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 
 ## Angular Compatibility
 - version `1.x.x` for Angular 4 to 6 
-   - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` package. 
 - version `2.x.x` for Angular 7+ 
-  - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 - version `3.x.x` for Angular 12+ and RxJS 7+
   - build `target` got bumped to `ES2018` for modern browser **only**
   - IE11 is reaching EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
@@ -55,7 +67,7 @@ If you are facing any issues with `ngx-translate` library while building your An
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
-|        10       |        13.x+        |
+|        10+      |        13.x+        |
 |        9        |        12.x+        |
 |        8        |        12.x+        |
 |        7        |        11.x+        |
@@ -77,7 +89,7 @@ module.exports = {
   }
 };
 ```
-You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silent the warnings.
+You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silence the warnings.
 ```json
 "options": {
   "allowedCommonJsDependencies": ["angular-slickgrid"]
@@ -123,22 +135,6 @@ Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage,
 Refer to the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please don't open any issue unless you have followed these steps (from the Wiki), and if any of the steps are incorrect or confusing, then please let me know.
 
 **NOTE:** if you have any question, please consider asking installation and/or general questions on [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=slickgrid)
-
-### Demo page
-`Angular-Slickgrid` works with `Bootstrap 4` and even latest `Bootstrap 5` version, you can see a demo of each one below.
-- [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
-- [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
-
-There are also 2 new styling Themes, Material & Salesforce are also available and you could also use SVG icons if so take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
-
-#### Working Demo
-For a complete and working local demo (with +30 examples), you can (should) clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used to update the GitHub demo pages for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
-```bash
-git clone https://github.com/ghiscoding/angular-slickgrid-demos
-cd bootstrap4-demo-with-translate
-npm install
-npm start
-```
 
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call it and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
