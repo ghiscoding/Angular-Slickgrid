@@ -10,6 +10,10 @@
     "slickgrid"
   ],
   "license": "MIT",
+  "homepage": "https://ghiscoding.github.io/Angular-Slickgrid/",
+  "bugs": {
+    "url": "https://github.com/ghiscoding/Angular-Slickgrid/issues"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4300",
