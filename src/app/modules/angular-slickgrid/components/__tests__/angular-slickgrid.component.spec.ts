@@ -35,17 +35,18 @@ import {
   SlickGrid,
   SlickDraggableGrouping,
   SortService,
-  TreeDataService
+  TreeDataService,
+  SlickGroupItemMetadataProvider
 } from '@slickgrid-universal/common';
 import * as formatterUtilities from '@slickgrid-universal/common/dist/commonjs/formatters/formatterUtilities';
 import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
 import { GraphqlPaginatedResult, GraphqlService, GraphqlServiceApi, GraphqlServiceOption } from '@slickgrid-universal/graphql';
-import { TextExportService } from '@slickgrid-universal/text-export';
 import { of, throwError } from 'rxjs';
 
 import { AngularSlickgridComponent } from '../angular-slickgrid.component';
+import { SlickRowDetailView } from '../../extensions/slickRowDetailView';
 import { TranslaterServiceStub } from '../../../../../../test/translaterServiceStub';
 import { AngularUtilService, ContainerService, TranslaterService } from '../../services';
 import { GridOption } from '../../models';
@@ -58,7 +59,15 @@ const mockAutoAddCustomEditorFormatter = jest.fn();
 declare const Slick: any;
 const slickEventHandler = new MockSlickEventHandler();
 jest.mock('flatpickr', () => { });
-const sharedService = new SharedService();
+
+const mockSlickRowDetailView = {
+  create: jest.fn(),
+  init: jest.fn(),
+} as unknown as SlickRowDetailView;
+
+jest.mock('../../extensions/slickRowDetailView', () => ({
+  SlickRowDetailView: jest.fn().mockImplementation(() => mockSlickRowDetailView),
+}));
 
 const angularUtilServiceStub = {
   createAngularComponent: jest.fn(),
@@ -84,16 +93,13 @@ const mockAppRef = {
 } as unknown as ApplicationRef;
 
 const extensionServiceStub = {
+  addExtensionToList: jest.fn(),
   bindDifferentExtensions: jest.fn(),
   createExtensionsBeforeGridCreation: jest.fn(),
   dispose: jest.fn(),
   renderColumnHeaders: jest.fn(),
-  translateCellMenu: jest.fn(),
+  translateAllExtensions: jest.fn(),
   translateColumnHeaders: jest.fn(),
-  translateColumnPicker: jest.fn(),
-  translateContextMenu: jest.fn(),
-  translateGridMenu: jest.fn(),
-  translateHeaderMenu: jest.fn(),
 } as unknown as ExtensionService;
 Object.defineProperty(extensionServiceStub, 'extensionList', { get: jest.fn(() => { }), set: jest.fn(), configurable: true });
 
@@ -718,7 +724,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     describe('use grouping', () => {
       it('should load groupItemMetaProvider to the DataView when using "draggableGrouping" feature', () => {
         const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
-        const groupMetaSpy = jest.spyOn(mockGroupItemMetaProviderImplementation.prototype, 'constructor');
         const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
         jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ draggableGrouping: { pluginName: 'DraggableGrouping' } } as unknown as ExtensionList<any, any>);
 
@@ -726,8 +731,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.initialization(slickEventHandler);
 
         expect(dataviewSpy).toHaveBeenCalledWith({ inlineFilters: false, groupItemMetadataProvider: expect.anything() });
-        expect(groupMetaSpy).toHaveBeenCalledWith();
-        expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
+        expect(sharedService.groupItemMetadataProvider instanceof SlickGroupItemMetadataProvider).toBeTruthy();
+        expect(sharedMetaSpy).toHaveBeenCalledWith(expect.toBeObject());
 
         component.destroy();
       });
@@ -741,8 +746,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.initialization(slickEventHandler);
 
         expect(dataviewSpy).toHaveBeenCalledWith({ inlineFilters: false, groupItemMetadataProvider: expect.anything() });
-        expect(groupMetaSpy).toHaveBeenCalledWith();
-        expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
+        expect(sharedMetaSpy).toHaveBeenCalledWith(expect.toBeObject());
+        expect(sharedService.groupItemMetadataProvider instanceof SlickGroupItemMetadataProvider).toBeTruthy();
 
         component.destroy();
       });
@@ -897,6 +902,18 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(spy).not.toHaveBeenCalled();
       });
 
+      it('should create the Row Detail View plugin when "enableRowDetailView" is enabled', () => {
+        const initSpy = jest.spyOn(mockSlickRowDetailView, 'init');
+        const createSpy = jest.spyOn(mockSlickRowDetailView, 'create');
+
+        component.gridOptions = { enableRowDetailView: true } as unknown as GridOption;
+        component.initialization(slickEventHandler);
+
+        expect(component.registeredResources.length).toBe(4);
+        expect(createSpy).toHaveBeenCalled();
+        expect(initSpy).toHaveBeenCalled();
+      });
+
       it('should call "translateColumnHeaders" from ExtensionService when "enableTranslate" is set', () => {
         const spy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
 
@@ -904,17 +921,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.initialization(slickEventHandler);
 
         expect(spy).toHaveBeenCalled();
-      });
-
-      it('should initialize ExportService when "enableTextExport" is set when using Salesforce', () => {
-        const fileExportMock = new TextExportService();
-        const fileExportSpy = jest.spyOn(fileExportMock, 'init');
-        component.gridOptions = { enableTextExport: true, registerExternalResources: [fileExportMock] } as GridOption;
-        component.initialization(slickEventHandler);
-
-        expect(fileExportSpy).toHaveBeenCalled();
-        expect(component.registeredResources.length).toBe(4); // TextExportService, GridService, GridStateService, SlickEmptyCompositeEditorComponent
-        expect(component.registeredResources[0] instanceof TextExportService).toBeTrue();
       });
 
       it('should add RxJS resource to all necessary Services when RxJS external resource is registered', () => {
@@ -1302,12 +1308,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call multiple translate methods when locale changes', (done) => {
-        const transCellMenuSpy = jest.spyOn(extensionServiceStub, 'translateCellMenu');
-        const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
-        const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
-        const transContextMenuSpy = jest.spyOn(extensionServiceStub, 'translateContextMenu');
-        const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
-        const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+        const transAllExtSpy = jest.spyOn(extensionServiceStub, 'translateAllExtensions');
         const transGroupingColSpanSpy = jest.spyOn(groupingAndColspanServiceStub, 'translateGroupingAndColSpan');
         const setHeaderRowSpy = jest.spyOn(mockGrid, 'setHeaderRowVisibility');
 
@@ -1319,24 +1320,14 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         setTimeout(() => {
           expect(setHeaderRowSpy).not.toHaveBeenCalled();
           expect(transGroupingColSpanSpy).not.toHaveBeenCalled();
-          expect(transCellMenuSpy).toHaveBeenCalled();
-          expect(transColHeaderSpy).toHaveBeenCalled();
-          expect(transColPickerSpy).toHaveBeenCalled();
-          expect(transContextMenuSpy).toHaveBeenCalled();
-          expect(transGridMenuSpy).toHaveBeenCalled();
-          expect(transHeaderMenuSpy).toHaveBeenCalled();
+          expect(transAllExtSpy).toHaveBeenCalled();
           done();
         });
       });
 
       it('should call "setHeaderRowVisibility", "translateGroupingAndColSpan" and other methods when locale changes', (done) => {
         component.columnDefinitions = [{ id: 'firstName', field: 'firstName', filterable: true }];
-        const transCellMenuSpy = jest.spyOn(extensionServiceStub, 'translateCellMenu');
-        const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
-        const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
-        const transContextMenuSpy = jest.spyOn(extensionServiceStub, 'translateContextMenu');
-        const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
-        const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+        const transAllExtSpy = jest.spyOn(extensionServiceStub, 'translateAllExtensions');
         const transGroupingColSpanSpy = jest.spyOn(groupingAndColspanServiceStub, 'translateGroupingAndColSpan');
 
         component.gridOptions = { enableTranslate: true, createPreHeaderPanel: true, enableDraggableGrouping: false } as unknown as GridOption;
@@ -1346,12 +1337,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         setTimeout(() => {
           expect(transGroupingColSpanSpy).toHaveBeenCalled();
-          expect(transCellMenuSpy).toHaveBeenCalled();
-          expect(transColHeaderSpy).toHaveBeenCalled();
-          expect(transColPickerSpy).toHaveBeenCalled();
-          expect(transContextMenuSpy).toHaveBeenCalled();
-          expect(transGridMenuSpy).toHaveBeenCalled();
-          expect(transHeaderMenuSpy).toHaveBeenCalled();
+          expect(transAllExtSpy).toHaveBeenCalled();
           done();
         });
       });

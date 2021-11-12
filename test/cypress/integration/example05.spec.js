@@ -198,12 +198,12 @@ describe('Example 5 - OData Grid', () => {
 
     it('should Clear all Filters and expect to go back to first page', () => {
       cy.get('#grid5')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click();
 
-      cy.get(`.slick-gridmenu:visible`)
-        .find('.slick-gridmenu-item')
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-grid-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')
@@ -243,12 +243,12 @@ describe('Example 5 - OData Grid', () => {
 
     it('should Clear all Sorting', () => {
       cy.get('#grid5')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click();
 
-      cy.get(`.slick-gridmenu:visible`)
-        .find('.slick-gridmenu-item:nth(1)')
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-grid-menu-item:nth(1)')
         .find('span')
         .contains('Clear all Sorting')
         .click();
@@ -335,12 +335,12 @@ describe('Example 5 - OData Grid', () => {
   describe('when "enableCount" is unchecked (not set)', () => {
     it('should Clear all Filters, set 20 items per page & uncheck "enableCount"', () => {
       cy.get('#grid5')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click();
 
-      cy.get(`.slick-gridmenu:visible`)
-        .find('.slick-gridmenu-item')
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-grid-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')
@@ -417,12 +417,12 @@ describe('Example 5 - OData Grid', () => {
 
     it('should Clear all Sorting', () => {
       cy.get('#grid5')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click();
 
-      cy.get(`.slick-gridmenu:visible`)
-        .find('.slick-gridmenu-item:nth(1)')
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-grid-menu-item:nth(1)')
         .find('span')
         .contains('Clear all Sorting')
         .click();
@@ -693,14 +693,14 @@ describe('Example 5 - OData Grid', () => {
       cy.get('#grid5')
         .find('.slick-header-left .slick-header-column:nth(1)')
         .trigger('mouseover')
-        .children('.slick-header-menubutton')
+        .children('.slick-header-menu-button')
         .invoke('show')
         .click();
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(6)')
-        .children('.slick-header-menucontent')
+        .children('.slick-header-menu-item:nth-child(6)')
+        .children('.slick-header-menu-content')
         .should('contain', 'Remove Filter')
         .click();
 

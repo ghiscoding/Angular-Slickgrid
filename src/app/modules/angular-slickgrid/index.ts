@@ -3,7 +3,7 @@ export * from '@slickgrid-universal/common';
 // Public classes.
 export { AngularComponentOutput, AngularGridInstance, GridOption, SlickGrid, RowDetailView } from './models/index';
 export { AngularUtilService, BsDropDownService, unsubscribeAllObservables } from './services/index';
-export { RowDetailViewExtension } from './extensions/index';
+export { SlickRowDetailView } from './extensions/index';
 
 // components & module
 export { SlickgridConfig } from './slickgrid-config';

@@ -40,12 +40,12 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
     const newColumnList = ['#', '% Complete', 'Start', 'Finish', 'Cost | Duration', 'Effort Driven', 'Title 1', 'Title 2', 'Title 3', 'Title 4'];
 
     cy.get('#grid20')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .click({ force: true });
 
     cy.get('#grid20')
-      .get('.slick-gridmenu:visible')
-      .find('.slick-gridmenu-list')
+      .get('.slick-grid-menu:visible')
+      .find('.slick-grid-menu-list')
       .children('li:visible:nth(1)')
       .children('label')
       .should('contain', 'Title')
@@ -67,15 +67,15 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
 
   it('should show again "Title" column from Grid Menu and expect last frozen column to still be "% Complete"', () => {
     cy.get('#grid20')
-      .get('.slick-gridmenu:visible')
-      .find('.slick-gridmenu-list')
+      .get('.slick-grid-menu:visible')
+      .find('.slick-grid-menu-list')
       .children('li:visible:nth(1)')
       .children('label')
       .should('contain', 'Title')
       .click({ force: true });
 
     cy.get('#grid20')
-      .get('.slick-gridmenu:visible')
+      .get('.slick-grid-menu:visible')
       .find('span.close')
       .click({ force: true });
 
@@ -100,15 +100,15 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
     cy.get('#grid20')
       .find('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(8)')
-      .children('.slick-header-menucontent')
+      .children('.slick-header-menu-item:nth-child(8)')
+      .children('.slick-header-menu-content')
       .should('contain', 'Hide Column')
       .click();
 
@@ -205,7 +205,7 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
 
   it('should click on the Grid Menu command "Unfreeze Columns/Rows" to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
     cy.get('#grid20')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .click({ force: true });
 
     cy.contains('Unfreeze Columns/Rows')

@@ -13,6 +13,8 @@ import {
   Formatter,
   Formatters,
   GridOption,
+  SlickCellMenu,
+  SlickContextMenu,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -108,12 +110,12 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
     this.angularGrid = angularGrid;
   }
 
-  get cellMenuInstance(): any {
-    return this.angularGrid?.extensionService?.getSlickgridAddonInstance?.(ExtensionName.cellMenu) ?? {};
+  get cellMenuInstance(): SlickCellMenu {
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.cellMenu) ?? {}) as SlickCellMenu;
   }
 
-  get contextMenuInstance(): any {
-    return this.angularGrid?.extensionService?.getSlickgridAddonInstance?.(ExtensionName.contextMenu) ?? {};
+  get contextMenuInstance(): SlickContextMenu {
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.contextMenu) ?? {}) as SlickContextMenu;
   }
 
   ngOnInit() {

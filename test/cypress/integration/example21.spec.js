@@ -195,29 +195,29 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
     cy.get('#slickGridContainer-grid21')
       .find('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(4)')
-      .children('.slick-header-menucontent')
+      .children('.slick-header-menu-item:nth-child(4)')
+      .children('.slick-header-menu-content')
       .should('contain', 'Sort Descending')
       .click();
 
     cy.get('#slickGridContainer-grid21')
       .find('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(3)')
-      .children('.slick-header-menucontent')
+      .children('.slick-header-menu-item:nth-child(3)')
+      .children('.slick-header-menu-content')
       .should('contain', 'Sort Ascending')
       .click();
 

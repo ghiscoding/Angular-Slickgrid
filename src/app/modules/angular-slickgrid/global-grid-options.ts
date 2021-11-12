@@ -135,6 +135,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   forceFitColumns: false,
   frozenHeaderWidthCalcDifferential: 0,
   gridMenu: {
+    dropSide: 'left',
     commandLabels: {
       clearAllFiltersCommandKey: 'CLEAR_ALL_FILTERS',
       clearAllSortingCommandKey: 'CLEAR_ALL_SORTING',
@@ -169,7 +170,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     iconTogglePreHeaderCommand: 'fa fa-random',
     menuWidth: 16,
     resizeOnShowHeaderRow: true,
-    useClickToRepositionMenu: false, // use icon location to reposition instead
     headerColumnValueExtractor: pickerHeaderColumnValueExtractor
   },
   headerMenu: {
@@ -203,6 +203,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   },
   // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
   rowDetailView: {
+    collapseAllOnSort: true,
     cssClass: 'detail-view-toggle',
     panelRows: 1,
     keyPrefix: '__',

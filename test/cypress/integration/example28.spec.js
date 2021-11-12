@@ -134,12 +134,12 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
 
   it('should open the Grid Menu "Clear all Filters" command', () => {
     cy.get('#grid28')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
@@ -186,12 +186,12 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
 
   it('should open the Grid Menu "Clear all Filters" command', () => {
     cy.get('#grid28')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
@@ -223,12 +223,12 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
 
   it('should open the Grid Menu "Clear all Filters" command', () => {
     cy.get('#grid28')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')

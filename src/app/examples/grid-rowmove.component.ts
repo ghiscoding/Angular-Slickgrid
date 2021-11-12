@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption, SlickRowMoveManager } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowmove.component.html'
@@ -32,8 +32,8 @@ export class GridRowMoveComponent implements OnInit {
     this.angularGrid = angularGrid;
   }
 
-  get rowMoveInstance(): any {
-    return this.angularGrid?.extensionService?.getSlickgridAddonInstance?.(ExtensionName.rowMoveManager) ?? {};
+  get rowMoveInstance(): SlickRowMoveManager {
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.rowMoveManager) ?? {}) as SlickRowMoveManager;
   }
 
   ngOnInit(): void {

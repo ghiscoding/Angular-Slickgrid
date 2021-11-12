@@ -111,11 +111,11 @@ describe('Example 27 - GraphQL Basic API without Pagination', { retries: 1 }, ()
 
   it('should Clear all Filters and expect all rows to be back', () => {
     cy.get('#grid27')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
@@ -164,12 +164,12 @@ describe('Example 27 - GraphQL Basic API without Pagination', { retries: 1 }, ()
 
   it('should Clear all Filters and expect all rows to be back', () => {
     cy.get('#grid27')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')

@@ -151,14 +151,14 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
     cy.get('.slick-header-column:nth-child(14)')
       .first()
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(6)')
-      .children('.slick-header-menucontent')
+      .children('.slick-header-menu-item:nth-child(6)')
+      .children('.slick-header-menu-content')
       .should('contain', 'Remove Filter')
       .click();
 

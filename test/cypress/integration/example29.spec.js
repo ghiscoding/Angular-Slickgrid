@@ -134,12 +134,12 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
 
   it('should Clear all Filters and default list', () => {
     cy.get('#slickGridContainer-grid29')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get(`.slick-gridmenu:visible`)
-      .find('.slick-gridmenu-item')
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-grid-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
