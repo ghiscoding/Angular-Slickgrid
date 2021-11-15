@@ -43,6 +43,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     protected readonly angularUtilService: AngularUtilService,
     protected readonly appRef: ApplicationRef,
     protected readonly eventPubSubService: EventPubSubService,
+    protected readonly gridContainerElement: HTMLDivElement,
     protected rxjs?: RxJsFacade,
   ) {
     super();
@@ -216,7 +217,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
-          this.eventPubSubService.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this))
+          this.eventPubSubService?.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this)),
+          this.eventPubSubService?.subscribe('onGridMenuClearAllFilters', () => setTimeout(() => this.redrawAllViewComponents())),
+          this.eventPubSubService?.subscribe('onGridMenuClearAllSorting', () => setTimeout(() => this.redrawAllViewComponents())),
         );
       }
     }
@@ -241,7 +244,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
+    const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
     if (containerElements && containerElements.length >= 0) {
       this.renderViewModel(createdView.dataContext);
     }
@@ -249,7 +252,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
-    const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
+    const containerElements = this.gridContainerElement.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
     if (containerElements && containerElements.length >= 0) {
       this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1], true);
     }
@@ -257,7 +260,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | undefined {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
+    const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
     if (containerElements && containerElements.length > 0) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
@@ -366,12 +369,8 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
   protected handleOnRowBackToViewportRange(e: Event, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
-    if (args && args.item) {
-      this._views.forEach((view) => {
-        if (view.id === args.item[this.datasetIdPropName]) {
-          this.redrawViewComponent(view);
-        }
-      });
+    if (args?.item) {
+      this.redrawAllViewComponents();
     }
   }
 }

@@ -111,11 +111,11 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
   }
 
   get cellMenuInstance(): SlickCellMenu {
-    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.cellMenu) ?? {}) as SlickCellMenu;
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.cellMenu) ?? {});
   }
 
   get contextMenuInstance(): SlickContextMenu {
-    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.contextMenu) ?? {}) as SlickContextMenu;
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.contextMenu) ?? {});
   }
 
   ngOnInit() {

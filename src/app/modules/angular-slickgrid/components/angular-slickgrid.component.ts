@@ -51,6 +51,7 @@ import {
   RxJsFacade,
   SharedService,
   SlickgridConfig,
+  SlickGroupItemMetadataProvider,
   SortService,
   TreeDataService,
 
@@ -58,7 +59,6 @@ import {
   autoAddEditorFormatterToColumnsWithEditor,
   emptyElement,
   GridStateType,
-  SlickGroupItemMetadataProvider,
 } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
@@ -88,7 +88,6 @@ declare const Slick: SlickNamespace;
     // make everything transient (non-singleton)
     AngularUtilService,
     ApplicationRef,
-    SlickRowDetailView,
     TranslaterService,
   ]
 })
@@ -107,7 +106,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   private _isLocalGrid = true;
   private _paginationOptions: Pagination | undefined;
   private _registeredResources: ExternalResource[] = [];
-  private slickRowDetailView?: SlickRowDetailView;
   dataView!: SlickDataView;
   slickGrid!: SlickGrid;
   groupingDefinition: any = {};
@@ -124,10 +122,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   };
   subscriptions: Subscription[] = [];
 
-  // components
+  // components / plugins
   slickEmptyWarning?: SlickEmptyWarningComponent;
   slickFooter?: SlickFooterComponent;
   slickPagination?: SlickPaginationComponent;
+  slickRowDetailView?: SlickRowDetailView;
 
   // services
   backendUtilityService!: BackendUtilityService;
@@ -1244,7 +1243,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     if (this.gridOptions.enableRowDetailView) {
-      this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.rxjs);
+      this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
       this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
       this._registeredResources.push(this.slickRowDetailView);
       this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, class: this.slickRowDetailView, instance: this.slickRowDetailView });

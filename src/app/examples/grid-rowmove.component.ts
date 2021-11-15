@@ -33,7 +33,7 @@ export class GridRowMoveComponent implements OnInit {
   }
 
   get rowMoveInstance(): SlickRowMoveManager {
-    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.rowMoveManager) ?? {}) as SlickRowMoveManager;
+    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.rowMoveManager) ?? {});
   }
 
   ngOnInit(): void {
