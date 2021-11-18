@@ -50,7 +50,6 @@
     "release": "standard-version",
     "build:demo": "ng build --configuration=production"
   },
-  "author": "Ghislain B.",
   "repository": {
     "type": "git",
     "url": "http://github.com/ghiscoding/angular-slickgrid"
