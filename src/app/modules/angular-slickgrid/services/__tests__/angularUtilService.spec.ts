@@ -34,14 +34,15 @@ describe('AngularUtilService', () => {
     document.body.appendChild(div);
 
     await TestBed.configureTestingModule({
-      declarations: [TestPreloadComponent],
-      providers: [
+    declarations: [TestPreloadComponent],
+    providers: [
         AngularUtilService,
         { provide: ApplicationRef, useValue: applicationRefStub },
         { provide: ComponentFactoryResolver, useValue: componentFactoryResolverStub },
         { provide: Injector, useValue: injectorStub },
-      ]
-    });
+    ],
+    teardown: { destroyAfterEach: false }
+});
     fixture = TestBed.createComponent(TestPreloadComponent);
     component = fixture.componentInstance;
     service = TestBed.inject(AngularUtilService);
