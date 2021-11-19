@@ -17,7 +17,7 @@ import {
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { Observable, Subject, Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
-const DOMPurify = DOMPurify_; // patch to fix rollup to work
+const DOMPurify = (DOMPurify_ as any)['default'] || DOMPurify_; // patch to fix rollup to work
 
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';
