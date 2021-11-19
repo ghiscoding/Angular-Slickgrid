@@ -113,8 +113,8 @@ describe('rowDetailViewExtension', () => {
     rxjsResourceStub = new RxJsResourceStub();
 
     await TestBed.configureTestingModule({
-    declarations: [TestPreloadComponent],
-    providers: [
+      declarations: [TestPreloadComponent],
+      providers: [
         RowDetailViewExtension,
         SharedService,
         { provide: ApplicationRef, useValue: applicationRefStub },
@@ -123,10 +123,10 @@ describe('rowDetailViewExtension', () => {
         { provide: FilterService, useValue: filterServiceStub },
         { provide: RxJsFacade, useValue: rxjsResourceStub },
         { provide: SortService, useValue: sortServiceStub },
-    ],
-    imports: [TranslateModule.forRoot()],
-    teardown: { destroyAfterEach: false }
-});
+      ],
+      imports: [TranslateModule.forRoot()],
+      teardown: { destroyAfterEach: false }
+    });
     extension = TestBed.inject(RowDetailViewExtension);
   });
 

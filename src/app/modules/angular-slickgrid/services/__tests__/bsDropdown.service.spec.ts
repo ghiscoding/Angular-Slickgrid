@@ -45,13 +45,13 @@ describe('bsdropdown-service', () => {
     document.body.appendChild(div);
 
     await TestBed.configureTestingModule({
-    declarations: [TestComponent],
-    providers: [
+      declarations: [TestComponent],
+      providers: [
         BsDropDownService,
         { provide: AngularUtilService, useValue: angularUtilServiceStub },
-    ],
-    teardown: { destroyAfterEach: false }
-});
+      ],
+      teardown: { destroyAfterEach: false }
+    });
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
     service = TestBed.inject(BsDropDownService);

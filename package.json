@@ -87,16 +87,15 @@
     "rxjs": ">=7.0.0"
   },
   "peerDependencies": {
-    "@ngx-translate/core": ">=13.0.0",
-    "@ngx-translate/http-loader": ">=6.0.0"
+    "@ngx-translate/core": ">=14.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.3",
-    "@angular-eslint/builder": "12.6.1",
-    "@angular-eslint/eslint-plugin": "12.6.1",
-    "@angular-eslint/eslint-plugin-template": "12.6.1",
-    "@angular-eslint/schematics": "12.6.1",
-    "@angular-eslint/template-parser": "12.6.1",
+    "@angular-eslint/builder": "13.0.1",
+    "@angular-eslint/eslint-plugin": "13.0.1",
+    "@angular-eslint/eslint-plugin-template": "13.0.1",
+    "@angular-eslint/schematics": "13.0.1",
+    "@angular-eslint/template-parser": "13.0.1",
     "@angular/animations": "^13.0.2",
     "@angular/cli": "^13.0.3",
     "@angular/common": "^13.0.2",
@@ -118,12 +117,12 @@
     "@slickgrid-universal/odata": "^0.19.1",
     "@slickgrid-universal/text-export": "^0.19.1",
     "@types/flatpickr": "^3.1.2",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/moment": "^2.13.0",
-    "@types/node": "^16.11.7",
+    "@types/node": "^16.11.8",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "autoprefixer": "^10.4.0",
     "bootstrap": "^5.1.3",
     "codecov": "^3.8.3",
@@ -134,11 +133,11 @@
     "custom-event-polyfill": "^1.0.7",
     "del": "^6.0.0",
     "del-cli": "^4.0.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.2.0",
     "jest": "^27.3.1",
     "jest-extended": "^1.1.0",
     "jest-preset-angular": "^11.0.0-rc.4",
-    "ng-packagr": "^13.0.5",
+    "ng-packagr": "^13.0.6",
     "ngx-bootstrap": "^7.1.0",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.3.11",
@@ -156,7 +155,7 @@
     "zone.js": "~0.11.4"
   },
   "engines": {
-    "node": ">=14.15.0",
+    "node": ">=14.17.0",
     "npm": ">=6.14.8"
   }
 }
