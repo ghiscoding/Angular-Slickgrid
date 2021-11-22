@@ -124,7 +124,8 @@ describe('rowDetailViewExtension', () => {
         { provide: RxJsFacade, useValue: rxjsResourceStub },
         { provide: SortService, useValue: sortServiceStub },
       ],
-      imports: [TranslateModule.forRoot()]
+      imports: [TranslateModule.forRoot()],
+      teardown: { destroyAfterEach: false }
     });
     extension = TestBed.inject(RowDetailViewExtension);
   });

@@ -347,8 +347,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     sharedService = new SharedService();
     translaterService = new TranslaterServiceStub();
     await TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()]
-    });
+    imports: [TranslateModule.forRoot()],
+    teardown: { destroyAfterEach: false }
+});
     translate = TestBed.inject(TranslateService);
 
     mockChangeDetectorRef = {

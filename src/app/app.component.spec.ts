@@ -10,7 +10,8 @@ describe('AppComponent', () => {
         AppComponent
       ],
       providers: [],
-      imports: [RouterTestingModule]
+      imports: [RouterTestingModule],
+      teardown: { destroyAfterEach: false }
     }).compileComponents();
   });
 
