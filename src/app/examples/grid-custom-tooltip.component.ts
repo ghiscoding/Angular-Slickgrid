@@ -270,7 +270,6 @@ export class GridCustomTooltipComponent implements OnInit {
         excludeFromExport: true,
         cellMenu: {
           hideCloseButton: false,
-          width: 175,
           commandTitle: 'Commands',
           commandItems: [
             // array of command item objects, you can also use the "positionOrder" that will be used to sort the items in the list

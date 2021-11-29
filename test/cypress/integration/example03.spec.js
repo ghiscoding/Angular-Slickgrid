@@ -157,7 +157,7 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menu-item:nth-child(6)')
+      .children('.slick-header-menu-item:nth-of-type(6)')
       .children('.slick-header-menu-content')
       .should('contain', 'Remove Filter')
       .click();

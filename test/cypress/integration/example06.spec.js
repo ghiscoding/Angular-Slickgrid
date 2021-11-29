@@ -177,7 +177,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menu-item:nth-child(6)')
+      .children('.slick-header-menu-item:nth-of-type(6)')
       .children('.slick-header-menu-content')
       .should('contain', 'Remove Filter')
       .click();
@@ -207,7 +207,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menu-item:nth-child(6)')
+      .children('.slick-header-menu-item:nth-of-type(6)')
       .children('.slick-header-menu-content')
       .should('contain', 'Remove Filter')
       .click();
@@ -238,7 +238,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menu-item:nth-child(6)')
+      .children('.slick-header-menu-item:nth-of-type(6)')
       .children('.slick-header-menu-content')
       .should('contain', 'Remove Filter')
       .click();
@@ -411,27 +411,27 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-child(3)')
+        .children('.slick-header-menu-item:nth-of-type(3)')
         .children('.slick-header-menu-content')
         .should('contain', 'Sort Ascending');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(4)')
+        .children('.slick-header-menu-item:nth-of-type(4)')
         .children('.slick-header-menu-content')
         .should('contain', 'Sort Descending');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(6)')
+        .children('.slick-header-menu-item:nth-of-type(6)')
         .children('.slick-header-menu-content')
         .should('contain', 'Remove Filter');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(7)')
+        .children('.slick-header-menu-item:nth-of-type(7)')
         .children('.slick-header-menu-content')
         .should('contain', 'Remove Sort');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(8)')
+        .children('.slick-header-menu-item:nth-of-type(8)')
         .children('.slick-header-menu-content')
         .should('contain', 'Hide Column');
     });
@@ -459,7 +459,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       cy.get('.slick-grid-menu-list li:nth(1)')
         .contains('Customer Information - Gender');
 
-      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu] > span.close')
+      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close')
         .click({ force: true });
     });
 
@@ -519,27 +519,27 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-child(3)')
+        .children('.slick-header-menu-item:nth-of-type(3)')
         .children('.slick-header-menu-content')
         .should('contain', 'Trier par ordre croissant');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(4)')
+        .children('.slick-header-menu-item:nth-of-type(4)')
         .children('.slick-header-menu-content')
         .should('contain', 'Trier par ordre décroissant');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(6)')
+        .children('.slick-header-menu-item:nth-of-type(6)')
         .children('.slick-header-menu-content')
         .should('contain', 'Supprimer le filtre');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(7)')
+        .children('.slick-header-menu-item:nth-of-type(7)')
         .children('.slick-header-menu-content')
         .should('contain', 'Supprimer le tri');
 
       cy.get('.slick-header-menu')
-        .children('.slick-header-menu-item:nth-child(8)')
+        .children('.slick-header-menu-item:nth-of-type(8)')
         .children('.slick-header-menu-content')
         .should('contain', 'Cacher la colonne');
     });
@@ -567,7 +567,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       cy.get('.slick-grid-menu-list li:nth(1)')
         .contains('Information Client - Sexe');
 
-      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu] > span.close')
+      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close')
         .click({ force: true });
     });
 

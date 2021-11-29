@@ -185,7 +185,6 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         formatter: actionFormatter,
         cellMenu: {
           hideCloseButton: false,
-          width: 200,
           // you can override the logic of when the menu is usable
           // for example say that we want to show a menu only when then Priority is set to 'High'.
           // Note that this ONLY overrides the usability itself NOT the text displayed in the cell,
@@ -354,7 +353,6 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
   getContextMenuOptions(): ContextMenu {
     return {
       hideCloseButton: false,
-      width: 200,
       // optionally and conditionally define when the the menu is usable,
       // this should be used with a custom formatter to show/hide/disable the menu
       menuUsabilityOverride: (args) => {

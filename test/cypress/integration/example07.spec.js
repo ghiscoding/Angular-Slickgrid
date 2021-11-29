@@ -364,7 +364,7 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
 
       cy.get('#grid7-2 .slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-child(6)')
+        .children('.slick-header-menu-item:nth-of-type(6)')
         .children('.slick-header-menu-content')
         .should('contain', 'Remove Filter')
         .click();
@@ -394,7 +394,7 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
 
       cy.get('#grid7-2 .slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-child(3)')
+        .children('.slick-header-menu-item:nth-of-type(3)')
         .children('.slick-header-menu-content')
         .should('contain', 'Sort Ascending')
         .click();

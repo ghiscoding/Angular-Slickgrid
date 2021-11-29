@@ -50,7 +50,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     iconExportCsvCommand: 'fa fa-download',
     iconExportExcelCommand: 'fa fa-file-excel-o text-success',
     iconExportTextDelimitedCommand: 'fa fa-download',
-    width: 200,
   },
   customFooterOptions: {
     dateFormat: 'YYYY-MM-DD, hh:mm a',

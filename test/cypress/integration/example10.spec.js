@@ -107,7 +107,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
     cy.get('#grid1')
       .get('.slick-grid-menu:visible')
-      .find('span.close')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -148,7 +148,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
     cy.get('#grid1')
       .get('.slick-columnpicker:visible')
-      .find('span.close')
+      .find('.close')
       .trigger('click')
       .click();
   });

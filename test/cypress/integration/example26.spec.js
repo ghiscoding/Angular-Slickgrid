@@ -52,7 +52,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
       cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
         .find('.slick-context-menu-item')
         .each(($command, index) => {
-          expect($command.text()).to.eq(commands[index]);
+          expect($command.text()).to.contain(commands[index]);
           expect($command.text()).not.include('Help');
         });
     });
@@ -132,7 +132,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
 
       cy.get('.slick-context-menu.dropleft .slick-context-menu-command-list')
         .find('.slick-context-menu-item')
-        .each(($command, index) => expect($command.text()).to.eq(commands[index]));
+        .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-context-menu button.close')
         .click();
@@ -273,7 +273,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
       cy.get('.slick-cell-menu .slick-cell-menu-command-list')
         .should('exist')
         .find('.slick-cell-menu-item')
-        .each(($command, index) => expect($command.text()).to.eq(commands[index]));
+        .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-cell-menu-option-list')
         .should('not.exist');
@@ -377,7 +377,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
       cy.get('#grid26')
         .find('.slick-header-columns')
         .children()
-        .each(($child, index) => expect($child.text()).to.eq(fullFrenchTitles[index]));
+        .each(($child, index) => expect($child.text()).to.contain(fullFrenchTitles[index]));
     });
 
     it('should have first row with "Tâche 1" and a Priority set to a Orange Star (medium) with the Action cell disabled and not clickable', () => {
@@ -410,7 +410,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
 
       cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
         .find('.slick-context-menu-item')
-        .each(($command, index) => expect($command.text()).to.eq(commands[index]));
+        .each(($command, index) => expect($command.text()).to.contain(commands[index]));
     });
 
     it('should be able to click on the Context Menu (x) close button, on top right corner, to close the menu', () => {
@@ -474,7 +474,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
 
       cy.get('.slick-context-menu.dropleft .slick-context-menu-command-list')
         .find('.slick-context-menu-item')
-        .each(($command, index) => expect($command.text()).to.eq(commands[index]));
+        .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-context-menu button.close')
         .click();
@@ -615,7 +615,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
       cy.get('.slick-cell-menu .slick-cell-menu-command-list')
         .should('exist')
         .find('.slick-cell-menu-item')
-        .each(($command, index) => expect($command.text()).to.eq(commands[index]));
+        .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-cell-menu-option-list')
         .should('not.exist');

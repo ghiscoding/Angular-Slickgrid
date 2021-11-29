@@ -229,7 +229,6 @@ export class GridAngularComponent implements OnInit {
         field: 'id',
         formatter: () => `<div class="fake-hyperlink">Action <i class="fa fa-caret-down"></i></div>`,
         cellMenu: {
-          width: 175,
           commandTitle: 'Commands',
           commandItems: [
             {

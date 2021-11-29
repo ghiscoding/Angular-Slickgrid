@@ -89,7 +89,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
         menuUsabilityOverride: (args) => true,
 
         // all titles optionally support translation keys, if you wish to use that feature then use the title properties with the 'Key' suffix (e.g: titleKey)
-        // example "customTitle" for a plain string OR "customTitleKey" to use a translation key
+        // example "commandTitle" for a plain string OR "commandTitleKey" to use a translation key
         commandTitleKey: 'CUSTOM_COMMANDS',
         iconCssClass: 'fa fa-ellipsis-v', // defaults to "fa-bars"
         hideForceFitButton: true,
