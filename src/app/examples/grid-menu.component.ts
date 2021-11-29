@@ -73,7 +73,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
         hideForceFitButton: true,
         hideSyncResizeButton: true,
         onColumnsChanged: (e, args) => {
-          console.log('Column selection changed from Column Picker, visible columns: ', args.columns);
+          console.log('Column selection changed from Column Picker, visible columns: ', args.visibleColumns);
         }
       },
       enableAutoResize: true,
@@ -90,7 +90,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
 
         // all titles optionally support translation keys, if you wish to use that feature then use the title properties with the 'Key' suffix (e.g: titleKey)
         // example "customTitle" for a plain string OR "customTitleKey" to use a translation key
-        customTitleKey: 'CUSTOM_COMMANDS',
+        commandTitleKey: 'CUSTOM_COMMANDS',
         iconCssClass: 'fa fa-ellipsis-v', // defaults to "fa-bars"
         hideForceFitButton: true,
         hideSyncResizeButton: true,
@@ -160,7 +160,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
           }
         },
         onColumnsChanged: (e, args) => {
-          console.log('Column selection changed from Grid Menu, visible columns: ', args.columns);
+          console.log('Column selection changed from Grid Menu, visible columns: ', args.visibleColumns);
         }
       },
       enableTranslate: true,

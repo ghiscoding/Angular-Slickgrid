@@ -725,7 +725,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should load groupItemMetaProvider to the DataView when using "draggableGrouping" feature', () => {
         const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
         const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
-        jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ draggableGrouping: { pluginName: 'DraggableGrouping' } } as unknown as ExtensionList<any, any>);
+        jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ draggableGrouping: { pluginName: 'DraggableGrouping' } } as unknown as ExtensionList<any>);
 
         component.gridOptions = { draggableGrouping: {} };
         component.initialization(slickEventHandler);

@@ -1,5 +1,5 @@
-$preheader-font-size: 18px;
-$preheader-border-right: 1px solid lightgrey;
+$slick-preheader-font-size: 18px;
+$slick-preheader-border-right: 1px solid lightgrey;
 
 /* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';

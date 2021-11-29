@@ -1246,7 +1246,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
       this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
       this._registeredResources.push(this.slickRowDetailView);
-      this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, class: this.slickRowDetailView, instance: this.slickRowDetailView });
+      this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, instance: this.slickRowDetailView });
     }
 
     // also initialize (render) the empty warning component

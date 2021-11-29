@@ -23,7 +23,7 @@ export interface AngularGridInstance {
   slickGrid: SlickGrid;
 
   /** SlickGrid extensions (external controls/plugins) */
-  extensions: ExtensionList<any, any>;
+  extensions: ExtensionList<any>;
 
   // --
   // Methods
