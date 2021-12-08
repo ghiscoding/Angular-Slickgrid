@@ -49,8 +49,8 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
+      cy.get('.slick-context-menu.dropright .slick-menu-command-list')
+        .find('.slick-menu-item')
         .each(($command, index) => {
           expect($command.text()).to.contain(commands[index]);
           expect($command.text()).not.include('Help');
@@ -74,11 +74,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .contains('High')
         .click();
 
-      cy.get('.slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('not.exist');
 
       cy.get('#grid26')
@@ -91,7 +91,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
     });
 
     it('should expect a "Command 2" to be disabled and not clickable (menu will remain open), in that same Action menu', () => {
-      cy.get('.slick-cell-menu .slick-cell-menu-item.slick-cell-menu-item-disabled')
+      cy.get('.slick-cell-menu .slick-menu-item.slick-menu-item-disabled')
         .contains('Command 2')
         .click({ force: true });
 
@@ -103,8 +103,8 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
       const alertStub = cy.stub();
       cy.on('window:alert', alertStub);
 
-      cy.get('.slick-cell-menu .slick-cell-menu-option-list')
-        .find('.slick-cell-menu-item')
+      cy.get('.slick-cell-menu .slick-menu-option-list')
+        .find('.slick-menu-item')
         .contains('False')
         .click();
 
@@ -113,7 +113,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-item')
+      cy.get('.slick-cell-menu .slick-menu-item')
         .contains('Command 2')
         .click()
         .then(() => expect(alertStub.getCall(0)).to.be.calledWith('Command 2'));
@@ -130,8 +130,8 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(6)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu.dropleft .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
+      cy.get('.slick-context-menu.dropleft .slick-menu-command-list')
+        .find('.slick-menu-item')
         .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-context-menu button.close')
@@ -162,13 +162,13 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .should('exist')
         .contains('High');
 
-      cy.get('.slick-context-menu-command-list')
-        .find('.slick-context-menu-item.red')
-        .find('.slick-context-menu-content.bold')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Delete Row');
 
@@ -184,11 +184,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .should('exist')
         .contains('High');
 
-      cy.get('.slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('not.exist');
 
       cy.get('.slick-context-menu button.close')
@@ -204,11 +204,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-option-list')
+      cy.get('.slick-cell-menu .slick-menu-option-list')
         .should('exist')
         .contains('True');
 
-      cy.get('.slick-cell-menu-command-list')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
         .should('exist')
         .contains('Delete Row');
 
@@ -226,9 +226,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .should('exist');
 
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
-        .find('.slick-cell-menu-item.italic')
-        .find('.slick-cell-menu-content')
+        .find('.slick-menu-option-list')
+        .find('.slick-menu-item.italic')
+        .find('.slick-menu-content')
         .contains('null');
     });
 
@@ -237,7 +237,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .should('exist');
 
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
+        .find('.slick-menu-option-list')
         .contains('True')
         .click();
 
@@ -254,7 +254,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
 
     it('should reset Completed to False for the next test to include all commands', () => {
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
+        .find('.slick-menu-option-list')
         .contains('False')
         .click();
     });
@@ -270,12 +270,12 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-command-list')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
         .should('exist')
-        .find('.slick-cell-menu-item')
+        .find('.slick-menu-item')
         .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
-      cy.get('.slick-cell-menu-option-list')
+      cy.get('.slick-cell-menu .slick-menu-option-list')
         .should('not.exist');
 
       cy.get('.slick-cell-menu button.close')
@@ -291,9 +291,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
-        .find('.slick-context-menu-item.red')
-        .find('.slick-context-menu-content.bold')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Delete Row')
         .click();
@@ -315,9 +315,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-command-list')
-        .find('.slick-cell-menu-item.red')
-        .find('.slick-cell-menu-content.bold')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Delete Row')
         .click();
@@ -338,7 +338,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row:nth(3) .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('not.exist');
     });
 
@@ -351,7 +351,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row:nth(1) .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('exist');
 
       cy.get('.slick-context-menu button.close')
@@ -408,8 +408,8 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
+      cy.get('.slick-context-menu.dropright .slick-menu-command-list')
+        .find('.slick-menu-item')
         .each(($command, index) => expect($command.text()).to.contain(commands[index]));
     });
 
@@ -430,11 +430,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .contains('Haut')
         .click();
 
-      cy.get('.slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('not.exist');
 
       cy.get('#grid26')
@@ -455,7 +455,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-item')
+      cy.get('.slick-cell-menu .slick-menu-item')
         .contains('Command 2')
         .click()
         .then(() => expect(stub.getCall(0)).to.be.calledWith('Command 2'));
@@ -472,8 +472,8 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(6)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu.dropleft .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
+      cy.get('.slick-context-menu.dropleft .slick-menu-command-list')
+        .find('.slick-menu-item')
         .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
       cy.get('.slick-context-menu button.close')
@@ -504,13 +504,13 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .should('exist')
         .contains('Haut');
 
-      cy.get('.slick-context-menu-command-list')
-        .find('.slick-context-menu-item.red')
-        .find('.slick-context-menu-content.bold')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Supprimer la ligne');
 
@@ -526,11 +526,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(5)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-option-list')
+      cy.get('.slick-context-menu .slick-menu-option-list')
         .should('exist')
         .contains('Haut');
 
-      cy.get('.slick-context-menu-command-list')
+      cy.get('.slick-context-menu .slick-menu-command-list')
         .should('not.exist');
 
       cy.get('.slick-context-menu button.close')
@@ -546,11 +546,11 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-option-list')
+      cy.get('.slick-cell-menu .slick-menu-option-list')
         .should('exist')
         .contains('Vrai');
 
-      cy.get('.slick-cell-menu-command-list')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
         .should('exist')
         .contains('Supprimer la ligne');
 
@@ -568,9 +568,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .should('exist');
 
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
-        .find('.slick-cell-menu-item.italic')
-        .find('.slick-cell-menu-content')
+        .find('.slick-menu-option-list')
+        .find('.slick-menu-item.italic')
+        .find('.slick-menu-content')
         .contains('null');
     });
 
@@ -579,7 +579,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .should('exist');
 
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
+        .find('.slick-menu-option-list')
         .contains('Vrai')
         .click();
 
@@ -596,7 +596,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
 
     it('should reset Completed to Faux for the next test to include all commands', () => {
       cy.get('.slick-cell-menu')
-        .find('.slick-cell-menu-option-list')
+        .find('.slick-menu-option-list')
         .contains('Faux')
         .click();
     });
@@ -612,12 +612,12 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-command-list')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
         .should('exist')
-        .find('.slick-cell-menu-item')
+        .find('.slick-menu-item')
         .each(($command, index) => expect($command.text()).to.contain(commands[index]));
 
-      cy.get('.slick-cell-menu-option-list')
+      cy.get('.slick-cell-menu .slick-menu-option-list')
         .should('not.exist');
 
       cy.get('.slick-cell-menu button.close')
@@ -633,9 +633,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
-        .find('.slick-context-menu-item.red')
-        .find('.slick-context-menu-content.bold')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Supprimer la ligne')
         .click();
@@ -657,9 +657,9 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
         .contains('Action')
         .click({ force: true });
 
-      cy.get('.slick-cell-menu .slick-cell-menu-command-list')
-        .find('.slick-cell-menu-item.red')
-        .find('.slick-cell-menu-content.bold')
+      cy.get('.slick-cell-menu .slick-menu-command-list')
+        .find('.slick-menu-item.red')
+        .find('.slick-menu-content.bold')
         .should('exist')
         .contains('Supprimer la ligne')
         .click();

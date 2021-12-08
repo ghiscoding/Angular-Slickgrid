@@ -364,8 +364,8 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
 
       cy.get('#grid7-2 .slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(6)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(6)')
+        .children('.slick-menu-content')
         .should('contain', 'Remove Filter')
         .click();
 
@@ -379,7 +379,7 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
         .click({ force: true });
 
       cy.get(`.slick-grid-menu:visible`)
-        .find('.slick-grid-menu-item:nth(1)')
+        .find('.slick-menu-item:nth(1)')
         .find('span')
         .contains('Clear all Sorting')
         .click();
@@ -394,8 +394,8 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
 
       cy.get('#grid7-2 .slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(3)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(3)')
+        .children('.slick-menu-content')
         .should('contain', 'Sort Ascending')
         .click();
     });

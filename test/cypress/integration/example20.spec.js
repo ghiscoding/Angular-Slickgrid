@@ -45,7 +45,7 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
 
     cy.get('#grid20')
       .get('.slick-grid-menu:visible')
-      .find('.slick-grid-menu-list')
+      .find('.slick-column-picker-list')
       .children('li:visible:nth(1)')
       .children('label')
       .should('contain', 'Title')
@@ -68,7 +68,7 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
   it('should show again "Title" column from Grid Menu and expect last frozen column to still be "% Complete"', () => {
     cy.get('#grid20')
       .get('.slick-grid-menu:visible')
-      .find('.slick-grid-menu-list')
+      .find('.slick-column-picker-list')
       .children('li:visible:nth(1)')
       .children('label')
       .should('contain', 'Title')
@@ -107,8 +107,8 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menu-item:nth-of-type(8)')
-      .children('.slick-header-menu-content')
+      .children('.slick-menu-item:nth-of-type(8)')
+      .children('.slick-menu-content')
       .should('contain', 'Hide Column')
       .click();
 
@@ -133,14 +133,14 @@ describe('Example 20 - Frozen Grid', { retries: 1 }, () => {
       .trigger('contextmenu')
       .invoke('show');
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(2)')
       .children('label')
       .should('contain', 'Title')
       .click();
 
-    cy.get('.slick-columnpicker:visible')
+    cy.get('.slick-column-picker:visible')
       .find('.close')
       .trigger('click')
       .click();

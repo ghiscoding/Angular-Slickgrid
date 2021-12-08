@@ -87,7 +87,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .click();
 
       cy.get(`.slick-grid-menu:visible`)
-        .find('.slick-grid-menu-item')
+        .find('.slick-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')
@@ -156,7 +156,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .click();
 
       cy.get(`.slick-grid-menu:visible`)
-        .find('.slick-grid-menu-item')
+        .find('.slick-menu-item')
         .first()
         .find('span')
         .contains('Supprimer tous les filtres')
@@ -211,7 +211,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .click();
 
       cy.get(`.slick-grid-menu:visible`)
-        .find('.slick-grid-menu-item')
+        .find('.slick-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')
@@ -229,8 +229,8 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(4)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Sort Descending')
         .click();
 

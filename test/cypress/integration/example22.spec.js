@@ -36,8 +36,8 @@ describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
       .contains('Action')
       .click({ force: true });
 
-    cy.get('.slick-cell-menu .slick-cell-menu-command-list')
-      .find('.slick-cell-menu-item.red')
+    cy.get('.slick-cell-menu .slick-menu-command-list')
+      .find('.slick-menu-item.red')
       .should('exist')
       .contains('Delete Row')
       .click();

@@ -92,9 +92,9 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
-        .find('.slick-context-menu-content')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
         .contains('Expand all Groups')
         .click();
 
@@ -115,9 +115,9 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
-        .find('.slick-context-menu-content')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
         .contains('Collapse all Groups')
         .click();
 
@@ -158,9 +158,9 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
         .find('.slick-row .slick-cell:nth(1)')
         .rightclick({ force: true });
 
-      cy.get('.slick-context-menu .slick-context-menu-command-list')
-        .find('.slick-context-menu-item')
-        .find('.slick-context-menu-content')
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
         .contains('Clear all Grouping')
         .click();
 

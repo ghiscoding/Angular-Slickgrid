@@ -30,12 +30,12 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-command-list')
-        .find('.title')
+      cy.get('.slick-menu-command-list')
+        .find('.slick-menu-title')
         .contains('Custom Commands');
 
       cy.get('.slick-grid-menu')
-        .find('.title')
+        .find('.slick-menu-title')
         .contains('Columns');
 
       cy.get('#grid9')
@@ -59,8 +59,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(4)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Hide Column')
         .click({ force: true });
 
@@ -79,8 +79,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-item.orange')
-        .find('.slick-grid-menu-content')
+      cy.get('.slick-menu-item.orange')
+        .find('.slick-menu-content')
         .contains('Command 1')
         .click()
         .then(() => expect(alertStub.getCall(0)).to.be.null);
@@ -101,7 +101,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-item.red')
+      cy.get('.slick-menu-item.red')
         .should('not.exist');
     });
 
@@ -111,8 +111,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-item')
-        .find('.slick-grid-menu-content')
+      cy.get('.slick-menu-item')
+        .find('.slick-menu-content')
         .contains('Clear all Filters')
         .click();
 
@@ -126,8 +126,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-item.red')
-        .find('.slick-grid-menu-content.italic')
+      cy.get('.slick-menu-item.red')
+        .find('.slick-menu-content.italic')
         .should('contain', 'Command 2');
     });
 
@@ -139,7 +139,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('#grid9')
         .get('.slick-grid-menu:visible')
-        .find('.slick-grid-menu-list')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
@@ -166,8 +166,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-grid-menu-item.orange')
-        .find('.slick-grid-menu-content')
+      cy.get('.slick-menu-item.orange')
+        .find('.slick-menu-content')
         .contains('Command 1')
         .click()
         .then(() => expect(alertStub.getCall(0)).to.be.calledWith('command1'));
@@ -187,8 +187,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(4)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Hide Column')
         .click({ force: true });
 
@@ -205,7 +205,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('#grid9')
         .get('.slick-grid-menu:visible')
-        .find('.slick-grid-menu-list')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
@@ -258,8 +258,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(4)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });
 
@@ -277,7 +277,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('#grid9')
         .get('.slick-grid-menu:visible')
-        .find('.slick-grid-menu-list')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')
@@ -303,8 +303,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menu-item:nth-of-type(4)')
-        .children('.slick-header-menu-content')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });
 
@@ -321,7 +321,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
       cy.get('#grid9')
         .get('.slick-grid-menu:visible')
-        .find('.slick-grid-menu-list')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')

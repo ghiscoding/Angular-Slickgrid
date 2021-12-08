@@ -75,7 +75,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       .click();
 
     cy.get('.slick-grid-menu')
-      .find('.slick-grid-menu-list')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -92,7 +92,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
     cy.get('#grid1')
       .get('.slick-grid-menu:visible')
-      .find('.slick-grid-menu-list')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(2)')
       .children('label')
       .should('contain', 'Title')
@@ -120,8 +120,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       .trigger('contextmenu')
       .invoke('show');
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -132,8 +132,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
         expect($child.text()).to.eq(titles[index]);
       });
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(2)')
       .children('label')
       .should('contain', 'Title')
@@ -147,7 +147,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       });
 
     cy.get('#grid1')
-      .get('.slick-columnpicker:visible')
+      .get('.slick-column-picker:visible')
       .find('.close')
       .trigger('click')
       .click();
@@ -161,7 +161,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
         .click();
 
       cy.get(`.slick-grid-menu:visible`)
-        .find('.slick-grid-menu-item')
+        .find('.slick-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')

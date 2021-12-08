@@ -76,9 +76,9 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
       .find('.slick-row .slick-cell:nth(1)')
       .rightclick({ force: true });
 
-    cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
-      .find('.slick-context-menu-item')
-      .find('.slick-context-menu-content')
+    cy.get('.slick-context-menu.dropright .slick-menu-command-list')
+      .find('.slick-menu-item')
+      .find('.slick-menu-content')
       .contains('Collapse all Groups')
       .click();
 
@@ -99,9 +99,9 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
       .find('.slick-row .slick-cell:nth(1)')
       .rightclick({ force: true });
 
-    cy.get('.slick-context-menu.dropright .slick-context-menu-command-list')
-      .find('.slick-context-menu-item')
-      .find('.slick-context-menu-content')
+    cy.get('.slick-context-menu.dropright .slick-menu-command-list')
+      .find('.slick-menu-item')
+      .find('.slick-menu-content')
       .contains('Expand all Groups')
       .click();
 
@@ -139,7 +139,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
       .click();
 
     cy.get(`.slick-grid-menu:visible`)
-      .find('.slick-grid-menu-item')
+      .find('.slick-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
@@ -191,7 +191,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
       .click();
 
     cy.get(`.slick-grid-menu:visible`)
-      .find('.slick-grid-menu-item')
+      .find('.slick-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
@@ -228,7 +228,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
       .click();
 
     cy.get(`.slick-grid-menu:visible`)
-      .find('.slick-grid-menu-item')
+      .find('.slick-menu-item')
       .first()
       .find('span')
       .contains('Clear all Filters')
