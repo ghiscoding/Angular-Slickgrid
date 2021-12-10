@@ -20,7 +20,7 @@ One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 ### Demo page
-`Angular-Slickgrid` works with `Bootstrap 4` and even latest `Bootstrap 5` version, you can see a demo of each one below. There are also 2 new styling Themes, Material & Salesforce are also available and you could also use SVG icons if so take a look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
+`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. There are also 2 new styling Themes, Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
@@ -54,10 +54,12 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 ## Angular Compatibility
 - version `1.x.x` for Angular 4 to 6 
 - version `2.x.x` for Angular 7+ 
-- version `3.x.x` for Angular 12+ and RxJS 7+
+- version `3.x.x` for Angular 12+ and RxJS 7+ ([migration guide to 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x))
   - build `target` got bumped to `ES2018` for modern browser **only**
   - IE11 is reaching EOL by year end and is **no longer supported**, if you still need to support it then stick with version 2.x
   - uses [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo
+- version `4.x.x` for Angular 13+ and RxJS 7+ (**Ivy only**, [migration guide to 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x))
+  - for Ivy build only (no more UMD bundle), IE is definitely out of the picture
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
@@ -67,10 +69,10 @@ If you are facing any issues with `ngx-translate` library while building your An
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
-|        10+      |        13.x+        |
-|        9        |        12.x+        |
-|        8        |        12.x+        |
-|        7        |        11.x+        |
+|  13+ (Ivy only) |        14.x+        |
+|  10-13          |        13.x+        |
+|  8-9            |        12.x+        |
+|  7              |        11.x+        |
 
 ### Build Warnings (Angular 8+)
 You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
