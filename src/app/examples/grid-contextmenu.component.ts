@@ -13,8 +13,6 @@ import {
   Formatter,
   Formatters,
   GridOption,
-  SlickCellMenu,
-  SlickContextMenu,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -110,12 +108,12 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
     this.angularGrid = angularGrid;
   }
 
-  get cellMenuInstance(): SlickCellMenu {
-    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.cellMenu) ?? {});
+  get cellMenuInstance() {
+    return this.angularGrid?.extensionService?.getExtensionInstanceByName(ExtensionName.cellMenu);
   }
 
-  get contextMenuInstance(): SlickContextMenu {
-    return (this.angularGrid?.extensionService?.getExtensionInstanceByName?.(ExtensionName.contextMenu) ?? {});
+  get contextMenuInstance() {
+    return this.angularGrid?.extensionService?.getExtensionInstanceByName(ExtensionName.contextMenu);
   }
 
   ngOnInit() {
@@ -434,7 +432,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       onOptionSelected: ((e, args) => {
         // change Priority
         const dataContext = args && args.dataContext;
-        if (dataContext && dataContext.hasOwnProperty('priority')) {
+        if (dataContext?.hasOwnProperty('priority')) {
           dataContext.priority = args.item.option;
           this.angularGrid.gridService.updateItem(dataContext);
         }
@@ -446,7 +444,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
     // when showing both Commands/Options, we can just pass an empty array to show over all columns
     // else show on all columns except Priority
     const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'completed', 'action'];
-    this.contextMenuInstance.setOptions({
+    this.contextMenuInstance?.setOptions({
       commandShownOverColumnIds: showOverColumnIds,
       // hideCommandSection: !showBothList
     });
@@ -454,7 +452,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
 
   showCellMenuCommandsAndOptions(showBothList: boolean) {
     // change via the plugin setOptions
-    this.cellMenuInstance.setOptions({
+    this.cellMenuInstance?.setOptions({
       hideOptionSection: !showBothList
     });
 

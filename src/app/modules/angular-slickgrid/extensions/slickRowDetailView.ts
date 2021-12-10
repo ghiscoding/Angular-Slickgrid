@@ -1,7 +1,7 @@
 import 'slickgrid/plugins/slick.rowdetailview';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 
-import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
+import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
 import {
   addToArrayWhenNotExists,
   castObservableToPromise,
@@ -13,8 +13,7 @@ import {
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Observable, Subject, Subscription } from 'rxjs';
-import * as DOMPurify_ from 'dompurify';
-const DOMPurify = DOMPurify_; // patch to fix rollup to work
+import * as DOMPurify from 'dompurify';
 
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -29,7 +28,6 @@ export interface CreatedView {
   componentRef?: ComponentRef<any>;
 }
 
-@Injectable()
 export class SlickRowDetailView extends UniversalSlickRowDetailView {
   rowDetailContainer!: ViewContainerRef;
   protected _eventHandler!: SlickEventHandler;

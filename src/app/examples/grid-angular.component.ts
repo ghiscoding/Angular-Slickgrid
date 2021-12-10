@@ -259,6 +259,7 @@ export class GridAngularComponent implements OnInit {
       headerRowHeight: 45,
       rowHeight: 45, // increase row height so that the ng-select fits in the cell
       editable: true,
+      enableCellMenu: true,
       enableCellNavigation: true,
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
@@ -269,7 +270,6 @@ export class GridAngularComponent implements OnInit {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      enableCellMenu: true,
       i18n: this.translate,
       params: {
         angularUtilService: this.angularUtilService // provide the service to all at once (Editor, Filter, AsyncPostRender)
