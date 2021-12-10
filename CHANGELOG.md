@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.2](https://github.com/ghiscoding/angular-slickgrid/compare/v3.3.1...v3.3.2) (2021-11-20)
+
+
+### Bug Fixes
+
+* **build:** add DOM purify optional default import to fix rollup builds ([25091d0](https://github.com/ghiscoding/angular-slickgrid/commit/25091d03af771c9e8e5e94fbdccd6228247710c1))
+
+### [3.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v3.3.0...v3.3.1) (2021-11-16)
+
 ## [3.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.2.0...v3.3.0) (2021-10-28)
 
 

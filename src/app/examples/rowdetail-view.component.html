@@ -3,7 +3,7 @@
   <div class="row">
     <div class="col-3"><label>Assignee:</label> <input class="form-control" [(ngModel)]="model.assignee" /></div>
     <div class="col-3"><label>Reporter:</label> <span>{{model?.reporter}}</span></div>
-    <div class="col-2"><label>Duration:</label> <span>{{model?.duration}}</span></div>
+    <div class="col-2"><label>Duration:</label> <span>{{model?.duration |  number : '1.2-2'}}</span></div>
     <div class="col-2"><label>% Complete:</label> <span>{{model?.percentComplete}}</span></div>
   </div>
 

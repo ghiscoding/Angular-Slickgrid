@@ -49,7 +49,8 @@ describe('bsdropdown-service', () => {
       providers: [
         BsDropDownService,
         { provide: AngularUtilService, useValue: angularUtilServiceStub },
-      ]
+      ],
+      teardown: { destroyAfterEach: false }
     });
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
