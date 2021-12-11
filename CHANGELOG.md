@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.3.2...v4.0.0) (2021-12-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Slickgrid-Universal official 1.x major version
+* upgrade Angular 13 using Ivy build without UMD bundles
+
+### Features
+
+* **plugins:** use new internal slickgrid-universal plugins ([9ef4651](https://github.com/ghiscoding/angular-slickgrid/commit/9ef46511eab80ab923ff983b02830da0a5f287c1))
+
+
+### Bug Fixes
+
+* **styling:** better support of auto width on drop menu ([44a979d](https://github.com/ghiscoding/angular-slickgrid/commit/44a979df8e44bfeddb5b709991507998bb121207))
+
+
+* Merge pull request #864 from ghiscoding/feat/slickgrid-universal-plugins ([ee3bf0e](https://github.com/ghiscoding/angular-slickgrid/commit/ee3bf0ec311ece5836234087668db6b6a9fe0dc7)), closes [#864](https://github.com/ghiscoding/angular-slickgrid/issues/864)
+* Merge pull request #857 from ghiscoding/feat/angular13 ([9774b80](https://github.com/ghiscoding/angular-slickgrid/commit/9774b80a7b37940cad5b40a4f060415b0967750b)), closes [#857](https://github.com/ghiscoding/angular-slickgrid/issues/857)
+
 ### [3.3.2](https://github.com/ghiscoding/angular-slickgrid/compare/v3.3.1...v3.3.2) (2021-11-20)
 
 
