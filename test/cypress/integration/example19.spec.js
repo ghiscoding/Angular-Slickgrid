@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => {
-  const fullTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort Driven'];
+  const fullTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort-Driven'];
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
@@ -60,18 +60,18 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
       cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).should('contain', '0');
     });
 
-    it('should show 2 column titles (Duration, Effort Driven) shown in the pre-header section', () => {
+    it('should show 2 column titles (Duration, Effort-Driven) shown in the pre-header section', () => {
       cy.get('.slick-dropped-grouping:nth(0) div').contains('Duration');
-      cy.get('.slick-dropped-grouping:nth(1) div').contains('Effort Driven');
+      cy.get('.slick-dropped-grouping:nth(1) div').contains('Effort-Driven');
     });
 
     it('should be able to drag and swap grouped column titles inside the pre-header', () => {
       cy.get('.slick-dropped-grouping:nth(0) div')
         .contains('Duration')
-        .trigger('mousedown', 'bottom', { which: 1 });
+        .trigger('mousedown', 'center', { which: 1 });
 
       cy.get('.slick-dropped-grouping:nth(1) div')
-        .contains('Effort Driven')
+        .contains('Effort-Driven')
         .trigger('mousemove', 'bottomRight')
         .trigger('mouseup', 'bottomRight', { force: true });
     });
@@ -85,6 +85,101 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
 
       cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0)`).should('contain', 'Task');
       cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).should('contain', '0');
+    });
+
+    it('should expand all rows with "Expand All" from context menu and expect all the Groups to be expanded and the Toogle All icon to be collapsed', () => {
+      cy.get('#grid19')
+        .find('.slick-row .slick-cell:nth(1)')
+        .rightclick({ force: true });
+
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
+        .contains('Expand all Groups')
+        .click();
+
+      cy.get('#grid19')
+        .find('.slick-group-toggle.collapsed')
+        .should('have.length', 0);
+
+      cy.get('#grid19')
+        .find('.slick-group-toggle.expanded')
+        .should(($rows) => expect($rows).to.have.length.greaterThan(0));
+
+      cy.get('.slick-group-toggle-all-icon.expanded')
+        .should('exist');
+    });
+
+    it('should collapse all rows with "Collapse All" from context menu and expect all the Groups to be collapsed and the Toogle All icon to be collapsed', () => {
+      cy.get('#grid19')
+        .find('.slick-row .slick-cell:nth(1)')
+        .rightclick({ force: true });
+
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
+        .contains('Collapse all Groups')
+        .click();
+
+      cy.get('#grid19')
+        .find('.slick-group-toggle.expanded')
+        .should('have.length', 0);
+
+      cy.get('#grid19')
+        .find('.slick-group-toggle.collapsed')
+        .should(($rows) => expect($rows).to.have.length.greaterThan(0));
+
+      cy.get('.slick-group-toggle-all-icon.collapsed')
+        .should('exist');
+    });
+
+    it('should use the preheader Toggle All button and expect all groups to now be expanded', () => {
+      cy.get('.slick-preheader-panel .slick-group-toggle-all').click();
+
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Effort-Driven: False');
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 0');
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`)
+        .should('have.css', 'marginLeft').and('eq', `0px`);
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) .slick-group-toggle.expanded`)
+        .should('have.css', 'marginLeft').and('eq', `15px`);
+    });
+
+    it('should use the preheader Toggle All button again and expect all groups to now be collapsed', () => {
+      cy.get('.slick-preheader-panel .slick-group-toggle-all').click();
+
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Effort-Driven: False');
+      cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Effort-Driven: True');
+    });
+
+    it('should clear all groups with "Clear all Grouping" from context menu and expect all the Groups to be collapsed and the Toogle All icon to be collapsed', () => {
+      cy.get('#grid19')
+        .find('.slick-row .slick-cell:nth(1)')
+        .rightclick({ force: true });
+
+      cy.get('.slick-context-menu .slick-menu-command-list')
+        .find('.slick-menu-item')
+        .find('.slick-menu-content')
+        .contains('Clear all Grouping')
+        .click();
+
+      cy.get('#grid19')
+        .find('.slick-group-toggle-all')
+        .should('be.hidden');
+
+      cy.get('#grid19')
+        .find('.slick-draggable-dropbox-toggle-placeholder')
+        .should('be.visible')
+        .should('have.text', 'Drop a column header here to group by the column');
+    });
+
+    it('should add 500 items and expect 500 of 500 items displayed', () => {
+      cy.get('[data-test="add-500-rows-btn"]')
+        .click();
+
+      cy.get('.right-footer')
+        .contains('500 of 500 items');
     });
   });
 });

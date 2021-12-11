@@ -109,8 +109,8 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
       .trigger('contextmenu')
       .invoke('show');
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -122,15 +122,15 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
         expect($child.text()).to.eq(expectedTitles[index]);
       });
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(6)')
       .children('label')
       .should('contain', 'Start')
       .click();
 
-    cy.get('.slick-columnpicker:visible')
-      .find('span.close')
+    cy.get('.slick-column-picker:visible')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -171,15 +171,15 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(2)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       // .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(5)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(5)')
+      .children('.slick-menu-content')
       .should('contain', 'Sort Descending')
       .click();
 
@@ -346,8 +346,8 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
       .trigger('contextmenu')
       .invoke('show');
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -359,8 +359,8 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
         expect($child.text()).to.eq(expectedTitles[index]);
       });
 
-    cy.get('.slick-columnpicker:visible')
-      .find('span.close')
+    cy.get('.slick-column-picker:visible')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -369,11 +369,11 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée', 'Début', 'Terminé'];
 
     cy.get('#grid16')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .click({ force: true });
 
-    cy.get('.slick-gridmenu')
-      .find('.slick-gridmenu-list')
+    cy.get('.slick-grid-menu')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -385,8 +385,8 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
         expect($child.text()).to.eq(expectedTitles[index]);
       });
 
-    cy.get('.slick-gridmenu:visible')
-      .find('span.close')
+    cy.get('.slick-grid-menu:visible')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -397,15 +397,15 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(5)')
       .trigger('mouseover', { force: true })
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(9)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(9)')
+      .children('.slick-menu-content')
       .should('contain', 'Cacher la colonne')
       .click();
 
@@ -419,15 +419,15 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(1)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(1)')
+      .children('.slick-menu-content')
       .should('contain', 'Geler les colonnes')
       .click();
   });

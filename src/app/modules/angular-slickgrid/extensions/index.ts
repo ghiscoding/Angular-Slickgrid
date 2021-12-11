@@ -1,1 +1,1 @@
-export * from './rowDetailViewExtension';
+export * from './slickRowDetailView';

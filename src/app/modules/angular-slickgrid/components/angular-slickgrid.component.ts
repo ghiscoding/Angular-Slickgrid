@@ -8,7 +8,6 @@ import 'slickgrid/lib/jquery.mousewheel';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
-import 'slickgrid/slick.groupitemmetadataprovider';
 
 // ...then everything else...
 import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
@@ -23,6 +22,7 @@ import {
   Column,
   ColumnEditor,
   DataViewOption,
+  ExtensionName,
   ExternalResource,
   Locale,
   Metrics,
@@ -39,6 +39,7 @@ import {
   CollectionService,
   EventNamingStyle,
   ExtensionService,
+  ExtensionUtility,
   FilterFactory,
   FilterService,
   GridEventService,
@@ -50,29 +51,13 @@ import {
   RxJsFacade,
   SharedService,
   SlickgridConfig,
+  SlickGroupItemMetadataProvider,
   SortService,
   TreeDataService,
-
-  // extensions
-  AutoTooltipExtension,
-  CheckboxSelectorExtension,
-  CellExternalCopyManagerExtension,
-  CellMenuExtension,
-  ColumnPickerExtension,
-  ContextMenuExtension,
-  DraggableGroupingExtension,
-  ExtensionUtility,
-  GridMenuExtension,
-  GroupItemMetaProviderExtension,
-  HeaderMenuExtension,
-  HeaderButtonExtension,
-  RowSelectionExtension,
-  RowMoveManagerExtension,
 
   // utilities
   autoAddEditorFormatterToColumnsWithEditor,
   emptyElement,
-  GetSlickEventType,
   GridStateType,
 } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
@@ -90,7 +75,7 @@ import { unsubscribeAllObservables } from './../services/utilities';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
-import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
+import { SlickRowDetailView } from '../extensions/slickRowDetailView';
 import { ContainerService } from '../services/container.service';
 
 // using external non-typed js libraries
@@ -103,7 +88,6 @@ declare const Slick: SlickNamespace;
     // make everything transient (non-singleton)
     AngularUtilService,
     ApplicationRef,
-    RowDetailViewExtension,
     TranslaterService,
   ]
 })
@@ -125,7 +109,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   dataView!: SlickDataView;
   slickGrid!: SlickGrid;
   groupingDefinition: any = {};
-  groupItemMetadataProvider: any;
+  groupItemMetadataProvider?: SlickGroupItemMetadataProvider;
   backendServiceApi?: BackendServiceApi;
   locales!: Locale;
   metrics?: Metrics;
@@ -138,18 +122,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   };
   subscriptions: Subscription[] = [];
 
-  // components
+  // components / plugins
   slickEmptyWarning?: SlickEmptyWarningComponent;
   slickFooter?: SlickFooterComponent;
   slickPagination?: SlickPaginationComponent;
-
-  // extensions
-  extensionUtility: ExtensionUtility;
+  slickRowDetailView?: SlickRowDetailView;
 
   // services
   backendUtilityService!: BackendUtilityService;
   collectionService: CollectionService;
   extensionService: ExtensionService;
+  extensionUtility: ExtensionUtility;
   filterFactory!: FilterFactory;
   filterService: FilterService;
   gridEventService: GridEventService;
@@ -299,7 +282,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.gridEventService = externalServices?.gridEventService ?? new GridEventService();
     this.sharedService = externalServices?.sharedService ?? new SharedService();
     this.collectionService = externalServices?.collectionService ?? new CollectionService(this.translaterService);
-    this.extensionUtility = externalServices?.extensionUtility ?? new ExtensionUtility(this.sharedService, this.translaterService);
+    this.extensionUtility = externalServices?.extensionUtility ?? new ExtensionUtility(this.sharedService, this.backendUtilityService, this.translaterService);
     this.filterFactory = new FilterFactory(slickgridConfig, this.translaterService, this.collectionService);
     this.filterService = externalServices?.filterService ?? new FilterService(this.filterFactory as any, this._eventPubSubService, this.sharedService, this.backendUtilityService);
     this.resizerService = externalServices?.resizerService ?? new ResizerService(this._eventPubSubService);
@@ -307,44 +290,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.treeDataService = externalServices?.treeDataService ?? new TreeDataService(this._eventPubSubService, this.sharedService, this.sortService);
     this.paginationService = externalServices?.paginationService ?? new PaginationService(this._eventPubSubService, this.sharedService, this.backendUtilityService);
 
-    // extensions
-    const autoTooltipExtension = new AutoTooltipExtension(this.sharedService);
-    const cellExternalCopyManagerExtension = new CellExternalCopyManagerExtension(this.extensionUtility, this.sharedService);
-    const cellMenuExtension = new CellMenuExtension(this.extensionUtility, this.sharedService, this.translaterService);
-    const contextMenuExtension = new ContextMenuExtension(this.extensionUtility, this._eventPubSubService, this.sharedService, this.treeDataService, this.translaterService);
-    const columnPickerExtension = new ColumnPickerExtension(this.extensionUtility, this.sharedService);
-    const checkboxExtension = new CheckboxSelectorExtension(this.sharedService);
-    const draggableGroupingExtension = new DraggableGroupingExtension(this.extensionUtility, this._eventPubSubService, this.sharedService);
-    const gridMenuExtension = new GridMenuExtension(this.extensionUtility, this.filterService,this._eventPubSubService, this.sharedService, this.sortService, this.backendUtilityService, this.translaterService);
-    const groupItemMetaProviderExtension = new GroupItemMetaProviderExtension(this.sharedService);
-    const headerButtonExtension = new HeaderButtonExtension(this.extensionUtility, this.sharedService);
-    const headerMenuExtension = new HeaderMenuExtension(this.extensionUtility, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.translaterService);
-    const rowDetailViewExtension = new RowDetailViewExtension(this.angularUtilService, this.appRef, this._eventPubSubService, this.sharedService, this.rxjs);
-    const rowMoveManagerExtension = new RowMoveManagerExtension(this.sharedService);
-    const rowSelectionExtension = new RowSelectionExtension(this.sharedService);
-
     this.extensionService = externalServices?.extensionService ?? new ExtensionService(
-      autoTooltipExtension,
-      cellExternalCopyManagerExtension,
-      cellMenuExtension,
-      checkboxExtension,
-      columnPickerExtension,
-      contextMenuExtension,
-      draggableGroupingExtension,
-      gridMenuExtension,
-      groupItemMetaProviderExtension,
-      headerButtonExtension,
-      headerMenuExtension,
-      rowDetailViewExtension,
-      rowMoveManagerExtension,
-      rowSelectionExtension,
+      this.extensionUtility,
+      this.filterService,
+      this._eventPubSubService,
       this.sharedService,
+      this.sortService,
+      this.treeDataService,
       this.translaterService,
     );
 
     this.gridStateService = externalServices?.gridStateService ?? new GridStateService(this.extensionService, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.treeDataService);
     this.gridService = externalServices?.gridService ?? new GridService(this.gridStateService, this.filterService, this._eventPubSubService, this.paginationService, this.sharedService, this.sortService, this.treeDataService);
-    this.groupingService = externalServices?.groupingAndColspanService ?? new GroupingAndColspanService(this.extensionUtility, this.extensionService, this._eventPubSubService);
+    this.groupingService = externalServices?.groupingAndColspanService ?? new GroupingAndColspanService(this.extensionUtility, this._eventPubSubService);
 
     this.serviceList = [
       this.extensionService,
@@ -519,7 +477,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       let dataViewOptions: DataViewOption = { inlineFilters: dataviewInlineFilters };
 
       if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
-        this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+        this.groupItemMetadataProvider = new SlickGroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
         dataViewOptions = { ...dataViewOptions, groupItemMetadataProvider: this.groupItemMetadataProvider };
       }
@@ -556,6 +514,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.slickGrid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
     this.sharedService.dataView = this.dataView;
     this.sharedService.slickGrid = this.slickGrid;
+    this.sharedService.gridContainerElement = this.elm.nativeElement as HTMLDivElement;
 
     this.extensionService.bindDifferentExtensions();
     this.bindDifferentHooks(this.slickGrid, this.gridOptions, this.dataView);
@@ -593,7 +552,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
-      const selectionModel = this.slickGrid && this.slickGrid.getSelectionModel();
+      const selectionModel = this.slickGrid?.getSelectionModel();
       if (selectionModel && this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
         // if we are using a Backend Service, we will do an extra flag check, the reason is because it might have some unintended behaviors
         // with the BackendServiceApi because technically the data in the page changes the DataView on every page change.
@@ -833,6 +792,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     if (this.translate?.onLangChange) {
       // translate some of them on first load, then on each language change
       if (gridOptions.enableTranslate) {
+        this.extensionService.translateAllExtensions();
         this.translateColumnHeaderTitleKeys();
         this.translateColumnGroupKeys();
       }
@@ -843,12 +803,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           this._eventPubSubService.publish('onLanguageChange');
 
           if (gridOptions.enableTranslate) {
-            this.extensionService.translateCellMenu();
-            this.extensionService.translateColumnHeaders();
-            this.extensionService.translateColumnPicker();
-            this.extensionService.translateContextMenu();
-            this.extensionService.translateGridMenu();
-            this.extensionService.translateHeaderMenu();
+            this.extensionService.translateAllExtensions();
             this.translateColumnHeaderTitleKeys();
             this.translateColumnGroupKeys();
             if (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping) {
@@ -874,9 +829,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       // expose all Slick Grid Events through dispatch
       for (const prop in grid) {
         if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
-          const gridEventHandler = (grid as any)[prop];
           const gridEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
-          (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof gridEventHandler>>).subscribe(gridEventHandler, (event, args) => {
+          this._eventHandler.subscribe((grid as any)[prop], (event, args) => {
             return this._eventPubSubService.dispatchCustomEvent(gridEventName, { eventData: event, args });
           });
         }
@@ -885,8 +839,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       // expose all Slick DataView Events through dispatch
       for (const prop in dataView) {
         if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
-          const dataViewEventHandler = (dataView as any)[prop];
-          (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof dataViewEventHandler>>).subscribe(dataViewEventHandler, (event, args) => {
+          this._eventHandler.subscribe((dataView as any)[prop], (event, args) => {
             const dataViewEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
             return this._eventPubSubService.dispatchCustomEvent(dataViewEventName, { eventData: event, args });
           });
@@ -925,13 +878,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         this.loadFilterPresetsWhenDatasetInitialized();
 
         // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
-        const onRowCountChangedHandler = dataView.onRowCountChanged;
-        (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onRowCountChangedHandler>>).subscribe(onRowCountChangedHandler, (_e, args) => {
+        this._eventHandler.subscribe(dataView.onRowCountChanged, () => {
           grid.invalidate();
           this.handleOnItemCountChanged(this.dataView.getFilteredItemCount() || 0, dataView.getItemCount());
         });
-        const onSetItemsCalledHandler = dataView.onSetItemsCalled;
-        (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onSetItemsCalledHandler>>).subscribe(onSetItemsCalledHandler, (_e, args) => {
+        this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e, args) => {
           grid.invalidate();
           this.handleOnItemCountChanged(this.dataView.getFilteredItemCount(), args.itemCount);
 
@@ -941,8 +892,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           }
         });
 
-        const onRowsChangedHandler = dataView.onRowsChanged;
-        (this._eventHandler as SlickEventHandler<GetSlickEventType<typeof onRowsChangedHandler>>).subscribe(onRowsChangedHandler, (_e, args) => {
+        this._eventHandler.subscribe(dataView.onRowsChanged, (_e, args) => {
           // filtering data with local dataset will not always show correctly unless we call this updateRow/render
           // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
           // see commit: https://github.com/ghiscoding/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
@@ -1196,7 +1146,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   private loadRowSelectionPresetWhenExists() {
     // if user entered some Row Selections "presets"
     const presets = this.gridOptions?.presets;
-    const selectionModel = this.slickGrid?.getSelectionModel?.();
+    const selectionModel = this.slickGrid?.getSelectionModel();
     const enableRowSelection = this.gridOptions && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection);
     if (enableRowSelection && selectionModel && presets && presets.rowSelection && (Array.isArray(presets.rowSelection.gridRowIndexes) || Array.isArray(presets.rowSelection.dataContextIds))) {
       let dataContextIds = presets.rowSelection.dataContextIds;
@@ -1290,6 +1240,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
     if (this.gridOptions.enableTranslate) {
       this.extensionService.translateColumnHeaders();
+    }
+
+    if (this.gridOptions.enableRowDetailView) {
+      this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
+      this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
+      this._registeredResources.push(this.slickRowDetailView);
+      this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, instance: this.slickRowDetailView });
     }
 
     // also initialize (render) the empty warning component

@@ -135,7 +135,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       i18n: this.translate,
       gridMenu: {
         resizeOnShowHeaderRow: true,
-        customItems: [
+        commandItems: [
           {
             iconCssClass: 'fa fa-times text-danger',
             title: 'Reset Grid',

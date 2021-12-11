@@ -195,29 +195,29 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
     cy.get('#slickGridContainer-grid21')
       .find('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .should('be.hidden')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(4)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(4)')
+      .children('.slick-menu-content')
       .should('contain', 'Sort Descending')
       .click();
 
     cy.get('#slickGridContainer-grid21')
       .find('.slick-header-column:nth(1)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(3)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(3)')
+      .children('.slick-menu-content')
       .should('contain', 'Sort Ascending')
       .click();
 
@@ -242,5 +242,65 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
           .first()
           .should('contain', expectedTasks[index]);
       });
+  });
+
+  it('should click open Row Detail of Task 102 then type a title filter of "Task 102" and expect Row Detail to be opened and still be rendered', () => {
+    cy.get('#grid21')
+      .find('.slick-row:nth(4)')
+      .click();
+
+    cy.get('#grid21')
+      .find('.innerDetailView_102 .container_102')
+      .as('detailContainer');
+
+    cy.get('@detailContainer')
+      .find('h3')
+      .contains('Task 102');
+
+    cy.get('.search-filter.filter-title')
+      .type('Task 102');
+  });
+
+  it('should call "Clear all Filters" from Grid Menu and expect "Task 102" to still be rendered correctly', () => {
+    cy.get('#grid21')
+      .find('button.slick-grid-menu-button')
+      .trigger('click')
+      .click();
+
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-menu-item')
+      .first()
+      .find('span')
+      .contains('Clear all Filters')
+      .click();
+
+    cy.get('#grid21')
+      .find('.innerDetailView_102 .container_102')
+      .as('detailContainer');
+
+    cy.get('@detailContainer')
+      .find('h3')
+      .contains('Task 102');
+  });
+
+  it('should call "Clear all Sorting" from Grid Menu and expect "Task 102" to still be rendered correctly', () => {
+    cy.get('#grid21')
+      .find('button.slick-grid-menu-button')
+      .trigger('click')
+      .click();
+
+    cy.get(`.slick-grid-menu:visible`)
+      .find('.slick-menu-item')
+      .find('span')
+      .contains('Clear all Sorting')
+      .click();
+
+    cy.get('#grid21')
+      .find('.innerDetailView_102 .container_102')
+      .as('detailContainer');
+
+    cy.get('@detailContainer')
+      .find('h3')
+      .contains('Task 102');
   });
 });

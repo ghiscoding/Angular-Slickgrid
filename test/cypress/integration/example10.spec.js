@@ -70,12 +70,12 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
   it('should make sure that first column is hidden from the Grid Menu (1st column definition has "excludeFromGridMenu" set) on 1st grid', () => {
     cy.get('#grid1')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .trigger('click')
       .click();
 
-    cy.get('.slick-gridmenu')
-      .find('.slick-gridmenu-list')
+    cy.get('.slick-grid-menu')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -91,8 +91,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
     const newTitleList = ['', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
     cy.get('#grid1')
-      .get('.slick-gridmenu:visible')
-      .find('.slick-gridmenu-list')
+      .get('.slick-grid-menu:visible')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(2)')
       .children('label')
       .should('contain', 'Title')
@@ -106,8 +106,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       });
 
     cy.get('#grid1')
-      .get('.slick-gridmenu:visible')
-      .find('span.close')
+      .get('.slick-grid-menu:visible')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -120,8 +120,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       .trigger('contextmenu')
       .invoke('show');
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children()
       .each(($child, index) => {
         if (index === 0) {
@@ -132,8 +132,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
         expect($child.text()).to.eq(titles[index]);
       });
 
-    cy.get('.slick-columnpicker')
-      .find('.slick-columnpicker-list')
+    cy.get('.slick-column-picker')
+      .find('.slick-column-picker-list')
       .children('li:nth-child(2)')
       .children('label')
       .should('contain', 'Title')
@@ -147,8 +147,8 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       });
 
     cy.get('#grid1')
-      .get('.slick-columnpicker:visible')
-      .find('span.close')
+      .get('.slick-column-picker:visible')
+      .find('.close')
       .trigger('click')
       .click();
   });
@@ -156,12 +156,12 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
   describe('Pagination', () => {
     it('should Clear all Filters on 2nd Grid', () => {
       cy.get('#grid2')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click();
 
-      cy.get(`.slick-gridmenu:visible`)
-        .find('.slick-gridmenu-item')
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-menu-item')
         .first()
         .find('span')
         .contains('Clear all Filters')

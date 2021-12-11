@@ -69,14 +69,14 @@ describe('Example 31 - Columns Resize by Content', { retries: 1 }, () => {
     cy.get('#grid31')
       .find('.slick-header-column:nth-child(10)')
       .trigger('mouseover')
-      .children('.slick-header-menubutton')
+      .children('.slick-header-menu-button')
       .invoke('show')
       .click();
 
     cy.get('.slick-header-menu')
       .should('be.visible')
-      .children('.slick-header-menuitem:nth-child(1)')
-      .children('.slick-header-menucontent')
+      .children('.slick-menu-item:nth-of-type(1)')
+      .children('.slick-menu-content')
       .should('contain', 'Resize by Content')
       .click();
 

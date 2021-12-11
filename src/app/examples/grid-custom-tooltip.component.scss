@@ -1,4 +1,4 @@
-$button-border-color: #ababab !default;
+$slick-button-border-color: #ababab !default;
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
 
 // --
@@ -24,12 +24,12 @@ $button-border-color: #ababab !default;
 .button-style {
   cursor: pointer;
   background-color: white;
-  border: 1px solid #{$button-border-color};
+  border: 1px solid #{$slick-button-border-color};
   border-radius: 2px;
   justify-content: center;
   text-align: center;
   &:hover {
-    border-color: darken($button-border-color, 10%);
+    border-color: darken($slick-button-border-color, 10%);
   }
 }
 

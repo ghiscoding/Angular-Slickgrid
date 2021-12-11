@@ -26,21 +26,21 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
     it('should open the Grid Menu and expect a title for "Custom Menus" and for "Columns"', () => {
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-custom')
-        .find('.title')
+      cy.get('.slick-menu-command-list')
+        .find('.slick-menu-title')
         .contains('Custom Commands');
 
-      cy.get('.slick-gridmenu')
-        .find('.title')
+      cy.get('.slick-grid-menu')
+        .find('.slick-menu-title')
         .contains('Columns');
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('span.close')
+        .get('.slick-grid-menu:visible')
+        .find('.close')
         .trigger('click')
         .click({ force: true });
     });
@@ -52,15 +52,15 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .find('.slick-header-column')
         .first()
         .trigger('mouseover')
-        .children('.slick-header-menubutton')
+        .children('.slick-header-menu-button')
         .should('be.hidden')
         .invoke('show')
         .trigger('click', { force: true });
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(4)')
-        .children('.slick-header-menucontent')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Hide Column')
         .click({ force: true });
 
@@ -75,19 +75,19 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
       cy.on('window:alert', alertStub);
 
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-item.orange')
-        .find('.slick-gridmenu-content')
+      cy.get('.slick-menu-item.orange')
+        .find('.slick-menu-content')
         .contains('Command 1')
         .click()
         .then(() => expect(alertStub.getCall(0)).to.be.null);
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('span.close')
+        .get('.slick-grid-menu:visible')
+        .find('.close')
         .trigger('click')
         .click({ force: true });
     });
@@ -97,22 +97,22 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .type('10');
 
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-item.red')
+      cy.get('.slick-menu-item.red')
         .should('not.exist');
     });
 
     it('should clear all filters and expect no filters in the grid', () => {
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-item')
-        .find('.slick-gridmenu-content')
+      cy.get('.slick-menu-item')
+        .find('.slick-menu-content')
         .contains('Clear all Filters')
         .click();
 
@@ -122,32 +122,32 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
     it('should clear the filters and then open the Grid Menu and expect the "Command 2" to now be visible', () => {
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-item.red')
-        .find('.slick-gridmenu-content.italic')
+      cy.get('.slick-menu-item.red')
+        .find('.slick-menu-content.italic')
         .should('contain', 'Command 2');
     });
 
     it('should click on the Grid Menu to show the Title as 1st column again', () => {
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('.slick-gridmenu-list')
+        .get('.slick-grid-menu:visible')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('span.close')
+        .get('.slick-grid-menu:visible')
+        .find('.close')
         .trigger('click')
         .click({ force: true });
 
@@ -162,12 +162,12 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
       cy.on('window:alert', alertStub);
 
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
-      cy.get('.slick-gridmenu-item.orange')
-        .find('.slick-gridmenu-content')
+      cy.get('.slick-menu-item.orange')
+        .find('.slick-menu-content')
         .contains('Command 1')
         .click()
         .then(() => expect(alertStub.getCall(0)).to.be.calledWith('command1'));
@@ -180,15 +180,15 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .find('.slick-header-column')
         .first()
         .trigger('mouseover')
-        .children('.slick-header-menubutton')
+        .children('.slick-header-menu-button')
         .should('be.hidden')
         .invoke('show')
         .trigger('click', { force: true });
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(4)')
-        .children('.slick-header-menucontent')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Hide Column')
         .click({ force: true });
 
@@ -204,16 +204,16 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('.slick-gridmenu-list')
+        .get('.slick-grid-menu:visible')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('span.close')
+        .get('.slick-grid-menu:visible')
+        .find('.close')
         .trigger('click')
         .click({ force: true });
 
@@ -223,8 +223,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
 
       cy.get('#grid9')
-        .get('.slick-gridmenu')
-        .find('span.close')
+        .get('.slick-grid-menu')
+        .find('.close')
         .trigger('click', { force: true })
         .click({ force: true });
     });
@@ -251,15 +251,15 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .find('.slick-header-column')
         .first()
         .trigger('mouseover')
-        .children('.slick-header-menubutton')
+        .children('.slick-header-menu-button')
         .should('be.hidden')
         .invoke('show')
         .trigger('click', { force: true });
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(4)')
-        .children('.slick-header-menucontent')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });
 
@@ -271,13 +271,13 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
 
     it('should click on the Grid Menu to show the Title as 1st column again', () => {
       cy.get('#grid9')
-        .find('button.slick-gridmenu-button')
+        .find('button.slick-grid-menu-button')
         .trigger('click')
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('.slick-gridmenu-list')
+        .get('.slick-grid-menu:visible')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')
@@ -296,15 +296,15 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .find('.slick-header-column')
         .first()
         .trigger('mouseover')
-        .children('.slick-header-menubutton')
+        .children('.slick-header-menu-button')
         .should('be.hidden')
         .invoke('show')
         .trigger('click', { force: true });
 
       cy.get('.slick-header-menu')
         .should('be.visible')
-        .children('.slick-header-menuitem:nth-child(4)')
-        .children('.slick-header-menucontent')
+        .children('.slick-menu-item:nth-of-type(4)')
+        .children('.slick-menu-content')
         .should('contain', 'Cacher la colonne')
         .click({ force: true });
 
@@ -320,16 +320,16 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('.slick-gridmenu-list')
+        .get('.slick-grid-menu:visible')
+        .find('.slick-column-picker-list')
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')
         .click({ force: true });
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
-        .find('span.close')
+        .get('.slick-grid-menu:visible')
+        .find('.close')
         .trigger('click')
         .click({ force: true });
 
@@ -339,8 +339,8 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
         .each(($child, index) => expect($child.text()).to.eq(fullFrenchTitles[index]));
 
       cy.get('#grid9')
-        .get('.slick-gridmenu')
-        .find('span.close')
+        .get('.slick-grid-menu')
+        .find('.close')
         .trigger('click', { force: true })
         .click({ force: true });
     });

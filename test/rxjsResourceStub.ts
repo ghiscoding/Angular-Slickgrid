@@ -1,5 +1,5 @@
 import { RxJsFacade } from '@slickgrid-universal/common';
-import { EMPTY, iif, isObservable, firstValueFrom, Observable, Subject } from 'rxjs';
+import { EMPTY, iif, isObservable, firstValueFrom, Observable, ObservableInput, of, OperatorFunction, ObservedValueOf, Subject, switchMap, } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 export class RxJsResourceStub implements RxJsFacade {
@@ -18,12 +18,12 @@ export class RxJsResourceStub implements RxJsFacade {
     return new Observable<T>();
   }
 
-  /** Simple method to create an Subject */
+  /** Simple method to create a Subject */
   createSubject<T>(): Subject<T> {
     return new Subject<T>();
   }
 
-  /** he same Observable instance returned by any call to without a scheduler. It is preferrable to use this over empty() */
+  /** same Observable instance returned by any call to without a scheduler. It is preferrable to use this over empty() */
   empty(): Observable<never> {
     return EMPTY;
   }
@@ -39,6 +39,15 @@ export class RxJsResourceStub implements RxJsFacade {
   /** Tests to see if the object is an RxJS Observable */
   isObservable(obj: any): boolean {
     return isObservable(obj);
+  }
+
+  /** Converts the arguments to an observable sequence. */
+  of(value: any): Observable<any> {
+    return of(value);
+  }
+
+  switchMap<T, O extends ObservableInput<any>>(project: (value: T, index: number) => O): OperatorFunction<T, ObservedValueOf<O>> {
+    return switchMap(project);
   }
 
   /** Emits the values emitted by the source Observable until a `notifier` Observable emits a value. */

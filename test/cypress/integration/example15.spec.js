@@ -103,7 +103,7 @@ describe('Example 15 - Column Span & Header Grouping', { retries: 1 }, () => {
 
   it('should click on the Grid Menu command "Unfreeze Columns/Rows" to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
     cy.get('#grid2')
-      .find('button.slick-gridmenu-button')
+      .find('button.slick-grid-menu-button')
       .click({ force: true });
 
     cy.contains('Unfreeze Columns/Rows')
