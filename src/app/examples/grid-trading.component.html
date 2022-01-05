@@ -1,0 +1,58 @@
+<div class="container-fluid">
+  <h2>
+    {{title}}
+    <span class="float-end">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-trading.component.ts">
+        <span class="fa fa-link"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <div class="trading-platform">
+    <div class="row mb-4 simulation-form">
+      <div class="col-sm-12 d-flex align-items-center">
+        <div class="range">
+          <label for="refreshRateRange" class="form-label me-1">Changes Rate(ms)</label>
+          <input type="range" class="form-range" id="refreshRateRange" min="0" max="250" [(ngModel)]="refreshRate">
+          <span class="refresh-rate">
+            <input type="number" [(ngModel)]="refreshRate">
+          </span>
+        </div>
+        <span class="ms-3 me-1">
+          <button class="btn btn-outline-secondary btn-sm" data-test="start-btn" (click)="startSimulation()">
+            <li class="fa fa-play"></li> Start Simulation
+          </button>
+        </span>
+        <span class="me-3">
+          <button class="btn btn-outline-secondary btn-sm" data-test="stop-btn" (click)="stopSimulation()">
+            <li class="fa fa-stop"></li> Stop Simulation
+          </button>
+        </span>
+        <span class="mx-1">
+          <label for="change-per-cycle-input">Changes p/Cycle</label>
+          <input type="number" id="change-per-cycle-input" [(ngModel)]="minChangePerCycle" [max]="maxChangePerCycle">
+          to
+          <input type="number" [(ngModel)]="maxChangePerCycle" [min]="minChangePerCycle">
+        </span>
+        <span class="ms-2">
+          <label for="highlight-input">Highlight Duration(ms)</label>
+          <input type="number" id="highlight-input" data-test="highlight-input" [(ngModel)]="highlightDuration">
+        </span>
+        <div class="ms-auto">
+          <button class="btn btn-outline-secondary btn-sm" (click)="toggleFullScreen()">
+            <li [class]="isFullScreen ? 'fa fa-compress' : 'fa fa-arrows-alt'"></li> Toggle Full-Screen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <angular-slickgrid gridId="grid33"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset"
+                       (onAngularGridCreated)="angularGridReady($event.detail)">
+    </angular-slickgrid>
+  </div>

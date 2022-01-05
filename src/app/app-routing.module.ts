@@ -28,6 +28,7 @@ import { GridRowMoveComponent } from './examples/grid-rowmove.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { GridStateComponent } from './examples/grid-state.component';
 import { GridTabsComponent } from './examples/grid-tabs.component';
+import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
@@ -67,11 +68,12 @@ const routes: Routes = [
   { path: 'rowdetail', component: GridRowDetailComponent },
   { path: 'rowmove', component: GridRowMoveComponent },
   { path: 'selection', component: GridRowSelectionComponent },
+  { path: 'trading', component: GridTradingComponent },
   { path: 'tree-data-parent-child', component: GridTreeDataParentChildComponent },
   { path: 'tree-data-hierarchical', component: GridTreeDataHierarchicalComponent },
   { path: 'swt', component: SwtCommonGridTestComponent },
-  { path: '', redirectTo: '/basic', pathMatch: 'full' },
-  { path: '**', redirectTo: '/basic', pathMatch: 'full' }
+  { path: '', redirectTo: '/trading', pathMatch: 'full' },
+  { path: '**', redirectTo: '/trading', pathMatch: 'full' }
 ];
 
 @NgModule({
