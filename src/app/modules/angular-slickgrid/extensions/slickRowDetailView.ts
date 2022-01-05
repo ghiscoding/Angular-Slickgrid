@@ -5,19 +5,20 @@ import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/c
 import {
   addToArrayWhenNotExists,
   castObservableToPromise,
+  EventSubscription,
   RxJsFacade,
   SlickEventHandler,
   SlickGrid,
   SlickRowSelectionModel,
+  unsubscribeAll,
 } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import * as DOMPurify from 'dompurify';
 
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';
-import { unsubscribeAllObservables } from '../services/utilities';
 
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
 const PRELOAD_CONTAINER_PREFIX = 'container_loading';
@@ -34,7 +35,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   protected _preloadComponent: Type<object> | undefined;
   protected _views: CreatedView[] = [];
   protected _viewComponent!: Type<object>;
-  protected _subscriptions: Subscription[] = [];
+  protected _subscriptions: EventSubscription[] = [];
   protected _userProcessFn!: (item: any) => Promise<any> | Observable<any> | Subject<any>;
 
   constructor(
@@ -78,7 +79,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Dispose of the RowDetailView Extension */
   dispose() {
     this.disposeAllViewComponents();
-    this._subscriptions = unsubscribeAllObservables(this._subscriptions); // also unsubscribe all RxJS subscriptions
+    this._subscriptions = unsubscribeAll(this._subscriptions); // also unsubscribe all RxJS subscriptions
     super.dispose();
   }
 

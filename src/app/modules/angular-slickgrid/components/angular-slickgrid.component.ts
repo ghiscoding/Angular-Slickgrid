@@ -12,7 +12,7 @@ import 'slickgrid/slick.dataview';
 // ...then everything else...
 import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import {
   // interfaces/types
@@ -22,6 +22,7 @@ import {
   Column,
   ColumnEditor,
   DataViewOption,
+  EventSubscription,
   ExtensionName,
   ExternalResource,
   Locale,
@@ -59,6 +60,7 @@ import {
   autoAddEditorFormatterToColumnsWithEditor,
   emptyElement,
   GridStateType,
+  unsubscribeAll,
 } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
@@ -71,7 +73,6 @@ import { Constants } from '../constants';
 import { AngularGridInstance, ExternalTestingDependencies, GridOption, } from './../models/index';
 import { GlobalGridOptions } from './../global-grid-options';
 import { TranslaterService } from '../services/translater.service';
-import { unsubscribeAllObservables } from './../services/utilities';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -120,7 +121,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     gridOptions: GridOption;
     paginationService: PaginationService;
   };
-  subscriptions: Subscription[] = [];
+  subscriptions: EventSubscription[] = [];
 
   // components / plugins
   slickEmptyWarning?: SlickEmptyWarningComponent;
@@ -413,7 +414,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     // also unsubscribe all RxJS subscriptions
-    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+    this.subscriptions = unsubscribeAll(this.subscriptions);
 
     this._dataset = null;
     this.datasetHierarchical = undefined;
