@@ -21,14 +21,25 @@
   </div>
 
   <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-2">
       <div [class]="status.class" role="alert" data-test="status">
         <strong>Status: </strong> {{status.text}}
         <span [hidden]="!processing">
           <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
         </span>
       </div>
-      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+    </div>
+    <div class="col-sm-10">
+      <div class="alert alert-info" data-test="alert-odata-query">
+        <strong>OData Query:</strong> <span data-test="odata-query-result">{{odataQuery}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+              (click)="setFiltersDynamically()">
         Set Filters Dynamically
       </button>
       <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
@@ -41,11 +52,8 @@
         | {{metrics.totalItemCount}} items
       </span>
     </div>
-    <div class="col-sm-8">
-      <div class="alert alert-info" data-test="alert-odata-query">
-        <strong>OData Query:</strong> <span data-test="odata-query-result">{{odataQuery}}</span>
-      </div>
 
+    <div class="col-sm-8">
       <label>OData Version: </label>
       <span data-test="radioVersion">
         <label class="radio-inline control-label" for="radio2">
@@ -62,24 +70,35 @@
                (click)="changeCountEnableFlag()">
         <span style="font-weight: bold">Enable Count</span> (add to OData query)
       </label>
-      <span class="float-end">
-        <button class="btn btn-outline-danger btn-sm " data-test="throw-page-error-btn"
-                (click)="throwPageChangeError()">
-          <span>Throw Error Going to Last Page... </span>
-          <i class="mdi mdi-page-last"></i>
-        </button>
-      </span>
+      <label class="checkbox-inline control-label" for="enableSelect" style="margin-left: 20px">
+        <input type="checkbox" id="enableSelect" data-test="enable-select" [checked]="isSelectEnabled"
+               (click)="changeEnableSelectFlag()">
+        <span style="font-weight: bold">Enable Select</span> (add to OData query)
+      </label>
+      <label class="checkbox-inline control-label" for="enableExpand" style="margin-left: 20px">
+        <input type="checkbox" id="enableExpand" data-test="enable-expand" [checked]="isExpandEnabled"
+               (click)="changeEnableExpandFlag()">
+        <span style="font-weight: bold">Enable Expand</span> (add to OData query)
+      </label>
     </div>
   </div>
-  <div class="row">
+  <div class="row mt-2 mb-1">
     <div class="col-md-12">
-      <span>Programmatically go to first/last page:</span>
-      <button class="btn btn-outline-secondary btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
-        <i class="fa fa-caret-left fa-lg"></i>
+      <button class="btn btn-outline-danger btn-sm" data-test="throw-page-error-btn"
+              (click)="throwPageChangeError()">
+        <span>Throw Error Going to Last Page... </span>
+        <i class="mdi mdi-page-last"></i>
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
-        <i class="fa fa-caret-right fa-lg"></i>
-      </button>
+
+      <span class="ms-2">
+        <label>Programmatically go to first/last page:</label>
+        <button class="btn btn-outline-secondary btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
+          <i class="fa fa-caret-left fa-lg"></i>
+        </button>
+        <button class="btn btn-outline-secondary btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
+          <i class="fa fa-caret-right fa-lg"></i>
+        </button>
+      </span>
     </div>
   </div>
 
