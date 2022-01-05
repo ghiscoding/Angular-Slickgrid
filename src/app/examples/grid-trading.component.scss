@@ -1,0 +1,49 @@
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.lite.scss';
+
+$sparkline-color: #00b78d;
+// $sparkline-color: #573585;
+
+.trading-platform.full-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 12px 0 10px;
+  background-color: white;
+  z-index: 8000;
+  position: fixed;
+}
+.changed-gain {
+  background-color: #eafae8 !important;
+}
+.changed-loss {
+  background-color: #ffeae8 !important;
+}
+.simulation-form {
+  input[type=number] {
+    height: 32px;
+    width: 50px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+  }
+  div.range {
+    display: contents;
+    width: 200px;
+    label.form-label {
+      margin: 0;
+    }
+    input.form-range {
+      width: 120px;
+    }
+  }
+  .refresh-rate input {
+    height: 30px;
+    width: 46px;
+  }
+}
+.sparkline {
+  stroke: $sparkline-color;
+  // fill: none;
+  fill: rgba($sparkline-color, 0.03);
+}

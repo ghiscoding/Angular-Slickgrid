@@ -42,6 +42,7 @@ import { GridRowMoveComponent } from './examples/grid-rowmove.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { GridStateComponent } from './examples/grid-state.component';
 import { GridTabsComponent } from './examples/grid-tabs.component';
+import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { HomeComponent } from './examples/home.component';
@@ -119,6 +120,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridRowSelectionComponent,
     GridStateComponent,
     GridTabsComponent,
+    GridTradingComponent,
     GridTreeDataParentChildComponent,
     GridTreeDataHierarchicalComponent,
     RowDetailPreloadComponent,
