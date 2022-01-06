@@ -42,13 +42,13 @@
     "copy:lib": "cross-env copyfiles --up 2 src/assets/lib/** dist",
     "copy-demo:dist": "cross-env copyfiles --up 1 dist/**/*.* ../angular-slickgrid-demos/bootstrap3-demo-with-translate/node_modules/angular-slickgrid",
     "del-demo:dist": "cross-env rimraf ../angular-slickgrid-demos/bootstrap3-demo-with-translate/node_modules/angular-slickgrid",
-    "pack-lib": "npm pack ./dist",
     "packagr": "ng-packagr -p package.json",
     "changelog": "cross-env conventional-changelog -p angular -i doc/CHANGELOG.md -s",
     "bump-version": "npm --no-git-tag-version version",
     "prepare-release": "cross-env npm run changelog && npm run build && npm run doc",
     "release": "standard-version",
-    "build:demo": "ng build --configuration=production"
+    "build:demo": "ng build --configuration=production",
+    "pack-lib": "npm pack ./dist"
   },
   "repository": {
     "type": "git",
