@@ -65,7 +65,7 @@ describe('Example 5 - OData Grid', () => {
       cy.get('#items-per-page-label').select('10');
 
       // wait for the query to start and finish
-      cy.get('[data-test=status]').should('contain', 'loading...');
+      cy.get('[data-test=status]').should('contain', 'loading');
       cy.get('[data-test=status]').should('contain', 'finished');
 
       cy.get('[data-test=page-number-input]')
@@ -372,7 +372,7 @@ describe('Example 5 - OData Grid', () => {
       cy.get('#items-per-page-label').select('10');
 
       // wait for the query to start and finish
-      cy.get('[data-test=status]').should('contain', 'loading...');
+      cy.get('[data-test=status]').should('contain', 'loading');
       cy.get('[data-test=status]').should('contain', 'finished');
 
       cy.get('[data-test=odata-query-result]')
@@ -808,6 +808,97 @@ describe('Example 5 - OData Grid', () => {
 
       cy.get('[data-test=total-items]')
         .contains('50');
+    });
+  });
+
+  describe('Select and Expand Behaviors', () => {
+    it('should enable "enableSelect" and "enableExpand" and expect the query to select/expand all fields', () => {
+      cy.get('[data-test=enable-expand]').click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$orderby=Name desc&$expand=category`);
+        });
+
+      cy.get('[data-test=enable-select]').click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$orderby=Name desc&$select=id,name,gender,company&$expand=category($select=name)`);
+        });
+    });
+
+    it('should try to sort and filter on "Category" and expect the query to be succesful', () => {
+      cy.get('#grid5')
+        .find('button.slick-grid-menu-button')
+        .click({ force: true });
+
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-menu-item')
+        .first()
+        .find('span')
+        .contains('Clear all Filters')
+        .click();
+
+      cy.get('#grid5')
+        .find('button.slick-grid-menu-button')
+        .click({ force: true });
+
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-menu-item')
+        .find('span')
+        .contains('Clear all Sorting')
+        .click();
+
+      cy.get('.slick-header-columns')
+        .children('.slick-header-column:nth(4)')
+        .click();
+
+      cy.get('.slick-header-columns')
+        .children('.slick-header-column:nth(4)')
+        .find('.slick-sort-indicator.slick-sort-indicator-asc')
+        .should('exist');
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$orderby=Category/name asc&$select=id,name,gender,company&$expand=category($select=name)`);
+        });
+
+      cy.get('input.search-filter.filter-category_name')
+        .type('Silver');
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$orderby=Category/name asc&$filter=(contains(Category/name, 'Silver'))&$select=id,name,gender,company&$expand=category($select=name)`);
+        });
+
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('[data-test=page-count]')
+        .contains('4');
+
+      cy.get('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('[data-test=item-to]')
+        .contains('10');
+
+      cy.get('[data-test=total-items]')
+        .contains('32');
     });
   });
 });
