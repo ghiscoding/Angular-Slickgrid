@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.0.0...v4.1.0) (2022-01-06)
+
+
+### Features
+
+* **demo:** add new Example 33 to demo Realtime Trading ([75987b4](https://github.com/ghiscoding/angular-slickgrid/commit/75987b4c7eea85a8e233930053e6507170fa157b))
+* **OData:** add `$select` and `$expand` query options ([b445a79](https://github.com/ghiscoding/angular-slickgrid/commit/b445a79b72e4a707070b3871677d3caa76d6a3e2))
+
+
+### Bug Fixes
+
+* **build:** should use `EventSubscription` to be unsubscribed ([ee81db3](https://github.com/ghiscoding/angular-slickgrid/commit/ee81db3c13e562948171d80c60453c11a905b350))
+
 ## [4.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v3.3.2...v4.0.0) (2021-12-11)
 
 
