@@ -337,6 +337,32 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       });
   });
 
+  it('should use a range filter when searching with ".."', () => {
+    cy.get('.slick-header-columns')
+      .children('.slick-header-left .slick-header-column:nth(0)')
+      .contains('Name')
+      .click();
+
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .clear()
+      .type('Anthony Joyner..Ayers Hood');
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'finished');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query { users (first:30,offset:0,
+          orderBy:[{field:"name",direction:DESC}],
+          filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:GE,value:"Anthony Joyner"},{field:"name",operator:LE,value:"Ayers Hood"},
+          {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
+          {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"en",userId:123)
+          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+      });
+  });
+
   describe('Set Dynamic Sorting', () => {
     it('should click on "Clear all Filters & Sorting" then "Set Dynamic Sorting" buttons', () => {
       cy.get('[data-test=clear-filters-sorting]')

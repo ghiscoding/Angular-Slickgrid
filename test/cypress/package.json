@@ -10,8 +10,8 @@
   "author": "Ghislain B.",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^9.2.0",
-    "mocha": "^9.1.3",
+    "cypress": "^9.2.1",
+    "mocha": "^9.1.4",
     "mochawesome": "^7.0.1"
   }
 }
