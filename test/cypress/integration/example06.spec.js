@@ -54,7 +54,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
     cy.get('[data-test=alert-graphql-query]').should('contain', 'GraphQL Query');
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -73,7 +73,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
     cy.get('.icon-seek-next').click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -91,7 +91,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
     cy.get('.icon-seek-end').click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -110,7 +110,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -132,7 +132,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -152,7 +152,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
     cy.get('#items-per-page-label').select('30');
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -183,7 +183,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -213,7 +213,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -244,7 +244,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -260,7 +260,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
     cy.contains('Clear all Filter & Sorts').click();
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -280,7 +280,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .should('be.visible');
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -323,7 +323,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .then(text => expect(text).to.eq(`${presetLowestDay} to ${presetHighestDay}`));
 
     // wait for the query to finish
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
@@ -373,7 +373,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
       // wait for the query to finish
       // cy.get('[data-test=status]').should('contain', 'processing');
-      cy.get('[data-test=status]').should('contain', 'done');
+      cy.get('[data-test=status]').should('contain', 'finished');
     });
 
     it('should expect the grid to be sorted by "Zip" descending then by "Company" ascending', () => {
@@ -406,7 +406,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       cy.contains('Clear all Filter & Sorts').click();
 
       // wait for the query to finish
-      cy.get('[data-test=status]').should('contain', 'done');
+      cy.get('[data-test=status]').should('contain', 'finished');
     });
 
     it('should have English Column Titles in the grid after switching locale', () => {
@@ -629,7 +629,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
         .then(text => expect(text).to.eq(`${presetLowestDay} au ${presetHighestDay}`));
 
       // wait for the query to finish
-      cy.get('[data-test=status]').should('contain', 'done');
+      cy.get('[data-test=status]').should('contain', 'finished');
 
       cy.get('[data-test=graphql-query-result]')
         .should(($span) => {
