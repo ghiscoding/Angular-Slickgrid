@@ -12,7 +12,7 @@ describe('Example 27 - GraphQL Basic API without Pagination', { retries: 1 }, ()
 
   it('should display a processing alert which will change to done', () => {
     // cy.get('[data-test=status]').should('contain', 'processing');
-    cy.get('[data-test=status]').should('contain', 'done');
+    cy.get('[data-test=status]').should('contain', 'finished');
   });
 
   it('should have exact Column Pre-Header & Column Header Titles in the grid', () => {
