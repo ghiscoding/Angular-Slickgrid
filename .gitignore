@@ -49,7 +49,6 @@ dist-demo
 **/node_modules
 **/coverage
 **/jest-coverage
-**/mochawesome-report
 **/dist
 **/*.tgz
 **/junit.xml

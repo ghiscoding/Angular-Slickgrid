@@ -24,7 +24,6 @@
 **/node_modules
 **/coverage
 **/jest-coverage
-**/mochawesome-report
 **/*.tgz
 **/junit.xml
 **/test-report.xml

@@ -44,7 +44,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Cypress CI (mochawesome)",
+      "label": "Cypress CI",
       "type": "shell",
       "command": "yarn run cypress:ci",
       "problemMatcher": []
