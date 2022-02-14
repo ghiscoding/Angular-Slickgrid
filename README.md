@@ -34,10 +34,7 @@ npm start
 ```
 
 ### Like it? :star: it
-You like and use **Angular-Slickgrid**? Be sure to upvote :star: and feel free to contribute. :construction_worker:👷‍♀️
-
-### Like my work? 
-You could :star: the lib and maybe support me with cafeine :coffee:. Thanks.
+You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support me with cafeine :coffee: and feel free to contribute. 👷👷‍♀️ 
 
 <a href='https://ko-fi.com/N4N679OT' target='_blank'><img height='30' style='border:0px;height:30px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
