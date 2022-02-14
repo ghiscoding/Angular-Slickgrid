@@ -59,6 +59,10 @@
   "comments": {
     "new-release": "1- build library (ng-packagr), 2- 'prepare-release' (npm script) & publish to npm, typically 'npm publish dist' works if it does not then run script 'pack-lib' and 'npm publish [tar file]'"
   },
+  "funding": {
+    "type": "ko_fi",
+    "url": "https://ko-fi.com/N4N679OT"
+  },
   "ngPackage": {
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
     "allowedNonPeerDependencies": [
