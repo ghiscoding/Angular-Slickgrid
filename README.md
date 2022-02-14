@@ -36,7 +36,7 @@ npm start
 ### Like it? :star: it
 You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support me with cafeine :coffee: and feel free to contribute. 👷👷‍♀️ 
 
-<a href='https://ko-fi.com/N4N679OT' target='_blank'><img height='30' style='border:0px;height:30px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+<a href='https://ko-fi.com/N4N679OT' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
 ## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
