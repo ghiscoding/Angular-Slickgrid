@@ -1187,8 +1187,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // using jQuery extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
     // jQuery wrote this on their docs:: On a deep extend, Object and Array are extended, but object wrappers on primitive types such as String, Boolean, and Number are not.
-    if (options?.pagination && (gridOptions.enablePagination || gridOptions.backendServiceApi) && gridOptions.pagination && Array.isArray(gridOptions.pagination.pageSizes)) {
-      options.pagination.pageSizes = gridOptions.pagination.pageSizes;
+    if (options?.pagination && (gridOptions.enablePagination || gridOptions.backendServiceApi) && (this.forRootConfig.pagination || gridOptions.pagination)) {
+      options.pagination.pageSize = gridOptions.pagination?.pageSize ?? this.forRootConfig.pagination?.pageSize ?? GlobalGridOptions.pagination!.pageSize;
+      options.pagination.pageSizes = gridOptions.pagination?.pageSizes ?? this.forRootConfig.pagination?.pageSizes ?? GlobalGridOptions.pagination!.pageSizes;
     }
 
     // also make sure to show the header row if user have enabled filtering
