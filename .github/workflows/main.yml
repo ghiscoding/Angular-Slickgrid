@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [14]
+        node: [16]
 
     steps:
       - name: Clone repository
