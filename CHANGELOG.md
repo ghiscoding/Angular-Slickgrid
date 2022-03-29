@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.2](https://github.com/ghiscoding/angular-slickgrid/compare/v4.1.1...v4.1.2) (2022-02-15)
+
+
+### Bug Fixes
+
+* **core:** pagination set in global config should work, fixes [#879](https://github.com/ghiscoding/angular-slickgrid/issues/879) ([7237a23](https://github.com/ghiscoding/angular-slickgrid/commit/7237a238d0eef14abc57afb42114b1eea9dcfe66))
+
+### [4.1.1](https://github.com/ghiscoding/angular-slickgrid/compare/v4.1.0...v4.1.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* **demo:** small leak fix when leaving the page ([b488757](https://github.com/ghiscoding/angular-slickgrid/commit/b488757d9f7c897c12722771b485cb47a5d70f3f))
+* **graphql:** fix range filtering with ".." ([cfcd16e](https://github.com/ghiscoding/angular-slickgrid/commit/cfcd16eed644457cdfccf7d69c9c08dee9afae2a))
+* **odata:** fix range filtering with ".." ([817ca59](https://github.com/ghiscoding/angular-slickgrid/commit/817ca59dad49620d7a392b79668269a61e636f88))
+
 ## [4.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.0.0...v4.1.0) (2022-01-06)
 
 

@@ -8,7 +8,6 @@
   "integrationFolder": "integration",
   "pluginsFile": "plugins/index.js",
   "projectId": "hqnfoi",
-  "reporter": "mochawesome",
   "screenshotsFolder": "screenshots",
   "supportFile": "support/index.js",
   "videosFolder": "videos",

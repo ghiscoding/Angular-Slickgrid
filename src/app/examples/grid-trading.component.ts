@@ -290,14 +290,14 @@ export class GridTradingComponent implements OnDestroy, OnInit {
         this.angularGrid.slickGrid.setCellCssStyles(`highlight_${[column.id]}${row}`, hash);
 
         // remove highlight after x amount of time
-        setTimeout(() => this.removeUnsavedStylingFromCell(item, column, row), this.highlightDuration);
+        setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);
       }
     }
   }
 
   /** remove change highlight css class from that cell */
-  removeUnsavedStylingFromCell(_item: any, column: Column, row: number) {
-    this.angularGrid.slickGrid.removeCellCssStyles(`highlight_${[column.id]}${row}`);
+  removeCellStyling(_item: any, column: Column, row: number) {
+    this.angularGrid?.slickGrid?.removeCellCssStyles(`highlight_${[column.id]}${row}`);
   }
 
   toggleFullScreen() {
