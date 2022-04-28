@@ -10,6 +10,6 @@
   "author": "Ghislain B.",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^9.5.3"
+    "cypress": "^9.6.0"
   }
 }
