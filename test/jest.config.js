@@ -1,8 +1,4 @@
 
-require('jest-preset-angular/ngcc-jest-processor');
-
-/** @type {import('@jest/types').Config.InitialOptions} */
-
 module.exports = {
   rootDir: '../',
   globals: {
@@ -55,13 +51,12 @@ module.exports = {
   setupFiles: ['<rootDir>/test/jest-pretest.ts'],
   setupFilesAfterEnv: ['jest-extended/all', '<rootDir>/test/setup-jest.ts'],
   transform: {
-    '^.+\\.(ts|html)$': 'jest-preset-angular',
+    '^.+\\.ts$': 'jest-preset-angular',
   },
   transformIgnorePatterns: [
     '<rootDir>/node_modules/angular-slickgrid/',
     '<rootDir>/node_modules/slickgrid/'
   ],
-  // testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.+(ts|js)', '**/+(*.)+(spec|test).+(ts|js)'],
   testPathIgnorePatterns: [
     '/node_modules/',
