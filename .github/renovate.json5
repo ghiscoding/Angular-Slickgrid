@@ -1,0 +1,36 @@
+{
+  extends: ["config:base", "group:allNonMajor"],
+  labels: ["dependencies"],
+  ignorePaths: ["**/__tests__/**"],
+  node: false,
+  pin: false,
+  rangeStrategy: "bump",
+  packageRules: [
+    {
+      depTypeList: ["peerDependencies"],
+      enabled: false,
+    },
+    {
+      packageNames: ["jquery"],
+      allowedVersions: "3.5.1",
+    },
+    {
+      packageNames: ["jquery-ui"],
+      allowedVersions: "1.12.1",
+    },
+    {
+      packageNames: ["jquery-ui-dist"],
+      allowedVersions: "1.12.1",
+    },
+    // allow Node14/npm8 until its EOL June 2023
+    {
+      packageNames: ["node"],
+      allowedVersions: "14.17.0",
+    },
+    {
+      packageNames: ["npm"],
+      allowedVersions: "6.14.13",
+    },
+  ],
+  schedule: ["on Friday", "every weekend"],
+}
