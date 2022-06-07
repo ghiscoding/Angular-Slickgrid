@@ -338,6 +338,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    if (!this.gridOptions || !this.columnDefinitions) {
+      throw new Error('Using `<angular-slickgrid>` requires [gridOptions] and [columnDefinitions], it seems that you might have forgot to provide them since at least of them is undefined.');
+    }
     this.initialization(this._eventHandler);
     this._isGridInitialized = true;
 

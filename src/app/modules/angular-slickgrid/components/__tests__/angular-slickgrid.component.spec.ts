@@ -353,9 +353,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     sharedService = new SharedService();
     translaterService = new TranslaterServiceStub();
     await TestBed.configureTestingModule({
-    imports: [TranslateModule.forRoot()],
-    teardown: { destroyAfterEach: false }
-});
+      imports: [TranslateModule.forRoot()],
+      teardown: { destroyAfterEach: false }
+    });
     translate = TestBed.inject(TranslateService);
 
     mockChangeDetectorRef = {
@@ -418,6 +418,18 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     component.ngAfterViewInit();
 
     expect(component.gridOptions.enableMouseWheelScrollHandler).toBeTrue();
+  });
+
+  it('should throw an error when [gridOptions] and/or [columnDefinitions] is undefined', (done) => {
+    try {
+      component.gridOptions = undefined as any;
+      component.ngAfterViewInit();
+      component.dataset = [];
+    } catch (e: any) {
+      expect(e.toString()).toContain('Using `<angular-slickgrid>` requires [gridOptions] and [columnDefinitions]');
+      component.destroy();
+      done();
+    }
   });
 
   it('should keep frozen column index reference (via frozenVisibleColumnId) when grid is a frozen grid', () => {
