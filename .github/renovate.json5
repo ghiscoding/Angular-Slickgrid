@@ -33,4 +33,5 @@
     },
   ],
   schedule: ["on Friday", "every weekend"],
+  ignoreDeps: ["typescript"],
 }
