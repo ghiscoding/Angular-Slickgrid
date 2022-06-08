@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "cypress": "node node_modules/cypress/bin/cypress open",
-    "cypress:ci": "cypress run --config-file cypress.json --record"
+    "cypress:ci": "cypress run"
   },
   "author": "Ghislain B.",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^9.7.0"
+    "cypress": "^10.0.3"
   }
 }
