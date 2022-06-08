@@ -6,7 +6,7 @@ describe('Example 24 - Grids in Bootstrap Tabs', { retries: 1 }, () => {
   const grid2FullTitles = ['Name', 'Gender', 'Company'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/gridtabs`);
+    cy.visit(`${Cypress.config('baseUrl')}/gridtabs`);
     cy.get('h2').should('contain', 'Example 24: Grids in Bootstrap Tabs');
   });
 

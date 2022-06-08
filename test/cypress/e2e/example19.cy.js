@@ -5,7 +5,7 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/draggrouping`);
+    cy.visit(`${Cypress.config('baseUrl')}/draggrouping`);
     cy.get('h2').should('contain', 'Example 19: Draggable Grouping & Aggregators');
   });
 

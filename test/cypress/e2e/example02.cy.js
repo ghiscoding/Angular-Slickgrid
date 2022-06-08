@@ -6,7 +6,7 @@ function removeExtraSpaces(textS) {
 
 describe('Example 2 - Grid with Formatters', { retries: 1 }, () => {
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/formatter`);
+    cy.visit(`${Cypress.config('baseUrl')}/formatter`);
     cy.get('h2').should('contain', 'Example 2: Grid with Formatters');
   });
 

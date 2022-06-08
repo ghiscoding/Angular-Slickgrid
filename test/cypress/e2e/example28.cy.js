@@ -9,7 +9,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
   const titles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/tree-data-parent-child`);
+    cy.visit(`${Cypress.config('baseUrl')}/tree-data-parent-child`);
     cy.get('h2').should('contain', 'Example 28: Tree Data');
     cy.get('h2').should('contain', 'from a flat dataset with parentId references');
   });

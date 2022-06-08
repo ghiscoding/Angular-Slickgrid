@@ -23,7 +23,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
   });
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/localization`);
+    cy.visit(`${Cypress.config('baseUrl')}/localization`);
     cy.get('h2')
       .should('contain', 'Example 12: Localization (i18n)');
   });

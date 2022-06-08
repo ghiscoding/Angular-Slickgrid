@@ -5,7 +5,7 @@ describe('Example 33 - Regular & Custom Tooltips', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/trading`);
+    cy.visit(`${Cypress.config('baseUrl')}/trading`);
     cy.get('h2').should('contain', 'Example 33: Real-Time Trading Platform');
   });
 

@@ -1,8 +1,7 @@
-const { defineConfig } = require('cypress')
-const fs = require('fs')
+const { defineConfig } = require('cypress');
+const fs = require('fs');
 
 module.exports = defineConfig({
-  baseExampleUrl: 'http://localhost:4300/#',
   video: false,
   viewportWidth: 1200,
   viewportHeight: 950,
@@ -15,7 +14,7 @@ module.exports = defineConfig({
     openMode: 0,
   },
   e2e: {
-    baseUrl: 'http://localhost:4300',
+    baseUrl: 'http://localhost:4300/#',
     specPattern: 'e2e/**/*.{js,ts}',
     supportFile: 'support/index.js',
     setupNodeEvents(on, config) {

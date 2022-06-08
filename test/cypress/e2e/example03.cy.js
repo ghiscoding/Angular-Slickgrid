@@ -9,7 +9,7 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
   ];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/editor`);
+    cy.visit(`${Cypress.config('baseUrl')}/editor`);
     cy.get('h2').should('contain', 'Example 3: Editors / Delete');
   });
 

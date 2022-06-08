@@ -4,7 +4,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
   const fullTitles = ['', '', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/rowmove`);
+    cy.visit(`${Cypress.config('baseUrl')}/rowmove`);
     cy.get('h2').should('contain', 'Example 17: Row Move & Checkbox Selector');
   });
 
