@@ -6,7 +6,7 @@ describe('Example 15 - Column Span & Header Grouping', { retries: 1 }, () => {
   const fullTitles = ['#', 'Title', 'Duration', 'Start', 'Finish', '% Complete', 'Effort Driven'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/colspan`);
+    cy.visit(`${Cypress.config('baseUrl')}/colspan`);
     cy.get('h2').should('contain', 'Example 15: Column Span & Header Grouping');
   });
 

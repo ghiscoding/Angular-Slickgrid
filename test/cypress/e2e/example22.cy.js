@@ -4,7 +4,7 @@ describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
   const fullTitles = ['Title', 'Assignee', 'Assignee with Angular Component', '% Complete', 'Start', 'Finish', 'Action'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/angular-components`);
+    cy.visit(`${Cypress.config('baseUrl')}/angular-components`);
     cy.get('h2').should('contain', 'Example 22: Use of Angular Components');
   });
 

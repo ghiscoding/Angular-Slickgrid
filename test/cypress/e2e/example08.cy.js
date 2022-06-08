@@ -11,7 +11,7 @@ describe('Example 8 - Header Menu Plugin', { retries: 1 }, () => {
   });
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/headermenu`);
+    cy.visit(`${Cypress.config('baseUrl')}/headermenu`);
     cy.get('h2').should('contain', 'Example 8: Header Menu Plugin');
   });
 

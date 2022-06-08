@@ -12,7 +12,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
   const popMusicWith3ExtraSongs = ['music', 'mp3', 'pop', 'pop-125.mp3', 'pop-126.mp3', 'pop-127.mp3', 'song.mp3', 'theme.mp3',];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/tree-data-hierarchical`);
+    cy.visit(`${Cypress.config('baseUrl')}/tree-data-hierarchical`);
     cy.get('h2').should('contain', 'Example 29: Tree Data');
     cy.get('h2').should('contain', 'from a Hierarchical Dataset');
   });

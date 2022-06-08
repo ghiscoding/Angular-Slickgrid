@@ -4,7 +4,7 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/rowdetail`);
+    cy.visit(`${Cypress.config('baseUrl')}/rowdetail`);
     cy.get('h2').should('contain', 'Example 21: Row Detail View');
   });
 

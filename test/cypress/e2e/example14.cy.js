@@ -5,7 +5,7 @@ describe('Example 14 - Grouping & Aggregators', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/grouping`);
+    cy.visit(`${Cypress.config('baseUrl')}/grouping`);
     cy.get('h2').should('contain', 'Example 14: Grouping & Aggregators');
   });
 

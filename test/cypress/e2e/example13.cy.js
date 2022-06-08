@@ -4,7 +4,7 @@ describe('Example 13 - Custom Backend Server Pagination', { retries: 1 }, () => 
   const fullTitles = ['Note', 'Status', 'Currency', 'Amount', 'Input Date', 'Input Time'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/swt`);
+    cy.visit(`${Cypress.config('baseUrl')}/swt`);
     cy.get('h2').should('contain', 'Example 13: Custom Backend Server Pagination');
   });
 

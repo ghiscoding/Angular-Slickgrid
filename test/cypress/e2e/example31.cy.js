@@ -4,7 +4,7 @@ describe('Example 31 - Columns Resize by Content', { retries: 1 }, () => {
   const titles = ['', 'Title', 'Duration', 'Cost', '% Complete', 'Complexity', 'Start', 'Completed', 'Finish', 'Product', 'Country of Origin', 'Action'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/resize-by-content`);
+    cy.visit(`${Cypress.config('baseUrl')}/resize-by-content`);
     cy.get('h2').should('contain', 'Example 31: Columns Resize by Content');
   });
 

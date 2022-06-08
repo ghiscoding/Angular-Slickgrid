@@ -5,7 +5,7 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => 
   const fullFrenchTitles = ['#', 'Titre', '% Achevée', 'Début', 'Fin', 'Priorité', 'Terminé', 'Action'];
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/context`);
+    cy.visit(`${Cypress.config('baseUrl')}/context`);
     cy.get('h2').should('contain', 'Example 26: Cell Menu & Context Menu Plugins');
   });
 

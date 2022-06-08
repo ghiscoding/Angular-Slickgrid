@@ -12,7 +12,7 @@ describe('Example 9 - Grid Menu', { retries: 1 }, () => {
   });
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/gridmenu`);
+    cy.visit(`${Cypress.config('baseUrl')}/gridmenu`);
     cy.get('h2').should('contain', 'Example 9: Grid Menu Control');
   });
 

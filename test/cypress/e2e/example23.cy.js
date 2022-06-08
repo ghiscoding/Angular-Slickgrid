@@ -5,7 +5,7 @@ describe('Example 23 - Grid AutoHeight', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
-    cy.visit(`${Cypress.config('baseExampleUrl')}/autoheight`);
+    cy.visit(`${Cypress.config('baseUrl')}/autoheight`);
     cy.get('h2').should('contain', 'Example 23: Grid AutoHeight');
   });
 
