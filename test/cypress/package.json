@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cypress": "node node_modules/cypress/bin/cypress open",
-    "cypress:ci": "cypress run --record"
+    "cypress:ci": "cypress run"
   },
   "author": "Ghislain B.",
   "license": "MIT",
