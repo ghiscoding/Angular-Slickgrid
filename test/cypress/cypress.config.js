@@ -14,7 +14,7 @@ module.exports = defineConfig({
     openMode: 0,
   },
   e2e: {
-    baseUrl: 'http://localhost:9000/#',
+    baseUrl: 'http://localhost:4300/#',
     specPattern: 'e2e/**/*.{js,ts}',
     supportFile: 'support/index.js',
     excludeSpecPattern: process.env.CI ? ['**/node_modules/**', '**/000-*.cy.{js,ts}'] : ['**/node_modules/**'],
