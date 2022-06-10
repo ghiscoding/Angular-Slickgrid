@@ -2153,10 +2153,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@ng-select/ng-select@^8.3.0":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-8.3.0.tgz#900a160738dc059a4cefaf019d67643534652d01"
-  integrity sha512-AwAuDs+86++D2kEsik2/ZiQuRk0khd1HESofOm1yMBwbzsw+xLSyVOMml/OehDFSOxli7fAkk07wYtzAhxSB3Q==
+"@ng-select/ng-select@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-9.0.0.tgz#6e661cef2245599a6d2165e08c319bcf2b8956bf"
+  integrity sha512-I9cVZ6AXYCqv0E9HfGeAw9PysqU9Io83KRVsq3T7dITcMCLcu3DQut8k2HJHz/lId6ade+Q8p/AZv5uwoQeyhw==
   dependencies:
     tslib "^2.3.1"
 

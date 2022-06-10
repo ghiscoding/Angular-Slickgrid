@@ -114,7 +114,7 @@
     "@angular/router": "^13.3.11",
     "@faker-js/faker": "^7.2.0",
     "@fnando/sparkline": "^0.3.10",
-    "@ng-select/ng-select": "^8.3.0",
+    "@ng-select/ng-select": "^9.0.0",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@slickgrid-universal/composite-editor-component": "^1.2.6",
