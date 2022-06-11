@@ -143,7 +143,7 @@
     "jest-preset-angular": "^12.1.0",
     "ng-packagr": "^13.3.1",
     "ngx-bootstrap": "^8.0.0",
-    "npm-run-all2": "^5.0.2",
+    "npm-run-all2": "^6.0.0",
     "postcss": "^8.4.14",
     "postcss-cli": "^9.1.0",
     "rimraf": "^3.0.2",
