@@ -2,6 +2,7 @@
   extends: ["config:base", "group:allNonMajor"],
   labels: ["dependencies"],
   ignorePaths: ["**/__tests__/**"],
+  dependencyDashboard: false,
   node: false,
   pin: false,
   rangeStrategy: "bump",
