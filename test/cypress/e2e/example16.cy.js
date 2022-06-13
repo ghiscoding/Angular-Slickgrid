@@ -69,7 +69,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
       .children('.slick-header-column:nth(3)')
       .should('contain', 'Duration')
       .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { force: true });
+      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
 
     cy.get('#grid16')
       .find('.slick-header-columns')
@@ -96,7 +96,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(5)')
       .trigger('mousemove', 'bottomLeft')
-      .trigger('mouseup', 'bottomLeft', { force: true });
+      .trigger('mouseup', 'bottomLeft', { which: 1, force: true });
   });
 
   it('should hide the "Start" column from the Column Picker', () => {

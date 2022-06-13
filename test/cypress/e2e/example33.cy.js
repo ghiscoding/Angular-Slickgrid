@@ -53,7 +53,7 @@ describe('Example 33 - Regular & Custom Tooltips', { retries: 1 }, () => {
 
     cy.get('.slick-draggable-dropbox-toggle-placeholder')
       .trigger('mousemove', 'center')
-      .trigger('mouseup', 'center', { force: true });
+      .trigger('mouseup', 'center', { which: 1, force: true });
 
     cy.get('.slick-group-toggle-all')
       .click();

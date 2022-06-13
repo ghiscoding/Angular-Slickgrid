@@ -73,7 +73,7 @@ describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => 
       cy.get('.slick-dropped-grouping:nth(1) div')
         .contains('Effort-Driven')
         .trigger('mousemove', 'bottomRight')
-        .trigger('mouseup', 'bottomRight', { force: true });
+        .trigger('mouseup', 'bottomRight', { which: 1, force: true });
     });
 
     it('should expect the grouping to be swapped as well in the grid', () => {
