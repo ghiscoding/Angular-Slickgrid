@@ -137,7 +137,7 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "custom-event-polyfill": "^1.0.7",
-    "eslint": "^8.17.0",
+    "eslint": "^8.18.0",
     "jest": "^28.1.1",
     "jest-extended": "^2.0.0",
     "jest-preset-angular": "^12.1.0",
@@ -160,6 +160,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001355"
+    "caniuse-lite": "1.0.30001356"
   }
 }
