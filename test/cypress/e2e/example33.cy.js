@@ -49,11 +49,11 @@ describe('Example 33 - Regular & Custom Tooltips', { retries: 1 }, () => {
   it('should Group by 1st column "Currency" and expect 2 groups with Totals when collapsed', () => {
     cy.get('.slick-column-name')
       .first()
-      .trigger('mousedown', { button: 1, force: true })
+      .trigger('mousedown', { which: 1, force: true })
 
     cy.get('.slick-draggable-dropbox-toggle-placeholder')
       .trigger('mousemove', 'center')
-      .trigger('mouseup', 'center', { force: true });
+      .trigger('mouseup', 'center', { which: 1, force: true });
 
     cy.get('.slick-group-toggle-all')
       .click();

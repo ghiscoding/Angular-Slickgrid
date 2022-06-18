@@ -32,12 +32,12 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
     cy.get('@moveIconTask3').should('have.length', 1);
 
     cy.get('@moveIconTask3')
-      .trigger('mousedown', { button: 0, force: true })
+      .trigger('mousedown', { which: 1, force: true })
       .trigger('mousemove', 'bottomRight');
 
     cy.get('@moveIconTask1')
       .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { force: true });
+      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
 
     cy.get('@moveIconTask2').trigger('mouseover', { force: true });
 
@@ -84,12 +84,12 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
     cy.get('@moveIconTask3').should('have.length', 1);
 
     cy.get('@moveIconTask3')
-      .trigger('mousedown', { button: 0, force: true })
+      .trigger('mousedown', { which: 1, force: true })
       .trigger('mousemove', 'bottomRight');
 
     cy.get('@moveIconTask5')
       .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { force: true });
+      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
 
     cy.get('.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');
@@ -119,7 +119,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
       .children('.slick-header-column:nth(6)')
       .should('contain', 'Finish')
       .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { force: true });
+      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
 
     cy.get('#grid17')
       .find('.slick-header-columns')
