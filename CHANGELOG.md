@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.1.4...v4.2.0) (2022-06-18)
+
+
+### Features
+
+* **core:** upgrade to jQuery 3.6 and jQuery-UI 1.13 ([7e7f24c](https://github.com/ghiscoding/angular-slickgrid/commit/7e7f24c8fdd62b2aff1fd28449b122cc629bc52f))
+
+
+### Bug Fixes
+
+* **core:** throw error when `[gridOptions]` missing, fixes [#910](https://github.com/ghiscoding/angular-slickgrid/issues/910) ([974be12](https://github.com/ghiscoding/angular-slickgrid/commit/974be124bbb3210d71b86cb6d93a35e8e2e60405))
+
 ### [4.1.4](https://github.com/ghiscoding/angular-slickgrid/compare/v4.1.3...v4.1.4) (2022-04-28)
 
 
