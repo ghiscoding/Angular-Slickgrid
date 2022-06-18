@@ -46,11 +46,11 @@
       </button>
       <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
               class="btn btn-outline-secondary btn-sm"
-              disabled.bind="hasNoExpandCollapseChanged">
+              [disabled]="hasNoExpandCollapseChanged">
         <span class="mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
       </button>
-      <div class.bind="loadingClass"></div>
+      <div [class]="loadingClass"></div>
     </div>
   </div>
 

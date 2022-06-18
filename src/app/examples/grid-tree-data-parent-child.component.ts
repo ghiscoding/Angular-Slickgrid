@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import {
@@ -49,7 +49,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
   hasNoExpandCollapseChanged = true;
   treeToggleItems: TreeToggledItem[] = [];
 
-  constructor() { }
+  constructor(private cdref: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     // define the grid options & columns and then create the grid itself
@@ -313,12 +313,14 @@ export class GridTreeDataParentChildComponent implements OnInit {
   /** Whenever a parent is being toggled, we'll keep a reference of all of these changes so that we can reapply them whenever we want */
   handleOnTreeItemToggled(treeToggleExecution: TreeToggleStateChange) {
     this.hasNoExpandCollapseChanged = false;
+    this.cdref.detectChanges();
     this.treeToggleItems = treeToggleExecution.toggledItems as TreeToggledItem[];
     console.log('Tree Data changes', treeToggleExecution);
   }
 
   handleOnGridStateChanged(gridStateChange: GridStateChange) {
     this.hasNoExpandCollapseChanged = false;
+    this.cdref.detectChanges();
 
     if (gridStateChange?.change?.type === GridStateType.treeData) {
       console.log('Tree Data gridStateChange', gridStateChange?.gridState?.treeData);
