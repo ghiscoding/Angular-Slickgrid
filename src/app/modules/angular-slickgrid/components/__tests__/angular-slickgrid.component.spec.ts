@@ -323,10 +323,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       </div>
     </div>
   <angular-slickgrid
-    grid-id="grid1"
-    column-definitions.bind="columnDefinitions"
-    grid-options.bind="gridOptions"
-    dataset.bind="dataset">
+    gridId="grid1"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset">
   </angular-slickgrid>`;
 
   beforeEach(async () => {
