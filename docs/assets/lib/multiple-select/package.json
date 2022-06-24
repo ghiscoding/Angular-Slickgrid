@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "jquery": ">=1.7"
+    "jquery": ">=1.12.4"
   },
   "keywords": [
     "multiple.select",

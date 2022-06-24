@@ -111,7 +111,7 @@
     "@angular/platform-browser": "^13.3.11",
     "@angular/platform-browser-dynamic": "^13.3.11",
     "@angular/router": "^13.3.11",
-    "@faker-js/faker": "^7.2.0",
+    "@faker-js/faker": "^7.3.0",
     "@fnando/sparkline": "^0.3.10",
     "@ng-select/ng-select": "^8.3.0",
     "@ngx-translate/core": "^14.0.0",
@@ -124,12 +124,12 @@
     "@slickgrid-universal/text-export": "1.3.0",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
-    "@types/jest": "^28.1.2",
+    "@types/jest": "^28.1.3",
     "@types/moment": "^2.13.0",
     "@types/node": "^18.0.0",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.28.0",
-    "@typescript-eslint/parser": "^5.28.0",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
     "autoprefixer": "^10.4.7",
     "bootstrap": "^5.1.3",
     "conventional-changelog": "^3.1.25",
@@ -146,7 +146,7 @@
     "postcss": "^8.4.14",
     "postcss-cli": "^9.1.0",
     "rimraf": "^3.0.2",
-    "sass": "^1.52.3",
+    "sass": "^1.53.0",
     "standard-version": "^9.5.0",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.8.1",
@@ -159,6 +159,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001356"
+    "caniuse-lite": "1.0.30001359"
   }
 }
