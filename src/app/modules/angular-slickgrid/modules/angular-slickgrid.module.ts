@@ -9,17 +9,16 @@ import { BsDropDownService } from '../services/bsDropdown.service';
 import { ContainerService } from '../services/container.service';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    TranslateModule
-  ],
-  declarations: [
-    AngularSlickgridComponent,
-  ],
-  exports: [
-    AngularSlickgridComponent,
-  ],
-  entryComponents: [AngularSlickgridComponent]
+    imports: [
+        CommonModule,
+        TranslateModule
+    ],
+    declarations: [
+        AngularSlickgridComponent,
+    ],
+    exports: [
+        AngularSlickgridComponent,
+    ]
 })
 export class AngularSlickgridModule {
   static forRoot(config: GridOption = {}): ModuleWithProviders<AngularSlickgridModule> {
