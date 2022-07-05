@@ -47,7 +47,7 @@
     "bump-version": "npm --no-git-tag-version version",
     "prepare-release": "cross-env npm run changelog && npm run build && npm run doc",
     "release": "standard-version",
-    "build:demo": "ng build --configuration=production",
+    "build:demo": "ng build --configuration=production --base-href=\"\"",
     "pack-lib": "npm pack ./dist"
   },
   "repository": {
