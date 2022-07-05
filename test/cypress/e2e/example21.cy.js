@@ -166,7 +166,7 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
   });
 
   it('should open a few Row Details, then sort by Title and expect all Row Details to be closed afterward', () => {
-    const expectedTasks = ['Task 1', 'Task 10', 'Task 100', 'Task 101', 'Task 102'];
+    const expectedTasks = ['Task 1', 'Task 10', 'Task 100', 'Task 101', 'Task 102', 'Task 103', 'Task 104'];
 
     cy.get('#grid21')
       .find('.slick-row:nth(0)')
@@ -220,6 +220,11 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
       .children('.slick-menu-content')
       .should('contain', 'Sort Ascending')
       .click();
+
+    cy.get('#grid21')
+      .find('.slick-header-column:nth(1)')
+      .find('.slick-sort-indicator-asc')
+      .should('have.length', 1);
 
     cy.get('.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');
@@ -294,6 +299,10 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
       .find('span')
       .contains('Clear all Sorting')
       .click();
+
+    cy.get('#grid21')
+      .find('.slick-sort-indicator-asc')
+      .should('have.length', 0);
 
     cy.get('#grid21')
       .find('.innerDetailView_102 .container_102')

@@ -900,7 +900,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           // filtering data with local dataset will not always show correctly unless we call this updateRow/render
           // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
           // see commit: https://github.com/ghiscoding/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
-          if (gridOptions && gridOptions.enableFiltering && !gridOptions.enableRowDetailView) {
+          if (gridOptions?.enableFiltering && !gridOptions.enableRowDetailView) {
             if (args?.rows && Array.isArray(args.rows)) {
               args.rows.forEach((row: number) => grid.updateRow(row));
               grid.render();
@@ -1215,12 +1215,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     return options;
   }
 
-  /** Pre-Register any Resource that don't require SlickGrid to be instantiated (for example RxJS Resource) */
+  /** Pre-Register any Resource that don't require SlickGrid to be instantiated (for example RxJS Resource & RowDetail) */
   private preRegisterResources() {
     this._registeredResources = this.gridOptions.registerExternalResources || [];
 
     // Angular-Slickgrid requires RxJS, so we'll register it as the first resource
     this.registerRxJsResource(new RxJsResource() as RxJsFacade);
+
+    if (this.gridOptions.enableRowDetailView) {
+      this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
+      this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
+      this._registeredResources.push(this.slickRowDetailView);
+      this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, instance: this.slickRowDetailView });
+    }
   }
 
   private registerResources() {
@@ -1245,13 +1252,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
     if (this.gridOptions.enableTranslate) {
       this.extensionService.translateColumnHeaders();
-    }
-
-    if (this.gridOptions.enableRowDetailView) {
-      this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
-      this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
-      this._registeredResources.push(this.slickRowDetailView);
-      this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, instance: this.slickRowDetailView });
     }
 
     // also initialize (render) the empty warning component
