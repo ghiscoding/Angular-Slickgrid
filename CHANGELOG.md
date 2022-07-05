@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.2.2](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.1...v4.2.2) (2022-07-05)
+
+
+### Bug Fixes
+
+* **plugin:** Row Detail column sorting was offset, fixes [#949](https://github.com/ghiscoding/angular-slickgrid/issues/949) ([09cc298](https://github.com/ghiscoding/angular-slickgrid/commit/09cc298abc15adaa58c500ac9f7052156dc97c27))
+
 ### [4.2.1](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.0...v4.2.1) (2022-06-18)
 
 ## [4.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.1.4...v4.2.0) (2022-06-18)
