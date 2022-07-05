@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
-  ExtensionList,
   FieldType,
   Filters,
   Formatters,
@@ -12,7 +11,7 @@ import {
 import { RowDetailViewComponent } from './rowdetail-view.component';
 import { RowDetailPreloadComponent } from './rowdetail-preload.component';
 
-const NB_ITEMS = 500;
+const NB_ITEMS = 1000;
 
 @Component({
   templateUrl: './grid-rowdetail.component.html'
@@ -29,12 +28,12 @@ export class GridRowDetailComponent implements OnInit {
   `;
 
   angularGrid!: AngularGridInstance;
-  columnDefinitions!: Column[];
+  columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
-  dataset!: any[];
+  dataset: any[] = [];
   detailViewRowCount = 9;
-  message = '';
   flashAlertType = 'info';
+  message = '';
 
   constructor() { }
 
@@ -58,12 +57,6 @@ export class GridRowDetailComponent implements OnInit {
 
   /* Define grid Options and Columns */
   defineGrid() {
-    // prepare a multiple-select array to filter with
-    const multiSelectFilterArray = [];
-    for (let i = 0; i < NB_ITEMS; i++) {
-      multiSelectFilterArray.push({ value: i, label: i });
-    }
-
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, width: 70, filterable: true },
       { id: 'duration', name: 'Duration (days)', field: 'duration', formatter: Formatters.decimal, params: { minDecimal: 1, maxDecimal: 2 }, sortable: true, type: FieldType.number, minWidth: 90, filterable: true },
@@ -138,7 +131,7 @@ export class GridRowDetailComponent implements OnInit {
   getData() {
     // mock a dataset
     this.dataset = [];
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < NB_ITEMS; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));

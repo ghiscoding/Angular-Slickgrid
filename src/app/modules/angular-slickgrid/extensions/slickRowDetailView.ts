@@ -1,6 +1,3 @@
-import 'slickgrid/plugins/slick.rowdetailview';
-import 'slickgrid/plugins/slick.rowselectionmodel';
-
 import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
 import {
   addToArrayWhenNotExists,
