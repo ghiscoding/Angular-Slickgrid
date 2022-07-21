@@ -142,13 +142,13 @@
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typescript": "~4.7.4",
-    "zone.js": "~0.11.6"
+    "zone.js": "~0.11.7"
   },
   "engines": {
     "node": ">=14.17.0",
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001367"
+    "caniuse-lite": "1.0.30001368"
   }
 }
