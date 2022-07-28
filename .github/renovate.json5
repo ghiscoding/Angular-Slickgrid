@@ -21,8 +21,8 @@
       allowedVersions: "6.14.13",
     },
     {
-      matchCurrentVersion: '>=7.5.0',
-      matchPackageNames: ['rxjs']
+      packageNames: ["rxjs"],
+      allowedVersions: ">=7.5.0"
     }
   ],
   schedule: ["on Thursday"],
