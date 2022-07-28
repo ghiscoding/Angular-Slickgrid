@@ -57,7 +57,7 @@
   "main": "src/app/modules/angular-slickgrid/index",
   "private": false,
   "comments": {
-    "new-release": "1- build library (ng-packagr), 2- 'prepare-release' (npm script) & publish to npm, typically 'npm publish dist' works if it does not then run script 'pack-lib' and 'npm publish [tar file]'"
+    "new-release": "1- build library (ng-packagr), 2- 'prepare-release' (npm script), 3- run script 'pack-lib' and 'npm publish [tar tgz]'"
   },
   "funding": {
     "type": "ko_fi",
@@ -78,7 +78,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "moment-mini": "^2.24.0",
-    "rxjs": "^7.5.6"
+    "rxjs": ">=7.5.0"
   },
   "peerDependencies": {
     "@ngx-translate/core": ">=14.0.0"
