@@ -20,6 +20,10 @@
       packageNames: ["npm"],
       allowedVersions: "6.14.13",
     },
+    {
+      matchCurrentVersion: '>=7.5.0',
+      matchPackageNames: ['rxjs']
+    }
   ],
   schedule: ["on Thursday"],
   ignoreDeps: ["typescript"],
