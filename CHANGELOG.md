@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.2.6](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.5...v4.2.6) (2022-07-28)
+
+
+### Bug Fixes
+
+* **deps:** loosen up RxJS min version to avoid interface out of sync ([a29b4e5](https://github.com/ghiscoding/angular-slickgrid/commit/a29b4e59a8f739ba164a3dd2c5f7813ef23bc3f5))
+
 ### [4.2.5](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.4...v4.2.5) (2022-07-28)
 
 
