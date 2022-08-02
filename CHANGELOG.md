@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.2.7](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.6...v4.2.7) (2022-08-02)
+
+
+### Bug Fixes
+
+* **version:** update to latest Slickgrid-Universal versions ([c37f4b6](https://github.com/ghiscoding/angular-slickgrid/commit/c37f4b6422ea1863597d261260d1cf99bd7a0778))
+
 ### [4.2.6](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.5...v4.2.6) (2022-07-28)
 
 
