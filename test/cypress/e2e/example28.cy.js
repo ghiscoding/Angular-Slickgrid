@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
 function removeExtraSpaces(text) {
   return `${text}`.replace(/\s+/g, ' ').trim();
@@ -206,6 +207,29 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
     cy.get('.slick-tree-title[level=1]')
       .get('.slick-cell')
       .contains('Task 500');
+  });
+
+  it('should be able to update the 1st row item (Task 0)', () => {
+    cy.get('[data-test=update-item-btn]')
+      .contains('Update 1st Row Item')
+      .click();
+
+    const now = new Date();
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const today = changeTimezone(now, tz);
+
+    const currentDate = today.getDate();
+    let currentMonth = today.getMonth() + 1; // month is zero based, let's add 1 to it
+    if (currentMonth < 10) {
+      currentMonth = `0${currentMonth}`; // add zero padding
+    }
+    const currentYear = today.getFullYear();
+
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0)`).should('contain', 'Task 0');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(1)`).should('contain', '11 days');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(2)`).should('contain', '77%');
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(3)`).should('contain', `${currentYear}-${zeroPadding(currentMonth)}-${zeroPadding(currentDate)}`);
+    cy.get(`#grid28 [style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(4)`).should('contain', `${currentYear}-${zeroPadding(currentMonth)}-${zeroPadding(currentDate)}`);
   });
 
   it('should collapse the Tree and not expect to see the newly inserted item (Task 500) because all child will be collapsed', () => {
