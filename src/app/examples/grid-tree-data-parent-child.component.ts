@@ -216,6 +216,29 @@ export class GridTreeDataParentChildComponent implements OnInit {
     }
   }
 
+  updateFirstRow() {
+    // to update any of the grid rows, we CANNOT simply pass a new updated object
+    // we MUST read it from the DataView first (that will include all mutated Tree Data props, like `__treeLevel`, `__parentId`, ...) and then update it
+    const item = this.angularGrid.dataView.getItemById<any>(0);
+
+    // option 1
+    /*
+    // now that we have the extra Tree Data props, we can update any of the object properties (while keeping the Tree Data props)
+    item.duration = `11 days`;
+    item.percentComplete = 77;
+    item.start = new Date();
+    item.finish = new Date();
+    item.effortDriven = false;
+
+    // finally we can now update the item which includes our updated props + the Tree Data props (`__treeLevel`, ...)
+    this.angularGrid.gridService.updateItem(item);
+    */
+
+    // optiona 2 - alternative
+    // we could also simply use the spread operator directly
+    this.angularGrid.gridService.updateItem({ ...item, duration: `11 days`, percentComplete: 77, start: new Date(), finish: new Date(), effortDriven: false });
+  }
+
   collapseAll() {
     this.angularGrid.treeDataService.toggleTreeDataCollapse(true);
   }
