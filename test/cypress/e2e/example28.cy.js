@@ -213,6 +213,9 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
     cy.get('[data-test=update-item-btn]')
       .contains('Update 1st Row Item')
       .click();
+    
+    cy.get('.slick-viewport-top.slick-viewport-left')
+      .scrollTo('top');
 
     const now = new Date();
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
