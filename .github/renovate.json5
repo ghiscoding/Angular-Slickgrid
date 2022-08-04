@@ -1,30 +1,30 @@
 {
-  extends: ["config:base", "group:allNonMajor"],
-  labels: ["dependencies"],
-  ignorePaths: ["**/__tests__/**"],
+  extends: ['config:base', 'group:allNonMajor'],
+  labels: ['dependencies'],
+  ignorePaths: ['**/__tests__/**'],
   dependencyDashboard: false,
   node: false,
   pin: false,
-  rangeStrategy: "bump",
+  rangeStrategy: 'bump',
   packageRules: [
     {
-      depTypeList: ["peerDependencies"],
+      depTypeList: ['peerDependencies'],
       enabled: false,
     },
     // allow Node14/npm8 until its EOL June 2023
     {
-      packageNames: ["node"],
-      allowedVersions: "14.17.0",
+      packageNames: ['node'],
+      allowedVersions: '14.17.0',
     },
     {
-      packageNames: ["npm"],
-      allowedVersions: "6.14.13",
+      packageNames: ['npm'],
+      allowedVersions: '6.14.13',
     },
     {
-      packageNames: ["rxjs"],
-      allowedVersions: ">=7.5.0"
+      packageNames: ['rxjs'],
+      allowedVersions: '7.5.0',
     }
   ],
-  schedule: ["on Thursday"],
-  ignoreDeps: ["typescript"],
+  schedule: ['on Thursday'],
+  ignoreDeps: ['typescript'],
 }
