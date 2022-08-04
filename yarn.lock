@@ -4099,10 +4099,10 @@ camelcase@^6.2.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.2.0.tgz#924af881c9d525ac9d87f40d964e5cea982a1809"
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
-caniuse-lite@1.0.30001373, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.30001271, caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001332, caniuse-lite@^1.0.30001335, caniuse-lite@^1.0.30001359, caniuse-lite@^1.0.30001370, caniuse-lite@^1.0.30001373:
-  version "1.0.30001373"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001373.tgz#2dc3bc3bfcb5d5a929bec11300883040d7b4b4be"
-  integrity sha512-pJYArGHrPp3TUqQzFYRmP/lwJlj8RCbVe3Gd3eJQkAV8SAC6b19XS9BjMvRdvaS8RMkaTN8ZhoHP6S1y8zzwEQ==
+caniuse-lite@1.0.30001374, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.30001271, caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001332, caniuse-lite@^1.0.30001335, caniuse-lite@^1.0.30001359, caniuse-lite@^1.0.30001370, caniuse-lite@^1.0.30001373:
+  version "1.0.30001374"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001374.tgz#3dab138e3f5485ba2e74bd13eca7fe1037ce6f57"
+  integrity sha512-mWvzatRx3w+j5wx/mpFN5v5twlPrabG8NqX2c6e45LCpymdoGqNvRkRutFUqpRTXKFQFNQJasvK0YT7suW6/Hw==
 
 chalk@4.1.0:
   version "4.1.0"
@@ -7029,10 +7029,10 @@ jest-environment-node@^28.1.3:
     jest-mock "^28.1.3"
     jest-util "^28.1.3"
 
-jest-extended@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/jest-extended/-/jest-extended-3.0.1.tgz#9fc2d329d793f5c3256edc366f9ef574f62010d3"
-  integrity sha512-OSGbKUhbjy7QikfQyK3ishFrAqLeRodBzeJk7SuuWGACAT7HHcGuJ4aUQ3ueLANx4KSv1Pa7r1LJWGtJ3eI0xA==
+jest-extended@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/jest-extended/-/jest-extended-3.0.2.tgz#f74ae82bdf280536552752b502f57f71e7d2fcf1"
+  integrity sha512-LnVZvwWLRV9AL8J7f4frKu0KHuTrbIFK15IqrvSwbFCYxalkuC5l7HfcofsksePrvlEJ2WAcfYNnu1+bEGvInA==
   dependencies:
     jest-diff "^28.0.0"
     jest-get-type "^28.0.0"
