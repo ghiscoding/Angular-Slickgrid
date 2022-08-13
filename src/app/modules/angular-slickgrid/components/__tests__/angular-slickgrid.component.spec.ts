@@ -687,13 +687,11 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should be able to load async editors with an Observable', (done) => {
         const mockCollection = ['male', 'female'];
         const mockColDefs = [{ id: 'gender', field: 'gender', editor: { model: Editors.text, collectionAsync: of(mockCollection) } }] as Column[];
-        const getColSpy = jest.spyOn(mockGrid, 'getColumns').mockReturnValue(mockColDefs);
 
         component.ngAfterViewInit();
         component.columnDefinitions = mockColDefs;
 
         setTimeout(() => {
-          expect(getColSpy).toHaveBeenCalled();
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
           expect(component.columnDefinitions[0].internalColumnEditor!.collection).toEqual(mockCollection);
@@ -711,7 +709,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           renderDomElement: jest.fn(),
         } as unknown as Editor;
         const mockColDefs = [{ id: 'gender', field: 'gender', editor: { model: Editors.text, collectionAsync: promise } }] as Column[];
-        const getColSpy = jest.spyOn(mockGrid, 'getColumns').mockReturnValue(mockColDefs);
         jest.spyOn(mockGrid, 'getCellEditor').mockReturnValue(mockEditor);
         const disableSpy = jest.spyOn(mockEditor, 'disable');
         const destroySpy = jest.spyOn(mockEditor, 'destroy');
@@ -721,7 +718,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.columnDefinitions = mockColDefs;
 
         setTimeout(() => {
-          expect(getColSpy).toHaveBeenCalled();
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
           expect(component.columnDefinitions[0].internalColumnEditor!.collection).toEqual(mockCollection);
