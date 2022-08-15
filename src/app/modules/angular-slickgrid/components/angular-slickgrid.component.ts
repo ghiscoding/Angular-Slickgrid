@@ -1375,9 +1375,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     (column.editor as ColumnEditor).disabled = false;
 
     // find the new column reference pointer & re-assign the new editor to the internalColumnEditor
-    const columns = this.slickGrid.getColumns();
-    if (Array.isArray(columns)) {
-      const columnRef = columns.find((col: Column) => col.id === column.id);
+    if (Array.isArray(this.columnDefinitions)) {
+      const columnRef = this.columnDefinitions.find((col: Column) => col.id === column.id);
       if (columnRef) {
         columnRef.internalColumnEditor = column.editor as ColumnEditor;
       }
