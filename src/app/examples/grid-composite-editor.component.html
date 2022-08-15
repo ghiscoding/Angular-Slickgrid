@@ -73,7 +73,8 @@
                      (onCompositeEditorChange)="handleOnCompositeEditorChange($event.detail.eventData, $event.detail.args)"
                      (onItemDeleted)="handleItemDeleted($event.detail.eventData, $event.detail.args)"
                      (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
-                     (onPaginationChanged)="handlePaginationChanged()"
+                     (onPaginationChanged)="handleReRenderUnsavedStyling()"
+                     (onFilterChanged)="handleReRenderUnsavedStyling()"
                      (onValidationError)="handleValidationError($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>
