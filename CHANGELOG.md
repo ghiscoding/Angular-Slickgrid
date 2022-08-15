@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.7...v4.3.0) (2022-08-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** switch from `jquery-ui-dist` to the official `jquery-ui`
+
+### Bug Fixes
+
+* **collectionAsync:** hidden column does not load edit field selection ([0b2db3d](https://github.com/ghiscoding/angular-slickgrid/commit/0b2db3d3d54e980806659da5441110a83e0ac49c))
+* **deps:** switch from `jquery-ui-dist` to the official `jquery-ui` ([29f3ba6](https://github.com/ghiscoding/angular-slickgrid/commit/29f3ba64924bdd9e25aecf0b3b11a9984eb055b7))
+
 ### [4.2.7](https://github.com/ghiscoding/angular-slickgrid/compare/v4.2.6...v4.2.7) (2022-08-02)
 
 
