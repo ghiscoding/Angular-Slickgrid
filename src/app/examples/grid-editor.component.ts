@@ -332,7 +332,6 @@ export class GridEditorComponent implements OnInit {
           // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
           editorOptions: {
             forceUserInput: true,
-            emptyMsg: 'No elements found',
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
               /** with Angular Http, note this demo won't work because of CORS */
@@ -363,7 +362,6 @@ export class GridEditorComponent implements OnInit {
           // OR use your own autocomplete options, instead of $.ajax, use http
           // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
           filterOptions: {
-            emptyMsg: 'No elements found',
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
               $.ajax({

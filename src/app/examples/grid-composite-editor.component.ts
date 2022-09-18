@@ -319,7 +319,7 @@ export class GridCompositeEditorComponent implements OnInit {
           massUpdate: true,
           customStructure: { label: 'name', value: 'code' },
           collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
-          editorOptions: { minLength: 0, emptyMsg: 'No elements found', }
+          editorOptions: { minLength: 0 }
         },
         filter: {
           model: Filters.inputText,
