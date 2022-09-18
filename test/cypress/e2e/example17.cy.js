@@ -112,14 +112,10 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
 
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(3)')
-      .should('contain', 'Duration')
-      .trigger('mousedown', 'center', { which: 1 });
+      .contains('Duration')
+      .drag('.slick-header-column:nth(6)');
 
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(6)')
-      .should('contain', 'Finish')
-      .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
+    cy.get('.slick-header-column:nth(6)').contains('Duration');
 
     cy.get('#grid17')
       .find('.slick-header-columns')

@@ -75,7 +75,7 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
       });
   });
 
-  it('should change "% Complete" filter range by using the slider left handle (min value) to make it a higher min value and expect all rows to be within new range', () => {
+  xit('should change "% Complete" filter range by using the slider left handle (min value) to make it a higher min value and expect all rows to be within new range', () => {
     let newLowest = presetMinComplete;
     let newHighest = presetMaxComplete;
 

@@ -22,6 +22,8 @@
 //
 //
 // -- This is will overwrite an existing command --
+import '@4tw/cypress-drag-drop';
+
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('triggerHover', (elements) => {
