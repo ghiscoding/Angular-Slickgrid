@@ -1,4 +1,5 @@
 import { ComponentRef } from '@angular/core';
+import { emptyElement } from '@slickgrid-universal/common';
 import { Subscription } from 'rxjs';
 import {
   AngularUtilService,
@@ -77,9 +78,9 @@ export class CustomAngularComponentFilter implements Filter {
       // use a delay to make sure Angular ran at least a full cycle and it finished rendering the Component before hooking onto it
       // else we get the infamous error "ExpressionChangedAfterItHasBeenCheckedError"
       setTimeout(() => {
-        const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
-        $($headerElm).empty();
-        const componentOuput = this.angularUtilService.createAngularComponentAppendToDom(this.columnFilter.params.component, $headerElm);
+        const headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        emptyElement(headerElm);
+        const componentOuput = this.angularUtilService.createAngularComponentAppendToDom(this.columnFilter.params.component, headerElm);
         this.componentRef = componentOuput.componentRef;
 
         // here we override the collection object of the Angular Component

@@ -1,4 +1,4 @@
-import { Column, DelimiterType, EventNamingStyle, FileType, Filters, GridAutosizeColsMode, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
+import { Column, DelimiterType, EventNamingStyle, FileType, Filters, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
 import { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */

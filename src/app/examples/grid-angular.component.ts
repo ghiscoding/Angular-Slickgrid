@@ -4,9 +4,9 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   AngularUtilService,
-  BsDropDownService,
   Column,
   Editors,
+  emptyElement,
   FieldType,
   Filters,
   Formatters,
@@ -22,7 +22,6 @@ import { FilterNgSelectComponent } from './filter-ng-select.component';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
-declare const $: any;
 
 const NB_ITEMS = 100;
 
@@ -71,7 +70,7 @@ export class GridAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private bsDropdown: BsDropDownService, private translate: TranslateService) { }
+  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -227,7 +226,8 @@ export class GridAngularComponent implements OnInit {
         id: 'action',
         name: 'Action',
         field: 'id',
-        formatter: () => `<div class="fake-hyperlink">Action <i class="fa fa-caret-down"></i></div>`,
+        maxWidth: 100,
+        formatter: () => `<div class="cell-menu-dropdown-outline">Action<i class="fa fa-caret-down"></i></div>`,
         cellMenu: {
           commandTitle: 'Commands',
           commandItems: [
@@ -358,7 +358,10 @@ export class GridAngularComponent implements OnInit {
       Object.assign(componentOutput.componentRef.instance, { item: dataContext });
 
       // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component
-      setTimeout(() => $(cellNode).empty().html(componentOutput.domElement));
+      setTimeout(() => {
+        emptyElement(cellNode);
+        cellNode = componentOutput.domElement;
+      });
     }
   }
 
