@@ -114,7 +114,7 @@
     "@slickgrid-universal/text-export": "~1.4.0",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
-    "@types/jest": "^29.1.1",
+    "@types/jest": "^29.1.2",
     "@types/moment": "^2.13.0",
     "@types/node": "^18.7.16",
     "@types/text-encoding-utf-8": "^1.0.2",
