@@ -1,4 +1,4 @@
-import { BindingEventService, Column, ColumnEditor, Editor, EditorValidator, EditorValidationResult, emptyElement, KeyCode } from './../modules/angular-slickgrid';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidationResult, KeyCode } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare const $: any;
@@ -8,13 +8,11 @@ declare const $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomInputEditor implements Editor {
-  protected _bindEventService: BindingEventService;
-  protected _lastInputEvent?: any;
-  inputElm!: HTMLInputElement;
+  private _lastInputEvent?: JQuery.Event;
+  $input!: JQuery<HTMLInputElement>;
   defaultValue: any;
 
   constructor(private args: any) {
-    this._bindEventService = new BindingEventService();
     this.init();
   }
 
@@ -41,64 +39,51 @@ export class CustomInputEditor implements Editor {
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
 
-    this.inputElm = document.createElement('input');
-    this.inputElm.type = 'text';
-    this.inputElm.className = 'editor-text';
-    this.inputElm.placeholder = placeholder;
-    this.inputElm.title = title;
-
-    const cellContainer = this.args.container;
-    if (cellContainer && typeof cellContainer.appendChild === 'function') {
-      cellContainer.appendChild(this.inputElm);
-    }
-
-    this._bindEventService.bind(this.inputElm, 'focus', () => this.inputElm?.select());
-    this._bindEventService.bind(this.inputElm, 'keydown', (event: any) => {
-      this._lastInputEvent = event;
-      if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
-        event.stopImmediatePropagation();
-      }
-    });
+    this.$input = $(`<input type="text" class="editor-text" placeholder="${placeholder}" title="${title}" />`)
+      .appendTo(this.args.container)
+      .on('keydown.nav', (event: JQuery.Event) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
+        }
+      });
 
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this._bindEventService.bind(this.inputElm, 'focusout', () => {
-        this.save();
-      });
+      this.$input.on('focusout', () => this.save());
     }
 
     setTimeout(() => {
-      this.inputElm.focus();
-      this.inputElm.select();
+      this.$input.focus().select();
     }, 50);
   }
 
   destroy() {
-    this._bindEventService.unbindAll();
+    this.$input.off('keydown.nav').remove();
   }
 
   focus() {
-    this.inputElm.focus();
+    this.$input.focus();
   }
 
   getValue() {
-    return this.inputElm.value;
+    return this.$input.val();
   }
 
   setValue(val: string) {
-    this.inputElm.value = val;
+    this.$input.val(val);
   }
 
   loadValue(item: any) {
     this.defaultValue = item[this.args.column.field] || '';
-    this.inputElm.value = this.defaultValue;
-    this.inputElm.defaultValue = this.defaultValue;
-    this.inputElm.select();
+    this.$input.val(this.defaultValue);
+    this.$input[0].defaultValue = this.defaultValue;
+    this.$input.select();
   }
 
   serializeValue() {
-    return this.inputElm.value;
+    return this.$input.val();
   }
 
   applyValue(item: any, state: any) {
@@ -111,7 +96,7 @@ export class CustomInputEditor implements Editor {
     if (this.columnEditor?.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(this.inputElm.value === '' && this.defaultValue === null)) && (this.inputElm.value !== this.defaultValue);
+    return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
   }
 
   save() {
@@ -127,7 +112,7 @@ export class CustomInputEditor implements Editor {
 
   validate(inputValue?: any): EditorValidationResult {
     if (this.validator) {
-      const value = (inputValue !== undefined) ? inputValue : this.inputElm?.value;
+      const value = (inputValue !== undefined) ? inputValue : this.$input?.val();
       return this.validator(value, this.args);
     }
 
