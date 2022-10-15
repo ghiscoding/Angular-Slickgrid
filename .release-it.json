@@ -1,0 +1,27 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}"
+  },
+  "github": {
+    "release": true
+  },
+  "npm": {
+    "publishPath": "dist/"
+  },
+  "hooks": {
+    "before:init": [
+      "npm run lint"
+    ],
+    "after:bump": "npm run build",
+    "after:git:release": "echo After git push, before GitHub Release",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "header": "# Change Log \n\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.",
+      "preset": "angular",
+      "ignoreRecommendedBump": true,
+      "infile": "CHANGELOG.md"
+    }
+  }
+}
