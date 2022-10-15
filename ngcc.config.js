@@ -5,7 +5,6 @@ module.exports = {
         /assign-deep/,
         /dequal/,
         /flatpickr/,
-        /jquery-ui/,
         /slickgrid\//,
       ]
     },

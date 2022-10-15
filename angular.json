@@ -22,7 +22,6 @@
               "excel-builder-webpacker",
               "flatpickr",
               "jquery",
-              "jquery-ui",
               "stream"
             ],
             "assets": [
@@ -60,7 +59,6 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/jquery-ui/dist/jquery-ui.min.js",
               "node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/multiple-select-modified/src/multiple-select.js"
