@@ -55,5 +55,5 @@ dist-demo
 **/test-report.xml
 **/testresult.xml
 
-# Node Version Manager files
-.naverc
+# Environment variables
+.env

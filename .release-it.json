@@ -1,0 +1,15 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}"
+  },
+  "github": {
+    "release": true
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "header": "# Change Log \n\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.",
+      "preset": "angular",
+      "infile": "CHANGELOG.md"
+    }
+  }
+}
