@@ -40,12 +40,10 @@
     "packagr": "ng-packagr -p ng-package.json",
     "build:demo": "ng build --configuration=production --base-href=\"\"",
     "pack-lib": "npm pack ./dist",
-    "prerelease:release": "npm run build",
     "preview:release": "release-it --dry-run",
     "preview:release:minor": "release-it minor --dry-run",
     "preview:release:patch": "release-it patch --dry-run",
     "preview:release:major-alpha": "release-it major --preRelease=alpha --dry-run",
-    "prerelease": "npm run build",
     "release": "release-it",
     "release:minor": "release-it minor",
     "release:patch": "release-it major"
