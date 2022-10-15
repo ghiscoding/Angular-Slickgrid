@@ -21,7 +21,6 @@
     "postinstall": "ngcc",
     "prebuild": "npm-run-all delete:dist lint",
     "build": "npm run packagr",
-    "postbuild": "npm-run-all copy:i18n copy:lib",
     "build:with-e2e": "npm-run-all build cypress:ci",
     "build:gh-demo": "npm run build",
     "postbuild:gh-demo": "npm-run-all del-demo:dist copy-demo:dist",
