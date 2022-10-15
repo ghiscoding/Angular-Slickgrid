@@ -26,5 +26,27 @@
     }
   ],
   schedule: ['on Thursday'],
-  ignoreDeps: ['typescript'],
+  ignoreDeps: [
+    // ignore any of the packages related to Angular major versions, since we will update them manually
+    '@angular-devkit/build-angular',
+    '@angular-eslint/builder',
+    '@angular-eslint/eslint-plugin',
+    '@angular-eslint/eslint-plugin-template',
+    '@angular-eslint/schematics',
+    '@angular-eslint/template-parser',
+    '@angular/animations',
+    '@angular/cli',
+    '@angular/common',
+    '@angular/compiler',
+    '@angular/compiler-cli',
+    '@angular/core',
+    '@angular/forms',
+    '@angular/language-service',
+    '@angular/platform-browser',
+    '@angular/platform-browser-dynamic',
+    '@angular/router',
+    '@ng-select/ng-select',
+    'ngx-bootstrap',
+    'typescript'
+  ],
 }

@@ -17,7 +17,8 @@ import { ContainerService } from '../services/container.service';
   ],
   exports: [
     AngularSlickgridComponent,
-  ]
+  ],
+  entryComponents: [AngularSlickgridComponent]
 })
 export class AngularSlickgridModule {
   static forRoot(config: GridOption = {}): ModuleWithProviders<AngularSlickgridModule> {
