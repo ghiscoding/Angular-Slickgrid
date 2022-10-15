@@ -11,7 +11,6 @@ describe('Testing library entry point', () => {
     expect(typeof entry.SlickgridConfig).toBe('function');
     expect(typeof entry.SlickRowDetailView).toBe('function');
     expect(typeof entry.AngularUtilService).toBe('function');
-    expect(typeof entry.BsDropDownService).toBe('function');
     expect(typeof entry.unsubscribeAllObservables).toBe('function');
   });
 });

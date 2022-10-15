@@ -18,6 +18,7 @@
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "assign-deep",
+              "autocompleter",
               "dompurify",
               "excel-builder-webpacker",
               "flatpickr",

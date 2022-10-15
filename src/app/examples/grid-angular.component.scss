@@ -2,10 +2,20 @@ h3 {
   font-style: normal;
   color: #3d3d3d;
 }
-.fake-hyperlink {
-  color: #0d6efd;
-  text-decoration: underline;
-  text-decoration-color: #0d6efd;
+.cell-menu-dropdown {
+  border: 1px solid #a3a3a3;
+  border-radius: 5px;
+  width: max-content;
+  padding: 0 14px;
+  cursor: pointer;
+  &:hover {
+    background-color: #a3a3a3;
+    color: #ffffff;
+  }
+
+  .fa-caret-down {
+    margin-left: 5px;
+  }
 }
 
 #slickGridContainer-grid22 {
