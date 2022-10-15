@@ -1,9 +1,16 @@
 {
   "git": {
-    "commitMessage": "chore: release v${version}"
+    "commitMessage": "chore: release v${version}",
+    "addFiles": [
+      "package.json",
+      "CHANGELOG.md"
+    ]
   },
   "github": {
     "release": true
+  },
+  "npm": {
+    "publishPath": "dist"
   },
   "plugins": {
     "@release-it/conventional-changelog": {
