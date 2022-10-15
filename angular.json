@@ -133,7 +133,6 @@
       }
     }
   },
-  "defaultProject": "angular-slickgrid",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -145,6 +144,9 @@
   },
   "cli": {
     "packageManager": "yarn",
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": false
   }
 }
