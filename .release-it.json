@@ -1,10 +1,6 @@
 {
   "git": {
-    "commitMessage": "chore: release v${version}",
-    "addFiles": [
-      "package.json",
-      "CHANGELOG.md"
-    ]
+    "commitMessage": "chore: release v${version}"
   },
   "github": {
     "release": true
