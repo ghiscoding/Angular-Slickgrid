@@ -9,7 +9,7 @@ declare const $: any;
  */
 export class CustomInputEditor implements Editor {
   private _lastInputEvent?: JQuery.Event;
-  $input: any;
+  $input!: JQuery<HTMLInputElement>;
   defaultValue: any;
 
   constructor(private args: any) {
@@ -92,8 +92,8 @@ export class CustomInputEditor implements Editor {
   }
 
   isValueChanged() {
-    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+    const lastEvent = this._lastInputEvent?.keyCode;
+    if (this.columnEditor?.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
     }
     return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
@@ -101,7 +101,7 @@ export class CustomInputEditor implements Editor {
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid) {
+    if (validation?.valid) {
       if (this.hasAutoCommitEdit) {
         this.args.grid.getEditorLock().commitCurrentEdit();
       } else {
@@ -112,7 +112,7 @@ export class CustomInputEditor implements Editor {
 
   validate(inputValue?: any): EditorValidationResult {
     if (this.validator) {
-      const value = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
+      const value = (inputValue !== undefined) ? inputValue : this.$input?.val();
       return this.validator(value, this.args);
     }
 

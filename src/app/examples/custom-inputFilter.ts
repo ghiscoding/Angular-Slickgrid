@@ -17,7 +17,7 @@ declare const $: any;
 export class CustomInputFilter implements Filter {
   private _clearFilterTriggered = false;
   private _shouldTriggerQuery = true;
-  private $filterElm: any;
+  private $filterElm!: JQuery<HTMLInputElement>;;
   grid!: SlickGrid;
   searchTerms: SearchTerm[] = [];
   columnDef!: Column;
@@ -99,7 +99,7 @@ export class CustomInputFilter implements Filter {
   /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[]) {
     if (values) {
-      this.$filterElm.val(values);
+      this.$filterElm.val(values as string);
     }
   }
 
@@ -111,8 +111,8 @@ export class CustomInputFilter implements Filter {
    * Create the HTML template as a string
    */
   private buildTemplateHtmlString() {
-    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-    if (this.columnFilter && this.columnFilter.placeholder) {
+    let placeholder = this.gridOptions?.defaultFilterPlaceholder ?? '';
+    if (this.columnFilter?.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
     return `<input type="text" class="form-control search-filter" placeholder="${placeholder}">`;

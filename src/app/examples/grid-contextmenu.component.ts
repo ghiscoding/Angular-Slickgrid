@@ -18,7 +18,7 @@ import {
 
 const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
   if (dataContext.priority === 3) { // option 3 is High
-    return `<div class="fake-hyperlink">Action <i class="fa fa-caret-down"></i></div>`;
+    return `<div class="cell-menu-dropdown-outline">Action<i class="fa fa-caret-down"></i></div>`;
   }
   return `<div class="disabled">Action <i class="fa fa-caret-down"></i></div>`;
 };
@@ -178,7 +178,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'action', name: 'Action', field: 'action', width: 110, maxWidth: 200,
+        id: 'action', name: 'Action', field: 'action', width: 100, maxWidth: 110,
         excludeFromExport: true,
         formatter: actionFormatter,
         cellMenu: {

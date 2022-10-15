@@ -1,5 +1,5 @@
 import { ApplicationRef, Component } from '@angular/core';
-import { Column, SharedService, SlickEventHandler, SlickGrid, SlickNamespace, } from '@slickgrid-universal/common';
+import { Column, OnSelectedRowsChangedEventArgs, SharedService, SlickEventHandler, SlickGrid, SlickNamespace, } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowSelectionModel } from '@slickgrid-universal/common/dist/commonjs/extensions/slickRowSelectionModel';
 import { of } from 'rxjs';
@@ -406,7 +406,7 @@ describe('SlickRowDetailView', () => {
         plugin.onBeforeRowDetailToggle = new Slick.Event();
         plugin.register();
         plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
-          gridStub.onSelectedRowsChanged.notify({ rows: [0], previousSelectedRows: [], grid: gridStub }, new Slick.EventData(), gridStub);
+          gridStub.onSelectedRowsChanged.notify({ rows: [0], previousSelectedRows: [], grid: gridStub } as unknown as OnSelectedRowsChangedEventArgs, new Slick.EventData(), gridStub);
           expect(appendSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
         });
         plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
@@ -572,7 +572,7 @@ describe('SlickRowDetailView', () => {
 
         try {
           await (gridOptionsMock.rowDetailView as RowDetailView).process(mockItem);
-        } catch (e) {
+        } catch (e: any) {
           expect(e.toString()).toContain(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback`);
         }
       });
@@ -584,7 +584,7 @@ describe('SlickRowDetailView', () => {
 
         try {
           await gridOptionsMock.rowDetailView!.process(mockItem);
-        } catch (e) {
+        } catch (e: any) {
           expect(e.toString()).toContain(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback`);
         }
       });
