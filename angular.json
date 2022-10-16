@@ -23,6 +23,7 @@
               "excel-builder-webpacker",
               "flatpickr",
               "jquery",
+              "moment-mini",
               "stream"
             ],
             "assets": [
