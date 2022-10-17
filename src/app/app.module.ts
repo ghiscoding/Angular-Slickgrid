@@ -154,14 +154,6 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       }
     })
   ],
-  entryComponents: [
-    // dynamically created components
-    CustomTitleFormatterComponent,
-    EditorNgSelectComponent,
-    FilterNgSelectComponent,
-    RowDetailPreloadComponent,
-    RowDetailViewComponent,
-  ],
   providers: [
     {
       provide: APP_INITIALIZER,

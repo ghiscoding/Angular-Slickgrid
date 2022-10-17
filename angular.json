@@ -18,11 +18,12 @@
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "assign-deep",
+              "autocompleter",
               "dompurify",
               "excel-builder-webpacker",
               "flatpickr",
               "jquery",
-              "jquery-ui",
+              "moment-mini",
               "stream"
             ],
             "assets": [
@@ -60,7 +61,6 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/jquery-ui/dist/jquery-ui.min.js",
               "node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/multiple-select-modified/src/multiple-select.js"
@@ -135,7 +135,6 @@
       }
     }
   },
-  "defaultProject": "angular-slickgrid",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -147,6 +146,9 @@
   },
   "cli": {
     "packageManager": "yarn",
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": false
   }
 }

@@ -10,7 +10,6 @@ import {
   Formatters,
   GridOption,
   GridStateChange,
-  JQueryUiSliderOption,
   Metrics,
   MultipleSelectOption,
   OperatorType,
@@ -106,11 +105,11 @@ export class GridRangeComponent implements OnInit, OnDestroy {
         type: FieldType.number,
         filterable: true,
         filter: {
-          model: Filters.sliderRange,
+          model: Filters.slider,
           maxValue: 100, // or you can use the filterOptions as well
           operator: OperatorType.rangeInclusive, // defaults to inclusive
           params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
-          filterOptions: { min: 0, step: 5 } as JQueryUiSliderOption // you can also optionally pass any option of the jQuery UI Slider
+          filterOptions: { min: 0, step: 5 }
         }
       },
       {

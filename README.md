@@ -38,7 +38,7 @@ npm start
 ```
 
 ### Like it? :star: it
-You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support me with cafeine :coffee: and feel free to contribute. 👷👷‍♀️ 
+You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support me with cafeine :coffee: and feel free to contribute. 👷👷‍♀️
 
 <a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
@@ -46,13 +46,13 @@ You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support m
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Angular Compatibility
-- version `1.x.x` for Angular 4-6 
-- version `2.x.x` for Angular 7-11 
+- version `1.x.x` for Angular 4-6
+- version `2.x.x` for Angular 7-11
 - version `3.x.x` for Angular 12+ and RxJS 7+ ([migration guide to 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x))
   - build `target` got bumped to `ES2018` for modern browser **only**
   - IE11 is EOL and **no longer supported**, if you still need to support it stay with version 2.x
   - uses new [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo
-  - last version is [v3.3.2](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v3.3.2) compatible **only** with Slickgrid-Universal [v0.19.2](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v0.19.2) 
+  - last version is [v3.3.2](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v3.3.2) compatible **only** with Slickgrid-Universal [v0.19.2](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v0.19.2)
       - Slickgrid-Universal 1.x versions only works with Angular-Slickgrid 4.x
 - version `4.x.x` for Angular 13+, RxJS 7+ and **Ivy ONLY** ([migration guide to 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x))
   - for Ivy build only (no more UMD bundle & output >= ES2017), IE is EOL and definitely out of the picture (finally).
@@ -81,7 +81,6 @@ module.exports = {
         /slickgrid\//,
         /flatpickr/,
         /dequal/,
-        /jquery-ui\//,
       ]
     },
   }
@@ -121,7 +120,6 @@ This is no longer the case. Verify if you need this module and configure a polyf
     "allowedCommonJsDependencies": [
       "assign-deep",
       "excel-builder-webpacker",
-      "jquery-ui",
       "stream"
     ],
 ```

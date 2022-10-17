@@ -1,13 +1,10 @@
 // import 3rd party vendor libs
-// only import the necessary core lib, each will be imported on demand when enabled (via require)
-import 'jquery-ui/ui/widgets/draggable';
-import 'jquery-ui/ui/widgets/droppable';
-import 'jquery-ui/ui/widgets/sortable';
-import 'slickgrid/lib/jquery.event.drag-2.3.0';
-import 'slickgrid/lib/jquery.mousewheel';
-import 'slickgrid/slick.core';
-import 'slickgrid/slick.grid';
-import 'slickgrid/slick.dataview';
+import 'slickgrid/dist/slick.core.min';
+import 'slickgrid/dist/slick.interactions.min';
+import 'slickgrid/dist/slick.grid.min';
+import 'slickgrid/dist/slick.dataview.min';
+import * as Sortable_ from 'sortablejs';
+const Sortable = ((Sortable_ as any)?.['default'] ?? Sortable_); // patch for rollup
 
 // ...then everything else...
 import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
@@ -16,7 +13,7 @@ import { Observable } from 'rxjs';
 
 import {
   // interfaces/types
-  AutoCompleteEditor,
+  AutocompleterEditor,
   BackendServiceApi,
   BackendServiceOption,
   Column,
@@ -81,6 +78,9 @@ import { ContainerService } from '../services/container.service';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
+
+// add Sortable to the window object so that SlickGrid lib can use globally
+(window as any).Sortable = Sortable;
 
 @Component({
   selector: 'angular-slickgrid',
@@ -1383,7 +1383,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     // get current Editor, remove it from the DOM then re-enable it and re-render it with the new collection.
-    const currentEditor = this.slickGrid.getCellEditor() as AutoCompleteEditor | SelectEditor;
+    const currentEditor = this.slickGrid.getCellEditor() as AutocompleterEditor | SelectEditor;
     if (currentEditor?.disable && currentEditor?.renderDomElement) {
       currentEditor.destroy();
       currentEditor.disable(false);

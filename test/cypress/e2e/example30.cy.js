@@ -233,8 +233,8 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-completed .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-product .autocomplete').type('granite');
-    cy.get('.ui-menu.ui-autocomplete.autocomplete-custom-four-corners').should('be.visible');
-    cy.get('.ui-menu.ui-autocomplete.autocomplete-custom-four-corners').find('li.ui-menu-item:nth(0)').click();
+    cy.get('.slick-autocomplete.autocomplete-custom-four-corners').should('be.visible');
+    cy.get('.slick-autocomplete.autocomplete-custom-four-corners').find('div:nth(0)').click();
     cy.get('.item-details-container.editor-product .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-duration .editor-text').type('22');
@@ -246,7 +246,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-finish .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-origin .autocomplete').type('c');
-    cy.get('.ui-menu.ui-autocomplete:visible').find('li.ui-menu-item:nth(1)').click();
+    cy.get('.slick-autocomplete:visible').find('div:nth(1)').click();
     cy.get('.item-details-container.editor-origin .autocomplete').invoke('val').then(text => expect(text).to.eq('Antarctica'));
     cy.get('.item-details-container.editor-origin .modified').should('have.length', 1);
 
@@ -321,7 +321,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-finish .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-origin .autocomplete').type('bel');
-    cy.get('.ui-menu.ui-autocomplete:visible').find('li.ui-menu-item:nth(1)').click();
+    cy.get('.slick-autocomplete:visible').find('div:nth(1)').click();
     cy.get('.item-details-container.editor-origin .modified').should('have.length', 1);
     cy.get('.item-details-container.editor-origin .autocomplete').invoke('val').then(text => expect(text).to.eq('Belgium'));
 
@@ -381,7 +381,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-finish .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-origin .autocomplete').type('bel');
-    cy.get('.ui-menu.ui-autocomplete:visible').find('li.ui-menu-item:nth(1)').click();
+    cy.get('.slick-autocomplete:visible').find('div:nth(1)').click();
     cy.get('.item-details-container.editor-origin .modified').should('have.length', 1);
     cy.get('.item-details-container.editor-origin .autocomplete').invoke('val').then(text => expect(text).to.eq('Belgium'));
   });
@@ -433,7 +433,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-finish .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-origin .autocomplete').type('ze');
-    cy.get('.ui-menu.ui-autocomplete:visible').find('li.ui-menu-item:nth(1)').click();
+    cy.get('.slick-autocomplete:visible').find('div:nth(1)').click();
     cy.get('.item-details-container.editor-origin .modified').should('have.length', 1);
     cy.get('.item-details-container.editor-origin .autocomplete').invoke('val').then(text => expect(text).to.eq('Belize'));
 
