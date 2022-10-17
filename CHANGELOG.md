@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.0-alpha.0...v5.0.0) (2022-10-17)
+
+# Change Log 
+
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [5.0.0-alpha.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.3.1...v5.0.0-alpha.0) (2022-10-15)
 
 
