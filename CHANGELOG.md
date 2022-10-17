@@ -4,9 +4,6 @@ All notable changes to this project will be documented in this file. See [Conven
 
 # [5.0.0-alpha.0](https://github.com/ghiscoding/angular-slickgrid/compare/v4.3.1...v5.0.0-alpha.0) (2022-10-15)
 
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ### [4.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v4.3.0...v4.3.1) (2022-09-12)
 
