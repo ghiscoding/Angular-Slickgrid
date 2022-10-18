@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.1...v5.0.2) (2022-10-18)
+
+
+### Bug Fixes
+
+* load SortableJS via `angular.json` instead of component ([69f14de](https://github.com/ghiscoding/angular-slickgrid/commit/69f14deab289f4c8cf6be9343f7bc590425ef8b5))
+
 ## [5.0.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.0...v5.0.1) (2022-10-18)
 
 # Change Log
