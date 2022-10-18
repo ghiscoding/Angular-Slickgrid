@@ -58,6 +58,8 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
   - removal of jQueryUI dependency (replaced internally by SortableJS, a smaller and touch friendly lib).
   - requires Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version
 
+**Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, you can consult the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table)
+
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
 ### ngx-translate Compatibility
