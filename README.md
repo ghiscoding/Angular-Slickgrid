@@ -49,15 +49,14 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `1.x.x` for Angular 4-6
 - version `2.x.x` for Angular 7-11
 - version `3.x.x` for Angular 12+ and RxJS 7+ ([migration guide to 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x))
-  - build `target` got bumped to `ES2018` for modern browser **only**
   - IE11 is EOL and **no longer supported**, if you still need to support it stay with version 2.x
-  - uses new [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo
-  - last version is [v3.3.2](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v3.3.2) compatible **only** with Slickgrid-Universal [v0.19.2](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v0.19.2)
-      - Slickgrid-Universal 1.x versions only works with Angular-Slickgrid 4.x
+  - uses new [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo version 0.19.2
 - version `4.x.x` for Angular 13+, RxJS 7+ and **Ivy ONLY** ([migration guide to 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x))
-  - for Ivy build only (no more UMD bundle & output >= ES2017), IE is EOL and definitely out of the picture (finally).
+  - for Ivy build only (no more UMD bundle & output >= ES2017), IE not supported.
+  - requires Slickgrid-Universal [1.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v1.1.1) version
 - version `5.x.x` for Angular 14+, RxJS >=7.5.0 and **Ivy ONLY** ([migration guide to 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x))
   - removal of jQueryUI dependency (replaced internally by SortableJS, a smaller and touch friendly lib).
+  - requires Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 
