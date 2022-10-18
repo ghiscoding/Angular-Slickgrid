@@ -3,8 +3,6 @@ import 'slickgrid/dist/slick.core.min';
 import 'slickgrid/dist/slick.interactions.min';
 import 'slickgrid/dist/slick.grid.min';
 import 'slickgrid/dist/slick.dataview.min';
-import * as Sortable_ from 'sortablejs';
-const Sortable = ((Sortable_ as any)?.['default'] ?? Sortable_); // patch for rollup
 
 // ...then everything else...
 import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
@@ -78,9 +76,6 @@ import { ContainerService } from '../services/container.service';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
-
-// add Sortable to the window object so that SlickGrid lib can use globally
-(window as any).Sortable = Sortable;
 
 @Component({
   selector: 'angular-slickgrid',
