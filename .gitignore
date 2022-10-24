@@ -42,14 +42,16 @@ yarn-error.log
 Thumbs.db
 
 # Distribution folder
-dist
-dist-demo
+/docs
+/dist
+/dist-demo
 
 # Tests Report & Coverage
 **/node_modules
 **/coverage
 **/jest-coverage
 **/dist
+**/docs
 **/*.tgz
 **/junit.xml
 **/test-report.xml
