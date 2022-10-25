@@ -404,4 +404,30 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries
         }
       });
   });
+
+  it('should add Edit/Delete columns and expect 2 new columns added at the beginning of the grid', () => {
+    const newExpectedColumns = ['', '', ...fullTitles];
+    cy.get('[data-test="add-crud-columns-btn"]').click();
+
+    cy.get('#grid17')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => {
+        if (index <= 5) {
+          expect($child.text()).to.eq(newExpectedColumns[index]);
+        }
+      });
+
+    cy.get('.slick-row')
+      .first()
+      .children('.slick-cell')
+      .children('.edit-icon')
+      .should('have.length', 1);
+
+    cy.get('.slick-row')
+      .first()
+      .children('.slick-cell:nth(1)')
+      .children('.delete-icon')
+      .should('have.length', 1);
+  });
 });

@@ -5,7 +5,7 @@ import 'slickgrid/dist/slick.grid.min';
 import 'slickgrid/dist/slick.dataview.min';
 
 // ...then everything else...
-import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Input, OnDestroy, Optional, } from '@angular/core';
+import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, Optional, Output, } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
@@ -173,6 +173,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
   get columnDefinitions(): Column[] {
     return this._columnDefinitions;
   }
+
+  // make the columnDefinitions a 2-way binding so that plugin adding cols
+  // are synched on user's side as well (RowMove, RowDetail, RowSelections)
+  @Output() columnDefinitionsChange = new EventEmitter(true);
 
   @Input()
   get dataset(): any[] {
@@ -504,6 +508,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // save reference for all columns before they optionally become hidden/visible
     this.sharedService.allColumns = this._columnDefinitions;
     this.sharedService.visibleColumns = this._columnDefinitions;
+
+    // before certain extentions/plugins potentially adds extra columns not created by the user itself (RowMove, RowDetail, RowSelections)
+    // we'll subscribe to the event and push back the change to the user so they always use full column defs array including extra cols
+    this.subscriptions.push(
+      this._eventPubSubService.subscribe<{ columns: Column[]; grid: SlickGrid }>('onPluginColumnsChanged', data => {
+        this._columnDefinitions = data.columns;
+        this.columnDefinitionsChange.emit(this._columnDefinitions);
+      })
+    );
+
+    // after subscribing to potential columns changed, we are ready to create these optional extensions
+    // when we did find some to create (RowMove, RowDetail, RowSelections), it will automatically modify column definitions (by previous subscribe)
     this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
     // if user entered some Pinning/Frozen "presets", we need to apply them in the grid options

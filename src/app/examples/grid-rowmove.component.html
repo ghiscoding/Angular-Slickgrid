@@ -34,12 +34,16 @@
         <i class="fa fa-random"></i>
         Toggle Sorting
       </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="add-crud-columns-btn" (click)="addEditDeleteColumns()">
+        <i class="fa fa-add"></i>
+        Add Edit/Delete Columns
+      </button>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-12">
       <angular-slickgrid gridId="grid17"
-                         [columnDefinitions]="columnDefinitions"
+                         [(columnDefinitions)]="columnDefinitions"
                          [gridOptions]="gridOptions"
                          [dataset]="dataset"
                          (onAngularGridCreated)="angularGridReady($event.detail)">
