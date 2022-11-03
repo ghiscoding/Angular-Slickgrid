@@ -67,14 +67,14 @@
     "@ngx-translate/core": ">=14.0.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^14.2.7",
+    "@angular-devkit/build-angular": "^14.2.8",
     "@angular-eslint/builder": "^14.1.2",
     "@angular-eslint/eslint-plugin": "^14.1.2",
     "@angular-eslint/eslint-plugin-template": "^14.1.2",
     "@angular-eslint/schematics": "^14.1.2",
     "@angular-eslint/template-parser": "^14.1.2",
     "@angular/animations": "^14.2.8",
-    "@angular/cli": "^14.2.7",
+    "@angular/cli": "^14.2.8",
     "@angular/common": "^14.2.8",
     "@angular/compiler": "^14.2.8",
     "@angular/compiler-cli": "^14.2.8",
@@ -99,14 +99,14 @@
     "@types/dompurify": "^2.3.4",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
-    "@types/jest": "^29.2.0",
+    "@types/jest": "^29.2.1",
     "@types/jquery": "^3.5.14",
     "@types/moment": "^2.13.0",
-    "@types/node": "^18.11.7",
+    "@types/node": "^18.11.9",
     "@types/sortablejs": "^1.15.0",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.41.0",
-    "@typescript-eslint/parser": "^5.41.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
     "autoprefixer": "^10.4.13",
     "bootstrap": "^5.2.2",
     "copyfiles": "^2.4.1",
@@ -128,7 +128,7 @@
     "sass": "^1.55.0",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.0",
+    "tslib": "^2.4.1",
     "typescript": "~4.7.4",
     "zone.js": "~0.11.8"
   },
@@ -137,6 +137,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001426"
+    "caniuse-lite": "1.0.30001429"
   }
 }
