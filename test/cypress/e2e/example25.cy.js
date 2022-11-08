@@ -75,12 +75,13 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
       });
   });
 
-  xit('should change "% Complete" filter range by using the slider left handle (min value) to make it a higher min value and expect all rows to be within new range', () => {
+  it('should change "% Complete" filter range by using the slider left handle (min value) to make it a higher min value and expect all rows to be within new range', () => {
     let newLowest = presetMinComplete;
     let newHighest = presetMaxComplete;
 
-    cy.get('.ui-slider-range')
-      .click('bottom', { force: true });
+    // first input is the lowest range
+    cy.get('.slider-filter-input:nth(0)')
+      .as('range').invoke('val', 10).trigger('change', { force: true });
 
     cy.get('.lowest-range-percentComplete')
       .then(($lowest) => {
@@ -121,9 +122,12 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
     cy.get('#grid25')
       .find('.slick-row')
       .each(($row) => {
-        cy.wrap($row)
+        cy.wrap($row, idx)
           .children('.slick-cell:nth(5)')
           .each(($cell) => {
+            if (idx > 8) {
+              return;
+            }
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value)) {
               expect(value >= newMin).to.eq(true);
