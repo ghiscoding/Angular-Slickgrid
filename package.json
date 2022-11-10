@@ -86,7 +86,7 @@
     "@angular/router": "^14.2.10",
     "@faker-js/faker": "^7.6.0",
     "@fnando/sparkline": "^0.3.10",
-    "@ng-select/ng-select": "^9.0.2",
+    "@ng-select/ng-select": "^9.0.3",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@release-it/conventional-changelog": "^5.1.1",
