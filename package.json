@@ -58,7 +58,7 @@
     "@slickgrid-universal/rxjs-observable": "2.0.0",
     "@types/jquery": "^3.5.14",
     "dequal": "^2.0.3",
-    "dompurify": "^2.4.0",
+    "dompurify": "^2.4.1",
     "jquery": "^3.6.1",
     "rxjs": ">=7.5.0",
     "sortablejs": "^1.15.0"
