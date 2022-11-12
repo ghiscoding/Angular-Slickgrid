@@ -108,6 +108,17 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
       });
   });
 
+  it('should change the "Finish" date in the picker and expect all rows to be within new dates range', () => {
+    cy.get('.flatpickr.search-filter.filter-finish')
+      .click();
+
+    cy.get('.flatpickr-day.inRange')
+      .should('have.length.gt', 2);
+
+    cy.get('.flatpickr-day.selected.endRange')
+      .should('contain', moment().add(25, 'days').day() - 1);
+  });
+
   it('should change the "Duration" input filter and expect all rows to be within new range', () => {
     const newMin = 10;
     const newMax = 40;
@@ -121,8 +132,8 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
 
     cy.get('#grid25')
       .find('.slick-row')
-      .each(($row) => {
-        cy.wrap($row, idx)
+      .each(($row, idx) => {
+        cy.wrap($row)
           .children('.slick-cell:nth(5)')
           .each(($cell) => {
             if (idx > 8) {
@@ -133,36 +144,6 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
               expect(value >= newMin).to.eq(true);
               expect(value <= newMax).to.eq(true);
             }
-          });
-      });
-  });
-
-  xit('should change the "Finish" date in the picker and expect all rows to be within new dates range', () => {
-    cy.contains('Clear Filters')
-      .click({ force: true });
-
-    cy.get('.flatpickr.search-filter.filter-finish:nth(1)')
-      .click('bottom', { force: true });
-
-    cy.get('.flatpickr-days')
-      .find('[aria-label]')
-      .contains(moment().format('MMMM'));
-
-    cy.get('.flatpickr-day:nth(7)')
-      .click({ force: true });
-
-    cy.get('.flatpickr-day')
-      .should('contain', '28')
-      .click({ force: true });
-
-    cy.get('#grid25')
-      .find('.slick-row')
-      .each(($row) => {
-        cy.wrap($row)
-          .children('.slick-cell:nth(4)')
-          .each(($cell) => {
-            const isDateBetween = moment($cell.text()).isBetween(presetLowestDay, presetHighestDay, null, '[]'); // [] is inclusive, () is exclusive
-            expect(isDateBetween).to.eq(true);
           });
       });
   });
