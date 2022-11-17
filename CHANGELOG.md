@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.2...v5.1.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency dompurify to ^2.4.1 ([84ecc9d](https://github.com/ghiscoding/angular-slickgrid/commit/84ecc9d80ef26b7bf4b4d9acd2e96f7b5567d154))
+
+
+### Features
+
+* **common:** add "targetSelector" to onFilterChanged & Grid State ([cd9bec4](https://github.com/ghiscoding/angular-slickgrid/commit/cd9bec49e985e38e7d810dd88d0f148065f0d716))
+* **core:** expose EventPubSub Service on AngularGridInstance ([a1c5ad5](https://github.com/ghiscoding/angular-slickgrid/commit/a1c5ad534118d27ac6eaf61cfb0cc551fd899bed))
+* **filters:** add back Slider Range filter in pure JS ([271da15](https://github.com/ghiscoding/angular-slickgrid/commit/271da15066f3a6b5ded8fd04278366202f5c2910))
+* **plugins:** sync column definitions to user after plugin adds column ([2359171](https://github.com/ghiscoding/angular-slickgrid/commit/235917157ad1b8ffe6e5b075762f55edb56507fa)), closes [#1018](https://github.com/ghiscoding/angular-slickgrid/issues/1018)
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [5.0.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.1...v5.0.2) (2022-10-18)
 
 
