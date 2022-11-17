@@ -42,7 +42,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     protected readonly gridContainerElement: HTMLDivElement,
     protected rxjs?: RxJsFacade,
   ) {
-    super();
+    super(eventPubSubService);
   }
 
   get addonOptions() {
