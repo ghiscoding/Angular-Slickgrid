@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
   AngularGridInstance,
@@ -13,6 +15,7 @@ import {
   Metrics,
   MultipleSelectOption,
   OperatorType,
+  SliderRangeOption,
   unsubscribeAllObservables,
 } from '../modules/angular-slickgrid';
 import * as moment from 'moment-mini';
@@ -101,15 +104,18 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       {
         id: 'percentComplete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', minWidth: 120,
         sortable: true,
+        customTooltip: { position: 'center' },
         formatter: Formatters.progressBar,
         type: FieldType.number,
         filterable: true,
         filter: {
-          model: Filters.slider,
+          model: Filters.sliderRange,
           maxValue: 100, // or you can use the filterOptions as well
           operator: OperatorType.rangeInclusive, // defaults to inclusive
-          params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
-          filterOptions: { min: 0, step: 5 }
+          filterOptions: {
+            hideSliderNumbers: false, // you can hide/show the slider numbers on both side
+            min: 0, step: 5
+          } as SliderRangeOption
         }
       },
       {
@@ -177,7 +183,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
           { columnId: 'percentComplete', direction: 'DESC' },
           { columnId: 'duration', direction: 'ASC' },
         ],
-      }
+      },
+      registerExternalResources: [new SlickCustomTooltip(), new ExcelExportService()],
     };
 
     // mock a dataset
@@ -229,7 +236,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
-  refreshMetrics(e: Event, args: any) {
+  refreshMetrics(_e: Event, args: any) {
     if (args && args.current >= 0) {
       setTimeout(() => {
         this.metrics = {

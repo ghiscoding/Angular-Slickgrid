@@ -208,7 +208,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       const now = new Date();
       now.setHours(9, 30, 0);
       const currency = (Math.floor(Math.random() * 10)) % 2 ? 'CAD' : 'USD';
-      const company = faker.company.companyName();
+      const company = faker.company.name();
 
       tmpDataset[i] = {
         id: i,

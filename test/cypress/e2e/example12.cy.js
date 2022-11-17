@@ -163,10 +163,9 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .click();
     });
 
-    // TODO re-enable after Slider PR is merged
-    xit('should filter duration with slider filter', () => {
+    it('should filter duration with slider filter', () => {
       cy.get('.filter-duration input[type=range]').as('range')
-        .invoke('val', 25)
+        .invoke('val', 30)
         .trigger('change', { force: true });
 
       cy.get('#grid12')
@@ -188,12 +187,11 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
           cy.wrap($row)
             .children('.slick-cell:nth(3)')
             .children()
-            .should('have.css', 'background-color', 'rgb(255, 0, 0)')
+            .should('not.have.css', 'background-color', 'rgb(255, 0, 0)')
             .should(($el) => {
               // calculate 25% and expect the element width to be about the calculated size with a (+/-)1px precision
-              const expectedWidth = (fullCellWidth * .25);
-              expect($el.width()).greaterThan(expectedWidth - 1);
-              expect($el.width()).lessThan(expectedWidth + 1);
+              const expectedWidth = (fullCellWidth * .30);
+              expect($el.width()).greaterThan(expectedWidth + 1);
             });
         });
     });
