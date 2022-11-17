@@ -595,7 +595,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
 
       cy.window().then((win) => {
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
-        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'] }], type: 'filter' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'], targetSelector: 'input.form-control.filter-title.search-filter.filled' }], type: 'filter' });
       });
     });
 
@@ -678,7 +678,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(4);
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
-        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'] }], type: 'filter' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'], targetSelector: 'input.form-control.filter-title.search-filter.filled' }], type: 'filter' });
       });
     });
 
@@ -755,7 +755,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(4);
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
-        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'] }], type: 'filter' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', operator: 'Contains', searchTerms: ['3'], targetSelector: 'input.form-control.filter-title.search-filter.filled' }], type: 'filter' });
       });
 
       cy.get('@grid2')
