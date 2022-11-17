@@ -163,10 +163,11 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .click();
     });
 
-    it('should filter duration with slider filter', () => {
+    // TODO re-enable after Slider PR is merged
+    xit('should filter duration with slider filter', () => {
       cy.get('.filter-duration input[type=range]').as('range')
         .invoke('val', 25)
-        .trigger('change');
+        .trigger('change', { force: true });
 
       cy.get('#grid12')
         .find('.slick-row')
