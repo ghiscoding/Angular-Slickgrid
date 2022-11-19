@@ -16,9 +16,6 @@ All notable changes to this project will be documented in this file. See [Conven
 * **filters:** add back Slider Range filter in pure JS ([271da15](https://github.com/ghiscoding/angular-slickgrid/commit/271da15066f3a6b5ded8fd04278366202f5c2910))
 * **plugins:** sync column definitions to user after plugin adds column ([2359171](https://github.com/ghiscoding/angular-slickgrid/commit/235917157ad1b8ffe6e5b075762f55edb56507fa)), closes [#1018](https://github.com/ghiscoding/angular-slickgrid/issues/1018)
 
-# Change Log
-All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
 ## [5.0.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.0.1...v5.0.2) (2022-10-18)
 
 
