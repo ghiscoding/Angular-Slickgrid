@@ -8,9 +8,6 @@ on:
   pull_request:
     branches:
       - '**'
-env:
-  CI: true
-  PREFERRED_WORKSPACE_MANAGER: yarn
 
 jobs:
   run:
