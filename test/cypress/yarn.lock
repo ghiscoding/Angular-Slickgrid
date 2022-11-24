@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@4tw/cypress-drag-drop@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@4tw/cypress-drag-drop/-/cypress-drag-drop-2.2.1.tgz#bfacd45269ec3a5cbdb776cb05b7803d346f0792"
-  integrity sha512-+ioJSnEwx70IiMyb4pLEjOS5u6AMWRIVCV20toCY7lb0YcvA0ipbjQBa9DdxEI7Zg2E2jtcIj7Rx0e3WNUbk/w==
+"@4tw/cypress-drag-drop@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@4tw/cypress-drag-drop/-/cypress-drag-drop-2.2.2.tgz#30069469bf14bfdca0e90a0fcf13e26b87ecfa10"
+  integrity sha512-WlDkChwUKIn+8z8vLmmGARIOHlbymPu1sVFj3Hvxtuy+8Db7lBROcpmmYolYFBGGhFm9mgb7yG39La8wT4N5jA==
 
 "@cypress/request@^2.88.10":
   version "2.88.10"
@@ -308,10 +308,10 @@ cross-spawn@^7.0.0:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-cypress@^11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-11.1.0.tgz#b8f16495a8a5d8f9a7dd3374ae7b2cef45e9c779"
-  integrity sha512-kzizbG9s3p3ahWqxUwG/21NqLWEGtScMevMyUPeYlcmMX9RzVxWM18MkA3B4Cb3jKx72hSyIE2mHgHymfCM1bg==
+cypress@^11.2.0:
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-11.2.0.tgz#63edef8c387b687066c5493f6f0ad7b9ced4b2b7"
+  integrity sha512-u61UGwtu7lpsNWLUma/FKNOsrjcI6wleNmda/TyKHe0dOBcVjbCPlp1N6uwFZ0doXev7f/91YDpU9bqDCFeBLA==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
