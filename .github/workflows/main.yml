@@ -45,7 +45,11 @@ jobs:
 
       - name: Upload Jest coverage to Codecov
         if: "!contains(github.event.head_commit.message, 'chore: release')"
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: test/jest-coverage
+          verbose: true
 
       - name: Start server in the background
         run: yarn start &
