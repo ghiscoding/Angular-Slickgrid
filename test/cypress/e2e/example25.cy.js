@@ -78,6 +78,7 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
   it('should change "% Complete" filter range by using the slider left handle (min value) to make it a higher min value and expect all rows to be within new range', () => {
     let newLowest = presetMinComplete;
     let newHighest = presetMaxComplete;
+    const allowedBuffer = 0.5;
 
     // first input is the lowest range
     cy.get('.slider-filter-input:nth(0)')
@@ -101,8 +102,8 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
           .each(($cell) => {
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value)) {
-              expect(value >= newLowest).to.eq(true);
-              expect(value <= newHighest).to.eq(true);
+              expect(value >= (newLowest - allowedBuffer)).to.eq(true);
+              expect(value <= (newHighest + allowedBuffer)).to.eq(true);
             }
           });
       });
