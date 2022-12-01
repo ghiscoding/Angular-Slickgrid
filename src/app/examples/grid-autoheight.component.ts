@@ -132,7 +132,7 @@ export class GridAutoHeightComponent implements OnInit {
   // -- if any of the Search form input changes, we'll call the updateFilter() method
   //
 
-  cleargridSearchInput() {
+  clearGridSearchInput() {
     this.searchValue = '';
     this.updateFilter();
   }
