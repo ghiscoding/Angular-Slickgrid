@@ -136,7 +136,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     }
   }
 
-  onViewportChanged(e: Event, args: any) {
+  onViewportChanged() {
     if (this.gridObj && this.gridObj.getViewport && this.loaderDataView && this.loaderDataView.ensureData) {
       const vp = this.gridObj.getViewport();
       this.loaderDataView.ensureData(vp.top, vp.bottom);
