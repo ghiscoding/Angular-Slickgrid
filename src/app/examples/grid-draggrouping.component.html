@@ -67,9 +67,9 @@
         <div class="form-row">
           <div class="row form-group">
             <label for="field1" class="col-sm-3 mb-2">Group by field(s)</label>
-            <div class="form-group col-md-3"
+            <div class="form-group col-md-3 grouping-selects"
                  *ngFor="let groupField of selectedGroupingFields; let i = index; trackBy: selectTrackByFn">
-              <select class="form-select" name="groupField{{i}}" [(ngModel)]="selectedGroupingFields[i]"
+              <select class="form-select" name="group-field-{{i}}" [(ngModel)]="selectedGroupingFields[i]"
                       (ngModelChange)="groupByFieldName($event, i)">
                 <option value=""></option>
                 <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
