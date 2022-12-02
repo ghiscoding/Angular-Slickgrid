@@ -227,7 +227,7 @@ export class GridAngularComponent implements OnInit {
         name: 'Action',
         field: 'id',
         maxWidth: 100,
-        formatter: () => `<div class="cell-menu-dropdown-outline">Action<i class="fa fa-caret-down"></i></div>`,
+        formatter: () => `<div class="cell-menu-dropdown">Action<i class="fa fa-caret-down"></i></div>`,
         cellMenu: {
           commandTitle: 'Commands',
           commandItems: [
