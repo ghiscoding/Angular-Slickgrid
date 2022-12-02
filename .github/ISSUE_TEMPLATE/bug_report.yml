@@ -23,6 +23,14 @@ body:
     validations:
       required: true
   - type: textarea
+    id: expectation
+    attributes:
+      label: Expectation
+      description: You can optionally tell us what is your expectation from the lib?
+      placeholder: Expectation
+    validations:
+      required: false
+  - type: textarea
     id: system-info
     attributes:
       label: Environment Info
