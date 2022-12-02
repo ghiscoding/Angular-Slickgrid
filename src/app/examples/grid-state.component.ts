@@ -72,7 +72,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
 
   /** Clear the Grid State from Local Storage and reset the grid to it's original state */
   clearGridStateFromLocalStorage() {
-    localStorage[LOCAL_STORAGE_KEY] = null;
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
     this.angularGrid.gridService.resetGrid(this.columnDefinitions);
     this.angularGrid.paginationService!.changeItemPerPage(DEFAULT_PAGE_SIZE);
   }
@@ -180,7 +180,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
 
   getData(count: number) {
     // mock a dataset
-    const tmpData = [];
+    const tmpData: any[] = [];
     for (let i = 0; i < count; i++) {
       const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2025);
