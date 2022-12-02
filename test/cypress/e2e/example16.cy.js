@@ -497,4 +497,16 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
     cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 2);
     cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 3);
   });
+
+  it('should click on the reset button and have exact Column Titles position as in beginning', () => {
+    cy.get('#slickGridContainer-grid16').as('grid16');
+
+    cy.get('[data-test="reset-button"]')
+      .click();
+
+    cy.get('@grid16')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
+  });
 });

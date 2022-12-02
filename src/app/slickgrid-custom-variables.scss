@@ -3,8 +3,7 @@
  * and make sure to add the @import at the end of this file
  */
 
-/* for example, let's change the mouse hover color */
-
+ $slick-input-focus-box-shadow: 0 0 0 0.25rem #0d6efd40;
 
 /* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
