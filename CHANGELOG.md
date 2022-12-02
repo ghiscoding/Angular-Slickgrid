@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.1...v5.1.2) (2022-12-02)
+
+
+### Bug Fixes
+
+* **addons:** onGroupChanged callback should be executed with Draggable ([ff08f4b](https://github.com/ghiscoding/angular-slickgrid/commit/ff08f4b7b6fcd5ecf0b2345d13f5fb4e4049c2dd))
+* **core:** grid service `resetGrid` method wasn't always resetting ([a5bf5f1](https://github.com/ghiscoding/angular-slickgrid/commit/a5bf5f14d9e9c6131f92bbc2caf2e9068dc7f5af))
+
 ## [5.1.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.0...v5.1.1) (2022-11-19)
 
 # Change Log
