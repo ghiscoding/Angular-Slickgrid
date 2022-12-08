@@ -509,4 +509,71 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
       .children()
       .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
   });
+
+  it('should reload the page', () => {
+    cy.reload().wait(50);
+  });
+
+  it('should have same columns position after reload', () => {
+    const expectedTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
+
+    cy.get('#grid16')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(expectedTitles[index]));
+  });
+
+  it('should be able to freeze "Description" 3rd column', () => {
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(2)')
+      .trigger('mouseover')
+      .children('.slick-header-menu-button')
+      .should('be.hidden')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-menu-item:nth-of-type(1)')
+      .children('.slick-menu-content')
+      .should('contain', 'Freeze Columns')
+      .click();
+  });
+
+  it('should swap "Duration" and "% Complete" columns', () => {
+    const expectedTitles = ['', 'Title', 'Description', '% Complete', 'Duration', 'Start', 'Completed'];
+
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(3)')
+      .contains('Duration')
+      .drag('.slick-header-column:nth(4)');
+
+    cy.get('#grid16')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(expectedTitles[index]));
+  });
+
+  it('should be able to freeze "% Complete" and expect 4th column to be freezed', () => {
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(3)')
+      .trigger('mouseover')
+      .children('.slick-header-menu-button')
+      .should('be.hidden')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-menu-item:nth-of-type(1)')
+      .children('.slick-menu-content')
+      .should('contain', 'Freeze Columns')
+      .click();
+  });
+
+  it('should have a persisted frozen column after "Description" and a grid with 4 containers on page load with 2 columns on the left and 3 columns on the right', () => {
+    cy.get('[style="top:0px"]').should('have.length', 2);
+    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 4);
+    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 3);
+  });
 });

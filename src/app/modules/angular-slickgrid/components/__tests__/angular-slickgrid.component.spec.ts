@@ -283,6 +283,7 @@ const mockGrid = {
   setSelectedRows: jest.fn(),
   onClick: new MockSlickEvent(),
   onClicked: new MockSlickEvent(),
+  onColumnsReordered: new MockSlickEvent(),
   onRendered: jest.fn(),
   onScroll: jest.fn(),
   onSelectedRowsChanged: new MockSlickEvent(),
@@ -442,6 +443,20 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
     expect(component.eventHandler).toBe(slickEventHandler);
     expect(sharedFrozenIndexSpy).toHaveBeenCalledWith('name');
+  });
+
+  it('should update "visibleColumns" in the Shared Service when "onColumnsReordered" event is triggered', () => {
+    const sharedHasColumnsReorderedSpy = jest.spyOn(SharedService.prototype, 'hasColumnsReordered', 'set');
+    const sharedVisibleColumnsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+    const newVisibleColumns = [{ id: 'lastName', field: 'lastName' }, { id: 'fristName', field: 'fristName' }];
+
+    component.gridOptions = { enableFiltering: true };
+    component.initialization(slickEventHandler);
+    mockGrid.onColumnsReordered.notify({ impactedColumns: newVisibleColumns, grid: mockGrid });
+
+    expect(component.eventHandler).toEqual(slickEventHandler);
+    expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
+    expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
   });
 
   it('should create a grid and expect multiple event published', () => {
