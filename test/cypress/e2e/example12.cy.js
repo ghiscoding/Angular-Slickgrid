@@ -191,7 +191,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
             .should(($el) => {
               // calculate 25% and expect the element width to be about the calculated size with a (+/-)1px precision
               const expectedWidth = (fullCellWidth * .30);
-              expect($el.width()).greaterThan(expectedWidth + 1);
+              expect($el.width() + 1).greaterThan(expectedWidth);
             });
         });
     });
