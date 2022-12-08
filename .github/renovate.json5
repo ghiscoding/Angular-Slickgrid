@@ -11,6 +11,10 @@
       depTypeList: ['peerDependencies'],
       enabled: false,
     },
+    {
+      packageNames: ['@ngx-translate/core'],
+      allowedVersions: '14.0.0',
+    },
     // allow Node14/npm8 until its EOL June 2023
     {
       packageNames: ['node'],
