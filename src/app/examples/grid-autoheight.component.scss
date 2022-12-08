@@ -1,0 +1,16 @@
+// sort indication will show behind Grid Menu since we don't have scroll,
+// we can offset these icons to fix that
+#grid23 {
+    .slick-header-column:last-child {
+        .slick-header-menu-button,
+        .slick-resizable-handle,
+        .slick-sort-indicator,
+        .slick-sort-indicator-numbered {
+            margin-right: 18px; // grid menu icon width
+        }
+    }
+}
+
+.duration-bg {
+    background-color: #e9d4f1 !important;
+}

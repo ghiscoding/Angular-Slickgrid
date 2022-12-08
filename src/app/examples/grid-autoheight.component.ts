@@ -11,8 +11,8 @@ import {
 } from './../modules/angular-slickgrid';
 
 @Component({
-  styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
   encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./grid-autoheight.component.scss'],
   templateUrl: './grid-autoheight.component.html'
 })
 export class GridAutoHeightComponent implements OnInit {
@@ -51,23 +51,20 @@ export class GridAutoHeightComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'title',
-        sortable: true,
-        type: FieldType.string
+        sortable: true, type: FieldType.string
       },
       {
         id: 'duration', name: 'Duration (days)', field: 'duration',
-        sortable: true,
-        type: FieldType.number
+        sortable: true, type: FieldType.number
       },
       {
         id: 'complete', name: '% Complete', field: 'percentComplete',
-        formatter: Formatters.percentCompleteBar,
+        formatter: Formatters.percentCompleteBar, sortable: true,
         type: FieldType.number
       },
       {
         id: 'start', name: 'Start', field: 'start',
-        formatter: Formatters.dateIso,
-        sortable: true,
+        formatter: Formatters.dateIso, sortable: true,
         type: FieldType.date
       },
       {
@@ -77,7 +74,7 @@ export class GridAutoHeightComponent implements OnInit {
       },
       {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmark, sortable: true,
         type: FieldType.number
       }
     ];
@@ -99,7 +96,6 @@ export class GridAutoHeightComponent implements OnInit {
       enableFiltering: true,
       showHeaderRow: false, // hide the filter row (header row)
 
-      enableGridMenu: false, // disable grid menu & remove vertical scroll
       alwaysShowVerticalScroll: false,
       enableColumnPicker: true,
       enableCellNavigation: true,
