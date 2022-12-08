@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.3](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.2...v5.1.3) (2022-12-08)
+
+
+### Bug Fixes
+
+* **pinning:** cols reorder & freezing shouldn't affect order ([a81f92a](https://github.com/ghiscoding/angular-slickgrid/commit/a81f92a8392c514b35f5b460205070c838c2aec4))
+* **sorting:** update Slickgrid-Universal, fixes date sort shuffling ([4f70ada](https://github.com/ghiscoding/angular-slickgrid/commit/4f70adaa5e0c19715b369acd3e815d68b7b44631))
+
 ## [5.1.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.1...v5.1.2) (2022-12-02)
 
 
