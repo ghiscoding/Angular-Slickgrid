@@ -13,8 +13,8 @@ export class GridColspanComponent implements OnInit {
   This example demonstrates how to easily span a row over multiple columns & how to group header titles.
   <ul>
     <li>
-      Row Colspan - (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Row-Colspan" target="_blank">Wiki docs</a>) /
-      Header Grouping - (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Header-Title-Grouping" target="_blank">Wiki docs</a>)
+      Row Colspan - (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Row-Colspan" target="_blank">Wiki docs</a>) /
+      Header Grouping - (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Header-Title-Grouping" target="_blank">Wiki docs</a>)
     </li>
     <li>Note that you can add Sort but remember that it will sort by the data which the row contains, even if the data is visually hidden by colspan it will still sort it</li>
     <li>

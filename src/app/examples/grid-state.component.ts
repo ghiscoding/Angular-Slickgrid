@@ -27,7 +27,7 @@ const NB_ITEMS = 500;
 export class GridStateComponent implements OnInit, OnDestroy {
   title = 'Example 16: Grid State & Presets using Local Storage';
   subTitle = `
-    Grid State & Preset (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
+    Grid State & Preset (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
     <br/>
     <ul class="small">
       <li>Uses Local Storage to persist the Grid State and uses Grid Options "presets" to put the grid back to it's previous state</li>

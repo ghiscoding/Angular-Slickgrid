@@ -33,7 +33,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
 })
 export class GridLocalizationComponent implements OnInit, OnDestroy {
   title = 'Example 12: Localization (i18n)';
-  subTitle = `Support multiple locales with the ngx-translate plugin, following these steps (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
+  subTitle = `Support multiple locales with the ngx-translate plugin, following these steps (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
   <ol class="small">
     <li>You first need to "enableTranslate" in the Grid Options</li>
     <li>In the Column Definitions, you have following options</li>
@@ -53,9 +53,9 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
       <ul>
         <li>What if your select options have totally different value/label pair? In this case, you can use the <b>customStructure: { label: 'customLabel', value: 'customValue'}</b> to change the property name(s) to use.'</li>
         <li>What if you want to use "customStructure" and translation? Simply pass this flag <b>enableTranslateLabel: true</b></li>
-        <li>More info on the Select Filter <a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Select-Filter" target="_blank">Wiki page</a>
+        <li>More info on the Select Filter <a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Select-Filter" target="_blank">Wiki page</a>
       </ul>
-    <li>For more info about "Download to File", read the <a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Export-to-File" target="_blank">Wiki page</a></li>
+    <li>For more info about "Download to File", read the <a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Export-to-File" target="_blank">Wiki page</a></li>
     </ol>
   `;
 

@@ -41,7 +41,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
 export class GridRangeComponent implements OnInit, OnDestroy {
   title = 'Example 25: Filtering from Range of Search Values';
   subTitle = `
-  This demo shows how to use Filters with Range of Search Values (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Range-Filters" target="_blank">Wiki docs</a>)
+  This demo shows how to use Filters with Range of Search Values (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Range-Filters" target="_blank">Wiki docs</a>)
   <br/>
     <ul class="small">
       <li>All input filters support the following operators: (>, >=, <, <=, <>, !=, =, ==, *) and now also the (..) for an input range</li>

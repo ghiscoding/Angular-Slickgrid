@@ -11,9 +11,9 @@
   ],
   "license": "MIT",
   "author": "Ghislain B.",
-  "homepage": "https://slickclub.github.io/Angular-Slickgrid/",
+  "homepage": "https://slickgrid-stellar.github.io/Angular-Slickgrid/",
   "bugs": {
-    "url": "https://github.com/slickclub/Angular-Slickgrid/issues"
+    "url": "https://github.com/slickgrid-stellar/Angular-Slickgrid/issues"
   },
   "scripts": {
     "start": "ng serve --port 4300",
@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/slickclub/angular-slickgrid"
+    "url": "http://github.com/slickgrid-stellar/angular-slickgrid"
   },
   "main": "src/app/modules/angular-slickgrid/index",
   "private": false,

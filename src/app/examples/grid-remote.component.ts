@@ -43,7 +43,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
         for Sorting, Filtering, etc...
       </li>
       <li>
-        Soure code for this example is available <a href="https://github.com/slickclub/Angular-Slickgrid/blob/master/src/app/examples/grid-remote.component.ts" target="_blank">here</a>
+        Soure code for this example is available <a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/blob/master/src/app/examples/grid-remote.component.ts" target="_blank">here</a>
       </li>
     </ul>
   `;

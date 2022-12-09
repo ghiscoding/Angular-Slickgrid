@@ -12,7 +12,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
   title = 'Example 9: Grid Menu Control';
   subTitle = `
     This example demonstrates using the <b>Slick.Controls.GridMenu</b> plugin to easily add a Grid Menu (aka hamburger menu) on the top right corner of the grid.
-    (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Grid-Menu" target="_blank">Wiki docs</a>)
+    (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Grid-Menu" target="_blank">Wiki docs</a>)
     <br/>
     <ul>
       <li>You can change the Grid Menu icon, for example "fa-ellipsis-v"&nbsp;&nbsp;<span class="fa fa-ellipsis-v"></span>&nbsp;&nbsp;(which is shown in this example)</li>
