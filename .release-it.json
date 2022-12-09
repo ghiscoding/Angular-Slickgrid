@@ -1,10 +1,12 @@
 {
   "git": {
-    "commitMessage": "chore: release v${version}"
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}"
   },
   "github": {
     "release": true,
-    "web": true
+    "web": true,
+    "releaseName": "v${version}"
   },
   "npm": {
     "publishPath": "dist/"
