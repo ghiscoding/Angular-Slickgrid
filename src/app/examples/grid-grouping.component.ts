@@ -24,7 +24,7 @@ import {
 export class GridGroupingComponent implements OnInit {
   title = 'Example 14: Grouping & Aggregators';
   subTitle = `
-  (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a>)
+  (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a>)
   <ul>
     <li>
     Fully dynamic and interactive multi-level grouping with filtering and aggregates over 50'000 items

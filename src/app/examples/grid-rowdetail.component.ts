@@ -19,7 +19,7 @@ const NB_ITEMS = 1000;
 export class GridRowDetailComponent implements OnInit {
   title = 'Example 21: Row Detail View';
   subTitle = `
-    Add functionality to show extra information with a Row Detail View, (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Detail" target="_blank">Wiki docs</a>)
+    Add functionality to show extra information with a Row Detail View, (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Row-Detail" target="_blank">Wiki docs</a>)
     <ul>
       <li>Click on the row "+" icon or anywhere on the row to open it (the latter can be changed via property "useRowClick: false")</li>
       <li>Pass a View/Model as a Template to the Row Detail</li>

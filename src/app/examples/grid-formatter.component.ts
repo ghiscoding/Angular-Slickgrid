@@ -34,7 +34,7 @@ const customEnableButtonFormatter: Formatter<DataItem> = (_row: number, _cell: n
 export class GridFormatterComponent implements OnInit {
   title = 'Example 2: Grid with Formatters';
   subTitle = `
-    Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Formatters" target="_blank">Wiki docs</a>).
+    Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/Formatters" target="_blank">Wiki docs</a>).
     <ul>
       <li>The 2 last columns are using Custom Formatters</li>
       <ul><li>The "Completed" column uses a the "onCellClick" event and a formatter to simulate a toggle action</li></ul>

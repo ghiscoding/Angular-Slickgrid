@@ -38,7 +38,7 @@ export interface Country {
 export class GridGraphqlWithoutPaginationComponent implements OnInit {
   title = 'Example 27: GraphQL Basic API without Pagination';
   subTitle = `
-  Use basic GraphQL query with any external public APIs (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
+  Use basic GraphQL query with any external public APIs (<a href="https://github.com/slickclub/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
   <ul>
     <li>This Examples uses a Public GraphQL API that you can find at this link <a href="https://countries.trevorblades.com/" target="_blank">https://countries.trevorblades.com/</a></li>
     <li>Compare to the regular and default GraphQL implementation, you will find the following differences</li>
