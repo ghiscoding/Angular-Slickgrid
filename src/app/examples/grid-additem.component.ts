@@ -9,20 +9,20 @@ import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption
 export class GridAddItemComponent implements OnInit {
   title = 'Example 11: Add / Update / Highlight a Datagrid Item';
   subTitle = `
-  Add / Update / Hightlight an Item from the Datagrid (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Add,-Update-or-Highlight-a-Datagrid-Item" target="_blank">Wiki docs</a>).
+  Add / Update / Hightlight an Item from the Datagrid (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Add,-Update-or-Highlight-a-Datagrid-Item" target="_blank">Wiki docs</a>).
   <ul>
     <li><b>Note:</b> this demo is <b>only</b> on the datagrid (client) side, you still need to deal with the backend yourself</li>
     <li>Adding an item, will always be showing as the 1st item in the grid because that is the best visual place to add it</li>
     <li>Add/Update an item requires a valid Slickgrid Selection Model, you have 2 choices to deal with this:</li>
     <ul><li>You can enable "enableCheckboxSelector" or "enableRowSelection" to True</li></ul>
     <li>Click on any of the buttons below to test this out</li>
-    <li>You can change the highlighted color &amp; animation by changing the <a href="https://github.com/slickgrid-stellar/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss" target="_blank">SASS Variables</a>:</li>
+    <li>You can change the highlighted color &amp; animation by changing the <a href="https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss" target="_blank">SASS Variables</a>:</li>
     <ul>
       <li>"$row-highlight-background-color" or "$row-highlight-fade-animation"</li>
     </ul>
     <li>You can also add CSS class(es) on the fly (or on page load) on rows with certain criteria, (e.g. click on last button)
     <ul>
-      <li>Example, click on button "Highlight Rows with Duration over 50" to see row styling changing. <a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Dynamically-Add-CSS-Classes-to-Item-Rows" target="_blank">Wiki doc</a></li>
+      <li>Example, click on button "Highlight Rows with Duration over 50" to see row styling changing. <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Dynamically-Add-CSS-Classes-to-Item-Rows" target="_blank">Wiki doc</a></li>
     </ul>
   </ul>
   `;

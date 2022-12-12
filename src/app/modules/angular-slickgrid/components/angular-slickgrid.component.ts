@@ -918,7 +918,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
           this._eventHandler.subscribe(dataView.onRowsChanged, (_e, args) => {
             // filtering data with local dataset will not always show correctly unless we call this updateRow/render
             // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
-            // see commit: https://github.com/slickgrid-stellar/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
+            // see commit: https://github.com/ghiscoding/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
             if (args?.rows && Array.isArray(args.rows)) {
               args.rows.forEach((row: number) => grid.updateRow(row));
               grid.render();

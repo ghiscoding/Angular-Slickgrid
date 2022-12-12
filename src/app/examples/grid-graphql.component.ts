@@ -28,7 +28,7 @@ const LOCAL_STORAGE_KEY = 'gridStateGraphql';
 export class GridGraphqlComponent implements OnInit, OnDestroy {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';
   subTitle = `
-    Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
+    Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki docs</a>).
     <br/>
     <ul class="small">
       <li><span class="red">(*) NO DATA SHOWING</span> - just change Filters &amp; Pages and look at the "GraphQL Query" changing :)</li>
@@ -38,7 +38,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         <li>The (*) can be used as startsWith (ex.: "abc*" => startsWith "abc") / endsWith (ex.: "*xyz" => endsWith "xyz")</li>
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>
       </ul>
-      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
+      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
   private subscriptions: Subscription[] = [];

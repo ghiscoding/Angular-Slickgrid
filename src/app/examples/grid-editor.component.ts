@@ -69,7 +69,7 @@ const taskFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
 export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors / Delete';
   subTitle = `
-  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/slickgrid-stellar/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
+  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
   <ul>
     <li>Multiple Editors & Filters are available: AutoComplete, Checkbox, Date, Slider, SingleSelect, MultipleSelect, Float, Text, LongText... even Custom Editor</li>
     <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.</li>
