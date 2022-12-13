@@ -6,7 +6,7 @@ const presetMaxComplete = 80;
 const presetMinDuration = 4;
 const presetMaxDuration = 88;
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+const presetHighestDay = moment().add(28, 'days').format('YYYY-MM-DD');
 
 describe('Example 25 - Range Filters', { retries: 1 }, () => {
   it('should display Example title', () => {
