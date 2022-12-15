@@ -10,7 +10,7 @@
   "author": "Ghislain B.",
   "license": "MIT",
   "devDependencies": {
-    "@4tw/cypress-drag-drop": "^2.2.2",
+    "@4tw/cypress-drag-drop": "^2.2.3",
     "cypress": "^11.2.0"
   }
 }
