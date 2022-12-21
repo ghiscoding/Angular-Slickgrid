@@ -123,7 +123,7 @@ export class GridClientSideComponent implements OnInit {
         filterable: true, filter: { model: Filters.compoundInputNumber }
       },
       {
-        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: false,
+        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75,
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
       {

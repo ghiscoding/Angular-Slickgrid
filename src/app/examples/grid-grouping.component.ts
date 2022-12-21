@@ -107,16 +107,34 @@ export class GridGroupingComponent implements OnInit {
       },
       {
         id: 'cost', name: 'Cost', field: 'cost',
-        minWidth: 70,
-        width: 100,
-        filterable: true,
+        minWidth: 70, width: 80,
+        sortable: true, filterable: true,
         filter: { model: Filters.compoundInputNumber },
         type: FieldType.number,
-        sortable: true,
-        exportWithFormatter: true,
-        formatter: Formatters.dollar,
-        groupTotalsFormatter: GroupTotalFormatters.sumTotalsDollar,
-        params: { groupFormatterPrefix: '<b>Total</b>: ' /*, groupFormatterSuffix: ' USD'*/ }
+        formatter: Formatters.currency,
+        groupTotalsFormatter: GroupTotalFormatters.sumTotalsCurrency,
+        params: { displayNegativeNumberWithParentheses: true, currencyPrefix: '€', groupFormatterCurrencyPrefix: '€', minDecimal: 2, maxDecimal: 4, groupFormatterPrefix: '<b>Total</b>: ' },
+        excelExportOptions: {
+          style: {
+            font: { outline: true, italic: true },
+            format: '€0.00##;[Red](€0.00##)',
+          },
+          width: 18
+        },
+        groupTotalsExcelExportOptions: {
+          style: {
+            alignment: { horizontal: 'center' },
+            font: { bold: true, color: 'FF005289', underline: 'single', fontName: 'Consolas', size: 10 },
+            fill: { type: 'pattern', patternType: 'solid', fgColor: 'FFE6F2F6' },
+            border: {
+              top: { color: 'FFa500ff', style: 'thick', },
+              left: { color: 'FFa500ff', style: 'medium', },
+              right: { color: 'FFa500ff', style: 'dotted', },
+              bottom: { color: 'FFa500ff', style: 'double', },
+            },
+            format: '"Total: "€0.00##;[Red]"Total: "(€0.00##)'
+          },
+        },
       },
       {
         id: 'effort-driven', name: 'Effort Driven',
@@ -169,6 +187,7 @@ export class GridGroupingComponent implements OnInit {
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
+      const randomCost = (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100;
 
       this.dataset[i] = {
         id: 'id_' + i,
@@ -179,7 +198,7 @@ export class GridGroupingComponent implements OnInit {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
+        cost: i % 3 ? randomCost : randomCost !== null ? -randomCost : null,
         effortDriven: (i % 5 === 0)
       };
     }
