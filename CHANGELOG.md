@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.0...v5.2.1) (2022-12-22)
+
+
+### Bug Fixes
+
+* **styling:** make Grid Menu item full width instead of max-content ([b79a6ae](https://github.com/ghiscoding/angular-slickgrid/commit/b79a6ae51ec2346bcd21d4e9e35317116a57b84d))
+
 # [5.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.3...v5.2.0) (2022-12-22)
 
 
