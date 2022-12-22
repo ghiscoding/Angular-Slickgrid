@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.3...v5.2.0) (2022-12-22)
+
+
+### Features
+
+* **exports:** add auto-detect and Excel custom cell (column) styling ([5413e94](https://github.com/ghiscoding/angular-slickgrid/commit/5413e94734986b6482f64e52e2b2ae2228db9fe9))
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [5.1.3](https://github.com/ghiscoding/angular-slickgrid/compare/v5.1.2...v5.1.3) (2022-12-08)
 
 
