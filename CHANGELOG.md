@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.1...v5.2.2) (2022-12-24)
+
+
+### Bug Fixes
+
+* **common:** cell selection in Firefox not working ([45c5791](https://github.com/ghiscoding/angular-slickgrid/commit/45c5791c9b8fefdf1ae1b14d70b1f398500c8adf))
+
 ## [5.2.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.0...v5.2.1) (2022-12-22)
 
 
