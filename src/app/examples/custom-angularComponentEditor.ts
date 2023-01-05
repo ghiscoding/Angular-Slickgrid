@@ -136,7 +136,7 @@ export class CustomAngularComponentEditor implements Editor {
     }
 
     // also unsubscribe all Angular Subscriptions
-    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
+    unsubscribeAllObservables(this._subscriptions);
   }
 
   /** optional, implement a focus method on your Angular Component */
