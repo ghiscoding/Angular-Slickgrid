@@ -43,7 +43,7 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // also unsubscribe all Angular Subscriptions
-    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+    unsubscribeAllObservables(this.subscriptions);
   }
 
   ngOnInit(): void {

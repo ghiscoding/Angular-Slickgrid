@@ -114,7 +114,7 @@ export class CustomAngularComponentFilter implements Filter {
     }
 
     // also unsubscribe all Angular Subscriptions
-    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
+    unsubscribeAllObservables(this._subscriptions);
   }
 
   /** Set value(s) on the DOM element */
