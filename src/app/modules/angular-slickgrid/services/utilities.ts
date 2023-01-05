@@ -1,18 +1,17 @@
-import { Subscription } from 'rxjs';
-
 /**
  * Unsubscribe all Observables Subscriptions
  * It will return an empty array if it all went well
  * @param subscriptions
  */
-export function unsubscribeAllObservables(subscriptions: Subscription[]): Subscription[] {
+export function unsubscribeAllObservables(subscriptions: Array<{ unsubscribe: ()=> void; }>): Array<{ unsubscribe: ()=> void; }> {
   if (Array.isArray(subscriptions)) {
-    subscriptions.forEach((subscription: Subscription) => {
-      if (subscription && subscription.unsubscribe) {
+    let subscription = subscriptions.pop();
+    while (subscription) {
+      if (typeof subscription.unsubscribe === 'function') {
         subscription.unsubscribe();
       }
-    });
-    subscriptions = [];
+      subscription = subscriptions.pop();
+    }
   }
 
   return subscriptions;
