@@ -97,24 +97,24 @@
     "@types/dompurify": "^2.4.0",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
-    "@types/jest": "^29.2.5",
+    "@types/jest": "^29.2.6",
     "@types/jquery": "^3.5.16",
     "@types/moment": "^2.13.0",
     "@types/node": "^18.11.18",
     "@types/sortablejs": "^1.15.0",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.48.1",
-    "@typescript-eslint/parser": "^5.48.1",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
     "autoprefixer": "^10.4.13",
     "bootstrap": "^5.2.3",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "custom-event-polyfill": "^1.0.7",
-    "eslint": "^8.31.0",
+    "eslint": "^8.32.0",
     "font-awesome": "^4.7.0",
     "jest": "^29.3.1",
     "jest-extended": "^3.2.3",
-    "jest-preset-angular": "^12.2.3",
+    "jest-preset-angular": "^12.2.5",
     "moment-mini": "^2.29.4",
     "ng-packagr": "^14.3.0",
     "ngx-bootstrap": "^9.0.0",
@@ -135,6 +135,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001443"
+    "caniuse-lite": "1.0.30001445"
   }
 }
