@@ -42,7 +42,7 @@
   "main": "src/app/modules/angular-slickgrid/index",
   "private": false,
   "comments": {
-    "new-release": "1- build library (ng-packagr), 2- 'prepare-release' (npm script) and push git tag, 3- copy new version prop into dist/package.json, 4- run script 'pack-lib' and 'npm publish [tar tgz]'"
+    "new-release": "npm run release, note that yarn is not supported with release-it and will throw an error"
   },
   "funding": {
     "type": "ko_fi",
