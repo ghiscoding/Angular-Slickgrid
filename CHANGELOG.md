@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.2...v5.3.0) (2023-01-21)
+
+
+### Bug Fixes
+
+* **rxjs:** make unsubscribe more generic to avoid RxJS update issue ([14484ba](https://github.com/ghiscoding/angular-slickgrid/commit/14484bacd48acad7d3f9c3c236cdd2ff3e633c88))
+
 ## [5.2.2](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.1...v5.2.2) (2022-12-24)
 
 
