@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -42,7 +42,7 @@
   "main": "src/app/modules/angular-slickgrid/index",
   "private": false,
   "comments": {
-    "new-release": "1- build library (ng-packagr), 2- 'prepare-release' (npm script) and push git tag, 3- copy new version prop into dist/package.json, 4- run script 'pack-lib' and 'npm publish [tar tgz]'"
+    "new-release": "npm run release, note that yarn is not supported with release-it and will throw an error"
   },
   "funding": {
     "type": "ko_fi",
@@ -50,13 +50,13 @@
   },
   "dependencies": {
     "@ngx-translate/core": ">=14.0.0",
-    "@slickgrid-universal/common": "~2.2.2",
-    "@slickgrid-universal/custom-footer-component": "~2.2.2",
-    "@slickgrid-universal/empty-warning-component": "~2.2.2",
-    "@slickgrid-universal/event-pub-sub": "~2.1.2",
-    "@slickgrid-universal/pagination-component": "~2.2.2",
-    "@slickgrid-universal/row-detail-view-plugin": "~2.2.2",
-    "@slickgrid-universal/rxjs-observable": "~2.2.2",
+    "@slickgrid-universal/common": "~2.3.0",
+    "@slickgrid-universal/custom-footer-component": "~2.3.0",
+    "@slickgrid-universal/empty-warning-component": "~2.3.0",
+    "@slickgrid-universal/event-pub-sub": "~2.3.0",
+    "@slickgrid-universal/pagination-component": "~2.3.0",
+    "@slickgrid-universal/row-detail-view-plugin": "~2.3.0",
+    "@slickgrid-universal/rxjs-observable": "~2.3.0",
     "@types/jquery": "^3.5.16",
     "dequal": "^2.0.3",
     "dompurify": "^2.4.3",
@@ -88,23 +88,23 @@
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@release-it/conventional-changelog": "^5.1.1",
-    "@slickgrid-universal/composite-editor-component": "~2.2.2",
-    "@slickgrid-universal/custom-tooltip-plugin": "~2.2.2",
-    "@slickgrid-universal/excel-export": "~2.2.2",
-    "@slickgrid-universal/graphql": "~2.2.2",
-    "@slickgrid-universal/odata": "~2.2.2",
-    "@slickgrid-universal/text-export": "~2.2.2",
+    "@slickgrid-universal/composite-editor-component": "~2.3.0",
+    "@slickgrid-universal/custom-tooltip-plugin": "~2.3.0",
+    "@slickgrid-universal/excel-export": "~2.3.0",
+    "@slickgrid-universal/graphql": "~2.3.0",
+    "@slickgrid-universal/odata": "~2.3.0",
+    "@slickgrid-universal/text-export": "~2.3.0",
     "@types/dompurify": "^2.4.0",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
-    "@types/jest": "^29.2.6",
+    "@types/jest": "^29.4.0",
     "@types/jquery": "^3.5.16",
     "@types/moment": "^2.13.0",
     "@types/node": "^18.11.18",
     "@types/sortablejs": "^1.15.0",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.48.2",
-    "@typescript-eslint/parser": "^5.48.2",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
     "autoprefixer": "^10.4.13",
     "bootstrap": "^5.2.3",
     "copyfiles": "^2.4.1",
@@ -112,9 +112,9 @@
     "custom-event-polyfill": "^1.0.7",
     "eslint": "^8.32.0",
     "font-awesome": "^4.7.0",
-    "jest": "^29.3.1",
+    "jest": "^29.4.1",
     "jest-extended": "^3.2.3",
-    "jest-preset-angular": "^12.2.5",
+    "jest-preset-angular": "^12.2.6",
     "moment-mini": "^2.29.4",
     "ng-packagr": "^14.3.0",
     "ngx-bootstrap": "^9.0.0",
@@ -126,7 +126,7 @@
     "sass": "^1.57.1",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.1",
+    "tslib": "^2.5.0",
     "typescript": "~4.7.4",
     "zone.js": "~0.12.0"
   },
@@ -135,6 +135,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001446"
+    "caniuse-lite": "1.0.30001448"
   }
 }
