@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
       stringifyContentPathRegex: '\\.html$'
     },
   },
-  globalSetup: '<rootDir>/test/jest-global-setup.js',
+  globalSetup: '<rootDir>/test/jest-global-setup.ts',
   collectCoverage: false,
   collectCoverageFrom: [
     'src/app/modules/**/*.{js,ts}',
