@@ -1,5 +1,6 @@
+import type { Config } from '@jest/types';
 
-module.exports = {
+const config: Config.InitialOptions = {
   rootDir: '../',
   globals: {
     'ts-jest': {
@@ -64,3 +65,5 @@ module.exports = {
     '<rootDir>/node_modules/',
   ]
 };
+
+export default config;
