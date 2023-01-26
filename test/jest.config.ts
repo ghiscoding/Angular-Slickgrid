@@ -1,5 +1,6 @@
+import type { Config } from '@jest/types';
 
-module.exports = {
+const config: Config.InitialOptions = {
   rootDir: '../',
   globals: {
     'ts-jest': {
@@ -10,7 +11,7 @@ module.exports = {
       stringifyContentPathRegex: '\\.html$'
     },
   },
-  globalSetup: '<rootDir>/test/jest-global-setup.js',
+  globalSetup: '<rootDir>/test/jest-global-setup.ts',
   collectCoverage: false,
   collectCoverageFrom: [
     'src/app/modules/**/*.{js,ts}',
@@ -64,3 +65,5 @@ module.exports = {
     '<rootDir>/node_modules/',
   ]
 };
+
+export default config;
