@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 33;
   const titles = ['Files', 'Date Modified', 'Description', 'Size'];
@@ -40,7 +38,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
       .click();
 
     cy.get('.slick-viewport-top.slick-viewport-left')
-      .scrollTo('top', { force: true });
+      .scrollTo('top', { force: true } as any);
   });
 
   it('should have default Files list', () => {

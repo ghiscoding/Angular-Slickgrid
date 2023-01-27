@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 }, () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
   const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];

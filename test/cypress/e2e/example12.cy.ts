@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import moment from 'moment-mini';
 
 function removeExtraSpaces(text: string) {

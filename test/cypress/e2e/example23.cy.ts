@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 23 - Grid AutoHeight', { retries: 1 }, () => {
   const fullTitles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
   const GRID_ROW_HEIGHT = 35;

@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 5 - OData Grid', () => {
   const GRID_ROW_HEIGHT = 35;
   beforeEach(() => {

@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
 function removeExtraSpaces(text: string) {

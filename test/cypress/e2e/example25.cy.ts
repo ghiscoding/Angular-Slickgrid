@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import moment from 'moment-mini';
 
 const presetMinComplete = 5;

@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
   const fullTitles = ['Title', 'Assignee', 'Assignee with Angular Component', '% Complete', 'Start', 'Finish', 'Action'];
 
