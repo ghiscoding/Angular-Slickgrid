@@ -58,7 +58,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: test/cypress
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
           wait-on: 'http://localhost:4300'
           browser: chrome
           record: true
