@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 32 - Regular & Custom Tooltips', { retries: 1 }, () => {
   const titles = ['', 'Title', 'Duration', 'Description', 'Description 2', 'Cost', '% Complete', 'Start', 'Finish', 'Effort Driven', 'Prerequisites', 'Action'];
   const GRID_ROW_HEIGHT = 33;

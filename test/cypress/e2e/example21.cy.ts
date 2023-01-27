@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 21 - Row Detail View', { retries: 1 }, () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 

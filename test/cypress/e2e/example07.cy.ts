@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
   const titles = ['Resize me!', 'Hover me!', 'Column C', 'Column D', 'Column E', 'Column F', 'Column G', 'Column H', 'Column I', 'Column J'];
 

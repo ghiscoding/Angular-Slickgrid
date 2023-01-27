@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 35;
   const fullTitles = [

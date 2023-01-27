@@ -1,4 +1,3 @@
-/// <reference types="Cypress" />
 import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
 describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {

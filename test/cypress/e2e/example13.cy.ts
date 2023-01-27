@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 13 - Custom Backend Server Pagination', { retries: 1 }, () => {
   const fullTitles = ['Note', 'Status', 'Currency', 'Amount', 'Input Date', 'Input Time'];
 

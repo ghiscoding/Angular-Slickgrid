@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 

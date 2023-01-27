@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 function removeExtraSpaces(text: string) {
   return `${text}`.replace(/\s+/g, ' ').trim();
 }

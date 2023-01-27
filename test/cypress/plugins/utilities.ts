@@ -1,4 +1,4 @@
-export function changeTimezone(date, tz) {
+export function changeTimezone(date: Date, tz: string) {
   // suppose the date is 12:00 UTC
   var invdate = new Date(date.toLocaleString('en-US', {
     timeZone: tz
@@ -12,7 +12,7 @@ export function changeTimezone(date, tz) {
   return new Date(date.getTime() + diff);
 };
 
-export function zeroPadding(input) {
-  let number = parseInt(input, 10);
+export function zeroPadding(input: string | number) {
+  let number = parseInt(input as string, 10);
   return number < 10 ? `0${number}` : number;
 }

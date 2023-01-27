@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Example 11 - Add / Update / Highlight a Datagrid Item', { retries: 1 }, () => {
   const fullTitles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 

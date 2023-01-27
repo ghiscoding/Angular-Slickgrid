@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Home Page', () => {
   it('should display Home Page', () => {
     cy.visit(`${Cypress.config('baseUrl')}/home`);
