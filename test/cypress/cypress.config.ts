@@ -1,7 +1,9 @@
-const { defineConfig } = require('cypress');
-const fs = require('fs');
+import { defineConfig } from 'cypress';
+import fs from 'fs';
 
-module.exports = defineConfig({
+import plugins from './plugins/index';
+
+export default defineConfig({
   video: false,
   viewportWidth: 1200,
   viewportHeight: 950,
@@ -17,19 +19,19 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: 'http://localhost:4300/#',
     specPattern: 'e2e/**/*.{js,ts}',
-    supportFile: 'support/index.js',
+    supportFile: 'support/index.ts',
     excludeSpecPattern: process.env.CI ? ['**/node_modules/**', '**/000-*.cy.{js,ts}'] : ['**/node_modules/**'],
     setupNodeEvents(on, config) {
       on('task', {
         updateListOfTests() {
-          const UPDATE_TESTS_LIST_CY_JS = '000-update-tests-list.cy.js';
-          const RUN_ALL_TESTS_CY_JS = '000-run-all-specs.cy.js';
+          const UPDATE_TESTS_LIST_CY_JS = '000-update-tests-list.cy.ts';
+          const RUN_ALL_TESTS_CY_JS = '000-run-all-specs.cy.ts';
           const PATHNAME_OF_RUN_ALL_TESTS_CY_JS =
             './e2e/' + RUN_ALL_TESTS_CY_JS;
 
           const testsOnDisk = fs
             .readdirSync('./e2e/')
-            .filter(filename => filename.endsWith('.cy.js'))
+            .filter(filename => filename.endsWith('.cy.ts'))
             .filter(
               filename =>
                 ![UPDATE_TESTS_LIST_CY_JS, RUN_ALL_TESTS_CY_JS].includes(
@@ -46,7 +48,7 @@ module.exports = defineConfig({
           return true;
         },
       });
-      return require('./plugins/index.js')(on, config);
+      return plugins(on, config);
     },
   },
 });

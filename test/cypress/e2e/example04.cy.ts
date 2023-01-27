@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import moment from 'moment-mini';
 
-function removeExtraSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, ' ').trim();
+function removeExtraSpaces(text: string) {
+  return `${text}`.replace(/\s+/g, ' ').trim();
 }
 
 describe('Example 4 - Client Side Sort/Filter Grid', { retries: 1 }, () => {

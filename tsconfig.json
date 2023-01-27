@@ -13,6 +13,7 @@
     "noUnusedLocals": false,
     "noImplicitReturns": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "target": "es2020",
     "typeRoots": [

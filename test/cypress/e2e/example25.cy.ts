@@ -53,7 +53,7 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
         cy.wrap($row)
           .children('.slick-cell:nth(4)')
           .each(($cell) => {
-            const isDateBetween = moment($cell.text()).isBetween(presetLowestDay, presetHighestDay, null, '[]'); // [] is inclusive, () is exclusive
+            const isDateBetween = moment($cell.text()).isBetween(presetLowestDay, presetHighestDay, null as any, '[]'); // [] is inclusive, () is exclusive
             expect(isDateBetween).to.eq(true);
           });
       });
@@ -207,7 +207,7 @@ describe('Example 25 - Range Filters', { retries: 1 }, () => {
           cy.wrap($row)
             .children('.slick-cell:nth(4)')
             .each(($cell) => {
-              const isDateBetween = moment($cell.text()).isBetween(dynamicLowestDay, dynamicHighestDay, null, '[]'); // [] is inclusive, () is exclusive
+              const isDateBetween = moment($cell.text()).isBetween(dynamicLowestDay, dynamicHighestDay, null as any, '[]'); // [] is inclusive, () is exclusive
               expect(isDateBetween).to.eq(true);
             });
         });

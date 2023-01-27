@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
-function removeExtraSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, ' ').trim();
+function removeExtraSpaces(text: string) {
+  return `${text}`.replace(/\s+/g, ' ').trim();
 }
 
 describe('Example 2 - Grid with Formatters', { retries: 1 }, () => {
