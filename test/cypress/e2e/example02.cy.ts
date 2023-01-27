@@ -1,6 +1,4 @@
-function removeExtraSpaces(text: string) {
-  return `${text}`.replace(/\s+/g, ' ').trim();
-}
+import { removeExtraSpaces } from '../plugins/utilities';
 
 describe('Example 2 - Grid with Formatters', { retries: 1 }, () => {
   it('should display Example title', () => {

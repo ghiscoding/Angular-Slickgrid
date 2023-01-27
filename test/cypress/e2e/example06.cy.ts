@@ -1,8 +1,5 @@
 import moment from 'moment-mini';
-
-function removeSpaces(text: string) {
-  return `${text}`.replace(/\s+/g, '');
-}
+import { removeWhitespaces } from '../plugins/utilities';
 
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
 const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
@@ -57,8 +54,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:20,offset:20,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:20,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
@@ -76,8 +73,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:20,offset:40,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:40,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
@@ -94,8 +91,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:20,offset:80,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:80,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
@@ -113,8 +110,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query { users (first:20,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query { users (first:20,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
@@ -135,8 +132,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:20,offset:80,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:80,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
@@ -155,8 +152,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
@@ -186,8 +183,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
@@ -216,8 +213,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
@@ -247,8 +244,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"}],
           locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
@@ -263,8 +260,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
       });
   });
 
@@ -283,8 +280,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
       });
@@ -326,8 +323,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
           {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
@@ -352,8 +349,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query { users (first:30,offset:0,
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeWhitespaces(`query { users (first:30,offset:0,
           orderBy:[{field:"name",direction:DESC}],
           filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:GE,value:"Anthony Joyner"},{field:"name",operator:LE,value:"Ayers Hood"},
           {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
@@ -392,8 +389,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
       cy.get('[data-test=graphql-query-result]')
         .should(($span) => {
-          const text = removeSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+          const text = removeWhitespaces($span.text()); // remove all white spaces
+          expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
             orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
             totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
         });
@@ -632,8 +629,8 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
 
       cy.get('[data-test=graphql-query-result]')
         .should(($span) => {
-          const text = removeSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+          const text = removeWhitespaces($span.text()); // remove all white spaces
+          expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
             filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
             {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"fr",userId:123)
