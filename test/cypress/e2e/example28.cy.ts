@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
-function removeExtraSpaces(text) {
+function removeExtraSpaces(text: string) {
   return `${text}`.replace(/\s+/g, ' ').trim();
 }
 
@@ -178,7 +178,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
           // only read the percent complete value if it's not a parent
           const $slickGroupToggleNotExpanded = $elm.children('.slick-cell:nth(0)').children('.slick-group-toggle:not(.expanded)');
           if ($slickGroupToggleNotExpanded.length > 1) {
-            const percentComplete = $elm.children('.slick-cell:nth(2)').first('div.percent-complete-bar-with-text').text();
+            const percentComplete = $elm.children('.slick-cell:nth(2)').first().text();
             expect(+percentComplete).to.be.lt(40)
           }
         });
@@ -222,7 +222,7 @@ describe('Example 28 - Tree Data (from a flat dataset with parentId references)'
     const today = changeTimezone(now, tz);
 
     const currentDate = today.getDate();
-    let currentMonth = today.getMonth() + 1; // month is zero based, let's add 1 to it
+    let currentMonth: number | string = today.getMonth() + 1; // month is zero based, let's add 1 to it
     if (currentMonth < 10) {
       currentMonth = `0${currentMonth}`; // add zero padding
     }

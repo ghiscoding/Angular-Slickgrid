@@ -24,37 +24,46 @@
 // -- This is will overwrite an existing command --
 import '@4tw/cypress-drag-drop';
 
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-
-Cypress.Commands.add('triggerHover', (elements) => {
-  console.log(elements)
-  elements.each((index, element) => {
-    fireEvent(element, 'mouseover');
-  });
-
-  function fireEvent(element, event) {
-    if (element.fireEvent) {
-      element.fireEvent('on' + event);
-    } else {
-      var evObj = document.createEvent('Events');
-
-      evObj.initEvent(event, true, false);
-
-      element.dispatchEvent(evObj);
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      // triggerHover: (elements: NodeListOf<HTMLElement>) => void;
+      saveLocalStorage: () => void;
+      restoreLocalStorage: () => void;
     }
   }
-});
+}
 
-let LOCAL_STORAGE_MEMORY = {};
+// Cypress.Commands.add('triggerHover', (elements: NodeListOf<HTMLElement>) => {
+//   elements.each((index, element) => {
+//     fireEvent(element, 'mouseover');
+//   });
 
-Cypress.Commands.add("saveLocalStorage", () => {
+//   function fireEvent(element, event) {
+//     if (element.fireEvent) {
+//       element.fireEvent('on' + event);
+//     } else {
+//       var evObj = document.createEvent('Events');
+
+//       evObj.initEvent(event, true, false);
+
+//       element.dispatchEvent(evObj);
+//     }
+//   }
+// });
+
+let LOCAL_STORAGE_MEMORY: any = {};
+
+Cypress.Commands.add('saveLocalStorage', () => {
   Object.keys(localStorage).forEach(key => {
     LOCAL_STORAGE_MEMORY[key] = localStorage[key];
   });
 });
 
-Cypress.Commands.add("restoreLocalStorage", () => {
+Cypress.Commands.add('restoreLocalStorage', () => {
   Object.keys(LOCAL_STORAGE_MEMORY).forEach(key => {
     localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
   });
 });
+
+

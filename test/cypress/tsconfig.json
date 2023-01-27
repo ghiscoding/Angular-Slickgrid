@@ -1,7 +1,11 @@
 {
-  "extends": "../tsconfig.spec.json",
-  "include": [
-    "node_modules/cypress",
-    "*/*.js"
-  ]
+  "compilerOptions": {
+    "target": "es5",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": ["es5", "dom"],
+    "types": ["cypress", "node"],
+    "jsx": "preserve"
+  },
+  "include": ["**/*.{js,ts}", "../../cypress.d.ts"]
 }

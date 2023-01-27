@@ -75,25 +75,25 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
 
   // --
   // Cypress does not yet implement the .hover() method and this test won't work until then
-  xit('should resize "Title" column and make it wider', () => {
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(3)')
-      .should('contain', 'Title');
+  // xit('should resize "Title" column and make it wider', () => {
+  //   cy.get('.slick-header-columns')
+  //     .children('.slick-header-column:nth(3)')
+  //     .should('contain', 'Title');
 
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(3)')
-      .find('.slick-resizable-handle')
-      .trigger('mouseover', -2, 50, { force: true })
-      .should('be.visible')
-      .invoke('show')
-      .hover()
-      .trigger('mousedown', -2, 50, { which: 1, force: true });
+  //   cy.get('.slick-header-columns')
+  //     .children('.slick-header-column:nth(3)')
+  //     .find('.slick-resizable-handle')
+  //     .trigger('mouseover', -2, 50, { force: true })
+  //     .should('be.visible')
+  //     .invoke('show')
+  //     .hover()
+  //     .trigger('mousedown', -2, 50, { which: 1, force: true });
 
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(5)')
-      .trigger('mousemove', 'bottomLeft')
-      .trigger('mouseup', 'bottomLeft', { which: 1, force: true });
-  });
+  //   cy.get('.slick-header-columns')
+  //     .children('.slick-header-column:nth(5)')
+  //     .trigger('mousemove', 'bottomLeft')
+  //     .trigger('mouseup', 'bottomLeft', { which: 1, force: true });
+  // });
 
   it('should hide the "Start" column from the Column Picker', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete', 'Start', 'Completed'];

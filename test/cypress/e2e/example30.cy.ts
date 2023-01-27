@@ -113,7 +113,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     const today = changeTimezone(now, tz);
 
     const currentDate = today.getDate();
-    let currentMonth = today.getMonth() + 1; // month is zero based, let's add 1 to it
+    let currentMonth: number | string = today.getMonth() + 1; // month is zero based, let's add 1 to it
     if (currentMonth < 10) {
       currentMonth = `0${currentMonth}`; // add zero padding
     }
@@ -482,7 +482,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     const today = changeTimezone(now, tz);
 
     const currentDate = today.getDate();
-    let currentMonth = today.getMonth() + 1; // month is zero based, let's add 1 to it
+    let currentMonth: number | string = today.getMonth() + 1; // month is zero based, let's add 1 to it
     if (currentMonth < 10) {
       currentMonth = `0${currentMonth}`; // add zero padding
     }

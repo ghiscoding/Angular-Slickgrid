@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import moment from 'moment-mini';
 
-function removeSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, '');
+function removeSpaces(text: string) {
+  return `${text}`.replace(/\s+/g, '');
 }
 
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');

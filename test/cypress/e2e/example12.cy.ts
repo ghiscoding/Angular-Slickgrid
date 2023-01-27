@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import moment from 'moment-mini';
 
-function removeExtraSpaces(textS) {
-  return `${textS}`.replace(/\s+/g, ' ').trim();
+function removeExtraSpaces(text: string) {
+  return `${text}`.replace(/\s+/g, ' ').trim();
 }
 
 describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
@@ -171,7 +171,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
       cy.get('#grid12')
         .find('.slick-row')
         .each(($row, index) => {
-          let fullCellWidth;
+          let fullCellWidth: number;
 
           // only checks first 5 rows
           if (index > 5) {
@@ -181,7 +181,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
           // get full cell width of the first cell, then return
           cy.wrap($row).children('.slick-cell:nth(3)')
             .first()
-            .then(($cell) => fullCellWidth = $cell.width());
+            .then(($cell) => fullCellWidth = $cell.width() as number);
 
 
           cy.wrap($row)
@@ -191,7 +191,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
             .should(($el) => {
               // calculate 25% and expect the element width to be about the calculated size with a (+/-)1px precision
               const expectedWidth = (fullCellWidth * .30);
-              expect($el.width() + 1).greaterThan(expectedWidth);
+              expect($el.width() as number + 1).greaterThan(expectedWidth);
             });
         });
     });

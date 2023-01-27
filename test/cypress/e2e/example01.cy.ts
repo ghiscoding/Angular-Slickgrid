@@ -124,7 +124,7 @@ describe('Example 1 - Basic Grids', { retries: 1 }, () => {
     cy.get('#grid2')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find(className => /slickgrid_.*/.test(className));
+        gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
@@ -208,7 +208,7 @@ describe('Example 1 - Basic Grids', { retries: 1 }, () => {
     cy.get('#grid1')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find(className => /slickgrid_.*/.test(className));
+        gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
@@ -256,7 +256,7 @@ describe('Example 1 - Basic Grids', { retries: 1 }, () => {
     cy.get('#grid2')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find(className => /slickgrid_.*/.test(className));
+        gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
@@ -386,7 +386,7 @@ describe('Example 1 - Basic Grids', { retries: 1 }, () => {
     cy.get('#grid2')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find(className => /slickgrid_.*/.test(className));
+        gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
@@ -422,7 +422,7 @@ describe('Example 1 - Basic Grids', { retries: 1 }, () => {
     cy.get('#grid1')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find(className => /slickgrid_.*/.test(className));
+        gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
