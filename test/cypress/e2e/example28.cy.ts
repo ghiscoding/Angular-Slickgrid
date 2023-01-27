@@ -1,8 +1,5 @@
 import { changeTimezone, zeroPadding } from '../plugins/utilities';
-
-function removeExtraSpaces(text: string) {
-  return `${text}`.replace(/\s+/g, ' ').trim();
-}
+import { removeExtraSpaces } from '../plugins/utilities';
 
 describe('Example 28 - Tree Data (from a flat dataset with parentId references)', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 40;

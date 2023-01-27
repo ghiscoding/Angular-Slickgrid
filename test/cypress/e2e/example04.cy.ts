@@ -1,8 +1,5 @@
 import moment from 'moment-mini';
-
-function removeExtraSpaces(text: string) {
-  return `${text}`.replace(/\s+/g, ' ').trim();
-}
+import { removeExtraSpaces } from '../plugins/utilities';
 
 describe('Example 4 - Client Side Sort/Filter Grid', { retries: 1 }, () => {
   it('should display Example title', () => {

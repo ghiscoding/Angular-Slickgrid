@@ -1,8 +1,5 @@
 import moment from 'moment-mini';
-
-function removeExtraSpaces(text: string) {
-  return `${text}`.replace(/\s+/g, ' ').trim();
-}
+import { removeExtraSpaces } from '../plugins/utilities';
 
 describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
