@@ -55,7 +55,7 @@ jobs:
         run: yarn start &
 
       - name: Run Cypress E2E tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v5
         with:
           working-directory: test/cypress
           config-file: cypress.config.ts
