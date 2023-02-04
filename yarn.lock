@@ -2263,7 +2263,7 @@
   dependencies:
     "@slickgrid-universal/common" "~2.4.1"
 
-"@slickgrid-universal/event-pub-sub@~2.4.0", "@slickgrid-universal/event-pub-sub@~2.4.1":
+"@slickgrid-universal/event-pub-sub@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/event-pub-sub/-/event-pub-sub-2.4.0.tgz#12a9d0a49ef28be4d08f2f1184cb6d07b75f4c24"
   integrity sha512-YUnWByjPDvXznr73TfomimZfwwoBt16e3hcsrlWJA+7wl74y191i5J0DYgB49pvPn6jyTerQ/W7fCzTwojjCtA==
@@ -2432,7 +2432,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/dompurify@^2.4.1":
+"@types/dompurify@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-2.4.0.tgz#fd9706392a88e0e0e6d367f3588482d817df0ab9"
   integrity sha512-IDBwO5IZhrKvHFUl+clZxgf3hn2b/lU6H1KaBShPkQyGJUQ0xwebezIPSuiyGwfz1UzJWQl4M7BDxtHtCCPlTg==
