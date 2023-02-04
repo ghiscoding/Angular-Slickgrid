@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.3.0...v5.4.0) (2023-02-04)
+
+
+### Features
+
+* **dataView:** add option to apply row selection to all pages ([e6335be](https://github.com/ghiscoding/angular-slickgrid/commit/e6335be01875e2e1223039f2daa11cea23643843))
+
 # [5.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.2.2...v5.3.0) (2023-01-21)
 
 
