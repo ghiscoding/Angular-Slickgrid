@@ -35,9 +35,14 @@
 
     <div class="mb-2">
       <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
+        <button type="button" class="btn btn-outline-secondary" (click)="setSelectedRowIds()"
+                data-test="set-dynamic-rows-btn"
+                title="Change Row Selection across multiple pages">
+          <span>Change Row Selection</span>
+        </button>
         <button type="button" class="btn btn-outline-secondary" data-test="toggle-readonly-btn"
                 (click)="toggleGridEditReadonly()">
-          <i class="fa fa-table"></i> Toggle Edit/Readonly Grid
+          <i class="fa fa-table"></i> Toggle Readonly
         </button>
         <button type="button" class="btn btn-outline-secondary" data-test="undo-last-edit-btn"
                 (click)="undoLastEdit()">
@@ -56,7 +61,8 @@
                        [columnDefinitions]="columnDefinitions"
                        [gridOptions]="gridOptions"
                        [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)">
+                       (onAngularGridCreated)="angularGridReady($event.detail)"
+                       (onSelectedRowIdsChanged)="handleOnSelectedRowIdsChanged($event.detail.args)">
     </angular-slickgrid>
   </div>
 </div>

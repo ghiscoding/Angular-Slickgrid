@@ -1,4 +1,4 @@
-describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 }, () => {
+describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 }, () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
   const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];
 
@@ -73,7 +73,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 },
 
   // --
   // Cypress does not yet implement the .hover() method and this test won't work until then
-  // xit('should resize "Title" column and make it wider', () => {
+  // it('should resize "Title" column and make it wider', () => {
   //   cy.get('.slick-header-columns')
   //     .children('.slick-header-column:nth(3)')
   //     .should('contain', 'Title');
