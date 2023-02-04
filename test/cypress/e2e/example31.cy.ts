@@ -1,5 +1,12 @@
 describe('Example 31 - Columns Resize by Content', { retries: 1 }, () => {
-  const titles = ['', 'Title', 'Duration', 'Cost', '% Complete', 'Complexity', 'Start', 'Completed', 'Finish', 'Product', 'Country of Origin', 'Action'];
+  const GRID_ROW_HEIGHT = 33;
+
+  beforeEach(() => {
+    // create a console.log spy for later use
+    cy.window().then((win) => {
+      cy.spy(win.console, 'log');
+    });
+  });
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/resize-by-content`);
@@ -79,5 +86,102 @@ describe('Example 31 - Columns Resize by Content', { retries: 1 }, () => {
       .click();
 
     cy.get('.slick-row').find('.slick-cell:nth(9)').invoke('width').should('be.gt', 120);
+  });
+
+  it('should change row selection across multiple pages, first page should have 2 selected', () => {
+    cy.get('[data-test="set-dynamic-rows-btn"]').click();
+
+    // Row index 3, 4 and 11 (last one will be on 2nd page)
+    cy.get('input[type="checkbox"]:checked').should('have.length', 2); // 2x in current page and 1x in next page
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 4}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+  });
+
+  it('should go to next page and expect 1 row selected in that second page', () => {
+    cy.get('.icon-seek-next').click();
+
+    cy.get('input[type="checkbox"]:checked').should('have.length', 1); // only 1x row in page 2
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+  });
+
+  it('should click on "Select All" checkbox and expect all rows selected in current page', () => {
+    const expectedRowIds = [11, 3, 4];
+
+    // go back to 1st page
+    cy.get('.icon-seek-prev')
+      .click();
+
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .click({ force: true });
+
+    cy.window().then((win) => {
+      expect(win.console.log).to.have.callCount(3);
+      expect(win.console.log).to.be.calledWith('Selected Ids:', expectedRowIds);
+    });
+  });
+
+  it('should go to the next 2 pages and expect all rows selected in each page', () => {
+    cy.get('.icon-seek-next')
+      .click();
+
+    cy.get('.slick-cell-checkboxsel input:checked')
+      .should('have.length', 10);
+
+    cy.get('.icon-seek-next')
+      .click();
+
+    cy.get('.slick-cell-checkboxsel input:checked')
+      .should('have.length', 10);
+  });
+
+  it('should uncheck 1 row and expect current and next page to have "Select All" uncheck', () => {
+    cy.get('.slick-row:nth(0) .slick-cell:nth(0) input[type=checkbox]')
+      .click({ force: true });
+
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .should('not.be.checked', true);
+
+    cy.get('.icon-seek-next')
+      .click();
+
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .should('not.be.checked', true);
+  });
+
+  it('should go back to previous page, select the row that was unchecked and expect "Select All" to be selected again', () => {
+    cy.get('.icon-seek-prev')
+      .click();
+
+    cy.get('.slick-row:nth(0) .slick-cell:nth(0) input[type=checkbox]')
+      .click({ force: true });
+
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .should('be.checked', true);
+
+    cy.get('.icon-seek-next')
+      .click();
+
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .should('be.checked', true);
+  });
+
+  it('should Unselect All and expect all pages to no longer have any row selected', () => {
+    cy.get('#filter-checkbox-selectall-container input[type=checkbox]')
+      .click({ force: true });
+
+    cy.get('.slick-cell-checkboxsel input:checked')
+      .should('have.length', 0);
+
+    cy.get('.icon-seek-prev')
+      .click();
+
+    cy.get('.slick-cell-checkboxsel input:checked')
+      .should('have.length', 0);
+
+    cy.get('.icon-seek-prev')
+      .click();
+
+    cy.get('.slick-cell-checkboxsel input:checked')
+      .should('have.length', 0);
   });
 });

@@ -70,7 +70,11 @@ export const GlobalGridOptions: Partial<GridOption> = {
     }
   },
   dataView: {
-    syncGridSelection: true, // when enabled, this will preserve the row selection even after filtering/sorting/grouping
+    // when enabled, this will preserve the row selection even after filtering/sorting/grouping
+    syncGridSelection: {
+      preserveHidden: false,
+      preserveHiddenOnSelectionChange: true
+    },
     syncGridSelectionWithBackendService: false, // but disable it when using backend services
   },
   datasetIdPropertyName: 'id',

@@ -83,7 +83,7 @@ export class GridResizeByContentComponent implements OnInit {
 
   ngOnInit(): void {
     this.defineGrid();
-    this.dataset = this.loadData(5000);
+    this.dataset = this.loadData(400);
   }
 
   // Grid2 definition
@@ -303,6 +303,11 @@ export class GridResizeByContentComponent implements OnInit {
         rightPadding: 10
       },
       enableAutoResize: true,
+      enablePagination: true,
+      pagination: {
+        pageSize: 10,
+        pageSizes: [10, 200, 500, 5000]
+      },
 
       // resizing by cell content is opt-in
       // we first need to disable the 2 default flags to autoFit/autosize
@@ -463,6 +468,10 @@ export class GridResizeByContentComponent implements OnInit {
     this.isUsingDefaultResize = false;
   }
 
+  handleOnSelectedRowIdsChanged(args: any) {
+    console.log('Selected Ids:', args.selectedRowIds);
+  }
+
   toggleGridEditReadonly() {
     // first need undo all edits
     this.undoAllEdits();
@@ -517,6 +526,18 @@ export class GridResizeByContentComponent implements OnInit {
     }
   }
 
+  // change row selection dynamically and apply it to the DataView and the Grid UI
+  setSelectedRowIds() {
+    // change row selection even across multiple pages via DataView
+    this.angularGrid.dataView?.setSelectedIds([3, 4, 11]);
+
+    // you can also provide optional options (all defaults to true)
+    // this.sgb.dataView?.setSelectedIds([4, 5, 8, 10], {
+    //   isRowBeingAdded: true,
+    //   shouldTriggerEvent: true,
+    //   applyGridRowSelection: true
+    // });
+  }
 
   saveAll() {
     // Edit Queue (array increases every time a cell is changed, regardless of item object)
