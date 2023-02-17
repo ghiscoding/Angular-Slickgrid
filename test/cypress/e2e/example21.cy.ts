@@ -310,4 +310,37 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
       .find('h3')
       .contains('Task 102');
   });
+
+  it('should close all row details & make grid editable', () => {
+    cy.get('[data-test="close-all-btn"]').click();
+    cy.get('[data-test="editable-grid-btn"]').click();
+  });
+
+  it('should click on 3rd row detail open icon and expect it to open', () => {
+    cy.get('#grid21')
+      .find('.slick-row:nth(2) .slick-cell:nth(0)')
+      .click();
+
+    cy.get('#grid21')
+      .find('.innerDetailView_100 .container_100')
+      .as('detailContainer');
+
+    cy.get('@detailContainer')
+      .find('h3')
+      .contains('Task 100');
+  });
+
+  it('should click on 1st row "Title" cell to edit it and expect row detail to get closed', () => {
+    cy.get('#grid21')
+      .find('.slick-row:nth(1) .slick-cell:nth(1)')
+      .click();
+
+    cy.get('.editor-title')
+      .invoke('val')
+      .then(text => expect(text).to.eq('Task 10'));
+
+    cy.get('#grid21')
+      .find('.innerDetailView_100 .container_100')
+      .should('not.exist');
+  });
 });

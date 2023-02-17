@@ -12,12 +12,15 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-6">
-    <button class="btn btn-outline-secondary btn-sm" (click)="closeAllRowDetail()" data-test="close-all-btn">
+    <button class="btn btn-outline-secondary btn-xs" (click)="changeEditableGrid()" data-test="editable-grid-btn">
+      Make Grid Editable
+    </button>
+    <button class="btn btn-outline-secondary btn-xs" (click)="closeAllRowDetail()" data-test="close-all-btn">
       Close All Row Details
     </button>
     &nbsp;&nbsp;
     <label for="">Detail View Rows Shown: </label>
-    <input type="number" [(ngModel)]="detailViewRowCount">
+    <input type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount">
     <button class="btn btn-outline-secondary btn-xs" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
       Set
     </button>
