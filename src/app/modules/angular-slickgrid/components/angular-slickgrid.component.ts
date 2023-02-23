@@ -512,7 +512,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // before certain extentions/plugins potentially adds extra columns not created by the user itself (RowMove, RowDetail, RowSelections)
     // we'll subscribe to the event and push back the change to the user so they always use full column defs array including extra cols
     this.subscriptions.push(
-      this._eventPubSubService.subscribe<{ columns: Column[]; grid: SlickGrid }>('onPluginColumnsChanged', data => {
+      this._eventPubSubService.subscribe<{ columns: Column[]; grid: SlickGrid; }>('onPluginColumnsChanged', data => {
         this._columnDefinitions = data.columns;
         this.columnDefinitionsChange.emit(this._columnDefinitions);
       })
@@ -654,7 +654,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
       resizerService: this.resizerService,
       sortService: this.sortService,
       treeDataService: this.treeDataService,
-    }
+    };
 
     // all instances (SlickGrid, DataView & all Services)
     this._eventPubSubService.publish('onAngularGridCreated', this._angularGridInstances);
@@ -1074,7 +1074,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
         this._eventPubSubService.subscribe('onPaginationChanged', (paginationChanges: ServicePagination) => {
           this.paginationChanged(paginationChanges);
         }),
-        this._eventPubSubService.subscribe('onPaginationVisibilityChanged', (visibility: { visible: boolean }) => {
+        this._eventPubSubService.subscribe('onPaginationVisibilityChanged', (visibility: { visible: boolean; }) => {
           this.showPagination = visibility?.visible ?? false;
           if (this.gridOptions?.backendServiceApi) {
             this.backendUtilityService?.refreshBackendDataset(this.gridOptions);
@@ -1364,10 +1364,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     return columnDefinitions.map((column: Column | any) => {
       // on every Editor that have a "collectionAsync", resolve the data and assign it to the "collection" property
-      if (column && column.editor && column.editor.collectionAsync) {
+      if (column?.editor?.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
-      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };
+      return { ...column, editor: column.editor?.model, internalColumnEditor: { ...column.editor } };
     });
   }
 

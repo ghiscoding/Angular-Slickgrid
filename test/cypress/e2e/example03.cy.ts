@@ -1,4 +1,4 @@
-describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
+describe('Example 3 - Grid with Editors', { retries: 0 }, () => {
   const GRID_ROW_HEIGHT = 35;
   const fullTitles = [
     '', '', 'Title', 'Title, Custom Editor', 'Duration (days)', '% Complete',
@@ -16,6 +16,26 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
       .find('.slick-header-columns')
       .children()
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
+  });
+
+  it('should be able to change Title with Custom Editor and expect to save when changing the value and then mouse clicking on a different cell', () => {
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(3)`).should('contain', 'Task 1').click();
+    cy.get('input[type=text].editor-text')
+      .type('Task 8888');
+
+    // mouse click on next cell on the right & expect a save
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(4)`).click();
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(3)`).should('contain', 'Task 8888');
+  });
+
+  it('should be able to undo the editor and expect it to be opened, then clicking on Escape should reveal the cell to have rolled back text of "Task 1"', () => {
+    cy.get('[data-test="undo-btn"]').click();
+
+    cy.get('input[type=text].editor-text')
+      .should('exist')
+      .type('{esc}');
+
+    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(3)`).should('contain', 'Task 1');
   });
 
   it('should enable "Auto Commit Edit"', () => {
@@ -50,7 +70,7 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
     cy.get('.flatpickr-monthDropdown-months:visible')
       .select('January', { force: true });
     cy.get('.numInput.cur-year:visible').type('2009');
-    cy.get('.flatpickr-day:visible:nth(25)').click('bottom', { force: true })
+    cy.get('.flatpickr-day:visible:nth(25)').click('bottom', { force: true });
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(6)`).should('contain', '2009-01-22');
 
     // change City of Origin
@@ -123,7 +143,7 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
     cy.get('.flatpickr-monthDropdown-months:visible')
       .select('January', { force: true });
     cy.get('.numInput.cur-year:visible').type('2009');
-    cy.get('.flatpickr-day:visible:nth(25)').click('bottom', { force: true })
+    cy.get('.flatpickr-day:visible:nth(25)').click('bottom', { force: true });
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(6)`).should('contain', '2009-01-22');
 
     // change Effort Driven
@@ -197,7 +217,7 @@ describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
 
     // change Finish date
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(6)`).click();
-    cy.get('.flatpickr-day:visible:nth(24)').click('bottom', { force: true })
+    cy.get('.flatpickr-day:visible:nth(24)').click('bottom', { force: true });
     cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(6)`).should('contain', '2009-01-21');
 
     // // change Effort Driven
