@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.5.1...v5.6.0) (2023-02-24)
+
+
+### Bug Fixes
+
+* Edit cell mouseout should save & excel copy should work, fix [#1103](https://github.com/ghiscoding/angular-slickgrid/issues/1103) ([295c81c](https://github.com/ghiscoding/angular-slickgrid/commit/295c81c8ffdaa90439096e4b770659117e766395))
+
 ## [5.5.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.5.0...v5.5.1) (2023-02-17)
 
 # [5.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.4.1...v5.5.0) (2023-02-17)
