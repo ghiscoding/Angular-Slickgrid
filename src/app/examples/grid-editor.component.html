@@ -11,66 +11,68 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="col-sm-6">
-    <label>autoEdit setting: </label>
-    <span id="radioAutoEdit">
-      <label class="radio-inline control-label" for="radioTrue">
-        <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit"
-               (change)="setAutoEdit(true)"> ON (single-click)
-      </label>
-      <label class="radio-inline control-label" for="radioFalse">
-        <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit"
-               (change)="setAutoEdit(false)"> OFF (double-click)
-      </label>
-    </span>
-    <div class="row col-sm-12">
-      <span>
-        <button class="btn btn-outline-secondary btn-sm" (click)="undo()">
-          <i class="fa fa-undo"></i>
-          Undo last edit(s)
-        </button>
-        <label class="checkbox-inline control-label" for="autoCommitEdit">
-          <input type="checkbox" id="autoCommitEdit" data-test="auto-commit" [checked]="gridOptions.autoCommitEdit"
-                 (click)="changeAutoCommit()">
-          Auto Commit Edit
+  <div class="row">
+    <div class="col-sm-6">
+      <label>autoEdit setting: </label>
+      <span id="radioAutoEdit">
+        <label class="radio-inline control-label" for="radioTrue">
+          <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit"
+                 (change)="setAutoEdit(true)"> ON (single-click)
+        </label>
+        <label class="radio-inline control-label" for="radioFalse">
+          <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit"
+                 (change)="setAutoEdit(false)"> OFF (double-click)
         </label>
       </span>
-    </div>
-    <div class="row" style="margin-top: 5px">
-      <div class="col-sm-12">
-        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
-          Clear Filters
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
-          Clear Sorting
-        </button>
-        <button class="btn btn-sm btn-outline-primary" (click)="addItem()"
-                title="Clear Filters &amp; Sorting to see it better">Add item</button>
-        <button class="btn btn-sm btn-outline-danger" (click)="deleteItem()">Delete item</button>
+      <div class="row col-sm-12">
+        <span>
+          <button class="btn btn-outline-secondary btn-sm" (click)="undo()" data-test="undo-btn">
+            <i class="fa fa-undo"></i>
+            Undo last edit(s)
+          </button>
+          <label class="checkbox-inline control-label" for="autoCommitEdit">
+            <input type="checkbox" id="autoCommitEdit" data-test="auto-commit" [checked]="gridOptions.autoCommitEdit"
+                   (click)="changeAutoCommit()">
+            Auto Commit Edit
+          </label>
+        </span>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-sm-12">
+          <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
+            Clear Filters
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
+            Clear Sorting
+          </button>
+          <button class="btn btn-sm btn-outline-primary" (click)="addItem()"
+                  title="Clear Filters &amp; Sorting to see it better">Add item</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteItem()">Delete item</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 5px">
+        <div class="col-sm-12">
+          <button class="btn btn-outline-secondary btn-sm" data-test="add-title-column"
+                  (click)="dynamicallyAddTitleHeader()">
+            <i class="fa fa-plus"></i>
+            Dynamically Duplicate Title Column
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" data-test="remove-title-column"
+                  (click)="dynamicallyRemoveLastColumn()">
+            <i class="fa fa-minus"></i>
+            Dynamically Remove Last Column
+          </button>
+        </div>
       </div>
     </div>
-    <div class="row" style="margin-top: 5px">
-      <div class="col-sm-12">
-        <button class="btn btn-outline-secondary btn-sm" data-test="add-title-column"
-                (click)="dynamicallyAddTitleHeader()">
-          <i class="fa fa-plus"></i>
-          Dynamically Duplicate Title Column
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" data-test="remove-title-column"
-                (click)="dynamicallyRemoveLastColumn()">
-          <i class="fa fa-minus"></i>
-          Dynamically Remove Last Column
-        </button>
-      </div>
-    </div>
-  </div>
 
-  <div class="col-sm-6">
-    <div class="alert alert-info" *ngIf="updatedObject">
-      <strong>Updated Item:</strong> {{updatedObject | json}}
-    </div>
-    <div class="alert alert-warning" *ngIf="alertWarning">
-      <strong>Updated Item:</strong> {{alertWarning}}
+    <div class="col-sm-6">
+      <div class="alert alert-info" *ngIf="updatedObject">
+        <strong>Updated Item:</strong> {{updatedObject | json}}
+      </div>
+      <div class="alert alert-warning" *ngIf="alertWarning">
+        <strong>Updated Item:</strong> {{alertWarning}}
+      </div>
     </div>
   </div>
 

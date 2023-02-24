@@ -186,6 +186,7 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.string,
         editor: {
           model: CustomInputEditor,
+          // model: Editors.text,
           placeholder: 'custom',
           validator: myCustomTitleValidator, // use a custom validator
         },
@@ -335,7 +336,7 @@ export class GridEditorComponent implements OnInit {
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
               /** with Angular Http, note this demo won't work because of CORS */
-              // this.http.get(`http://gd.geobytes.com/AutoCompleteCity?q=${request.term}`).subscribe(data => response(data));
+              // this.http.get(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`).subscribe(data => updateCallback(data));
 
               /** with jQuery AJAX will work locally but not on the GitHub demo because of CORS */
               $.ajax({

@@ -1,4 +1,4 @@
-describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 }, () => {
+describe('Example 16: Grid State & Presets using Local Storage', { retries: 1 }, () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
   const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];
 
@@ -135,7 +135,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 },
       .should('be.visible');
 
     cy.get('.filter-title input')
-      .type('Task 1')
+      .type('Task 1');
   });
 
   it('should click on "Title" column to sort it Ascending', () => {
@@ -212,7 +212,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 },
     cy.get('@grid16')
       .find('#items-per-page-label').select('20');
 
-    cy.get('@grid16')
+    cy.get('@grid16');
     cy.get('.icon-seek-next').click().click();
 
     cy.wait(100);
@@ -319,7 +319,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 },
       .parent()
       .children()
       .each($child => {
-        console.log($child)
+        console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
   });
@@ -467,7 +467,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 },
       .parent()
       .children()
       .each($child => {
-        console.log($child)
+        console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
   });
@@ -485,7 +485,7 @@ describe('Example 16: Grid State & Presets using Local Storage', { retries: 0 },
       .parent()
       .children()
       .each($child => {
-        console.log($child)
+        console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
   });
