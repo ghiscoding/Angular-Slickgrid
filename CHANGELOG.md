@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.0...v5.6.1) (2023-03-03)
+
+
+### Bug Fixes
+
+* draggable grouping shouldn't throw error when dynamically changing columns ([b0791ec](https://github.com/ghiscoding/angular-slickgrid/commit/b0791ec35f2fde9b33c9500e5b154571e3229d72))
+
 # [5.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.5.1...v5.6.0) (2023-02-24)
 
 
