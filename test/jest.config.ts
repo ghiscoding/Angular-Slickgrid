@@ -2,16 +2,6 @@ import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
   rootDir: '../',
-  globals: {
-    'ts-jest': {
-      allowSyntheticDefaultImports: true,
-      diagnostics: false,
-      isolatedModules: true,
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-      stringifyContentPathRegex: '\\.html$'
-    },
-  },
-  globalSetup: '<rootDir>/test/jest-global-setup.ts',
   collectCoverage: false,
   collectCoverageFrom: [
     'src/app/modules/**/*.{js,ts}',
@@ -49,10 +39,17 @@ const config: Config.InitialOptions = {
     'node_modules'
   ],
   preset: 'jest-preset-angular',
+  globalSetup: '<rootDir>/test/jest-global-setup.ts',
   setupFiles: ['<rootDir>/test/jest-pretest.ts'],
   setupFilesAfterEnv: ['jest-extended/all', '<rootDir>/test/setup-jest.ts'],
   transform: {
-    '^.+\\.ts$': 'jest-preset-angular',
+    '^.+\\.ts$': ['jest-preset-angular', {
+      allowSyntheticDefaultImports: true,
+      diagnostics: false,
+      isolatedModules: true,
+      tsconfig: '<rootDir>/tsconfig.spec.json',
+      stringifyContentPathRegex: '\\.html$'
+    }],
   },
   transformIgnorePatterns: [
     '<rootDir>/node_modules/angular-slickgrid/',
