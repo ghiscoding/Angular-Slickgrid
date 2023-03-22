@@ -1424,6 +1424,56 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(setColSpy).toHaveBeenCalledWith(mockCols);
       });
 
+      it('should reflect columns with an extra row detail column in the grid when "enableRowDetailView" is set', () => {
+        const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
+        const mockCol = { id: 'firstName', field: 'firstName' };
+        const mockCols = [{ id: '_detail_selector', field: '_detail_selector', editor: undefined, internalColumnEditor: {} }, mockCol];
+        const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
+        const setColSpy = jest.spyOn(mockGrid, 'setColumns');
+
+        component.columnDefinitions = mockCols;
+        component.gridOptions = { ...gridOptions, enableRowDetailView: true, presets: { columns: mockColsPresets } } as unknown as GridOption;
+        component.initialization(slickEventHandler);
+
+        expect(getAssocColSpy).toHaveBeenCalledWith(mockGrid, mockColsPresets);
+        expect(setColSpy).toHaveBeenCalledWith(mockCols);
+      });
+
+      it('should reflect columns with an extra row move column in the grid when "enableRowMoveManager" is set', () => {
+        const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
+        const mockCol = { id: 'firstName', field: 'firstName' };
+        const mockCols = [{ id: '_move', field: '_move', editor: undefined, internalColumnEditor: {} }, mockCol];
+        const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
+        const setColSpy = jest.spyOn(mockGrid, 'setColumns');
+
+        component.columnDefinitions = mockCols;
+        component.gridOptions = { ...gridOptions, enableRowMoveManager: true, presets: { columns: mockColsPresets } } as unknown as GridOption;
+        component.initialization(slickEventHandler);
+
+        expect(getAssocColSpy).toHaveBeenCalledWith(mockGrid, mockColsPresets);
+        expect(setColSpy).toHaveBeenCalledWith(mockCols);
+      });
+
+      it('should reflect 3 dynamic columns (1-RowMove, 2-RowSelection, 3-RowDetail) when all associated extension flags are enabled', () => {
+        const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
+        const mockCol = { id: 'firstName', field: 'firstName' };
+        const mockCols = [
+          { id: '_move', field: '_move', editor: undefined, internalColumnEditor: {} },
+          { id: '_checkbox_selector', field: '_checkbox_selector', editor: undefined, internalColumnEditor: {} },
+          { id: '_detail_selector', field: '_detail_selector', editor: undefined, internalColumnEditor: {} },
+          mockCol
+        ];
+        const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
+        const setColSpy = jest.spyOn(mockGrid, 'setColumns');
+
+        component.columnDefinitions = mockCols;
+        component.gridOptions = { ...gridOptions, enableCheckboxSelector: true, enableRowDetailView: true, enableRowMoveManager: true, presets: { columns: mockColsPresets } } as unknown as GridOption;
+        component.initialization(slickEventHandler);
+
+        expect(getAssocColSpy).toHaveBeenCalledWith(mockGrid, mockColsPresets);
+        expect(setColSpy).toHaveBeenCalledWith(mockCols);
+      });
+
       it('should execute backend service "init" method when set', () => {
         const mockPagination = { pageNumber: 1, pageSizes: [10, 25, 50], pageSize: 10, totalItems: 100 };
         const mockGraphqlOptions = { datasetName: 'users', extraQueryArguments: [{ field: 'userId', value: 123 }] } as GraphqlServiceOption;

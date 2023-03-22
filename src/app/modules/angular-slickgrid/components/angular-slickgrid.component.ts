@@ -1107,27 +1107,47 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  protected insertDynamicPresetColumns(columnId: string, gridPresetColumns: Column[]) {
+    if (this._columnDefinitions) {
+      const columnPosition = this._columnDefinitions.findIndex(c => c.id === columnId);
+      if (columnPosition >= 0) {
+        const dynColumn = this._columnDefinitions[columnPosition];
+        if (dynColumn?.id === columnId && !gridPresetColumns.some(c => c.id === columnId)) {
+          columnPosition > 0
+            ? gridPresetColumns.splice(columnPosition, 0, dynColumn)
+            : gridPresetColumns.unshift(dynColumn);
+        }
+      }
+    }
+  }
+
   /** Load any possible Columns Grid Presets */
   private loadColumnPresetsWhenDatasetInitialized() {
     // if user entered some Columns "presets", we need to reflect them all in the grid
     if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.columns) && this.gridOptions.presets.columns.length > 0) {
-      const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(this.slickGrid, this.gridOptions.presets.columns);
-      if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
-        // make sure that the checkbox selector is also visible if it is enabled
+      const gridPresetColumns: Column[] = this.gridStateService.getAssociatedGridColumns(this.slickGrid, this.gridOptions.presets.columns);
+      if (gridPresetColumns && Array.isArray(gridPresetColumns) && gridPresetColumns.length > 0 && Array.isArray(this._columnDefinitions)) {
+        // make sure that the dynamic columns are included in presets (1.Row Move, 2. Row Selection, 3. Row Detail)
+        if (this.gridOptions.enableRowMoveManager) {
+          const rmmColId = this.gridOptions?.rowMoveManager?.columnId ?? '_move';
+          this.insertDynamicPresetColumns(rmmColId, gridPresetColumns);
+        }
         if (this.gridOptions.enableCheckboxSelector) {
-          const checkboxColumn = (Array.isArray(this._columnDefinitions) && this._columnDefinitions.length > 0) ? this._columnDefinitions[0] : null;
-          if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
-            gridColumns.unshift(checkboxColumn);
-          }
+          const chkColId = this.gridOptions?.checkboxSelector?.columnId ?? '_checkbox_selector';
+          this.insertDynamicPresetColumns(chkColId, gridPresetColumns);
+        }
+        if (this.gridOptions.enableRowDetailView) {
+          const rdvColId = this.gridOptions?.rowDetailView?.columnId ?? '_detail_selector';
+          this.insertDynamicPresetColumns(rdvColId, gridPresetColumns);
         }
 
         // keep copy the original optional `width` properties optionally provided by the user.
         // We will use this when doing a resize by cell content, if user provided a `width` it won't override it.
-        gridColumns.forEach(col => col.originalWidth = col.width);
+        gridPresetColumns.forEach(col => col.originalWidth = col.width);
 
         // finally set the new presets columns (including checkbox selector if need be)
-        this.slickGrid.setColumns(gridColumns);
-        this.sharedService.visibleColumns = gridColumns;
+        this.slickGrid.setColumns(gridPresetColumns);
+        this.sharedService.visibleColumns = gridPresetColumns;
       }
     }
   }
