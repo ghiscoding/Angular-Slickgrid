@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.3](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.1...v5.6.3) (2023-03-23)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies to ~2.6.3 ([90a2ce2](https://github.com/ghiscoding/angular-slickgrid/commit/90a2ce20851ab7e1d2519bd6fa84c3fa3ce1e087))
+* **presets:** dynamic columns should be auto-inserted with Grid Presets ([8091790](https://github.com/ghiscoding/angular-slickgrid/commit/80917904c3a30d8aee42b4b2ea0a8c6e4ccb32e0)), closes [#1092](https://github.com/ghiscoding/angular-slickgrid/issues/1092)
+
 ## [5.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.0...v5.6.1) (2023-03-03)
 
 
