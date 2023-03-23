@@ -2187,24 +2187,6 @@
   dependencies:
     dompurify "^3.0.1"
 
-"@slickgrid-universal/common@~2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/common/-/common-2.6.2.tgz#f8b18f46d203202b97125538da919fbbe2101864"
-  integrity sha512-13ebJ0SXTTxXYrrzBsqaoie576JDQG8LFQI+EcmLHMmhVzqDdXkWj8I2uJzMYb/FGVdU1I97vB9fYLFx/SdE8A==
-  dependencies:
-    "@slickgrid-universal/event-pub-sub" "~2.6.2"
-    "@slickgrid-universal/utils" "~2.6.2"
-    autocompleter "^8.0.3"
-    dequal "^2.0.3"
-    dompurify "^3.0.1"
-    flatpickr "^4.6.13"
-    jquery "^3.6.3"
-    moment-mini "^2.29.4"
-    multiple-select-modified "^1.3.17"
-    slickgrid "^3.0.4"
-    sortablejs "^1.15.0"
-    un-flatten-tree "^2.0.12"
-
 "@slickgrid-universal/common@~2.6.3":
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/common/-/common-2.6.3.tgz#3541cf068d05af8ad0b3032280f6a4417dd99393"
@@ -2311,12 +2293,12 @@
     "@slickgrid-universal/common" "~2.6.3"
     rxjs ">=7.5.0"
 
-"@slickgrid-universal/text-export@~2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/text-export/-/text-export-2.6.2.tgz#f3d92c6ad51b84745051e404edca01babc0f6c75"
-  integrity sha512-01jvFESyIGY2kcHnVUj7Vp1NtJ1CFIIlkurMaL58ZrJfUwAAQkg5gv/ETV6BRbcYsyR1BD6Yz+m9Xr4bVXVslQ==
+"@slickgrid-universal/text-export@~2.6.3":
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/@slickgrid-universal/text-export/-/text-export-2.6.3.tgz#9f6d21e606d64c86d07650e0ae5d2f880d42a395"
+  integrity sha512-uR0UYY0faqNlUQs24YxRNyBd0HNyFP6JrdSG3xM6+QaRZ8l6YzbLSFryQFjQfSheNviQw50O/3QVSzDGmJyrbw==
   dependencies:
-    "@slickgrid-universal/common" "~2.6.2"
+    "@slickgrid-universal/common" "~2.6.3"
     "@slickgrid-universal/utils" "~2.6.2"
     text-encoding-utf-8 "^1.0.2"
 
@@ -2425,10 +2407,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/dompurify@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-2.4.0.tgz#fd9706392a88e0e0e6d367f3588482d817df0ab9"
-  integrity sha512-IDBwO5IZhrKvHFUl+clZxgf3hn2b/lU6H1KaBShPkQyGJUQ0xwebezIPSuiyGwfz1UzJWQl4M7BDxtHtCCPlTg==
+"@types/dompurify@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-3.0.0.tgz#28388a1aff0ced6e635b5b912c5f5935711d45b9"
+  integrity sha512-EcSqmgm/xJwH8CcJPy9AHNypp/j58CYga3nWdl93/wLxX6OH+rSD3aAj75NQazcZd1YKHJ/pjNZ9qmgVajggwQ==
   dependencies:
     "@types/trusted-types" "*"
 
@@ -7530,11 +7512,6 @@ jquery@>=3.0.0, jquery@^3.5.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.1.tgz#fab0408f8b45fc19f956205773b62b292c147a16"
   integrity sha512-opJeO4nCucVnsjiXOE+/PcCgYw9Gwpvs/a6B1LL/lQhwWwpbVEVYDZ1FokFr8PRc7ghYlrFPuyHuiiDNTQxmcw==
-
-jquery@^3.6.3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.3.tgz#23ed2ffed8a19e048814f13391a19afcdba160e6"
-  integrity sha512-bZ5Sy3YzKo9Fyc8wH2iIQK4JImJ6R0GWI9kL1/k7Z91ZBNgkRXE6U0JfHIizZbort8ZunhSI3jw9I6253ahKfg==
 
 jquery@^3.6.4:
   version "3.6.4"
