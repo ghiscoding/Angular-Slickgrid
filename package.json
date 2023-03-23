@@ -100,11 +100,11 @@
     "@types/jest": "^29.5.0",
     "@types/jquery": "^3.5.16",
     "@types/moment": "^2.13.0",
-    "@types/node": "^18.15.3",
+    "@types/node": "^18.15.5",
     "@types/sortablejs": "^1.15.1",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "autoprefixer": "^10.4.14",
     "bootstrap": "^5.2.3",
     "copyfiles": "^2.4.1",
@@ -114,15 +114,15 @@
     "font-awesome": "^4.7.0",
     "jest": "^29.5.0",
     "jest-extended": "^3.2.4",
-    "jest-preset-angular": "^13.0.0",
+    "jest-preset-angular": "^13.0.1",
     "moment-mini": "^2.29.4",
     "ng-packagr": "^14.3.0",
     "ngx-bootstrap": "^9.0.0",
     "npm-run-all2": "^6.0.4",
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
-    "release-it": "^15.9.0",
-    "rimraf": "^4.4.0",
+    "release-it": "^15.9.1",
+    "rimraf": "^4.4.1",
     "sass": "^1.59.3",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
@@ -135,6 +135,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001466"
+    "caniuse-lite": "1.0.30001469"
   }
 }
