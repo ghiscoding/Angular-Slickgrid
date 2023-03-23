@@ -94,7 +94,7 @@
     "@slickgrid-universal/graphql": "~2.6.3",
     "@slickgrid-universal/odata": "~2.6.3",
     "@slickgrid-universal/text-export": "~2.6.3",
-    "@types/dompurify": "^2.4.0",
+    "@types/dompurify": "^3.0.0",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
     "@types/jest": "^29.5.0",

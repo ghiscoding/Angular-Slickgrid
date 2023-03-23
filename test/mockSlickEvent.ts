@@ -1,4 +1,4 @@
-import { SlickEvent, SlickEventHandler } from '@slickgrid-universal/common';
+import { SlickEvent, SlickEventData, SlickEventHandler } from '@slickgrid-universal/common';
 
 // interface PubSubEvent {
 //   name: string;
@@ -6,7 +6,7 @@ import { SlickEvent, SlickEventHandler } from '@slickgrid-universal/common';
 // }
 
 export class MockSlickEvent implements SlickEvent {
-  private _handlers = [];
+  private _handlers: any[] = [];
 
   notify(args: any, event?: any, scope?: any) {
     scope = scope || this;
@@ -19,13 +19,13 @@ export class MockSlickEvent implements SlickEvent {
     return returnValue;
   }
 
-  subscribe(handler: (data: any, e?: any) => void): any {
-    this._handlers.push(handler);
+  subscribe(fn: (data: any, e?: any) => void): any {
+    this._handlers.push(fn);
   }
 
-  unsubscribe(handler: (data: any, e?: any) => void) {
+  unsubscribe(fn?: (e: SlickEventData | Event, data?: any) => void) {
     this._handlers.forEach((handlerFn, index) => {
-      if (handlerFn === handler) {
+      if (handlerFn === fn) {
         this._handlers.splice(index, 1);
       }
     });
@@ -33,7 +33,7 @@ export class MockSlickEvent implements SlickEvent {
 }
 
 export class MockSlickEventHandler implements SlickEventHandler {
-  private _handlers = [];
+  private _handlers: any[] = [];
 
   notify(eventName: string, data?: any) {
     const pubSub = this._handlers.find(subscription => subscription.name === eventName);
