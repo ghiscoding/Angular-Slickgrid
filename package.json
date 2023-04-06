@@ -94,7 +94,7 @@
     "@slickgrid-universal/graphql": "~2.6.3",
     "@slickgrid-universal/odata": "~2.6.3",
     "@slickgrid-universal/text-export": "~2.6.3",
-    "@types/dompurify": "^3.0.0",
+    "@types/dompurify": "^3.0.1",
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
     "@types/jest": "^29.5.0",
@@ -103,8 +103,8 @@
     "@types/node": "^18.15.11",
     "@types/sortablejs": "^1.15.1",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
     "autoprefixer": "^10.4.14",
     "bootstrap": "^5.2.3",
     "copyfiles": "^2.4.1",
@@ -118,10 +118,10 @@
     "moment-mini": "^2.29.4",
     "ng-packagr": "^14.3.0",
     "ngx-bootstrap": "^9.0.0",
-    "npm-run-all2": "^6.0.4",
+    "npm-run-all2": "^6.0.5",
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
-    "release-it": "^15.9.3",
+    "release-it": "^15.10.1",
     "rimraf": "^4.4.1",
     "sass": "^1.60.0",
     "stream-browserify": "^3.0.0",
@@ -135,6 +135,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001473"
+    "caniuse-lite": "1.0.30001474"
   }
 }
