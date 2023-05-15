@@ -33,7 +33,7 @@
       "enabled": false
     }
   ],
-  schedule: ['on thursday and monday'],
+  schedule: ['on friday and tuesday'],
   ignoreDeps: [
     // ignore TypeScript since it has to follow whatever version allows at the time
     'typescript'
