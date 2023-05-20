@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.4](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.3...v5.6.4) (2023-05-20)
+
+
+### Bug Fixes
+
+* **export:** fix negative number exports to Excel, fixes [#1135](https://github.com/ghiscoding/angular-slickgrid/issues/1135) ([f52dc8a](https://github.com/ghiscoding/angular-slickgrid/commit/f52dc8aea6c8f26a6a0a9072521c609223b3a033))
+
 ## [5.6.3](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.1...v5.6.3) (2023-03-23)
 
 
