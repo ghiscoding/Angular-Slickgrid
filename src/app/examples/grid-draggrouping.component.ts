@@ -258,6 +258,7 @@ export class GridDraggableGroupingComponent implements OnInit {
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
+      const randomCost = Math.round(Math.random() * 10000) / 100;
 
       this.dataset[i] = {
         id: 'id_' + i,
@@ -268,7 +269,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
+        cost: (i % 33 === 0) ? -randomCost : randomCost,
         effortDriven: (i % 5 === 0)
       };
     }
