@@ -2235,13 +2235,6 @@
   dependencies:
     "@slickgrid-universal/common" "~2.6.4"
 
-"@slickgrid-universal/event-pub-sub@~2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/event-pub-sub/-/event-pub-sub-2.6.2.tgz#1e763855612e383ecb36e3cfc5d6940cea9e8352"
-  integrity sha512-FgzfYwVoy/2bjaEHspXi4qBEdKkRjI3aWncCkrEsxBvmOt6RXaMgqJ0X1WnzjkIayhRsZBisQa3/RK1NFv3a0g==
-  dependencies:
-    "@slickgrid-universal/utils" "~2.6.2"
-
 "@slickgrid-universal/event-pub-sub@~2.6.4":
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/event-pub-sub/-/event-pub-sub-2.6.4.tgz#f1e47bb49cb019b5c8a1465e70bf75eaf6800c40"
@@ -2306,11 +2299,6 @@
     "@slickgrid-universal/common" "~2.6.4"
     "@slickgrid-universal/utils" "~2.6.4"
     text-encoding-utf-8 "^1.0.2"
-
-"@slickgrid-universal/utils@~2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/utils/-/utils-2.6.2.tgz#5d21a4a8a49ac23e959b737dd9fe89fa00643a64"
-  integrity sha512-nGjdWCsr8G3f40XpcGxn53VXrshRlk6zVLhCIdFq7sJJ1yNQfJrJONHfNNt+fdRiopGUoK6jiEVu5Aqpj5OMgA==
 
 "@slickgrid-universal/utils@~2.6.4":
   version "2.6.4"

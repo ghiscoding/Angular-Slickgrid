@@ -53,7 +53,7 @@
     "@slickgrid-universal/common": "~2.6.4",
     "@slickgrid-universal/custom-footer-component": "~2.6.4",
     "@slickgrid-universal/empty-warning-component": "~2.6.4",
-    "@slickgrid-universal/event-pub-sub": "~2.6.2",
+    "@slickgrid-universal/event-pub-sub": "~2.6.4",
     "@slickgrid-universal/pagination-component": "~2.6.4",
     "@slickgrid-universal/row-detail-view-plugin": "~2.6.4",
     "@slickgrid-universal/rxjs-observable": "~2.6.4",
