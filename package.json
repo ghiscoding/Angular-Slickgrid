@@ -59,7 +59,6 @@
     "@slickgrid-universal/rxjs-observable": "3.0.0-beta.0",
     "dequal": "^2.0.3",
     "dompurify": "^3.0.3",
-    "rxjs": ">=7.8.1",
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
@@ -121,6 +120,7 @@
     "postcss-cli": "^10.1.0",
     "release-it": "^15.10.3",
     "rimraf": "^4.4.1",
+    "rxjs": "^7.8.1",
     "sass": "^1.62.1",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
