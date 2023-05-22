@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - next
   pull_request:
     branches:
       - '**'
@@ -44,7 +45,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-            
+
       - name: Run yarn install dependencies
         run: yarn --frozen-lockfile
 
