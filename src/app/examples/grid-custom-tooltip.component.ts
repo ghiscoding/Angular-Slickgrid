@@ -155,7 +155,7 @@ export class GridCustomTooltipComponent implements OnInit {
           model: Editors.slider,
           minValue: 0,
           maxValue: 100,
-          // params: { hideSliderNumber: true },
+          // editorOptions: { hideSliderNumber: true },
         },
         formatter: Formatters.percentCompleteBar,
         sortable: true, filterable: true,

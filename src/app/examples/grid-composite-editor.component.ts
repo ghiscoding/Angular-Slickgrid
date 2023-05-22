@@ -202,8 +202,8 @@ export class GridCompositeEditorComponent implements OnInit {
         id: 'complexity', name: 'Complexity', field: 'complexity', minWidth: 100,
         type: FieldType.number,
         sortable: true, filterable: true, columnGroup: 'Analysis',
-        formatter: (_row, _cell, value) => this.complexityLevelList[value].label,
-        exportCustomFormatter: (_row, _cell, value) => this.complexityLevelList[value].label,
+        formatter: (_row, _cell, value) => this.complexityLevelList[value]?.label,
+        exportCustomFormatter: (_row, _cell, value) => this.complexityLevelList[value]?.label,
         filter: {
           model: Filters.multipleSelect,
           collection: this.complexityLevelList

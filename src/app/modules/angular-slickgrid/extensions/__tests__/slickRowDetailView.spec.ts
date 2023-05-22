@@ -92,6 +92,7 @@ describe('SlickRowDetailView', () => {
 
     plugin = new SlickRowDetailView(angularUtilServiceStub, applicationRefStub, eventPubSubService, document.body as HTMLDivElement, rxjsResourceStub);
     plugin.eventHandler = new Slick.EventHandler();
+    jest.spyOn(plugin, 'getOptions').mockReturnValue(gridOptionsMock.rowDetailView);
   });
 
   afterEach(() => {
@@ -526,6 +527,7 @@ describe('SlickRowDetailView', () => {
       it('should run the internal "onProcessing" and call "notifyTemplate" with a Promise when "process" method is defined and executed', (done) => {
         const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
         gridOptionsMock.rowDetailView!.process = () => new Promise((resolve) => resolve(mockItem));
+
         plugin.init(gridStub);
         plugin.onAsyncResponse = new Slick.Event();
         plugin.onAsyncResponse.subscribe((_e, response) => {

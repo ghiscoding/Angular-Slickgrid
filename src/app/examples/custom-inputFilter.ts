@@ -11,29 +11,24 @@ import {
   SlickGrid,
 } from './../modules/angular-slickgrid';
 
-// using external non-typed js libraries
-declare const $: any;
-
 export class CustomInputFilter implements Filter {
   private _clearFilterTriggered = false;
   private _shouldTriggerQuery = true;
-  private $filterElm!: JQuery<HTMLInputElement>;;
+  private filterElm!: HTMLInputElement;
   grid!: SlickGrid;
   searchTerms: SearchTerm[] = [];
   columnDef!: Column;
   callback!: FilterCallback;
   operator: OperatorType | OperatorString = OperatorType.equal;
 
-  constructor() { }
-
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter || {};
+    return this.columnDef?.filter ?? {};
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
-    return this.grid?.getOptions?.() as GridOption;
+    return this.grid?.getOptions() as GridOption;
   }
 
   /**
@@ -46,44 +41,24 @@ export class CustomInputFilter implements Filter {
     this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
-
-    // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString();
+    const searchTerm = Array.isArray(this.searchTerms) && this.searchTerms.length >= 0 ? this.searchTerms[0] : '';
 
     // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
-    this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
+    this.filterElm = this.createFilterElement(searchTerm);
 
     // step 3, subscribe to the keyup event and run the callback when that happens
-    this.$filterElm.keyup((e: any) => {
-      let value = e && e.target && e.target.value || '';
-      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
-      if (typeof value === 'string' && enableWhiteSpaceTrim) {
-        value = value.trim();
-      }
-
-      if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-        this.$filterElm.removeClass('filled');
-      } else {
-        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
-      }
-      // reset both flags for next use
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
-    });
+    this.filterElm?.addEventListener('keyup', this.onKeyup.bind(this));
   }
 
   /**
    * Clear the filter value
    */
   clear(shouldTriggerQuery = true) {
-    if (this.$filterElm) {
+    if (this.filterElm) {
       this._clearFilterTriggered = true;
       this._shouldTriggerQuery = shouldTriggerQuery;
-      this.$filterElm.val('');
-      this.$filterElm.trigger('keyup');
+      this.filterElm.value = '';
+      this.filterElm.dispatchEvent(new Event('keyup'));
     }
   }
 
@@ -91,15 +66,14 @@ export class CustomInputFilter implements Filter {
    * destroy the filter
    */
   destroy() {
-    if (this.$filterElm) {
-      this.$filterElm.off('keyup').remove();
-    }
+    this.filterElm?.removeEventListener('keyup', this.onKeyup.bind(this));
+    this.filterElm?.remove();
   }
 
   /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[]) {
-    if (values) {
-      this.$filterElm.val(values as string);
+    if (values && this.filterElm) {
+      this.filterElm.value = values as string;
     }
   }
 
@@ -107,36 +81,51 @@ export class CustomInputFilter implements Filter {
   // private functions
   // ------------------
 
-  /**
-   * Create the HTML template as a string
-   */
-  private buildTemplateHtmlString() {
-    let placeholder = this.gridOptions?.defaultFilterPlaceholder ?? '';
-    if (this.columnFilter?.placeholder) {
-      placeholder = this.columnFilter.placeholder;
+  private onKeyup(e: KeyboardEvent) {
+    let value = (e as KeyboardEvent & { target: HTMLInputElement })?.target?.value ?? '';
+    const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+    if (typeof value === 'string' && enableWhiteSpaceTrim) {
+      value = value.trim();
     }
-    return `<input type="text" class="form-control search-filter" placeholder="${placeholder}">`;
+
+    if (this._clearFilterTriggered) {
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this.filterElm?.classList.remove('filled');
+    } else {
+      value === '' ? this.filterElm?.classList.remove('filled') : this.filterElm?.classList.add('filled');
+      this.callback(e, { columnDef: this.columnDef, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+    }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 
   /**
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
-    const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
-    $($headerElm).empty();
+  private createFilterElement(searchTerm?: SearchTerm) {
+    const headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+    if (headerElm) {
+      headerElm.innerHTML = '';
 
-    // create the DOM element & add an ID and filter class
-    const $filterElm = $(filterTemplate);
+      let placeholder = this.gridOptions?.defaultFilterPlaceholder ?? '';
+      if (this.columnFilter?.placeholder) {
+        placeholder = this.columnFilter.placeholder;
+      }
 
-    $filterElm.val(searchTerm);
-    $filterElm.data('columnId', this.columnDef.id);
+      // create the DOM element & add an ID and filter class
+      this.filterElm = document.createElement('input');
+      this.filterElm.type = 'text';
+      this.filterElm.className = 'form-control search-filter';
+      this.filterElm.placeholder = placeholder;
+      this.filterElm.value = `${searchTerm || ''}`;
+      this.filterElm.dataset.columnid = `${this.columnDef.id}`;
 
-    // append the new DOM element to the header row
-    if ($filterElm && typeof $filterElm.appendTo === 'function') {
-      $filterElm.appendTo($headerElm);
+      // append the new DOM element to the header row
+      headerElm.appendChild(this.filterElm);
+
     }
-
-    return $filterElm;
+    return this.filterElm;
   }
 }

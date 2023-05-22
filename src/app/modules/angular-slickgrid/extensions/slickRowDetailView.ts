@@ -106,7 +106,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // we need to keep the user "process" method and replace it with our own execution method
       // we do this because when we get the item detail, we need to call "onAsyncResponse.notify" for the plugin to work
       this._userProcessFn = this.gridOptions.rowDetailView.process as (item: any) => Promise<any>;                // keep user's process method
-      this.gridOptions.rowDetailView.process = (item) => this.onProcessing(item);  // replace process method & run our internal one
+      this.addonOptions.process = (item) => this.onProcessing(item);  // replace process method & run our internal one
     } else {
       throw new Error('[Angular-Slickgrid] You need to provide a "process" function for the Row Detail Extension to work properly');
     }
@@ -116,11 +116,11 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // when those are Angular View/ViewModel, we need to create View Component & provide the html containers to the Plugin (preTemplate/postTemplate methods)
       if (!this.gridOptions.rowDetailView.preTemplate) {
         this._preloadComponent = this.gridOptions?.rowDetailView?.preloadComponent;
-        this.gridOptions.rowDetailView.preTemplate = () => DOMPurify.sanitize(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
+        this.addonOptions.preTemplate = () => DOMPurify.sanitize(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
       }
       if (!this.gridOptions.rowDetailView.postTemplate) {
         this._viewComponent = this.gridOptions?.rowDetailView?.viewComponent;
-        this.gridOptions.rowDetailView.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`);
+        this.addonOptions.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`);
       }
 
       // this also requires the Row Selection Model to be registered as well
@@ -232,7 +232,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render all the expanded row detail View Components */
   renderAllViewComponents() {
     this._views.forEach((view) => {
-      if (view && view.dataContext) {
+      if (view?.dataContext) {
         this.renderViewModel(view.dataContext);
       }
     });
@@ -241,7 +241,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
-    if (containerElements && containerElements.length >= 0) {
+    if (containerElements?.length >= 0) {
       this.renderViewModel(createdView.dataContext);
     }
   }
@@ -249,7 +249,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
-    if (containerElements && containerElements.length >= 0) {
+    if (containerElements?.length >= 0) {
       this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1], true);
     }
   }
@@ -257,7 +257,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | undefined {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
-    if (containerElements && containerElements.length > 0) {
+    if (containerElements?.length > 0) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
         // pass a few properties to the Row Detail template component
@@ -266,7 +266,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
           addon: this,
           grid: this._grid,
           dataView: this.dataView,
-          parent: this.rowDetailViewOptions && this.rowDetailViewOptions.parent,
+          parent: this.rowDetailViewOptions?.parent,
         });
 
         const viewObj = this._views.find(obj => obj.id === item[this.datasetIdPropName]);

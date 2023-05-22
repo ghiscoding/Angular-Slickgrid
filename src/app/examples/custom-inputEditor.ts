@@ -1,15 +1,19 @@
-import { Column, ColumnEditor, Editor, EditorValidator, EditorValidationResult, KeyCode } from './../modules/angular-slickgrid';
-
-// using external non-typed js libraries
-declare const $: any;
+import {
+  Column,
+  ColumnEditor,
+  Editor,
+  EditorValidator,
+  EditorValidationResult,
+  KeyCode,
+} from './../modules/angular-slickgrid';
 
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomInputEditor implements Editor {
-  private _lastInputEvent?: JQuery.Event;
-  $input!: JQuery<HTMLInputElement>;
+  private _lastInputEvent?: KeyboardEvent;
+  inputElm!: HTMLInputElement;
   defaultValue: any;
 
   constructor(private args: any) {
@@ -18,12 +22,12 @@ export class CustomInputEditor implements Editor {
 
   /** Get Column Definition object */
   get columnDef(): Column {
-    return this.args && this.args.column || {};
+    return this.args?.column ?? {};
   }
 
   /** Get Column Editor object */
   get columnEditor(): ColumnEditor {
-    return this.columnDef && this.columnDef.internalColumnEditor || {};
+    return this.columnDef?.internalColumnEditor ?? {};
   }
 
   get hasAutoCommitEdit(): boolean {
@@ -36,59 +40,70 @@ export class CustomInputEditor implements Editor {
   }
 
   init(): void {
-    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
-    const title = this.columnEditor && this.columnEditor.title || '';
+    const placeholder = this.columnEditor?.placeholder || '';
+    const title = this.columnEditor?.title || '';
 
-    this.$input = $(`<input type="text" class="editor-text" placeholder="${placeholder}" title="${title}" />`)
-      .appendTo(this.args.container)
-      .on('keydown.nav', (event: JQuery.Event) => {
-        this._lastInputEvent = event;
-        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
-          event.stopImmediatePropagation();
-        }
-      });
+    this.inputElm = document.createElement('input');
+    this.inputElm.type = 'text';
+    this.inputElm.className = 'editor-text';
+    this.inputElm.placeholder = placeholder;
+    this.inputElm.title = title;
+
+    this.args.container.appendChild(this.inputElm);
+
+    this.inputElm.addEventListener('keydown', this.onKeydown.bind(this));
 
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this.$input.on('focusout', () => this.save());
+      this.inputElm.addEventListener('focusout', this.save.bind(this));
     }
 
     setTimeout(() => {
-      this.$input.focus().select();
+      this.inputElm.focus();
+      this.inputElm.select();
     }, 50);
   }
 
+  onKeydown(event: KeyboardEvent) {
+    this._lastInputEvent = event;
+    if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+      event.stopImmediatePropagation();
+    }
+  }
+
   destroy() {
-    this.$input.off('keydown.nav').remove();
+    this.inputElm.removeEventListener('keydown', this.onKeydown.bind(this));
+    this.inputElm.removeEventListener('focusout', this.save.bind(this));
+    this.inputElm.remove();
   }
 
   focus() {
-    this.$input.focus();
+    this.inputElm.focus();
   }
 
   getValue() {
-    return this.$input.val();
+    return this.inputElm.value;
   }
 
   setValue(val: string) {
-    this.$input.val(val);
+    this.inputElm.value = val;
   }
 
   loadValue(item: any) {
     this.defaultValue = item[this.args.column.field] || '';
-    this.$input.val(this.defaultValue);
-    this.$input[0].defaultValue = this.defaultValue;
-    this.$input.select();
+    this.inputElm.value = this.defaultValue;
+    this.inputElm.defaultValue = this.defaultValue;
+    this.inputElm.select();
   }
 
   serializeValue() {
-    return this.$input.val();
+    return this.inputElm.value;
   }
 
   applyValue(item: any, state: any) {
     const validation = this.validate(state);
-    item[this.args.column.field] = (validation && validation.valid) ? state : '';
+    item[this.args.column.field] = validation && validation.valid ? state : '';
   }
 
   isValueChanged() {
@@ -96,7 +111,7 @@ export class CustomInputEditor implements Editor {
     if (this.columnEditor?.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    return (!(this.inputElm.value === '' && this.defaultValue === null) && this.inputElm.value !== this.defaultValue);
   }
 
   save() {
@@ -112,13 +127,13 @@ export class CustomInputEditor implements Editor {
 
   validate(inputValue?: any): EditorValidationResult {
     if (this.validator) {
-      const value = (inputValue !== undefined) ? inputValue : this.$input?.val();
+      const value = inputValue !== undefined ? inputValue : this.inputElm?.value;
       return this.validator(value, this.args);
     }
 
     return {
       valid: true,
-      msg: null
+      msg: null,
     };
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
@@ -10,7 +11,6 @@ import {
   GridOption,
   GridState,
   GridStateChange,
-  MultipleSelectOption,
   unsubscribeAllObservables
 } from './../modules/angular-slickgrid';
 
@@ -139,7 +139,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
+          filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption,
         }
       }
     ];

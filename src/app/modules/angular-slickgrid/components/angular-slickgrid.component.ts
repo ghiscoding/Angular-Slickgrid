@@ -1219,12 +1219,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
     gridOptions.enablePagination = ((gridOptions.backendServiceApi && gridOptions.enablePagination === undefined) ? true : gridOptions.enablePagination) || false;
 
-    // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
-    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
+    // use extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
+    const options = Slick.Utils.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
 
-    // using jQuery extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
+    // using copy extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
-    // jQuery wrote this on their docs:: On a deep extend, Object and Array are extended, but object wrappers on primitive types such as String, Boolean, and Number are not.
+    // On a deep extend, Object and Array are extended, but object wrappers on primitive types such as String, Boolean, and Number are not.
     if (options?.pagination && (gridOptions.enablePagination || gridOptions.backendServiceApi) && (this.forRootConfig.pagination || gridOptions.pagination)) {
       options.pagination.pageSize = gridOptions.pagination?.pageSize ?? this.forRootConfig.pagination?.pageSize ?? GlobalGridOptions.pagination!.pageSize;
       options.pagination.pageSizes = gridOptions.pagination?.pageSizes ?? this.forRootConfig.pagination?.pageSizes ?? GlobalGridOptions.pagination!.pageSizes;

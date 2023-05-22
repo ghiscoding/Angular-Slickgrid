@@ -11,7 +11,7 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to React. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, it is the most active fork since the original @mleibman was retired some time ago by the original author for personal reasons. Also worth to know, that I also contributed a lot to the 6pac/SlickGrid fork for the benefit of all the SlickGrid libraries that I maintain like this one here.... also as a reminder, this is a wrapper of a jQuery lib (SlickGrid) and its core component is written in jQuery/JavaScript, so just keep that in mind and it also mean that jQuery is a dependency of Angular-Slickgrid.
+One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). Angular-Slickgrid is a wrapper on top of SlickGrid, we will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, it is the most active fork since the original @mleibman was retired some time ago by the original author for personal reasons. Also worth to know, that I also contributed a lot to the 6pac/SlickGrid fork for the benefit of all the SlickGrid libraries that I maintain like this one here....
 
 ### License
 [MIT License](LICENSE)
@@ -57,6 +57,8 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `5.x.x` for Angular 14+, RxJS >=7.5.0 and **Ivy ONLY** ([migration guide to 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x))
   - removal of jQueryUI dependency (replaced internally by SortableJS, a smaller and touch friendly lib).
   - requires Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version
+- version `6.x.x` for Angular 16+, RxJS >=7.8.1 and **Ivy ONLY** ([migration guide to 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x))
+  - removal of jQuery dependency (now uses browser native code).
 
 **Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, you can consult the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table)
 

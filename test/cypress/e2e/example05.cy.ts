@@ -682,7 +682,7 @@ describe('Example 5 - OData Grid', () => {
     it('should change Gender filter to "female" and still expect previous sort (before the error) to still be in query', () => {
       cy.get('.ms-filter.filter-gender:visible').click();
 
-      cy.get('[name="filter-gender"].ms-drop')
+      cy.get('[data-name="filter-gender"].ms-drop')
         .find('li:visible:nth(2)')
         .contains('female')
         .click();
