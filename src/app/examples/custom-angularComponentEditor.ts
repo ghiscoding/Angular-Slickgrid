@@ -47,22 +47,22 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Get the Collection */
   get collection(): any[] {
-    return this.columnDef && this.columnDef.internalColumnEditor!.collection || [];
+    return this.columnDef?.internalColumnEditor!.collection ?? [];
   }
 
   /** Get Column Definition object */
   get columnDef(): Column {
-    return this.args && this.args.column || {};
+    return this.args?.column ?? {};
   }
 
   /** Get Column Editor object */
   get columnEditor(): ColumnEditor {
-    return this.columnDef && this.columnDef.internalColumnEditor || {};
+    return this.columnDef?.internalColumnEditor ?? {};
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
-    return this.grid?.getOptions?.() as GridOption;
+    return this.grid?.getOptions() ?? {} as GridOption;
   }
 
   get hasAutoCommitEdit(): boolean {
@@ -81,7 +81,7 @@ export class CustomAngularComponentEditor implements Editor {
       Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
       OR this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
-    if (this.columnEditor && this.columnEditor.params.component) {
+    if (this.columnEditor?.params.component) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
       this.componentRef = componentOutput && componentOutput.componentRef;
 
@@ -110,28 +110,28 @@ export class CustomAngularComponentEditor implements Editor {
   cancel() {
     this.componentRef.instance.selectedId = this.defaultId;
     this.componentRef.instance.selectedItem = this.defaultItem;
-    if (this.args && this.args.cancelChanges) {
+    if (this.args?.cancelChanges) {
       this.args.cancelChanges();
     }
   }
 
   /** optional, implement a hide method on your Angular Component */
   hide() {
-    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.hide === 'function') {
+    if (typeof this.componentRef?.instance.hide === 'function') {
       this.componentRef.instance.hide();
     }
   }
 
   /** optional, implement a show method on your Angular Component */
   show() {
-    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.show === 'function') {
+    if (typeof this.componentRef?.instance.show === 'function') {
       this.componentRef.instance.show();
     }
   }
 
   /** destroy the Angular Component & Subscription */
   destroy() {
-    if (this.componentRef && this.componentRef.destroy) {
+    if (this.componentRef?.destroy) {
       this.componentRef.destroy();
     }
 
@@ -141,7 +141,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** optional, implement a focus method on your Angular Component */
   focus() {
-    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.focus === 'function') {
+    if (typeof this.componentRef?.instance.focus === 'function') {
       this.componentRef.instance.focus();
     }
   }

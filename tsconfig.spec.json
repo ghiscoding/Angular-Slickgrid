@@ -9,7 +9,6 @@
     "types": [
       "jest",
       "jest-extended",
-      "jquery",
       "node"
     ]
   },

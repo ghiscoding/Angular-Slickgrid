@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TranslateService } from '@ngx-translate/core';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 import {
   AngularGridInstance,
   Column,
@@ -12,7 +13,6 @@ import {
   GridOption,
   GridStateChange,
   Metrics,
-  MultipleSelectOption,
   OperatorType,
 } from './../modules/angular-slickgrid';
 import { CustomInputFilter } from './custom-inputFilter';
@@ -166,7 +166,7 @@ export class GridClientSideComponent implements OnInit {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
+          filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption,
         }
       }
     ];
