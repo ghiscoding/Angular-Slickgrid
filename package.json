@@ -49,7 +49,6 @@
     "url": "https://ko-fi.com/ghiscoding"
   },
   "dependencies": {
-    "@ngx-translate/core": ">=14.0.0",
     "@slickgrid-universal/common": "3.0.0-beta.0",
     "@slickgrid-universal/custom-footer-component": "3.0.0-beta.0",
     "@slickgrid-universal/empty-warning-component": "3.0.0-beta.0",
