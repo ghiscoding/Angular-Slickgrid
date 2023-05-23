@@ -27,7 +27,8 @@ const NB_ITEMS = 100;
 @Component({
   templateUrl: './grid-angular.component.html',
   styleUrls: ['./grid-angular.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AngularUtilService]
 })
 export class GridAngularComponent implements OnInit {
   title = 'Example 22: Use of Angular Components';

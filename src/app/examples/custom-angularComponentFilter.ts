@@ -28,8 +28,6 @@ export class CustomAngularComponentFilter implements Filter {
   callback!: FilterCallback;
   operator: OperatorType | OperatorString = OperatorType.equal;
 
-  constructor() { }
-
   /** Angular Util Service (could be inside the Grid Options Params or the Filter Params ) */
   get angularUtilService(): AngularUtilService {
     let angularUtilService = this.gridOptions?.params?.angularUtilService;
@@ -64,8 +62,7 @@ export class CustomAngularComponentFilter implements Filter {
     this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     if (!this.columnFilter || !this.columnFilter.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
-      throw new Error(`[Angular-Slickgrid] For Filter with Angular Component to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
-      You also need to provide the "AngularUtilService" via the Filter Params OR the Grid Options Params
+      throw new Error(`[Angular-Slickgrid] For Filter with Angular Component to work properly, you need to provide the "AngularUtilService" via the Filter "params" OR the Grid Options "params"
       Example: this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomAngularComponentFilter, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
       OR this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomAngularComponentFilter, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }

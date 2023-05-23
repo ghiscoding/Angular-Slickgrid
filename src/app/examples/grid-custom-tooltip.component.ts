@@ -42,8 +42,6 @@ export class GridCustomTooltipComponent implements OnInit {
   dataset!: any[];
   serverApiDelay = 500;
 
-  constructor() { }
-
   ngOnInit(): void {
     this.initializeGrid();
 

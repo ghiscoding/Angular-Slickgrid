@@ -13,7 +13,7 @@
     },
     {
       packageNames: ['@ngx-translate/core'],
-      allowedVersions: '14.0.0',
+      allowedVersions: '15.0.0',
     },
     {
       packageNames: ['node'],

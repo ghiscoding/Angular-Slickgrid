@@ -76,14 +76,13 @@ export class CustomAngularComponentEditor implements Editor {
 
   init() {
     if (!this.columnEditor || !this.columnEditor.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
-      throw new Error(`[Angular-Slickgrid] For Editor with Angular Component to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
-      You also need to provide the "AngularUtilService" via the Editor Params OR the Grid Options Params
+      throw new Error(`[Angular-Slickgrid] For Editor with Angular Component to work properly, you need to provide the "AngularUtilService" via the Editor "params" OR the Grid Options "params"
       Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
       OR this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
     if (this.columnEditor?.params.component) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
-      this.componentRef = componentOutput && componentOutput.componentRef;
+      this.componentRef = componentOutput?.componentRef;
 
       // here we override the collection object of the Angular Component
       // but technically you can pass any values you wish to your Component

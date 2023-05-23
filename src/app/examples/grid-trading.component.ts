@@ -64,8 +64,6 @@ export class GridTradingComponent implements OnDestroy, OnInit {
   refreshRate = 75;
   timer: any;
 
-  constructor() { }
-
   ngOnInit(): void {
     this.defineGrid();
 
