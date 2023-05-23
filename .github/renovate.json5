@@ -12,20 +12,12 @@
       enabled: false,
     },
     {
-      packageNames: ['@ngx-translate/core'],
-      allowedVersions: '15.0.0',
-    },
-    {
       packageNames: ['node'],
       allowedVersions: '16.15.0',
     },
     {
       packageNames: ['npm'],
       allowedVersions: '8.5.0',
-    },
-    {
-      packageNames: ['rxjs'],
-      allowedVersions: '7.8.1',
     },
     {
       // skip any Angular major version updates
@@ -35,7 +27,7 @@
   ],
   schedule: ['on friday and tuesday'],
   ignoreDeps: [
-    // ignore TypeScript since it has to follow whatever version is allowed at the time
+    // ignore TypeScript since it has to follow Angular recommended version
     'typescript'
   ],
 }
