@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, ComponentFactoryResolver, Injector } from '@angular/core';
+import { ApplicationRef, Component, Injector, ViewContainerRef } from '@angular/core';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AngularUtilService } from '..';
 
@@ -6,10 +6,9 @@ const DOM_ELEMENT_ID = 'row-detail123';
 const DOM_PARENT_ID = 'parent-detail';
 jest.mock('flatpickr', () => { });
 
-const componentFactoryResolverStub = {
-  create: jest.fn(),
-  resolveComponentFactory: jest.fn(),
-} as ComponentFactoryResolver;
+const viewContainerRefStub = {
+  createComponent: jest.fn(),
+} as unknown as ViewContainerRef;
 
 const applicationRefStub = {
   attachView: jest.fn(),
@@ -38,7 +37,7 @@ describe('AngularUtilService', () => {
       providers: [
         AngularUtilService,
         { provide: ApplicationRef, useValue: applicationRefStub },
-        { provide: ComponentFactoryResolver, useValue: componentFactoryResolverStub },
+        { provide: ViewContainerRef, useValue: viewContainerRefStub },
         { provide: Injector, useValue: injectorStub },
       ],
       teardown: { destroyAfterEach: false }
@@ -68,13 +67,11 @@ describe('AngularUtilService', () => {
 
     it('should create an Angular Component and add it to the current component DOM tree', () => {
       // @ts-ignore
-      const spyResolver = jest.spyOn(componentFactoryResolverStub, 'resolveComponentFactory').mockReturnValue({ create: () => mockComponentFactory });
-      const spyAttachView = jest.spyOn(applicationRefStub, 'attachView');
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
 
       const output = service.createAngularComponent(TestPreloadComponent);
 
-      expect(spyResolver).toHaveBeenCalled();
-      expect(spyAttachView).toHaveBeenCalled();
+      expect(createCompSpy).toHaveBeenCalled();
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
     });
   });
@@ -92,28 +89,24 @@ describe('AngularUtilService', () => {
 
     it('should an angular component and append it to the DOM tree in the document body', () => {
       // @ts-ignore
-      const spyResolver = jest.spyOn(componentFactoryResolverStub, 'resolveComponentFactory').mockReturnValue({ create: () => mockComponentFactory });
-      const spyAttachView = jest.spyOn(applicationRefStub, 'attachView');
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const spyBody = jest.spyOn(document.body, 'appendChild');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent);
 
-      expect(spyResolver).toHaveBeenCalled();
-      expect(spyAttachView).toHaveBeenCalled();
+      expect(createCompSpy).toHaveBeenCalled();
       expect(spyBody).toHaveBeenCalled();
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
     });
 
     it('should an angular component and append it to the current component DOM tree, which also contains the parent node text', () => {
       // @ts-ignore
-      const spyResolver = jest.spyOn(componentFactoryResolverStub, 'resolveComponentFactory').mockReturnValue({ create: () => mockComponentFactory });
-      const spyAttachView = jest.spyOn(applicationRefStub, 'attachView');
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const spyElement = jest.spyOn(domParentElm, 'appendChild');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm);
 
-      expect(spyResolver).toHaveBeenCalled();
-      expect(spyAttachView).toHaveBeenCalled();
+      expect(createCompSpy).toHaveBeenCalled();
       expect(spyElement).toHaveBeenCalled();
       expect(domParentElm.innerHTML).toBe('parent text<div id="row-detail123">some text</div>');
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
@@ -121,14 +114,12 @@ describe('AngularUtilService', () => {
 
     it('should an angular component and append it to the current component DOM tree, which will have its parent node text emptied (because of 3rd flag)', () => {
       // @ts-ignore
-      const spyResolver = jest.spyOn(componentFactoryResolverStub, 'resolveComponentFactory').mockReturnValue({ create: () => mockComponentFactory });
-      const spyAttachView = jest.spyOn(applicationRefStub, 'attachView');
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const spyElement = jest.spyOn(domParentElm, 'appendChild');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm, true);
 
-      expect(spyResolver).toHaveBeenCalled();
-      expect(spyAttachView).toHaveBeenCalled();
+      expect(createCompSpy).toHaveBeenCalled();
       expect(spyElement).toHaveBeenCalled();
       expect(domParentElm.innerHTML).toBe('<div id="row-detail123">some text</div>');
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });

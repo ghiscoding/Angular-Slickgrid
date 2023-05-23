@@ -92,7 +92,7 @@ describe('SlickRowDetailView', () => {
 
     plugin = new SlickRowDetailView(angularUtilServiceStub, applicationRefStub, eventPubSubService, document.body as HTMLDivElement, rxjsResourceStub);
     plugin.eventHandler = new Slick.EventHandler();
-    jest.spyOn(plugin, 'getOptions').mockReturnValue(gridOptionsMock.rowDetailView);
+    jest.spyOn(plugin, 'getOptions').mockReturnValue(gridOptionsMock.rowDetailView as RowDetailView);
   });
 
   afterEach(() => {

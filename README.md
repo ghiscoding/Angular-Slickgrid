@@ -46,30 +46,27 @@ You like to use **Angular-Slickgrid**? Be sure to upvote :star:, maybe support m
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Angular Compatibility
-- version `1.x.x` for Angular 4-6
-- version `2.x.x` for Angular 7-11
-- version `3.x.x` for Angular 12+ and RxJS 7+ ([migration guide to 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x))
-  - IE11 is EOL and **no longer supported**, if you still need to support it stay with version 2.x
-  - uses new [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo version 0.19.2
-- version `4.x.x` for Angular 13+, RxJS 7+ and **Ivy ONLY** ([migration guide to 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x))
-  - for Ivy build only (no more UMD bundle & output >= ES2017), IE not supported.
-  - requires Slickgrid-Universal [1.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v1.1.1) version
-- version `5.x.x` for Angular 14+, RxJS >=7.5.0 and **Ivy ONLY** ([migration guide to 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x))
-  - removal of jQueryUI dependency (replaced internally by SortableJS, a smaller and touch friendly lib).
-  - requires Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version
-- version `6.x.x` for Angular 15+, RxJS >=7.8.1 ([migration guide to 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x))
-  - removal of jQuery dependency (now uses browser native code).
 
-**Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, you can consult the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table)
+| Angular-Slickgrid | Angular (requirement) | Migration Guide | info |
+|-------------------|-----------------------|-----------------|------|
+| 1.x               | 4-6.x                 |                 |      |
+| 2.x               | 7-11.x           |                 |      |
+| 3.x               | >=12.0                | [Migration to 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x) | the lib now uses [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo version 0.19.2. Also, IE11 is EOL and no longer supported. |
+| 4.x               | >= 13.0               | [Migration to 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x)     | for Ivy build only, uses Slickgrid-Universal [1.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v1.1.1) version |
+| 5.x               | >= 14.0               | [Migration to 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x)     | removal of jQueryUI, uses Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version |
+| 6.x               | >= 16.0               | [Migration to 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)     | removal of jQuery (now uses browser native code), uses Slickgrid-Universal [3.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v3.0.0) version |
 
-For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error)
+**Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, please take a look at the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table).
+
+For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error).
 
 ### ngx-translate Compatibility
 
-If you are facing any issues with `ngx-translate` library while building your Angular Project. You need to make sure that `@ngx-translate/core` is part of your dependencies, that is also true even when using a single Locale, that is because it is a `peerDependency` of Angular-Slickgrid. The reason is because, we use `@Optional() TranslateService` in the lib and for that to work, we still need it to be installed, but don't worry it should still be removed by the tree shaking process after a running a production build. See their version compatibility table below
+Angular-Slickgrid uses `ngx-translate` library to support Locales, it is also required even when using a single Locale. The reason is because, we use `@Optional() TranslateService` in the lib and for that to work, it requires `ngx-translate` to installed. Once you run the build and if you are using a single Locale then the tree shaking process should remove these optional dependencies. See their version compatibility table below for more info
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
+|  16+            |        15.x+        |
 |  13+ (Ivy only) |        14.x+        |
 |  10-13          |        13.x+        |
 |  8-9            |        12.x+        |

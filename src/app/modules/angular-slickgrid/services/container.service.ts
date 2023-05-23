@@ -5,8 +5,6 @@ import { ContainerInstance, ContainerService as UniversalContainerService } from
 export class ContainerService implements UniversalContainerService {
   dependencies: ContainerInstance[] = [];
 
-  constructor() { }
-
   get<T = any>(key: string): T | null {
     const dependency = this.dependencies.find(dep => dep.key === key);
     if (dependency?.instance) {

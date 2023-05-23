@@ -37,8 +37,6 @@ export class GridAutoHeightComponent implements OnInit {
   searchValue = '';
   selectedColumn?: Column;
 
-  constructor() { }
-
   ngOnInit() {
     this.prepareGrid();
   }
