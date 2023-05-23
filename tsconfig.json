@@ -15,7 +15,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types",
       "typings"
@@ -30,9 +30,12 @@
       "jszip": [
         "node_modules/jszip/dist/jszip.min.js"
       ],
-      "stream": [ "./node_modules/stream-browserify" ]
+      "stream": [
+        "./node_modules/stream-browserify"
+      ]
     },
-    "strict": true
+    "strict": true,
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "preserveWhitespaces": true,

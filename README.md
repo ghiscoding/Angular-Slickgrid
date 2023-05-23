@@ -57,7 +57,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 - version `5.x.x` for Angular 14+, RxJS >=7.5.0 and **Ivy ONLY** ([migration guide to 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x))
   - removal of jQueryUI dependency (replaced internally by SortableJS, a smaller and touch friendly lib).
   - requires Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version
-- version `6.x.x` for Angular 16+, RxJS >=7.8.1 and **Ivy ONLY** ([migration guide to 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x))
+- version `6.x.x` for Angular 15+, RxJS >=7.8.1 ([migration guide to 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x))
   - removal of jQuery dependency (now uses browser native code).
 
 **Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, you can consult the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table)
@@ -75,7 +75,7 @@ If you are facing any issues with `ngx-translate` library while building your An
 |  8-9            |        12.x+        |
 |  7              |        11.x+        |
 
-### Build Warnings (Angular 8+)
+### Build Warnings (Angular >=8.0 && <16.0)
 You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
 ```js
 module.exports = {
