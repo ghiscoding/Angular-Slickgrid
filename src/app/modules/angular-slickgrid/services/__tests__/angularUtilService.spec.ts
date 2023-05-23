@@ -10,12 +10,6 @@ const viewContainerRefStub = {
   createComponent: jest.fn(),
 } as unknown as ViewContainerRef;
 
-const applicationRefStub = {
-  attachView: jest.fn(),
-} as unknown as ApplicationRef;
-
-const injectorStub = {} as Injector;
-
 @Component({
   template: `<h4>Loading...</h4>`
 })
@@ -36,9 +30,7 @@ describe('AngularUtilService', () => {
       declarations: [TestPreloadComponent],
       providers: [
         AngularUtilService,
-        { provide: ApplicationRef, useValue: applicationRefStub },
         { provide: ViewContainerRef, useValue: viewContainerRefStub },
-        { provide: Injector, useValue: injectorStub },
       ],
       teardown: { destroyAfterEach: false }
     });
