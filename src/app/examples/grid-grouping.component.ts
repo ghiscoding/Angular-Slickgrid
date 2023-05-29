@@ -43,8 +43,6 @@ export class GridGroupingComponent implements OnInit {
   excelExportService = new ExcelExportService();
   textExportService = new TextExportService();
 
-  constructor() { }
-
   ngOnInit(): void {
     this.columnDefinitions = [
       {

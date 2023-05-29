@@ -28,7 +28,6 @@ export interface CreatedView {
 
 export class SlickRowDetailView extends UniversalSlickRowDetailView {
   rowDetailContainer!: ViewContainerRef;
-  protected _eventHandler!: SlickEventHandler;
   protected _preloadComponent: Type<object> | undefined;
   protected _views: CreatedView[] = [];
   protected _viewComponent!: Type<object>;
@@ -106,7 +105,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // we need to keep the user "process" method and replace it with our own execution method
       // we do this because when we get the item detail, we need to call "onAsyncResponse.notify" for the plugin to work
       this._userProcessFn = this.gridOptions.rowDetailView.process as (item: any) => Promise<any>;                // keep user's process method
-      this.gridOptions.rowDetailView.process = (item) => this.onProcessing(item);  // replace process method & run our internal one
+      this.addonOptions.process = (item) => this.onProcessing(item);  // replace process method & run our internal one
     } else {
       throw new Error('[Angular-Slickgrid] You need to provide a "process" function for the Row Detail Extension to work properly');
     }
@@ -116,11 +115,11 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // when those are Angular View/ViewModel, we need to create View Component & provide the html containers to the Plugin (preTemplate/postTemplate methods)
       if (!this.gridOptions.rowDetailView.preTemplate) {
         this._preloadComponent = this.gridOptions?.rowDetailView?.preloadComponent;
-        this.gridOptions.rowDetailView.preTemplate = () => DOMPurify.sanitize(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
+        this.addonOptions.preTemplate = () => DOMPurify.sanitize(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
       }
       if (!this.gridOptions.rowDetailView.postTemplate) {
         this._viewComponent = this.gridOptions?.rowDetailView?.viewComponent;
-        this.gridOptions.rowDetailView.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`);
+        this.addonOptions.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`);
       }
 
       // this also requires the Row Selection Model to be registered as well
@@ -136,7 +135,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onAsyncResponse) {
-          this._eventHandler.subscribe(this.onAsyncResponse, (event, args) => {
+          this.eventHandler.subscribe(this.onAsyncResponse, (event, args) => {
             if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAsyncResponse === 'function') {
               this.rowDetailViewOptions.onAsyncResponse(event, args);
             }
@@ -144,7 +143,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onAsyncEndUpdate) {
-          this._eventHandler.subscribe(this.onAsyncEndUpdate, (e: any, args: { grid: SlickGrid; item: any; }) => {
+          this.eventHandler.subscribe(this.onAsyncEndUpdate, (e: any, args: { grid: SlickGrid; item: any; }) => {
             // triggers after backend called "onAsyncResponse.notify()"
             this.renderViewModel(args?.item);
 
@@ -155,7 +154,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onAfterRowDetailToggle) {
-          this._eventHandler.subscribe(this.onAfterRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; expandedRows: number[]; }) => {
+          this.eventHandler.subscribe(this.onAfterRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; expandedRows: number[]; }) => {
             // display preload template & re-render all the other Detail Views after toggling
             // the preload View will eventually go away once the data gets loaded after the "onAsyncEndUpdate" event
             this.renderPreloadView();
@@ -168,7 +167,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onBeforeRowDetailToggle) {
-          this._eventHandler.subscribe(this.onBeforeRowDetailToggle, (e, args) => {
+          this.eventHandler.subscribe(this.onBeforeRowDetailToggle, (e, args) => {
             // before toggling row detail, we need to create View Component if it doesn't exist
             this.handleOnBeforeRowDetailToggle(e, args);
 
@@ -179,7 +178,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onRowBackToViewportRange) {
-          this._eventHandler.subscribe(this.onRowBackToViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+          this.eventHandler.subscribe(this.onRowBackToViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
             // when row is back to viewport range, we will re-render the View Component(s)
             this.handleOnRowBackToViewportRange(e, args);
 
@@ -190,7 +189,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onRowOutOfViewportRange) {
-          this._eventHandler.subscribe(this.onRowOutOfViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+          this.eventHandler.subscribe(this.onRowOutOfViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
             if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowOutOfViewportRange === 'function') {
               this.rowDetailViewOptions.onRowOutOfViewportRange(e, args);
             }
@@ -201,15 +200,15 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // hook some events needed by the Plugin itself
 
         // we need to redraw the open detail views if we change column position (column reorder)
-        this._eventHandler.subscribe(this._grid.onColumnsReordered, this.redrawAllViewComponents.bind(this));
+        this.eventHandler.subscribe(this._grid.onColumnsReordered, this.redrawAllViewComponents.bind(this));
 
         // on row selection changed, we also need to redraw
         if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
-          this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, this.redrawAllViewComponents.bind(this));
+          this.eventHandler.subscribe(this._grid.onSelectedRowsChanged, this.redrawAllViewComponents.bind(this));
         }
 
         // on sort, all row detail are collapsed so we can dispose of all the Views as well
-        this._eventHandler.subscribe(this._grid.onSort, this.disposeAllViewComponents.bind(this));
+        this.eventHandler.subscribe(this._grid.onSort, this.disposeAllViewComponents.bind(this));
 
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
@@ -232,7 +231,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render all the expanded row detail View Components */
   renderAllViewComponents() {
     this._views.forEach((view) => {
-      if (view && view.dataContext) {
+      if (view?.dataContext) {
         this.renderViewModel(view.dataContext);
       }
     });
@@ -241,7 +240,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
-    if (containerElements && containerElements.length >= 0) {
+    if (containerElements?.length >= 0) {
       this.renderViewModel(createdView.dataContext);
     }
   }
@@ -249,7 +248,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
-    if (containerElements && containerElements.length >= 0) {
+    if (containerElements?.length >= 0) {
       this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1], true);
     }
   }
@@ -257,7 +256,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | undefined {
     const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
-    if (containerElements && containerElements.length > 0) {
+    if (containerElements?.length > 0) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
         // pass a few properties to the Row Detail template component
@@ -266,7 +265,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
           addon: this,
           grid: this._grid,
           dataView: this.dataView,
-          parent: this.rowDetailViewOptions && this.rowDetailViewOptions.parent,
+          parent: this.rowDetailViewOptions?.parent,
         });
 
         const viewObj = this._views.find(obj => obj.id === item[this.datasetIdPropName]);

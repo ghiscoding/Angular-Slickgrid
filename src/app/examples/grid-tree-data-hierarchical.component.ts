@@ -39,8 +39,6 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   isAutoApproveParentItemWhenTreeColumnIsValid = true;
   searchString = '';
 
-  constructor() { }
-
   ngOnInit(): void {
     // define the grid options & columns and then create the grid itself
     this.defineGrid();

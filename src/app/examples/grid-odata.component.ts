@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { GridOdataService, OdataServiceApi, OdataOption } from '@slickgrid-universal/odata';
 import { ChangeDetectorRef, Component, OnInit, } from '@angular/core';
 import { HttpClient } from '@angular/common/http';

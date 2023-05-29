@@ -410,7 +410,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     expect(component.elementRef.nativeElement).toBeTruthy();
   });
 
-  it('should load enable jquery mousewheel scrolling when using a frozen grid', () => {
+  it('should load enable mousewheel event scrolling when using a frozen grid', () => {
     component.gridOptions = gridOptions;
     component.gridOptions.enableMouseWheelScrollHandler = undefined;
     component.gridOptions.frozenRow = 3;

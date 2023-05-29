@@ -98,7 +98,7 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
         exportWithFormatter: false,
         filterable: true,
         type: FieldType.number,
-        filter: { model: Filters.slider, /* operator: '=',*/ params: { hideSliderNumber: true } }
+        filter: { model: Filters.slider, /* operator: '=',*/ filterOptions: { hideSliderNumber: true } }
       },
       {
         id: 'start', name: 'Start', field: 'start', nameKey: 'START', minWidth: 100,
@@ -116,9 +116,6 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
           collection: [{ value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' }],
           model: Filters.singleSelect,
           enableTranslateLabel: true,
-          filterOptions: {
-            autoDropWidth: true
-          }
         }
       },
       {
@@ -133,9 +130,6 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
           },
           enableTranslateLabel: true,
           model: Filters.singleSelect,
-          filterOptions: {
-            autoDropWidth: true
-          }
         }
       }
       // OR via your own custom translate formatter

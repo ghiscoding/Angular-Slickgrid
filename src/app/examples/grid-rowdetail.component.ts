@@ -36,8 +36,6 @@ export class GridRowDetailComponent implements OnInit {
   flashAlertType = 'info';
   message = '';
 
-  constructor() { }
-
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }

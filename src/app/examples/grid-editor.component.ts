@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
+import fetchJsonp from 'fetch-jsonp';
+
 import {
   AngularGridInstance,
   AutocompleterOption,
@@ -204,12 +206,12 @@ export class GridEditorComponent implements OnInit {
         formatter: Formatters.complexObject,
         type: FieldType.number,
         exportWithFormatter: true,
-        filter: { model: Filters.slider, params: { hideSliderNumber: false } },
+        filter: { model: Filters.slider, filterOptions: { hideSliderNumber: false } },
         editor: {
           model: Editors.slider,
           minValue: 0,
           maxValue: 100,
-          // params: { hideSliderNumber: true },
+          // editorOptions: { hideSliderNumber: true },
         },
         /*
         editor: {
@@ -218,7 +220,7 @@ export class GridEditorComponent implements OnInit {
           alwaysSaveOnEnterKey: true, // defaults to False, when set to true and user presses ENTER it will always call a Save even if value is empty
           model: Editors.float,
           placeholder: 'enter number',
-          title: 'Your number must be bigger than 5', // add a custom title, to see it as a real tooltip you'll need to implement something like tipsy jquery lib
+          title: 'Your number must be bigger than 5',
           minValue: 5,
           maxValue: 365,
           // the default validation error message is in English but you can override it by using "errorMessage"
@@ -329,8 +331,8 @@ export class GridEditorComponent implements OnInit {
           placeholder: '🔎︎ search city',
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
-          // use your own autocomplete options, instead of $.ajax, use http
-          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          // use your own autocomplete options, instead of fetch-jsonp, use http
+          // here we use fetch-jsonp just because I'm not sure how to configure http with JSONP and CORS
           editorOptions: {
             forceUserInput: true,
             minLength: 3,
@@ -338,19 +340,12 @@ export class GridEditorComponent implements OnInit {
               /** with Angular Http, note this demo won't work because of CORS */
               // this.http.get(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`).subscribe(data => updateCallback(data));
 
-              /** with jQuery AJAX will work locally but not on the GitHub demo because of CORS */
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  const finalData = (data.length === 1 && data[0] === '') ? [] : data; // invalid result should be [] instead of [''] to show empty msg
-                  updateCallback(finalData);
-                }
-              });
-            }
+              /** with JSONP AJAX will work locally but not on the GitHub demo because of CORS */
+              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+                .then((response) => response.json())
+                .then((json) => updateCallback(json))
+                .catch((ex) => console.log('invalid JSONP response', ex));
+            },
           } as AutocompleterOption,
         },
         filter: {
@@ -360,23 +355,16 @@ export class GridEditorComponent implements OnInit {
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
 
-          // OR use your own autocomplete options, instead of $.ajax, use http
-          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          // OR use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
+          // use your own autocomplete options, instead of fetch-jsonp, use HttpClient or FetchClient
           filterOptions: {
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  const finalData = (data.length === 1 && data[0] === '') ? [] : data; // invalid result should be [] instead of [''] to show empty msg
-                  updateCallback(finalData);
-                }
-              });
-            }
+              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+                .then((response) => response.json())
+                .then((json) => updateCallback(json))
+                .catch((ex) => console.log('invalid JSONP response', ex));
+            },
           } as AutocompleterOption,
         }
       }, {

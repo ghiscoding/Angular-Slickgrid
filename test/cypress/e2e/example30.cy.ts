@@ -311,7 +311,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-completed .modified').should('have.length', 1);
 
     cy.get('.item-details-editor-container div.editor-complexity').click();
-    cy.get('[name=editor-complexity].ms-drop > ul > li > label:nth(2)').contains('Straightforward').click();
+    cy.get('[data-name=editor-complexity].ms-drop > ul > li > label:nth(2)').contains('Straightforward').click();
     cy.get('.item-details-container.editor-complexity .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-finish > .item-details-validation').contains('* You must provide a "Finish" date when "Completed" is checked.');
@@ -371,7 +371,7 @@ describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
     cy.get('.item-details-container.editor-completed .modified').should('have.length', 1);
 
     cy.get('.item-details-editor-container div.editor-complexity').click();
-    cy.get('[name=editor-complexity].ms-drop > ul > li > label:nth(2)').contains('Straightforward').click();
+    cy.get('[data-name=editor-complexity].ms-drop > ul > li > label:nth(2)').contains('Straightforward').click();
     cy.get('.item-details-container.editor-complexity .modified').should('have.length', 1);
 
     cy.get('.item-details-container.editor-finish > .item-details-validation').contains('* You must provide a "Finish" date when "Completed" is checked.');

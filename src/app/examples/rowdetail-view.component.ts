@@ -26,8 +26,6 @@ export class RowDetailViewComponent {
   // NOTE that you MUST provide it through the "parent" property in your "rowDetail" grid options
   parent!: GridRowDetailComponent;
 
-  constructor() { }
-
   alertAssignee(name: string) {
     if (typeof name === 'string') {
       alert(`Assignee on this task is: ${name.toUpperCase()}`);

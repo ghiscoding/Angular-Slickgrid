@@ -1,23 +1,15 @@
+import { EmbeddedViewRef, Injectable, ViewContainerRef } from '@angular/core';
+
 import { AngularComponentOutput } from '../models/angularComponentOutput.interface';
-import { ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 
 @Injectable()
 export class AngularUtilService {
-  constructor(
-    private compFactoryResolver: ComponentFactoryResolver,
-    private appRef: ApplicationRef,
-    private injector: Injector,
-  ) { }
 
-  // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
+  constructor(private vcr: ViewContainerRef) { }
+
   createAngularComponent(component: any): AngularComponentOutput {
     // Create a component reference from the component
-    const componentRef = this.compFactoryResolver
-      .resolveComponentFactory(component)
-      .create(this.injector);
-
-    // Attach component to the appRef so that it's inside the ng component tree
-    this.appRef.attachView(componentRef.hostView);
+    const componentRef = this.vcr.createComponent(component);
 
     // Get DOM element from component
     let domElem;
@@ -29,12 +21,11 @@ export class AngularUtilService {
     return { componentRef, domElement: domElem as HTMLElement };
   }
 
-  // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
   createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element, clearTargetContent = false): AngularComponentOutput {
     const componentOutput = this.createAngularComponent(component);
 
     // Append DOM element to the HTML element specified
-    if (targetElement && targetElement.appendChild) {
+    if (targetElement?.appendChild) {
       if (clearTargetContent && targetElement.innerHTML) {
         targetElement.innerHTML = '';
       }

@@ -21,14 +21,14 @@ import { FilterNgSelectComponent } from './filter-ng-select.component';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
-declare const $: any;
 
 const NB_ITEMS = 100;
 
 @Component({
   templateUrl: './grid-angular.component.html',
   styleUrls: ['./grid-angular.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AngularUtilService]
 })
 export class GridAngularComponent implements OnInit {
   title = 'Example 22: Use of Angular Components';
@@ -154,7 +154,7 @@ export class GridAngularComponent implements OnInit {
 
         // to load an Angular Component, you cannot use a Formatter since Angular needs at least 1 cycle to render everything
         // you can use a PostRenderer but you will visually see the data appearing,
-        // which is why it's still better to use regular Formatter (with jQuery if need be) instead of Angular Component
+        // which is why it's still better to use regular Formatter instead of Angular Component
         asyncPostRender: this.renderAngularComponent.bind(this),
         params: {
           component: CustomTitleFormatterComponent,
@@ -188,7 +188,7 @@ export class GridAngularComponent implements OnInit {
         filter: {
           model: Filters.slider,
           operator: '>=',
-          params: { hideSliderNumber: false }
+          filterOptions: { hideSliderNumber: false }
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
@@ -358,7 +358,7 @@ export class GridAngularComponent implements OnInit {
       Object.assign(componentOutput.componentRef.instance, { item: dataContext });
 
       // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component
-      setTimeout(() => $(cellNode).empty().html(componentOutput.domElement));
+      setTimeout(() => cellNode.innerHTML = componentOutput.domElement.innerHTML);
     }
   }
 
