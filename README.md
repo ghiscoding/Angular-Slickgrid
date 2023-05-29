@@ -11,7 +11,7 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. SlickGrid beats most other datagrids in terms of functionalities and performance (it can easily deal with even a million row). Angular-Slickgrid is a wrapper on top of SlickGrid and we are using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork which is the most active fork since the original was put on pause by its original author for personal reasons. Also worth to know, that I also contributed a lot to the 6pac/SlickGrid fork for the benefit of all the SlickGrid libraries that I maintain like this one here....
+One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. SlickGrid beats most other datagrids in terms of functionalities and performance (it can easily deal with even a million row). Angular-Slickgrid is a wrapper on top of SlickGrid and we are using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork which is the most active fork since the original was put on pause by its original author for personal reasons. Also worth to know, that I also contributed a lot to the 6pac/SlickGrid fork for the benefit of all the SlickGrid libraries that I maintain like this one here... SlickGrid is now also native and no longer requires jQuery (its only dependency is SortableJS)
 
 ### License
 [MIT License](LICENSE)
@@ -66,14 +66,14 @@ Angular-Slickgrid uses `ngx-translate` library to support Locales, it is also re
 
 | Angular Version | @ngx-translate/core |
 |-----------------|---------------------|
-|  16+            |        15.x+        |
-|  13+ (Ivy only) |        14.x+        |
-|  10-13          |        13.x+        |
-|  8-9            |        12.x+        |
-|  7              |        11.x+        |
+|  16+            |        15.x         |
+|  13+ (Ivy only) |        14.x         |
+|  10-13          |        13.x         |
+|  8-9            |        12.x         |
+|  7              |        11.x         |
 
-### Build Warnings (Angular >=8.0 && <16.0)
-You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
+### `ngcc` Build Warnings (Angular >=8.0 && <16.0)
+You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings to CommonJS packages, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
 ```js
 module.exports = {
   packages: {
