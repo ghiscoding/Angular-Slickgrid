@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [Conven
 
 # [6.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.4...v6.0.0) (2023-05-29)
 
+### Follow the [Migration 6.x Guide](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)
+
+### ⚠ BREAKING CHANGES
+
+* drop jQuery requirement & use ms-select-vanilla dependency (#1150)
+
 ## [5.6.4](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.3...v5.6.4) (2023-05-20)
 
 
