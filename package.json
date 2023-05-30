@@ -103,7 +103,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
     "autoprefixer": "^10.4.14",
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "custom-event-polyfill": "^1.0.7",
