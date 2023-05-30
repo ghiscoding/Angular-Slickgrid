@@ -67,7 +67,7 @@ jobs:
       - name: Prod Build for GitHub demo website (required for Cypress)
         run: yarn build:demo
 
-      - name: Start server in the background
+      - name: Start HTTP Server
         run: yarn serve:demo &
 
       - name: Run Cypress E2E tests
@@ -83,14 +83,13 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          Cypress_extended: true
 
       # deploy (re-publish) GitHub demo page with a Prod build but only when merging to "master" branch
       # and the commit message contains the text "chore: release"
       - name: Deploy to gh-pages
         if: |
           github.ref == 'refs/heads/master' &&
-          contains(github.event.head_commit.message, 'chore: release')
+          (contains(github.event.head_commit.message, 'chore: release') || contains(github.event.head_commit.message, '[refresh gh-pages]'))
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
