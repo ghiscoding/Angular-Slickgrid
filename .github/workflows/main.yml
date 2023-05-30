@@ -67,11 +67,12 @@ jobs:
       - name: Prod Build for GitHub demo website (required for Cypress)
         run: yarn build:demo
 
+      - name: Start server in the background
+        run: yarn serve:demo &
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v5
         with:
-          install: false
-          start: yarn run serve:demo
           working-directory: test/cypress
           config-file: cypress.config.ts
           wait-on: 'http://localhost:4300'
