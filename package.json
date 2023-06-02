@@ -126,7 +126,7 @@
     "servor": "^4.0.2",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.5.2",
+    "tslib": "^2.5.3",
     "typescript": "~5.0.4",
     "zone.js": "~0.13.0"
   },
