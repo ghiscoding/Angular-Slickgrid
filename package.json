@@ -119,7 +119,7 @@
     "npm-run-all2": "^6.0.5",
     "postcss": "^8.4.24",
     "postcss-cli": "^10.1.0",
-    "release-it": "^15.10.3",
+    "release-it": "^15.10.5",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.1",
     "sass": "^1.62.1",
