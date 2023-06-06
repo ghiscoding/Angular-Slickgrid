@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ContainerInstance, ContainerService as UniversalContainerService } from '@slickgrid-universal/common';
+import { type ContainerInstance, ContainerService as UniversalContainerService } from '@slickgrid-universal/common';
 
 @Injectable()
 export class ContainerService implements UniversalContainerService {

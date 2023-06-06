@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { TranslaterService as UniversalTranslateService } from '@slickgrid-universal/common';
+import type { TranslateService } from '@ngx-translate/core';
+import type { TranslaterService as UniversalTranslateService } from '@slickgrid-universal/common';
 
 /**
  * This is a Translate Service Wrapper for Slickgrid-Universal monorepo lib to work properly,

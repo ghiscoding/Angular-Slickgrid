@@ -1,6 +1,6 @@
 import { EmbeddedViewRef, Injectable, ViewContainerRef } from '@angular/core';
 
-import { AngularComponentOutput } from '../models/angularComponentOutput.interface';
+import type { AngularComponentOutput } from '../models/angularComponentOutput.interface';
 
 @Injectable()
 export class AngularUtilService {

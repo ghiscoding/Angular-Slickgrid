@@ -1,4 +1,4 @@
-import {
+import type {
   BackendService,
   ExtensionList,
   ExtensionService,
@@ -14,7 +14,7 @@ import {
   SortService,
   TreeDataService
 } from '@slickgrid-universal/common';
-import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
+import type { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 
 export interface AngularGridInstance {
   /** Slick DataView object */

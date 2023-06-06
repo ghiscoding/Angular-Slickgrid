@@ -9,8 +9,7 @@ import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
-import {
-  // interfaces/types
+import type {
   AutocompleterEditor,
   BackendServiceApi,
   BackendServiceOption,
@@ -18,24 +17,29 @@ import {
   ColumnEditor,
   DataViewOption,
   EventSubscription,
-  ExtensionName,
   ExternalResource,
   Locale,
   Metrics,
   Pagination,
+  RxJsFacade,
   SelectEditor,
   ServicePagination,
   SlickDataView,
   SlickEventHandler,
   SlickGrid,
   SlickNamespace,
+} from '@slickgrid-universal/common';
+
+import {
+  ExtensionName,
+  ExtensionUtility,
+  SlickGroupItemMetadataProvider,
 
   // services
   BackendUtilityService,
   CollectionService,
   EventNamingStyle,
   ExtensionService,
-  ExtensionUtility,
   FilterFactory,
   FilterService,
   GridEventService,
@@ -44,10 +48,8 @@ import {
   GroupingAndColspanService,
   PaginationService,
   ResizerService,
-  RxJsFacade,
   SharedService,
   SlickgridConfig,
-  SlickGroupItemMetadataProvider,
   SortService,
   TreeDataService,
 
@@ -65,7 +67,7 @@ import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
 import { dequal } from 'dequal/lite';
 
 import { Constants } from '../constants';
-import { AngularGridInstance, ExternalTestingDependencies, GridOption, } from './../models/index';
+import type { AngularGridInstance, ExternalTestingDependencies, GridOption } from './../models/index';
 import { GlobalGridOptions } from './../global-grid-options';
 import { TranslaterService } from '../services/translater.service';
 

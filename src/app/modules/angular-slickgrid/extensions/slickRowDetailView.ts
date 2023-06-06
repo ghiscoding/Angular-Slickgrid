@@ -1,14 +1,6 @@
 import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
-import {
-  addToArrayWhenNotExists,
-  castObservableToPromise,
-  EventSubscription,
-  RxJsFacade,
-  SlickEventHandler,
-  SlickGrid,
-  SlickRowSelectionModel,
-  unsubscribeAll,
-} from '@slickgrid-universal/common';
+import type { EventSubscription, RxJsFacade, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
+import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionModel, unsubscribeAll } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Observable, Subject } from 'rxjs';
