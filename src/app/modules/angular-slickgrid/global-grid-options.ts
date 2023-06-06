@@ -1,5 +1,5 @@
 import { Column, DelimiterType, EventNamingStyle, FileType, Filters, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
-import { GridOption, RowDetailView } from './models/index';
+import type { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */
 export const GlobalGridOptions: Partial<GridOption> = {

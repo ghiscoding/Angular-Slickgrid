@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption, OnEventArgs, SlickRowMoveManager } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowmove.component.html'
