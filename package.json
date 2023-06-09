@@ -122,7 +122,7 @@
     "release-it": "^15.11.0",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.1",
-    "sass": "^1.63.2",
+    "sass": "^1.63.3",
     "servor": "^4.0.2",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
