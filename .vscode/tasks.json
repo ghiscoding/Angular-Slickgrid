@@ -22,7 +22,7 @@
     {
       "label": "Cypress Open Tool",
       "type": "shell",
-      "command": "yarn run cypress",
+      "command": "yarn run cypress:open",
       "problemMatcher": []
     },
     {

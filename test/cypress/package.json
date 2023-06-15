@@ -4,7 +4,7 @@
   "description": "The Cypress integration tests.",
   "main": "index.js",
   "scripts": {
-    "cypress": "node node_modules/cypress/bin/cypress open",
+    "cypress:open": "node node_modules/cypress/bin/cypress open",
     "cypress:ci": "cypress run"
   },
   "author": "Ghislain B.",
