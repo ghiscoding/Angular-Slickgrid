@@ -44,7 +44,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
     cy.get('#grid2')
       .find('.slick-row')
       .children()
-      .filter('.slick-cell-checkboxsel.selected.true')
+      .filter('.slick-cell-checkboxsel.selected')
       .should('have.length', 1);
   });
 
@@ -62,7 +62,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
     cy.get('#grid2')
       .find('.slick-row')
       .children()
-      .filter('.slick-cell-checkboxsel.selected.true')
+      .filter('.slick-cell-checkboxsel.selected')
       .should('have.length', 2);
   });
 
@@ -385,7 +385,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('#grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 1);
     });
 
@@ -406,7 +406,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
     });
 
@@ -423,7 +423,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 1);
     });
 
@@ -445,7 +445,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
 
       cy.window().then((win) => {
@@ -474,7 +474,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
     });
 
@@ -491,7 +491,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 1);
     });
   });
@@ -536,7 +536,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('[data-test=grid1-selections]')
         .contains('Task 300');
 
-      cy.get('.slick-cell.l0.r0.slick-cell-checkboxsel.selected.true')
+      cy.get('.slick-cell.l0.r0.slick-cell-checkboxsel.selected')
         .should('exist');
 
       cy.get('[data-test=grid1-selections]')
@@ -591,7 +591,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
 
       cy.window().then((win) => {
@@ -631,7 +631,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
     });
 
@@ -648,7 +648,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
     });
 
@@ -673,7 +673,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
 
       cy.window().then((win) => {
@@ -750,7 +750,7 @@ describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () =>
       cy.get('@grid2')
         .find('.slick-row')
         .children()
-        .filter('.slick-cell-checkboxsel.selected.true')
+        .filter('.slick-cell-checkboxsel.selected')
         .should('have.length', 2);
 
       cy.window().then((win) => {
