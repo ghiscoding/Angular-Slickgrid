@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.0.0...v6.0.1) (2023-07-01)
+
+
+### Bug Fixes
+
+* **grouping:** DraggableGrouping could throw when leaving page ([6ff7f98](https://github.com/ghiscoding/angular-slickgrid/commit/6ff7f98f22fc019dd395d1538d75bcdbfccf1706))
+* using esbuild requires to specify type imports ([e694a6b](https://github.com/ghiscoding/angular-slickgrid/commit/e694a6b3b0334f60641646b32af247468d31d53c))
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [6.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v5.6.4...v6.0.0) (2023-05-29)
 
 ### Follow the [Migration 6.x Guide](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)
