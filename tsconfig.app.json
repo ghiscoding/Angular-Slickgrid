@@ -4,15 +4,7 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    "types": [
-      "moment"
-    ],
-    "paths": {
-      "jszip": [
-        "../node_modules/jszip/dist/jszip.min.js"
-      ],
-      "stream": [ "./node_modules/stream-browserify" ]
-    }
+    "types": ["moment"]
   },
   "files": [
     "src/main.ts",
