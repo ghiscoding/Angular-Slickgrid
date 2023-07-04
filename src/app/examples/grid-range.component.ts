@@ -153,7 +153,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     ];
 
     const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(28, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
 
     this.gridOptions = {
       autoResize: {
