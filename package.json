@@ -100,8 +100,8 @@
     "@types/node": "^20.3.3",
     "@types/sortablejs": "^1.15.1",
     "@types/text-encoding-utf-8": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "autoprefixer": "^10.4.14",
     "bootstrap": "^5.3.0",
     "copyfiles": "^2.4.1",
@@ -135,6 +135,6 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001509"
+    "caniuse-lite": "1.0.30001512"
   }
 }
