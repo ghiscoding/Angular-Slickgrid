@@ -135,6 +135,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001512"
+    "caniuse-lite": "1.0.30001512",
+    "semver": "^7.5.3"
   }
 }
