@@ -136,7 +136,6 @@
   },
   "resolutions": {
     "caniuse-lite": "1.0.30001512",
-    "semver": "^7.5.3",
-    "word-wrap": "^1.2.3"
+    "semver": "^7.5.3"
   }
 }
