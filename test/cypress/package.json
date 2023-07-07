@@ -11,6 +11,6 @@
   "license": "MIT",
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.4",
-    "cypress": "^12.16.0"
+    "cypress": "^12.17.0"
   }
 }
