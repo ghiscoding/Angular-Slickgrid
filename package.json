@@ -97,7 +97,7 @@
     "@types/fnando__sparkline": "^0.3.4",
     "@types/jest": "^29.5.2",
     "@types/moment": "^2.13.0",
-    "@types/node": "^20.4.0",
+    "@types/node": "^20.4.1",
     "@types/sortablejs": "^1.15.1",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
