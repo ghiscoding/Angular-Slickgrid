@@ -17,12 +17,18 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
+              "@fnando/sparkline",
               "assign-deep",
               "autocompleter",
               "dompurify",
               "excel-builder-webpacker",
+              "fetch-jsonp",
               "flatpickr",
+              "jszip/dist/jszip.min.js",
+              "lodash",
               "moment-mini",
+              "q",
+              "slickgrid",
               "stream"
             ],
             "assets": [
