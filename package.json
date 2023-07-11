@@ -58,7 +58,7 @@
     "@slickgrid-universal/row-detail-view-plugin": "3.0.1",
     "@slickgrid-universal/rxjs-observable": "3.0.1",
     "dequal": "^2.0.3",
-    "dompurify": "^3.0.4",
+    "dompurify": "^3.0.5",
     "rxjs": "^7.8.1",
     "sortablejs": "^1.15.0"
   },
@@ -130,7 +130,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001514",
+    "caniuse-lite": "1.0.30001515",
     "semver": "^7.5.4"
   }
 }
