@@ -6,6 +6,7 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: [
     'src/app/modules/**/*.{js,ts}',
     '!**/node_modules/**',
+    '!src/**/models/**',
     '!src/app/modules/angular-slickgrid/models/**',
   ],
   coverageDirectory: './test/jest-coverage/',
