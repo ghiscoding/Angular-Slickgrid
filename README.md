@@ -46,22 +46,27 @@ You like to use **Angular-Slickgrid**? Be sure to upvote :star: and maybe suppor
 ## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
+## Troubleshooting / Documentation
+The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
+
+For common issues, see the [Troubleshooting Section](#troubleshooting-section) below
+
 ## Angular Compatibility
 
-> **Note** please be aware that only the latest version of Angular-Slickgrid, shown in the table below, can receive bug fixes because that is already a lot of work for a single developer like me. 
+> **Note** please be aware that only the latest version of Angular-Slickgrid, shown in the table below, is supported and can receive bug fixes. It's already a lot of work for a single developer like me, so hopefully you will understand. 
 
 | Angular-Slickgrid | Angular version | Migration Guide | Notes |
 |-------------------|-----------------------|-----------------|------|
-| 6.x               | >=16.0               | [Migration 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)     | removal of jQuery (now uses browser native code), uses Slickgrid-Universal [3.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v3.0.0) version |
-| 5.x               | >=14.0               | [Migration 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x)     | removal of jQueryUI, uses Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version |
-| 4.x               | >=13.0               | [Migration 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x)     | for Ivy build only, uses Slickgrid-Universal [1.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v1.1.1) version |
-| 3.x               | >=12.0                | [Migration 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x) | the lib now uses [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo version [v0.19.2](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v0.19.2). Also, IE11 is EOL and no longer supported. |
+| 6.x               | >=16.0               | [Migration 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)     | removal of jQuery (now uses browser native code), it uses Slickgrid-Universal [3.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v3.0.0) version |
+| 5.x               | >=14.0               | [Migration 5.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-5.x)     | removal of jQueryUI, it uses Slickgrid-Universal [2.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v2.0.0) version |
+| 4.x               | >=13.0               | [Migration 4.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-4.x)     | for Ivy build only, it uses Slickgrid-Universal [1.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v1.1.1) version |
+| 3.x               | >=12.0                | [Migration 3.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-3.x) | the lib now uses [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) monorepo [v0.19.2](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v0.19.2). Also, IE11 is EOL and no longer supported. |
 | 2.x               | 7-11.x           | [Migration 2.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-2.x) | support multiple grids on same page     |
 | 1.x               | 4-6.x                 |                 |      |
 
 **Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, please take a look at the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table).
 
-For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](https://github.com/ghiscoding/Angular-Slickgrid#angular-12-with-webpack-5---how-to-fix-polyfill-error).
+For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](#angular-12-with-webpack-5---how-to-fix-polyfill-error).
 
 ### ngx-translate Compatibility
 
@@ -75,28 +80,16 @@ Angular-Slickgrid uses `ngx-translate` library to support Locales, it is also re
 |  8-9            |        12.x         |
 |  7              |        11.x         |
 
-### `ngcc` Build Warnings (Angular >=8.0 && <16.0)
-You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings to CommonJS packages, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
-```js
-module.exports = {
-  packages: {
-    'angular-slickgrid': {
-      ignorableDeepImportMatchers: [
-        /assign-deep/,
-        /slickgrid\//,
-        /flatpickr/,
-        /dequal/,
-      ]
-    },
-  }
-};
-```
-You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silence the warnings.
-```json
-"options": {
-  "allowedCommonJsDependencies": ["angular-slickgrid"]
-}
-```
+### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
+Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +15,000 lines of code (+3,750 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +500 Cypress E2E tests.
+
+#### How to load data with `HttpClient`?
+You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call it and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
+
+## Main features
+You can see some screenshots below and the instructions down below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
+
+## Troubleshooting Section
 
 ### Angular 12 with WebPack 5 - how to fix polyfill error
 Since Angular 12 switched to WebPack 5, you might get some new errors and you will need to add some polyfills manually to get the Excel Builder (Excel Export) to work.
@@ -129,23 +122,59 @@ This is no longer the case. Verify if you need this module and configure a polyf
     ],
 ```
 
-### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +15,000 lines of code (+3,750 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +500 Cypress E2E tests.
+### `ngcc` Build Warnings (Angular >=8.0 && <16.0)
+You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings to CommonJS packages, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
+```js
+module.exports = {
+  packages: {
+    'angular-slickgrid': {
+      ignorableDeepImportMatchers: [
+        /assign-deep/,
+        /slickgrid\//,
+        /flatpickr/,
+        /dequal/,
+      ]
+    },
+  }
+};
+```
+You should also add `Angular-Slickgrid` as an allowed CommonJS dependency to your `angular.json` file to silence the warnings.
+```json
+"options": {
+  "allowedCommonJsDependencies": ["angular-slickgrid"]
+}
+```
 
-#### How to load data with `HttpClient`?
-You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call it and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
+#### `strictTemplates` error
+In Angular 14 and higher, Angular has a `strictTemplates` flag in your `tsconfig.json` file (enabled by default when creating new projects from CLI) which causes issues with Angular-Slickgrid events with errors similar to this:
 
-## Wiki / Documentation
-The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
+> Property 'detail' does not exist on type 'Event'. (onAngularGridCreated)="angularGridReady($event.detail)"
 
-## Main features
-You can see some screenshots below and the instructions down below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
+The reason is because Angular-Slickgrid uses Custom Event for all its events and Angular complains because these Custom Events aren't typed. In order to fix this issue, you have 3 viable approach:
 
-## Missing features
-What if `Angular-Slickgrid` is missing feature(s) compare to the original core library [6pac/SlickGrid](https://github.com/6pac/SlickGrid/)?
+1. disabled `strictTemplates` in your `tsconfig.json` config
+2. cast the event in the View template to `$any` type 
+  - `$any($event)` for example `$any($event).detail.eventData`
+3. cast the event in the component ViewModel to `CustomEvent`
+```html
+<angular-slickgrid gridId="grid28"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"                    
+    (onAngularGridCreated)="angularGridReady($event.detail)">
+</angular-slickgrid>
+```
 
-Fear not, you can simply reference the `SlickGrid` and `DataView` objects, just like in the core lib (they are exposed through Custom Events). For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
+```ts
+angularGridReady(event: CustomEvent) {
+  this.angularGrid = event.detail as AngularGridInstance;
+  this.gridObj = this.angularGrid.slickGrid;
+}
+```
 
+The simplest is obviously the option 1 but you lose the strictness on the view templates, more details can found under the discussion [(`strictTemplates`) Template error ](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815).
+
+If you know how to fix these please provide a Pull Request or expand on the discussion.
 
 ## Screenshots
 
