@@ -172,9 +172,8 @@ angularGridReady(event: CustomEvent) {
 }
 ```
 
-The simplest is obviously the option 1 but you lose the strictness on the view templates, more details can found under the discussion [(`strictTemplates`) Template error ](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815).
-
-If you know how to fix these please provide a Pull Request or expand on the discussion.
+The simplest is obviously the option 1 but you lose the strictness on the view templates, more details can found under the discussion [(`strictTemplates`) Template error ](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815), I have also opened a similar Stack Overflow question myself: 
+[How to use Custom Event (not Event Emitter) without `strictTemplates` to complain about `$event` not being a Custom Event type?](https://stackoverflow.com/questions/68490848/how-to-use-custom-event-not-event-emitter-without-stricttemplates-to-complai).
 
 ## Screenshots
 
