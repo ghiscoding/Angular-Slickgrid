@@ -9159,10 +9159,10 @@ ng-packagr@^16.2.0:
   optionalDependencies:
     esbuild "^0.19.0"
 
-ngx-bootstrap@^10.3.0:
-  version "10.3.0"
-  resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-10.3.0.tgz#688e7df7c8b4302ce342a13c4b49c4d67d117311"
-  integrity sha512-Ok9umbq4tqJSXMy/5/+2VZJHcwj7hD3a3x2KkF1A+f0e70BARY8rfr9QKjGgvywWNyZMf0Z5PvE1WEeEiMvCkA==
+ngx-bootstrap@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-11.0.2.tgz#ed1d0e254ef16ba8245cd9a3450404dc81aabef6"
+  integrity sha512-McvQ72XB6692Jus47jahWWwjpSCa6EtHMIqoyMewKCEHMv0ybDgVnOAdEsWKvwfulowHn7Y/jDjeiURwYJG9cQ==
   dependencies:
     tslib "^2.3.0"
 

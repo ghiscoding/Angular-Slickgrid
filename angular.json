@@ -26,6 +26,7 @@
               "flatpickr",
               "jszip/dist/jszip.min.js",
               "lodash",
+              "moment",
               "moment-mini",
               "q",
               "slickgrid",
