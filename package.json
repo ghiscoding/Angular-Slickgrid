@@ -96,10 +96,10 @@
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
     "@types/jest": "^29.5.3",
-    "@types/node": "^20.4.10",
+    "@types/node": "^20.5.0",
     "@types/sortablejs": "^1.15.1",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
-    "@typescript-eslint/parser": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
     "bootstrap": "^5.3.1",
     "copyfiles": "^2.4.1",
     "custom-event-polyfill": "^1.0.7",
@@ -113,7 +113,7 @@
     "ng-packagr": "^16.2.0",
     "ngx-bootstrap": "^11.0.2",
     "npm-run-all2": "^6.0.6",
-    "release-it": "^16.1.4",
+    "release-it": "^16.1.5",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.1",
     "sass": "^1.65.1",
@@ -129,7 +129,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001519",
+    "caniuse-lite": "1.0.30001520",
     "semver": "^7.5.4"
   }
 }
