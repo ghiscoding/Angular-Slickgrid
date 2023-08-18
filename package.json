@@ -96,7 +96,7 @@
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.4",
     "@types/jest": "^29.5.3",
-    "@types/node": "^20.5.0",
+    "@types/node": "^20.5.1",
     "@types/sortablejs": "^1.15.1",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
@@ -120,7 +120,7 @@
     "servor": "^4.0.2",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.6.1",
+    "tslib": "^2.6.2",
     "typescript": "~5.1.6",
     "zone.js": "~0.13.1"
   },
