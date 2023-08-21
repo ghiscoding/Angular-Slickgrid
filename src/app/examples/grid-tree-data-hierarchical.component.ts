@@ -3,13 +3,18 @@ import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import {
   AngularGridInstance,
+  Aggregators,
   Column,
+  decimalFormatted,
   FieldType,
   Filters,
+  findItemInTreeStructure,
   Formatter,
   Formatters,
   GridOption,
-  findItemInTreeStructure,
+  isNumber,
+  // GroupTotalFormatters,
+  // italicFormatter,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -20,7 +25,8 @@ import {
 export class GridTreeDataHierarchicalComponent implements OnInit {
   title = 'Example 29: Tree Data <small> <span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset - <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Tree-Data-Grid" target="_blank">Wiki</a>)</small>';
   subTitle = `<ul>
-    <li><b>NOTE:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
+    <li><b>NOTE #1:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
+    <li><b>NOTE #2:</b> Tree Totals are only calculated once and are <b>NOT</b> recalculated while filtering data, if you do want that feature then you will need to enable <code>autoRecalcTotalsOnFilterChange</code> <i>(see checkbox below)</i></li>
     <li><b>Styling - Salesforce Theme</b></li>
     <ul>
       <li>The Salesforce Theme was created with SASS and compiled in CSS (<a href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss" target="_blank">slickgrid-theme-salesforce.scss</a>), you can override any of its SASS variables</li>
@@ -37,6 +43,9 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   datasetHierarchical: any[] = [];
   isExcludingChildWhenFiltering = false;
   isAutoApproveParentItemWhenTreeColumnIsValid = true;
+  isAutoRecalcTotalsOnFilterChange = false;
+  isRemoveLastInsertedPopSongDisabled = true;
+  lastInsertedPopSongId: number | undefined;
   searchString = '';
 
   ngOnInit(): void {
@@ -66,8 +75,44 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       {
         id: 'size', name: 'Size', field: 'size', minWidth: 90,
         type: FieldType.number, exportWithFormatter: true,
+        excelExportOptions: { autoDetectCellFormat: false },
         filterable: true, filter: { model: Filters.compoundInputNumber },
-        formatter: (row, cell, value) => isNaN(value) ? '' : `${value} MB`,
+
+        // Formatter option #1 (treeParseTotalFormatters)
+        // if you wish to use any of the GroupTotalFormatters (or even regular Formatters), we can do so with the code below
+        // use `treeTotalsFormatter` or `groupTotalsFormatter` to show totals in a Tree Data grid
+        // provide any regular formatters inside the params.formatters
+
+        // formatter: Formatters.treeParseTotals,
+        // treeTotalsFormatter: GroupTotalFormatters.sumTotalsBold,
+        // // groupTotalsFormatter: GroupTotalFormatters.sumTotalsBold,
+        // params: {
+        //   // we can also supply extra params for Formatters/GroupTotalFormatters like min/max decimals
+        //   groupFormatterSuffix: ' MB', minDecimal: 0, maxDecimal: 2,
+        // },
+
+        // OR option #2 (custom Formatter)
+        formatter: (_row, _cell, value, column, dataContext) => {
+          // parent items will a "__treeTotals" property (when creating the Tree and running Aggregation, it mutates all items, all extra props starts with "__" prefix)
+          const fieldId = column.field;
+
+          // Tree Totals, if exists, will be found under `__treeTotals` prop
+          if (dataContext?.__treeTotals !== undefined) {
+            const treeLevel = dataContext[this.gridOptions?.treeDataOptions?.levelPropName || '__treeLevel'];
+            const sumVal = dataContext?.__treeTotals?.['sum'][fieldId];
+            const avgVal = dataContext?.__treeTotals?.['avg'][fieldId];
+
+            if (avgVal !== undefined && sumVal !== undefined) {
+              // when found Avg & Sum, we'll display both
+              return isNaN(sumVal) ? '' : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+            } else if (sumVal !== undefined) {
+              // or when only Sum is aggregated, then just show Sum
+              return isNaN(sumVal) ? '' : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+            }
+          }
+          // reaching this line means it's a regular dataContext without totals, so regular formatter output will be used
+          return !isNumber(value) ? '' : `${value} MB`;
+        },
       },
     ];
 
@@ -101,7 +146,20 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         // initialSort: {
         //   columnId: 'file',
         //   direction: 'DESC'
-        // }
+        // },
+
+        // Aggregators are also supported and must always be an array even when single one is provided
+        // Note: only 5 are currently supported: Avg, Sum, Min, Max and Count
+        // Note 2: also note that Avg Aggregator will automatically give you the "avg", "count" and "sum" so if you need these 3 then simply calling Avg will give you better perf
+        // aggregators: [new Aggregators.Sum('size')]
+        aggregators: [new Aggregators.Avg('size'), new Aggregators.Sum('size') /* , new Aggregators.Min('size'), new Aggregators.Max('size') */],
+
+        // should we auto-recalc Tree Totals (when using Aggregators) anytime a filter changes
+        // it is disabled by default for perf reason, by default it will only calculate totals on first load
+        autoRecalcTotalsOnFilterChange: this.isAutoRecalcTotalsOnFilterChange,
+
+        // add optional debounce time to limit number of execution that recalc is called, mostly useful on large dataset
+        // autoRecalcTotalsDebounce: 250
       },
       // change header/cell row height for salesforce theme
       headerRowHeight: 35,
@@ -157,6 +215,17 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     return true;
   }
 
+  changeAutoRecalcTotalsOnFilterChange() {
+    this.isAutoRecalcTotalsOnFilterChange = !this.isAutoRecalcTotalsOnFilterChange;
+    this.gridOptions.treeDataOptions!.autoRecalcTotalsOnFilterChange = this.isAutoRecalcTotalsOnFilterChange;
+    this.angularGrid.slickGrid?.setOptions(this.gridOptions);
+
+    // since it doesn't take current filters in consideration, we better clear them
+    this.angularGrid.filterService.clearFilters();
+    this.angularGrid.treeDataService.enableAutoRecalcTotalsFeature();
+    return true;
+  }
+
   changeExcludeChildWhenFiltering() {
     this.isExcludingChildWhenFiltering = !this.isExcludingChildWhenFiltering;
     this.gridOptions.treeDataOptions!.excludeChildrenWhenFilteringTree = this.isExcludingChildWhenFiltering;
@@ -193,7 +262,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const spacer = `<span style="display:inline-block; width:${(15 * dataContext[treeLevelPropName])}px;"></span>`;
 
-    if (data[idx + 1] && data[idx + 1][treeLevelPropName] > data[idx][treeLevelPropName]) {
+    if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
       const folderPrefix = `<span class="mdi icon color-alt-warning ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></span>`;
       if (dataContext.__collapsed) {
         return `${spacer} <span class="slick-group-toggle collapsed" level="${dataContext[treeLevelPropName]}"></span>${folderPrefix} ${prefix}&nbsp;${value}`;
@@ -203,7 +272,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     } else {
       return `${spacer} <span class="slick-group-toggle" level="${dataContext[treeLevelPropName]}"></span>${prefix}&nbsp;${value}`;
     }
-  }
+  };
 
   getFileIcon(value: string) {
     let prefix = '';
@@ -224,29 +293,53 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
    * After adding the item, it will sort by parent/child recursively
    */
   addNewFile() {
-    const newId = this.dataViewObj.getLength() + 100;
+    const newId = this.dataViewObj.getLength() + 50;
 
     // find first parent object and add the new item as a child
     const tmpDatasetHierarchical = [...this.datasetHierarchical];
-    const popItem = findItemInTreeStructure(tmpDatasetHierarchical, x => x.file === 'pop', 'files');
+    const popFolderItem = findItemInTreeStructure(tmpDatasetHierarchical, x => x.file === 'pop', 'files');
 
-    if (popItem && Array.isArray(popItem.files)) {
-      popItem.files.push({
+    if (popFolderItem && Array.isArray(popFolderItem.files)) {
+      popFolderItem.files.push({
         id: newId,
         file: `pop-${newId}.mp3`,
         dateModified: new Date(),
-        size: Math.floor(Math.random() * 100) + 50,
+        size: newId + 3,
       });
+      this.lastInsertedPopSongId = newId;
+      this.isRemoveLastInsertedPopSongDisabled = false;
 
       // overwrite hierarchical dataset which will also trigger a grid sort and rendering
       this.datasetHierarchical = tmpDatasetHierarchical;
 
       // scroll into the position, after insertion cycle, where the item was added
       setTimeout(() => {
-        const rowIndex = this.dataViewObj.getRowById(popItem.id);
+        const rowIndex = this.dataViewObj.getRowById(popFolderItem.id);
         this.gridObj.scrollRowIntoView(rowIndex + 3);
       }, 10);
     }
+  }
+
+  deleteFile() {
+    const tmpDatasetHierarchical = [...this.datasetHierarchical];
+    const popFolderItem = findItemInTreeStructure(this.datasetHierarchical, x => x.file === 'pop', 'files');
+    const songItemFound = findItemInTreeStructure(this.datasetHierarchical, x => x.id === this.lastInsertedPopSongId, 'files');
+
+    if (popFolderItem && songItemFound) {
+      const songIdx = popFolderItem.files.findIndex((f: any) => f.id === songItemFound.id);
+      if (songIdx >= 0) {
+        popFolderItem.files.splice(songIdx, 1);
+        this.lastInsertedPopSongId = undefined;
+        this.isRemoveLastInsertedPopSongDisabled = true;
+
+        // overwrite hierarchical dataset which will also trigger a grid sort and rendering
+        this.datasetHierarchical = tmpDatasetHierarchical;
+      }
+    }
+  }
+
+  clearFilters() {
+    this.angularGrid.filterService.clearFilters();
   }
 
   collapseAll() {
@@ -276,12 +369,15 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
             id: 4, file: 'pdf', files: [
               { id: 22, file: 'map2.pdf', dateModified: '2015-07-21T08:22:00.123Z', size: 2.9, },
               { id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1, },
-              { id: 6, file: 'internet-bill.pdf', dateModified: '2015-05-12T14:50:00.123Z', size: 1.4, },
-              { id: 23, file: 'phone-bill.pdf', dateModified: '2015-05-01T07:50:00.123Z', size: 1.4, },
+              { id: 6, file: 'internet-bill.pdf', dateModified: '2015-05-12T14:50:00.123Z', size: 1.3, },
+              { id: 23, file: 'phone-bill.pdf', dateModified: '2015-05-01T07:50:00.123Z', size: 1.5, },
             ]
           },
-          { id: 9, file: 'misc', files: [{ id: 10, file: 'todo.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4, }] },
-          { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', description: 'movie compilation', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
+          { id: 9, file: 'misc', files: [{ id: 10, file: 'warranties.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4, }] },
+          { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
+          { id: 55, file: 'unclassified.csv', dateModified: '2015-04-08T03:44:12.333Z', size: 0.25, },
+          { id: 56, file: 'unresolved.csv', dateModified: '2015-04-03T03:21:12.000Z', size: 0.79, },
+          { id: 57, file: 'zebra.dll', dateModified: '2016-12-08T13:22:12.432', size: 1.22, },
         ]
       },
       {
@@ -292,8 +388,9 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
               id: 14, file: 'pop', files: [
                 { id: 15, file: 'theme.mp3', description: 'Movie Theme Song', dateModified: '2015-03-01T17:05:00Z', size: 47, },
                 { id: 25, file: 'song.mp3', description: 'it is a song...', dateModified: '2016-10-04T06:33:44Z', size: 6.3, }
-              ]
+              ],
             },
+            { id: 33, file: 'other', files: [] }
           ]
         }]
       },

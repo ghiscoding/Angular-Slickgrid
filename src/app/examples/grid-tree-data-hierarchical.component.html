@@ -17,6 +17,10 @@
         <span class="icon mdi mdi-plus color-white"></span>
         <span>Add New Pop Song</span>
       </button>
+      <button (click)="deleteFile()" data-test="remove-item-btn" class="btn btn-outline-secondary btn-sm" [disabled]="isRemoveLastInsertedPopSongDisabled">
+        <span class="mdi mdi-minus"></span>
+        <span>Remove Last Inserted Pop Song</span>
+      </button>
       <button (click)="collapseAll()" data-test="collapse-all-btn" class="btn btn-outline-secondary btn-sm">
         <span class="icon mdi mdi-arrow-collapse"></span>
         <span>Collapse All</span>
@@ -24,6 +28,10 @@
       <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm">
         <span class="icon mdi mdi-arrow-expand"></span>
         <span>Expand All</span>
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-btn" (click)="clearFilters()">
+        <span class="mdi mdi-close"></span>
+        <span>Clear Filters</span>
       </button>
       <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm"
               title="console.log of the Flat dataset">
@@ -66,6 +74,15 @@
             because none of the files have both criteria at the same time, however the column with the tree 'file' does pass the filter criteria 'music'
             and with this flag we tell the lib to skip any other filter(s) as soon as the with the tree (file in this demo) passes its own filter criteria">
         Skip Other Filter Criteria when Parent with Tree is valid
+      </span>
+    </label>
+    <label class="checkbox-inline control-label" for="autoRecalcTotalsOnFilterChange" style="margin-left: 20px">
+      <input type="checkbox" id="autoRecalcTotalsOnFilterChange" data-test="auto-recalc-totals"
+             [checked]="isAutoRecalcTotalsOnFilterChange"
+             (click)="changeAutoRecalcTotalsOnFilterChange()">
+      <span
+            title="Should we recalculate Tree Data Totals (when Aggregators are defined) while filtering? This feature is disabled by default.">
+        auto-recalc Tree Data totals on filter changed
       </span>
     </label>
   </div>
