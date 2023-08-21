@@ -56,7 +56,7 @@ import { SwtCommonGridComponent } from './examples/swt-common-grid.component';
 // import our custom module, library created using this article
 // https://medium.com/@ngl817/building-an-angular-4-component-library-with-the-angular-cli-and-ng-packagr-53b2ade0701e
 import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angular-slickgrid.module';
-// import { SlickgridModule } from 'angular-slickgrid';
+// import { AngularSlickgridModule } from 'angular-slickgrid';
 
 // load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
 import 'flatpickr/dist/l10n/fr';
