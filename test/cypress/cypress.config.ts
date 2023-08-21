@@ -6,7 +6,7 @@ import plugins from './plugins/index';
 export default defineConfig({
   video: false,
   viewportWidth: 1200,
-  viewportHeight: 950,
+  viewportHeight: 1020,
   fixturesFolder: 'fixtures',
   projectId: 'hqnfoi',
   screenshotsFolder: 'screenshots',
