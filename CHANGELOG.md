@@ -1,6 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.1.0...v6.2.0) (2023-08-21)
+
+
+### Bug Fixes
+
+* adding dataset hierarchical item shouldn't cause scroll flickering ([4c5864f](https://github.com/ghiscoding/angular-slickgrid/commit/4c5864f376e9e645c10668e7f12dfe5ad44332bf))
+
+
+### Features
+
+* **TreeData:** add optional Aggregators for Tree Data totals calc ([236add4](https://github.com/ghiscoding/angular-slickgrid/commit/236add4ea8aa6ad744c07221272e2542f0b220a3))
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [6.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.0.1...v6.1.0) (2023-07-21)
 
 
