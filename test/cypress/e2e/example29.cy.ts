@@ -1,4 +1,4 @@
-describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 }, () => {
+describe('Example 29 - Tree Data with Aggregators (from a Hierarchical Dataset)', { retries: 1 }, () => {
   const GRID_ROW_HEIGHT = 33;
   const titles = ['Files', 'Date Modified', 'Description', 'Size'];
   // const defaultSortAscList = ['bucket-list.txt', 'documents', 'misc', 'warranties.txt', 'pdf', 'internet-bill.pdf', 'map.pdf', 'map2.pdf', 'phone-bill.pdf', 'txt', 'todo.txt', 'unclassified.csv', 'unresolved.csv', 'xls', 'compilation.xls', 'music', 'mp3', 'other', 'pop', 'song.mp3', 'theme.mp3', 'rock', 'soft.mp3', 'something.txt'];
@@ -13,7 +13,7 @@ describe('Example 29 - Tree Data (from a Hierarchical Dataset)', { retries: 1 },
   describe('without Auto-Recalc feature', () => {
     it('should display Example title', () => {
       cy.visit(`${Cypress.config('baseUrl')}/tree-data-hierarchical`);
-      cy.get('h2').should('contain', 'Example 29: Tree Data');
+      cy.get('h2').should('contain', 'Example 29: Tree Data with Aggregators');
       cy.get('h2').should('contain', 'from a Hierarchical Dataset');
     });
 
