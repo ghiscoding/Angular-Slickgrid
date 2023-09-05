@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.0...v6.2.1) (2023-09-05)
+
+
+### Bug Fixes
+
+* **common:** Select Filter/Editor enableRenderHtml incorrect, fix [#1240](https://github.com/ghiscoding/angular-slickgrid/issues/1240) ([0b8b52b](https://github.com/ghiscoding/angular-slickgrid/commit/0b8b52b98d7ad8024cd5b6f122600815a3228c82))
+
 # [6.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.1.0...v6.2.0) (2023-08-21)
 
 
