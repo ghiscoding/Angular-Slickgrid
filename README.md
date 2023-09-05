@@ -53,7 +53,7 @@ For common issues, see the [Troubleshooting Section](#troubleshooting-section) b
 
 ## Angular Compatibility
 
-> **Note** please be aware that only the latest version of Angular-Slickgrid, shown in the table below, is supported and can receive bug fixes. It's already a lot of work for a single developer like me, so hopefully you will understand. 
+> **Note** please be aware that only the latest version of Angular-Slickgrid is supported and will receive bug fixes. The reason older versions are not supported is simply because it's already a lot of work to maintain for a single developer.
 
 | Angular-Slickgrid | Angular version | Migration Guide | Notes |
 |-------------------|-----------------------|-----------------|------|
