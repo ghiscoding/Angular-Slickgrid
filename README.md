@@ -116,7 +116,6 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```
   "options": {
     "allowedCommonJsDependencies": [
-      "assign-deep",
       "excel-builder-webpacker",
       "stream"
     ],

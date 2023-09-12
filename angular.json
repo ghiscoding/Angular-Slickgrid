@@ -18,7 +18,6 @@
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "@fnando/sparkline",
-              "assign-deep",
               "autocompleter",
               "dompurify",
               "excel-builder-webpacker",
