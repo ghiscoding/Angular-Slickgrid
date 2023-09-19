@@ -64,11 +64,11 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.2",
-    "@angular-eslint/builder": "^16.1.2",
-    "@angular-eslint/eslint-plugin": "^16.1.2",
-    "@angular-eslint/eslint-plugin-template": "^16.1.2",
-    "@angular-eslint/schematics": "^16.1.2",
-    "@angular-eslint/template-parser": "^16.1.2",
+    "@angular-eslint/builder": "^16.2.0",
+    "@angular-eslint/eslint-plugin": "^16.2.0",
+    "@angular-eslint/eslint-plugin-template": "^16.2.0",
+    "@angular-eslint/schematics": "^16.2.0",
+    "@angular-eslint/template-parser": "^16.2.0",
     "@angular/animations": "^16.2.5",
     "@angular/cli": "^16.2.2",
     "@angular/common": "^16.2.5",
@@ -96,10 +96,10 @@
     "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.5",
     "@types/jest": "^29.5.5",
-    "@types/node": "^20.6.1",
+    "@types/node": "^20.6.2",
     "@types/sortablejs": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
     "bootstrap": "^5.3.2",
     "copyfiles": "^2.4.1",
     "custom-event-polyfill": "^1.0.7",
@@ -129,7 +129,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001534",
+    "caniuse-lite": "1.0.30001535",
     "semver": "^7.5.4"
   }
 }
