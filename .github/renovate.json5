@@ -25,7 +25,7 @@
     },
     {
       packageNames: ['zone.js'],
-      allowedVersions: '0.13.1'
+      allowedVersions: '0.13.3'
     }
   ],
   schedule: ['on friday and tuesday'],
