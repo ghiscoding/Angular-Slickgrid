@@ -23,6 +23,10 @@
       "updateTypes": ["major"],
       "enabled": false
     },
+    {
+      packageNames: ['zone.js'],
+      allowedVersions: '0.13.1'
+    }
   ],
   schedule: ['on friday and tuesday'],
   ignoreDeps: [
