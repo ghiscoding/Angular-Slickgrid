@@ -132,14 +132,14 @@ export class GridRowDetailComponent implements OnInit {
 
   getData() {
     // mock a dataset
-    this.dataset = [];
+    const tmpData = [];
     for (let i = 0; i < NB_ITEMS; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      this.dataset[i] = {
+      tmpData[i] = {
         rowId: i,
         title: 'Task ' + i,
         duration: (i % 33 === 0) ? null : Math.random() * 100 + '',
@@ -151,6 +151,7 @@ export class GridRowDetailComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
+    this.dataset = tmpData;
   }
 
   changeDetailViewRowCount() {

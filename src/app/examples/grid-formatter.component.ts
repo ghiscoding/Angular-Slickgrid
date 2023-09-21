@@ -113,14 +113,14 @@ export class GridFormatterComponent implements OnInit {
     };
 
     // mock a dataset
-    this.dataset = [];
+    const tmpData = [];
     for (let i = 0; i < 500; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      this.dataset[i] = {
+      tmpData[i] = {
         id: i,
         title: 'Task ' + i,
         phone: this.generatePhoneNumber(),
@@ -133,6 +133,7 @@ export class GridFormatterComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
+    this.dataset = tmpData;
   }
 
   generatePhoneNumber(): string {

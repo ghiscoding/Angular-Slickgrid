@@ -252,7 +252,7 @@ export class GridDraggableGroupingComponent implements OnInit {
 
   loadData(rowCount: number) {
     // mock a dataset
-    this.dataset = [];
+    const tmpData = [];
     for (let i = 0; i < rowCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
@@ -260,7 +260,7 @@ export class GridDraggableGroupingComponent implements OnInit {
       const randomPercent = Math.round(Math.random() * 100);
       const randomCost = Math.round(Math.random() * 10000) / 100;
 
-      this.dataset[i] = {
+      tmpData[i] = {
         id: 'id_' + i,
         num: i,
         title: 'Task ' + i,
@@ -273,6 +273,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
+    this.dataset = tmpData;
   }
 
   clearGroupsAndSelects() {
@@ -354,7 +355,7 @@ export class GridDraggableGroupingComponent implements OnInit {
     }
   }
 
-  onGroupChanged(change: { caller?: string; groupColumns: Grouping[] }) {
+  onGroupChanged(change: { caller?: string; groupColumns: Grouping[]; }) {
     // the "caller" property might not be in the SlickGrid core lib yet, reference PR https://github.com/6pac/SlickGrid/pull/303
     const caller = change && change.caller || [];
     const groups = change && change.groupColumns || [];
