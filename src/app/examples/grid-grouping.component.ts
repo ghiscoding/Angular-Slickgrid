@@ -179,7 +179,7 @@ export class GridGroupingComponent implements OnInit {
 
   loadData(rowCount: number) {
     // mock a dataset
-    this.dataset = [];
+    const tmpData = [];
     for (let i = 0; i < rowCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
@@ -187,7 +187,7 @@ export class GridGroupingComponent implements OnInit {
       const randomPercent = Math.round(Math.random() * 100);
       const randomCost = (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100;
 
-      this.dataset[i] = {
+      tmpData[i] = {
         id: 'id_' + i,
         num: i,
         title: 'Task ' + i,
@@ -200,6 +200,7 @@ export class GridGroupingComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
+    this.dataset = tmpData;
   }
 
   clearGrouping() {
