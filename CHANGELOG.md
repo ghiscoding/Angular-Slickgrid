@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.2](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.1...v6.2.2) (2023-09-24)
+
+
+### Bug Fixes
+
+* bump Slickgrid-Universal w/auto-resize w/o container, fixes [#1266](https://github.com/ghiscoding/angular-slickgrid/issues/1266) ([c8a9317](https://github.com/ghiscoding/angular-slickgrid/commit/c8a931717254cda1b30222427311a838856bb066))
+
 ## [6.2.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.0...v6.2.1) (2023-09-05)
 
 
