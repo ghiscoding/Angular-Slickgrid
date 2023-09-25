@@ -57,6 +57,11 @@ yarn build
 
 # step 3.b, optional website build as well
 yarn build:demo
+
+# step 4, to test the E2E tests with Cypress the E2E tests, you will need to install it separately
+cd test/cypress
+yarn install
+yarn cypress:open # open Cypress UI then click on "Run All Specs" or choose dedicated Example to test
 ```
 
 ## Latest News & Releases
