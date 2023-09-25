@@ -358,7 +358,10 @@ export class GridAngularComponent implements OnInit {
       Object.assign(componentOutput.componentRef.instance, { item: dataContext });
 
       // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component
-      setTimeout(() => cellNode.innerHTML = componentOutput.domElement.innerHTML);
+      setTimeout(() => {
+        cellNode.innerHTML = componentOutput.domElement.innerHTML;
+        componentOutput.componentRef.destroy();
+      });
     }
   }
 
