@@ -44,25 +44,7 @@ You like to use **Angular-Slickgrid**? Be sure to upvote :star: and maybe suppor
 <a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
 ### Contributions
-If you wish to contribute then make sure to follow these steps (note that we use [Yarn classic](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) in this project):
-```sh
-# step 1, install with Yarn classic
-yarn install
-
-# step 2, run in dev and test your code change
-yarn start
-
-# step 3.a, build plugin (lib)
-yarn build
-
-# step 3.b, optional website build as well
-yarn build:demo
-
-# step 4, to test the E2E tests with Cypress the E2E tests, you will need to install it separately
-cd test/cypress
-yarn install
-yarn cypress:open # open Cypress UI then click on "Run All Specs" or choose dedicated Example to test
-```
+If you wish to contribute then make sure to follow the steps shown in the [CONTRIBUTING](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/CONTRIBUTING.md) guide.
 
 ## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
