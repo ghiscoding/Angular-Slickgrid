@@ -93,4 +93,12 @@ describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
         }
       });
   });
+
+  it('should remove Angular Component rendered for AsyncPostRender once content is copied', () => {
+    cy.visit(`${Cypress.config('baseUrl')}/angular-components`);
+
+    cy.get('router-outlet')
+      .siblings()
+      .should('have.length', 1);
+  });
 });
