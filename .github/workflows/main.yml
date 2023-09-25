@@ -53,11 +53,11 @@ jobs:
         run: yarn build
 
       - name: Run Jest unit tests
-        if: "!contains(github.event.head_commit.message, 'chore: release')"
+        if: ${{ !contains(github.event.head_commit.message, format('chore{0} release', ':')) }}
         run: yarn jest:ci
 
       - name: Upload Jest coverage to Codecov
-        if: "!contains(github.event.head_commit.message, 'chore: release')"
+        if: ${{ !contains(github.event.head_commit.message, format('chore{0} release', ':')) }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
