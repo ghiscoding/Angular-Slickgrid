@@ -34,7 +34,7 @@ body:
     id: system-info
     attributes:
       label: Environment Info
-      description: versions number of each systems and libs (Angular, Angular-Slickgrid, TypeScript)
+      description: output of `npx envinfo --system --npmPackages 'angular-slickgrid' --binaries --browsers`
       render: shell
       placeholder: |
         Angular (x.y)

@@ -239,27 +239,24 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
-    const containerElements = this.gridContainerElement.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
-    if (containerElements?.length >= 0) {
-      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1], true);
+    const containerElements = this.gridContainerElement.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`) as HTMLCollectionOf<HTMLElement>;
+    if (this._preloadComponent && containerElements?.length >= 0) {
+      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[containerElements.length - 1]);
     }
   }
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | undefined {
-    const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
-    if (containerElements?.length > 0) {
-      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], true);
-      if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
-        // pass a few properties to the Row Detail template component
-        Object.assign(componentOutput.componentRef.instance, {
-          model: item,
-          addon: this,
-          grid: this._grid,
-          dataView: this.dataView,
-          parent: this.rowDetailViewOptions?.parent,
-        });
-
+    const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`) as HTMLCollectionOf<HTMLElement>;
+    if (this._viewComponent && containerElements?.length > 0) {
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[containerElements.length - 1], {
+        model: item,
+        addon: this,
+        grid: this._grid,
+        dataView: this.dataView,
+        parent: this.rowDetailViewOptions?.parent,
+      });
+      if (componentOutput?.componentRef) {
         const viewObj = this._views.find(obj => obj.id === item[this.datasetIdPropName]);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;

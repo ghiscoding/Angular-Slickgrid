@@ -354,14 +354,11 @@ export class GridAngularComponent implements OnInit {
 
   renderAngularComponent(cellNode: HTMLElement, row: number, dataContext: any, colDef: Column) {
     if (colDef.params.component) {
-      const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component);
-      Object.assign(componentOutput.componentRef.instance, { item: dataContext });
-
-      // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component
-      setTimeout(() => {
-        cellNode.innerHTML = componentOutput.domElement.innerHTML;
-        componentOutput.componentRef.destroy();
-      });
+      // the last 2 arguments of createAngularComponent() are optional
+      // but when they are provided, that is the DOM target (cellNode) and the dataContext,
+      // the util will render everything for you without too much delay
+      const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component, cellNode, { item: dataContext });
+      componentOutput.componentRef.destroy(); // cleanup no longer needed temp component
     }
   }
 
