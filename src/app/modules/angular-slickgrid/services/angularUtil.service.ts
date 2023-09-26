@@ -72,7 +72,7 @@ export class AngularUtilService {
     if (targetElement?.replaceChildren) {
       targetElement.replaceChildren(componentOutput.domElement);
     } else {
-      document.body.replaceChildren(componentOutput.domElement); // when no target provided, we'll simply add it to the HTML Body
+      document.body.appendChild(componentOutput.domElement); // when no target provided, we'll simply add it to the HTML Body
     }
 
     return componentOutput;

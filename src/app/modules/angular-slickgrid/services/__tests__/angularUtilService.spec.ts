@@ -100,7 +100,7 @@ describe('AngularUtilService', () => {
     it('should an angular component and append it to the DOM tree in the document body', () => {
       // @ts-ignore
       const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyBody = jest.spyOn(document.body, 'replaceChildren');
+      const spyBody = jest.spyOn(document.body, 'appendChild');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent);
 
