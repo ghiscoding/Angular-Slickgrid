@@ -59,15 +59,15 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
   search = '';
 
   constructor() {
-    this.loaderDataView = new Slick.Data.RemoteModel();
-    this.customDataView = this.loaderDataView && this.loaderDataView.data;
+    // this.loaderDataView = new Slick.Data.RemoteModel();
+    // this.customDataView = this.loaderDataView && this.loaderDataView.data;
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid; // grid object
-    this.loaderDataView.setSort('score', -1);
-    this.gridObj.setSortColumn('score', false);
+    this.loaderDataView?.setSort('score', -1);
+    this.gridObj?.setSortColumn('score', false);
 
     // notify of a change to preload the first page
     this.gridObj.onViewportChanged.notify();

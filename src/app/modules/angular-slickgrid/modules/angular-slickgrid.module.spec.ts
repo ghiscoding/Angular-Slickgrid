@@ -12,6 +12,11 @@ describe('AppComponent', () => {
   });
 
   it('should create an instance with providers via forRoot()', () => {
+    const angularSlickgridModuleWithProviders = AngularSlickgridModule.forRoot();
+    expect(angularSlickgridModuleWithProviders.providers![0]).toEqual({ provide: 'config', useValue: {} });
+  });
+
+  it('should create an instance with providers via forRoot() with extra config options', () => {
     const angularSlickgridModuleWithProviders = AngularSlickgridModule.forRoot({ enableAutoResize: true });
     expect(angularSlickgridModuleWithProviders.providers![0]).toEqual({ provide: 'config', useValue: { enableAutoResize: true } });
   });
