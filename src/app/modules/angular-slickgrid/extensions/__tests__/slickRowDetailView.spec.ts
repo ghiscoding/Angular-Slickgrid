@@ -84,10 +84,10 @@ jest.mock('@slickgrid-universal/common/dist/commonjs/extensions/slickRowSelectio
 }));
 
 @Component({ template: `<h4>Loading...</h4>` })
-export class TestPreloadComponent { }
+class TestPreloadComponent { }
 
 @Component({ template: `<h1>Some Title</h1>` })
-export class TestComponent { }
+class TestComponent { }
 
 describe('SlickRowDetailView', () => {
   let eventHandler: SlickEventHandler;

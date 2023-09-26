@@ -30,7 +30,6 @@ export class AngularUtilService {
     const componentRef = this.vcr.createComponent(component, createCompOptions);
 
     // user could provide data to assign to the component instance
-
     if (componentRef?.instance && data) {
       Object.assign(componentRef.instance as any, data);
 
