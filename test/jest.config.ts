@@ -7,7 +7,8 @@ const config: Config.InitialOptions = {
     'src/app/modules/**/*.{js,ts}',
     '!**/node_modules/**',
     '!src/**/models/**',
-    '!src/app/modules/angular-slickgrid/models/**',
+    '!src/**/constants.ts',
+    '!src/**/index.ts',
   ],
   coverageDirectory: './test/jest-coverage/',
   coveragePathIgnorePatterns: [
