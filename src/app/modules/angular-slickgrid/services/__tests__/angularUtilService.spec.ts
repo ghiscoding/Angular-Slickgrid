@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, Injector, ViewContainerRef } from '@angular/core';
+import { Component, ViewContainerRef } from '@angular/core';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AngularUtilService } from '..';
 
@@ -82,7 +82,7 @@ describe('AngularUtilService', () => {
     it('should an angular component and append it to the DOM tree in the document body', () => {
       // @ts-ignore
       const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyBody = jest.spyOn(document.body, 'appendChild');
+      const spyBody = jest.spyOn(document.body, 'replaceChildren');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent);
 
@@ -91,25 +91,12 @@ describe('AngularUtilService', () => {
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
     });
 
-    it('should an angular component and append it to the current component DOM tree, which also contains the parent node text', () => {
+    it('should an angular component and append it to the current component DOM tree, which will have its parent node replaced by the new html', () => {
       // @ts-ignore
       const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyElement = jest.spyOn(domParentElm, 'appendChild');
+      const spyElement = jest.spyOn(domParentElm, 'replaceChildren');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm);
-
-      expect(createCompSpy).toHaveBeenCalled();
-      expect(spyElement).toHaveBeenCalled();
-      expect(domParentElm.innerHTML).toBe('parent text<div id="row-detail123">some text</div>');
-      expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
-    });
-
-    it('should an angular component and append it to the current component DOM tree, which will have its parent node text emptied (because of 3rd flag)', () => {
-      // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyElement = jest.spyOn(domParentElm, 'appendChild');
-
-      const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm, true);
 
       expect(createCompSpy).toHaveBeenCalled();
       expect(spyElement).toHaveBeenCalled();
