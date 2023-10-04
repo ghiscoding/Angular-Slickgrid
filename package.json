@@ -111,7 +111,7 @@
     "moment-mini": "^2.29.4",
     "ng-packagr": "^16.2.3",
     "ngx-bootstrap": "^11.0.2",
-    "npm-run-all2": "^6.0.6",
+    "npm-run-all2": "^6.1.0",
     "release-it": "^16.2.1",
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
@@ -128,7 +128,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001542",
+    "caniuse-lite": "1.0.30001543",
     "semver": "^7.5.4"
   }
 }
