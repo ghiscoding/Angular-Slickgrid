@@ -77,7 +77,7 @@ jobs:
           config-file: cypress.config.ts
           wait-on: 'http://localhost:4300'
           browser: chrome
-          record: true
+          record: false
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
