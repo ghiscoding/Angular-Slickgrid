@@ -55,7 +55,7 @@
     "@slickgrid-universal/empty-warning-component": "~3.3.0",
     "@slickgrid-universal/event-pub-sub": "~3.1.0",
     "@slickgrid-universal/pagination-component": "~3.3.0",
-    "@slickgrid-universal/row-detail-view-plugin": "~3.3.0",
+    "@slickgrid-universal/row-detail-view-plugin": "~3.3.1",
     "@slickgrid-universal/rxjs-observable": "~3.3.0",
     "dequal": "^2.0.3",
     "dompurify": "^3.0.6",

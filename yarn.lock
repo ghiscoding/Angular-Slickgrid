@@ -3048,10 +3048,10 @@
     "@slickgrid-universal/binding" "~3.2.2"
     "@slickgrid-universal/common" "~3.3.0"
 
-"@slickgrid-universal/row-detail-view-plugin@~3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/row-detail-view-plugin/-/row-detail-view-plugin-3.3.0.tgz#e149f40d4507cc78e4c172c8f7c84e90d33aff4d"
-  integrity sha512-vm8KgJxdR4K0h4yHfyq5ts03prctX3ehdpYayF2JLVVGpCkGaWCjjDJbmLQHVhYDR1FVmBwBovCXtvAmeGC6Vg==
+"@slickgrid-universal/row-detail-view-plugin@~3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@slickgrid-universal/row-detail-view-plugin/-/row-detail-view-plugin-3.3.1.tgz#cf4f6dca9909479f15c5adc7abdfc7ccde4137ef"
+  integrity sha512-KxsYqFIe6bWzg6A2xtPaJ7bPBHEqtmG1Zx4yhKXhD5m88PHXW97KwhBu6Y4SBakLrTqLDrqd0zJBU2QA54csRw==
   dependencies:
     "@slickgrid-universal/common" "~3.3.0"
     "@slickgrid-universal/utils" "~3.1.0"
