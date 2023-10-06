@@ -115,7 +115,7 @@
     "release-it": "^16.2.1",
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
-    "sass": "^1.68.0",
+    "sass": "^1.69.0",
     "servor": "^4.0.2",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
@@ -128,7 +128,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001543",
+    "caniuse-lite": "1.0.30001546",
     "semver": "^7.5.4"
   }
 }
