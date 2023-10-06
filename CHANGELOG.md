@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.3.0...v6.3.1) (2023-10-06)
+
+
+### Bug Fixes
+
+* **graphql:** column with complex object could throw null pointer exception ([15d2246](https://github.com/ghiscoding/angular-slickgrid/commit/15d2246b0260716bbba4087f7e625e51f276149c))
+
 # [6.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.2...v6.3.0) (2023-10-05)
 
 
