@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, Injector, ViewContainerRef } from '@angular/core';
+import { Component, ViewContainerRef } from '@angular/core';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AngularUtilService } from '..';
 
@@ -8,12 +8,14 @@ jest.mock('flatpickr', () => { });
 
 const viewContainerRefStub = {
   createComponent: jest.fn(),
+  detectChanges: jest.fn(),
 } as unknown as ViewContainerRef;
 
-@Component({
-  template: `<h4>Loading...</h4>`
-})
-export class TestPreloadComponent { }
+@Component({ template: `<h4>Loading...</h4>` })
+class TestPreloadComponent { }
+
+@Component({ template: `<h1>{{ title }}</h1>` })
+class TestComponent { title = ''; }
 
 describe('AngularUtilService', () => {
   let service: AngularUtilService;
@@ -50,11 +52,13 @@ describe('AngularUtilService', () => {
 
   describe('createAngularComponent method', () => {
     let domElm: HTMLElement;
+    let domParentElm: HTMLElement;
     let mockComponentFactory: any;
 
     beforeEach(() => {
       domElm = document.getElementById(DOM_ELEMENT_ID) as HTMLDivElement;
-      mockComponentFactory = { hostView: { rootNodes: [domElm] } };
+      domParentElm = document.getElementById(DOM_PARENT_ID) as HTMLDivElement;
+      mockComponentFactory = { hostView: { rootNodes: [domElm] }, instance: {}, changeDetectorRef: { detectChanges: jest.fn() } };
     });
 
     it('should create an Angular Component and add it to the current component DOM tree', () => {
@@ -65,6 +69,20 @@ describe('AngularUtilService', () => {
 
       expect(createCompSpy).toHaveBeenCalled();
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
+    });
+
+    it('should create an Angular Component with optional target element and extra data to provide to the component instance', () => {
+      const titleMock = 'Some Title';
+      const h1Mock = document.createElement('h1');
+      h1Mock.textContent = titleMock;
+      mockComponentFactory.hostView.rootNodes[0] = h1Mock;
+      // @ts-ignore
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const output = service.createAngularComponent(TestComponent, domParentElm, { title: titleMock });
+
+      expect(createCompSpy).toHaveBeenCalled();
+      expect(domParentElm.innerHTML).toBe('Some Title');
+      expect(output).toEqual({ componentRef: mockComponentFactory, domElement: h1Mock });
     });
   });
 
@@ -91,25 +109,12 @@ describe('AngularUtilService', () => {
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
     });
 
-    it('should an angular component and append it to the current component DOM tree, which also contains the parent node text', () => {
+    it('should an angular component and append it to the current component DOM tree, which will have its parent node replaced by the new html', () => {
       // @ts-ignore
       const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyElement = jest.spyOn(domParentElm, 'appendChild');
+      const spyElement = jest.spyOn(domParentElm, 'replaceChildren');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm);
-
-      expect(createCompSpy).toHaveBeenCalled();
-      expect(spyElement).toHaveBeenCalled();
-      expect(domParentElm.innerHTML).toBe('parent text<div id="row-detail123">some text</div>');
-      expect(output).toEqual({ componentRef: mockComponentFactory, domElement: domElm });
-    });
-
-    it('should an angular component and append it to the current component DOM tree, which will have its parent node text emptied (because of 3rd flag)', () => {
-      // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyElement = jest.spyOn(domParentElm, 'appendChild');
-
-      const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm, true);
 
       expect(createCompSpy).toHaveBeenCalled();
       expect(spyElement).toHaveBeenCalled();

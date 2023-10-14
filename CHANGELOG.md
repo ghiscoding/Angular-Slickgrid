@@ -1,6 +1,26 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.3.0...v6.3.1) (2023-10-06)
+
+
+### Bug Fixes
+
+* **graphql:** column with complex object could throw null pointer exception ([15d2246](https://github.com/ghiscoding/angular-slickgrid/commit/15d2246b0260716bbba4087f7e625e51f276149c))
+
+# [6.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.2...v6.3.0) (2023-10-05)
+
+
+### Bug Fixes
+
+* avoid setTimeout after creating dynamic component, fixes [#1273](https://github.com/ghiscoding/angular-slickgrid/issues/1273) ([9436b68](https://github.com/ghiscoding/angular-slickgrid/commit/9436b682ccea391df8466585642a3250c219174d))
+* remove component after copying innerHTML ([c4ba24a](https://github.com/ghiscoding/angular-slickgrid/commit/c4ba24a361869339bc03343402f698b65f6abd62))
+
+
+### Features
+
+* add pageUp/pageDown/home/end to SlickCellSelection ([7d08128](https://github.com/ghiscoding/angular-slickgrid/commit/7d081289d064fb7fc65a60ec9956834a4be4e335))
+
 ## [6.2.2](https://github.com/ghiscoding/angular-slickgrid/compare/v6.2.1...v6.2.2) (2023-09-24)
 
 
