@@ -6,6 +6,7 @@
 /.ng_build
 .ng_build
 .angular
+.env
 
 # dependencies
 /node_modules
