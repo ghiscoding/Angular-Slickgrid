@@ -18,6 +18,7 @@ import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 import { FilterNgSelectComponent } from './filter-ng-select.component';
+import { CustomButtonFormatterComponent } from './custom-buttonFormatter.component';
 
 // using external non-typed js libraries
 declare const Slick: SlickNamespace;
@@ -50,6 +51,7 @@ export class GridAngularComponent implements OnInit {
       it works but as the name suggest it's async users might see noticeable delay in loading the data
       </li>
     </ul>
+    <li>The 2nd "Title" showing an interactive component, which is not destroyed after first rendering but stays active. Click on the button to see the title alerted</li>
   </ul>
   `;
 
@@ -100,6 +102,22 @@ export class GridAngularComponent implements OnInit {
           console.log(args);
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
         }
+      }, {
+        id: 'title2',
+        name: 'Title with Angular Component',
+        field: 'title',
+        minWidth: 100,
+        sortable: true,
+        type: FieldType.string,
+        // loading formatter, text to display while Post Render gets processed
+        formatter: () => '...',
+
+        // if the component needs to stay and be interactive after rendering
+        asyncPostRender: this.renderInteractiveAngularComponent.bind(this),
+        params: {
+          component: CustomButtonFormatterComponent,
+          angularUtilService: this.angularUtilService,
+        },
       }, {
         id: 'assignee',
         name: 'Assignee',
@@ -359,6 +377,12 @@ export class GridAngularComponent implements OnInit {
       // the util will render everything for you without too much delay
       const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component, cellNode, { item: dataContext });
       componentOutput.componentRef.destroy(); // cleanup no longer needed temp component
+    }
+  }
+
+  renderInteractiveAngularComponent(cellNode: HTMLElement, row: number, dataContext: any, colDef: Column) {
+    if (colDef.params.component) {
+      this.angularUtilService.createInteractiveAngularComponent(colDef.params.component, cellNode, { item: dataContext });
     }
   }
 
