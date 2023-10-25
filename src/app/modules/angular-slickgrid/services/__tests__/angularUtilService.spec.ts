@@ -84,6 +84,24 @@ describe('AngularUtilService', () => {
       expect(domParentElm.innerHTML).toBe('Some Title');
       expect(output).toEqual({ componentRef: mockComponentFactory, domElement: h1Mock });
     });
+
+    it('should create an Interactive Angular Component with target element and extra data to provide to the component instance', () => {
+      const titleMock = 'Some Title';
+      const h1Mock = document.createElement('h1');
+      h1Mock.textContent = titleMock;
+      mockComponentFactory.hostView.rootNodes[0] = h1Mock;
+      mockComponentFactory.location = {
+        nativeElement: h1Mock
+      };
+
+      // @ts-ignore
+      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const output = service.createInteractiveAngularComponent(TestComponent, domParentElm, { title: titleMock });
+
+      expect(createCompSpy).toHaveBeenCalled();
+      expect(domParentElm.innerHTML).toBe('<h1>Some Title</h1>');
+      expect(output).toEqual({ componentRef: mockComponentFactory, domElement: h1Mock });
+    });
   });
 
   describe('createAngularComponentAppendToDom method', () => {
