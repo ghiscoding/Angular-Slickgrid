@@ -28,8 +28,10 @@ npm install angular-slickgrid
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
+[Bootstrap 5 with single Locale](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-locales) - Code Sample with single Locale (without `ngx-translate`)
+
 #### Working Demo
-For a complete set of working demos (over 30 examples), we strongly suggest you to clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository (instructions are provided in the demo repo). The repo provides multiple demos and they are updated every time a new version is out, so it is updated frequently and is also used as the GitHub live demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete set of working demos (over 30 examples), we strongly suggest you to clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository (instructions are provided in the demo repo). The repo provides multiple demos and they are updated every time a new version is released, so it is updated frequently and is also used as the GitHub live demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 
 ```sh
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
@@ -84,13 +86,13 @@ Angular-Slickgrid uses `ngx-translate` library to support Locales, it is also re
 |  7              |        11.x         |
 
 ### Fully Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, we are talking about +15,000 lines of code (+3,750 unit tests) that are fully tested with [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +500 Cypress E2E tests.
+Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage, that includes over +4,000 unit tests using [Jest](https://jestjs.io/). On the UI side, all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/), there are over +500 Cypress E2E tests.
 
 #### How to load data with `HttpClient`?
-You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call it and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
+You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's about it. The `dataset` property can be changed or refreshed at any time and it will be reflected in the grid, which is why you can use local data and/or connect it with a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
 ## Main features
-You can see some screenshots below and the instructions down below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
+You can see some screenshots below and some instructions below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
 
 ## Troubleshooting Section
 
@@ -152,11 +154,11 @@ In Angular 14 and higher, Angular has a `strictTemplates` flag in your `tsconfig
 
 > Property 'detail' does not exist on type 'Event'. (onAngularGridCreated)="angularGridReady($event.detail)"
 
-The reason is because Angular-Slickgrid uses Custom Event for all its events and Angular complains because these Custom Events aren't typed. In order to fix this issue, you have 3 viable approach:
+The reason is because Angular-Slickgrid uses Custom Event for all its events and Angular complains because these Custom Events aren't typed. In order to fix this issue, you have 3 viable approaches:
 
 1. disabled `strictTemplates` in your `tsconfig.json` config
 2. cast the event in the View template to `$any` type 
-  - `$any($event)` for example `$any($event).detail.eventData`
+   - `$any($event)` for example `$any($event).detail.eventData`
 3. cast the event in the component ViewModel to `CustomEvent`
 ```html
 <angular-slickgrid gridId="grid28"
