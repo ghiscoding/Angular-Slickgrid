@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.3.1...v6.4.0) (2023-11-02)
+
+
+### Features
+
+* add new api for creating interactive angular component formatters ([71d2132](https://github.com/ghiscoding/angular-slickgrid/commit/71d21320d9ca930f92d8d94df1aaefad99250beb))
+* add sub-menus to all Menu extensions/plugins ([b779ef1](https://github.com/ghiscoding/angular-slickgrid/commit/b779ef14186481ebbd3ff32c1167729989feb3cf))
+* update GraphQL demo with cursor pagination ([2ba991c](https://github.com/ghiscoding/angular-slickgrid/commit/2ba991c2587494e4046f01a9efc7b41d41dc7cc5))
+* update sample with an interactive title column ([8b96324](https://github.com/ghiscoding/angular-slickgrid/commit/8b963247ddaa1dae73bde8d46c71347fb9a5c214))
+
 ## [6.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.3.0...v6.3.1) (2023-10-06)
 
 
