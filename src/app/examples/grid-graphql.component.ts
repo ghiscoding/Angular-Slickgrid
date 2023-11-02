@@ -1,9 +1,10 @@
-import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, } from '@slickgrid-universal/graphql';
+import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, } from '@slickgrid-universal/graphql';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
+  CursorPageInfo,
   FieldType,
   Filters,
   Formatters,
@@ -48,10 +49,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   dataset = [];
   metrics!: Metrics;
 
+  isWithCursor = false;
   graphqlQuery = '';
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
-  isWithCursor = false;
   selectedLanguage: string;
 
   constructor(private readonly cd: ChangeDetectorRef, private translate: TranslateService) {
@@ -180,7 +181,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           { columnId: 'name', direction: 'asc' },
           { columnId: 'company', direction: SortDirection.DESC }
         ],
-        pagination: { pageNumber: 2, pageSize: defaultPageSize }
+        pagination: { pageNumber: this.isWithCursor ? 1 : 2, pageSize: 20 } // if cursor based, start at page 1
       },
       backendServiceApi: {
         service: new GraphqlService(),
@@ -191,6 +192,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
             field: 'userId',
             value: 123
           }],
+          isWithCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
           // when dealing with complex objects, we want to keep our field name with double quotes
           // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
           keepArgumentFieldDoubleQuotes: true
@@ -224,7 +226,36 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
    * @param query
    * @return Promise<GraphqlPaginatedResult> | Observable<GraphqlResult>
    */
-  getCustomerApiCall(query: string): Promise<GraphqlPaginatedResult> {
+  getCustomerApiCall(_query: string): Promise<GraphqlPaginatedResult> {
+    let pageInfo: CursorPageInfo;
+    if (this.angularGrid?.paginationService) {
+      const { paginationService } = this.angularGrid;
+      // there seems to a timing issue where when you click "cursor" it requests the data before the pagination-service is initialized...
+      const pageNumber = (paginationService as any)._initialized ? paginationService.getCurrentPageNumber() : 1;
+      // In the real world, each node item would be A,B,C...AA,AB,AC, etc and so each page would actually be something like A-T, T-AN
+      // but for this mock data it's easier to represent each page as
+      // Page1: A-B
+      // Page2: B-C
+      // Page3: C-D
+      // Page4: D-E
+      // Page5: E-F
+      const startCursor = String.fromCharCode('A'.charCodeAt(0) + pageNumber - 1);
+      const endCursor = String.fromCharCode(startCursor.charCodeAt(0) + 1);
+      pageInfo = {
+        hasPreviousPage: paginationService.dataFrom === 0,
+        hasNextPage: paginationService.dataTo === 100,
+        startCursor,
+        endCursor
+      };
+    } else {
+      pageInfo = {
+        hasPreviousPage: false,
+        hasNextPage: true,
+        startCursor: 'A',
+        endCursor: 'B'
+      };
+    }
+
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
     const mockedResult = {
@@ -233,7 +264,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       data: {
         [GRAPHQL_QUERY_DATASET_NAME]: {
           nodes: [],
-          totalCount: 100
+          totalCount: 100,
+          pageInfo
         }
       }
     };
@@ -241,6 +273,12 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     return new Promise(resolve => {
       setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService!.buildQuery();
+        if (this.isWithCursor) {
+          // When using cursor pagination, the pagination service needs to updated with the PageInfo data from the latest request
+          // This might be done automatically if using a framework specific slickgrid library
+          // Note because of this timeout, this may cause race conditions with rapid clicks!
+          this.angularGrid?.paginationService?.setCursorPageInfo((mockedResult.data[GRAPHQL_QUERY_DATASET_NAME].pageInfo));
+        }
         resolve(mockedResult);
       }, 100);
     });
@@ -291,6 +329,44 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       { columnId: 'billingAddressZip', direction: 'DESC' },
       { columnId: 'company', direction: 'ASC' },
     ]);
+  }
+
+  resetToOriginalPresets() {
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
+    this.angularGrid.filterService.updateFilters([
+      // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
+      { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+      { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
+
+      // use a date range with 2 searchTerms values
+      { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
+    ]);
+    this.angularGrid.sortService.updateSorting([
+      // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+      { columnId: 'name', direction: 'asc' },
+      { columnId: 'company', direction: SortDirection.DESC }
+    ]);
+    setTimeout(() => {
+      this.angularGrid.paginationService?.changeItemPerPage(20);
+      this.angularGrid.paginationService?.goToPageNumber(2);
+    });
+  }
+
+  setIsWithCursor(isWithCursor: boolean) {
+    this.isWithCursor = isWithCursor;
+    this.resetOptions({ isWithCursor: this.isWithCursor });
+    return true;
+  }
+
+  private resetOptions(options: Partial<GraphqlServiceOption>) {
+    const graphqlService = this.gridOptions.backendServiceApi!.service as GraphqlService;
+    this.angularGrid.paginationService!.setCursorBased(options.isWithCursor!);
+    this.angularGrid.paginationService?.goToFirstPage();
+    graphqlService.updateOptions(options);
+    this.gridOptions = { ...this.gridOptions };
   }
 
   switchLanguage() {

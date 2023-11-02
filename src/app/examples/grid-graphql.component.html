@@ -35,6 +35,10 @@
                   (click)="setSortingDynamically()">
             Set Sorting Dynamically
           </button>
+          <button class="btn btn-outline-secondary btn-sm" data-test="reset-presets"
+                  (click)="resetToOriginalPresets()">
+            Reset Original Presets
+          </button>
         </div>
       </div>
       <div class="row mt-1">
@@ -48,6 +52,17 @@
             {{selectedLanguage + '.json'}}
           </span>
         </div>
+
+        <span style="margin-left: 10px">
+          <label class="radio-inline control-label" for="radioOffset">
+            <input type="radio" name="inlineRadioOptions" data-test="offset" id="radioOffset" checked [value]="false"
+            (change)="setIsWithCursor(false)"> Offset
+          </label>
+          <label class="radio-inline control-label" for="radioCursor">
+            <input type="radio" name="inlineRadioOptions" data-test="cursor" id="radioCursor" [value]="true"
+            (change)="setIsWithCursor(true)"> Cursor
+          </label>
+        </span>
       </div>
       <br />
       <div *ngIf="metrics" style="margin: 10px 0px">
