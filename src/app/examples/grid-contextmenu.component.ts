@@ -223,7 +223,37 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
               iconCssClass: 'fa fa-question-circle',
               positionOrder: 66,
             },
-            { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 67, }
+            { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 67, },
+            { command: '', divider: true, positionOrder: 98 },
+            {
+              // we can also have multiple nested sub-menus
+              command: 'export', title: 'Exports', positionOrder: 99,
+              commandItems: [
+                { command: 'exports-txt', title: 'Text (tab delimited)' },
+                {
+                  command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+                  commandItems: [
+                    { command: 'exports-csv', title: 'Excel (csv)' },
+                    { command: 'exports-xlsx', title: 'Excel (xlsx)' },
+                  ]
+                }
+              ]
+            },
+            {
+              command: 'feedback', title: 'Feedback', positionOrder: 100,
+              commandItems: [
+                { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
+                'divider',
+                {
+                  command: 'sub-menu', title: 'Contact Us', iconCssClass: 'mdi mdi-account', subMenuTitle: 'contact us...', subMenuTitleCssClass: 'italic',
+                  commandItems: [
+                    { command: 'contact-email', title: 'Email us', iconCssClass: 'mdi mdi-pencil-outline' },
+                    { command: 'contact-chat', title: 'Chat with us', iconCssClass: 'mdi mdi-message-text-outline' },
+                    { command: 'contact-meeting', title: 'Book an appointment', iconCssClass: 'mdi mdi-coffee' },
+                  ]
+                }
+              ]
+            }
           ],
           optionTitleKey: 'CHANGE_COMPLETED_FLAG',
           optionItems: [
@@ -304,6 +334,16 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
     const dataContext = args.dataContext;
 
     switch (command) {
+      case 'contact-email':
+      case 'contact-chat':
+      case 'contact-meeting':
+        alert('Command: ' + args?.command);
+        break;
+      case 'exports-csv':
+      case 'exports-txt':
+      case 'exports-xlsx':
+        alert(`Exporting as ${args.item.title}`);
+        break;
       case 'command1':
         alert('Command 1');
         break;
@@ -374,6 +414,36 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
           }
         },
         { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 65 },
+        { command: '', divider: true, positionOrder: 98 },
+        {
+          // we can also have multiple nested sub-menus
+          command: 'export', title: 'Exports', positionOrder: 99,
+          commandItems: [
+            { command: 'exports-txt', title: 'Text (tab delimited)' },
+            {
+              command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+              commandItems: [
+                { command: 'exports-csv', title: 'Excel (csv)' },
+                { command: 'exports-xlsx', title: 'Excel (xlsx)' },
+              ]
+            }
+          ]
+        },
+        {
+          command: 'feedback', title: 'Feedback', positionOrder: 100,
+          commandItems: [
+            { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
+            'divider',
+            {
+              command: 'sub-menu', title: 'Contact Us', iconCssClass: 'mdi mdi-account', subMenuTitle: 'contact us...', subMenuTitleCssClass: 'italic',
+              commandItems: [
+                { command: 'contact-email', title: 'Email us', iconCssClass: 'mdi mdi-pencil-outline' },
+                { command: 'contact-chat', title: 'Chat with us', iconCssClass: 'mdi mdi-message-text-outline' },
+                { command: 'contact-meeting', title: 'Book an appointment', iconCssClass: 'mdi mdi-coffee' },
+              ]
+            }
+          ]
+        }
       ],
 
       // Options allows you to edit a column from an option chose a list
@@ -409,6 +479,14 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
             return (!dataContext.completed);
           }
         },
+        {
+          // we can also have multiple nested sub-menus
+          option: null, title: 'Sub-Options (demo)', subMenuTitleKey: 'CHANGE_PRIORITY', optionItems: [
+            { option: 1, iconCssClass: 'fa fa-star-o yellow', titleKey: 'LOW' },
+            { option: 2, iconCssClass: 'fa fa-star-half-o orange', titleKey: 'MEDIUM' },
+            { option: 3, iconCssClass: 'fa fa-star red', titleKey: 'HIGH' },
+          ]
+        }
       ],
       // subscribe to Context Menu
       onBeforeMenuShow: ((e, args) => {

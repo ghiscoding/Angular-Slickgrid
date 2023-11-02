@@ -726,7 +726,7 @@ describe('Example 5 - OData Grid', () => {
         .invoke('show')
         .click();
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(6)')
         .children('.slick-menu-content')

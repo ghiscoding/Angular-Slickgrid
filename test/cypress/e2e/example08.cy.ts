@@ -89,7 +89,7 @@ describe('Example 8 - Header Menu Plugin', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('exist');
 
     cy.get('.slick-menu-item .slick-menu-content')
@@ -98,7 +98,7 @@ describe('Example 8 - Header Menu Plugin', { retries: 1 }, () => {
   });
 
   it('should execute "Sort Descending" command from the menu left open and expect 2 sort icons afterward and "% Completed" to be descending with >80', () => {
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('exist');
 
     cy.get('.slick-menu-item .slick-menu-content')
@@ -151,6 +151,70 @@ describe('Example 8 - Header Menu Plugin', { retries: 1 }, () => {
       .children()
       .should('have.length', 5)
       .each(($child, index) => expect($child.text()).to.contain(titles[index]));
+  });
 
+  describe('with sub-menus', () => {
+    it(`should open Hello sub-menu and expect 3 options, then open Feedback->ContactUs sub-menus and expect previous Hello menu to no longer exists`, () => {
+      const subCommands1 = ['Hello World', 'Hello SlickGrid', `Let's play`];
+      const subCommands2 = ['Request update from supplier', '', 'Contact Us'];
+      const subCommands2_1 = ['Email us', 'Chat with us', 'Book an appointment'];
+
+      const stub = cy.stub();
+      cy.on('window:alert', stub);
+
+      cy.get('#grid8')
+        .find('.slick-header-column:nth(0)')
+        .trigger('mouseover')
+        .children('.slick-header-menu-button')
+        .should('be.hidden')
+        .invoke('show')
+        .click({ force: true });
+
+      cy.get('.slick-header-menu.slick-menu-level-0')
+        .find('.slick-menu-item.slick-menu-item')
+        .contains('Hello')
+        .should('exist')
+        .click();
+
+      cy.get('.slick-submenu').should('have.length', 1);
+      cy.get('.slick-header-menu.slick-menu-level-1.dropright') // right align
+        .should('exist')
+        .find('.slick-menu-item')
+        .each(($command, index) => expect($command.text()).to.contain(subCommands1[index]));
+
+      // click different sub-menu
+      cy.get('.slick-header-menu.slick-menu-level-0')
+        .find('.slick-menu-item.slick-menu-item')
+        .contains('Feedback')
+        .should('exist')
+        .click();
+
+      cy.get('.slick-submenu').should('have.length', 1);
+      cy.get('.slick-header-menu.slick-menu-level-1')
+        .should('exist')
+        .find('.slick-menu-item')
+        .each(($command, index) => expect($command.text()).to.contain(subCommands2[index]));
+
+      // click on Feedback->ContactUs
+      cy.get('.slick-header-menu.slick-menu-level-1.dropright') // right align
+        .find('.slick-menu-item.slick-menu-item')
+        .contains('Contact Us')
+        .should('exist')
+        .trigger('mouseover'); // mouseover or click should work
+
+      cy.get('.slick-submenu').should('have.length', 2);
+      cy.get('.slick-header-menu.slick-menu-level-2.dropleft') // left align
+        .should('exist')
+        .find('.slick-menu-item')
+        .each(($command, index) => expect($command.text()).to.contain(subCommands2_1[index]));
+
+      cy.get('.slick-header-menu.slick-menu-level-2')
+        .find('.slick-menu-item')
+        .contains('Chat with us')
+        .click()
+        .then(() => expect(stub.getCall(0)).to.be.calledWith('Command: contact-chat'));
+
+      cy.get('.slick-submenu').should('have.length', 0);
+    });
   });
 });

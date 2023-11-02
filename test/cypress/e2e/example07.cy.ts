@@ -360,7 +360,7 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('#grid7-2 .slick-header-menu')
+      cy.get('#grid7-2 .slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(6)')
         .children('.slick-menu-content')
@@ -390,7 +390,7 @@ describe('Example 7 - Header Button Plugin', { retries: 1 }, () => {
         .children('.slick-header-menu-button')
         .click();
 
-      cy.get('#grid7-2 .slick-header-menu')
+      cy.get('#grid7-2 .slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(3)')
         .children('.slick-menu-content')
