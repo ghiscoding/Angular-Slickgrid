@@ -331,6 +331,30 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     ]);
   }
 
+  resetToOriginalPresets() {
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
+    this.angularGrid.filterService.updateFilters([
+      // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
+      { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+      { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
+
+      // use a date range with 2 searchTerms values
+      { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
+    ]);
+    this.angularGrid.sortService.updateSorting([
+      // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+      { columnId: 'name', direction: 'asc' },
+      { columnId: 'company', direction: SortDirection.DESC }
+    ]);
+    setTimeout(() => {
+      this.angularGrid.paginationService?.changeItemPerPage(20);
+      this.angularGrid.paginationService?.goToPageNumber(2);
+    });
+  }
+
   setIsWithCursor(isWithCursor: boolean) {
     this.isWithCursor = isWithCursor;
     this.resetOptions({ isWithCursor: this.isWithCursor });
