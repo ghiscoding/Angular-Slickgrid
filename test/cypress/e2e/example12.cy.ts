@@ -224,7 +224,7 @@ describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(4)')
         .children('.slick-menu-content')

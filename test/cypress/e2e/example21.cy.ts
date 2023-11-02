@@ -198,7 +198,7 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('be.visible')
       .children('.slick-menu-item:nth-of-type(4)')
       .children('.slick-menu-content')
@@ -212,7 +212,7 @@ describe('Example 21 - Row Detail View', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('be.visible')
       .children('.slick-menu-item:nth-of-type(3)')
       .children('.slick-menu-content')

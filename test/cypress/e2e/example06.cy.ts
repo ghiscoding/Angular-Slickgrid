@@ -171,7 +171,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('be.visible')
       .children('.slick-menu-item:nth-of-type(6)')
       .children('.slick-menu-content')
@@ -201,7 +201,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('be.visible')
       .children('.slick-menu-item:nth-of-type(6)')
       .children('.slick-menu-content')
@@ -232,7 +232,7 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
       .invoke('show')
       .click();
 
-    cy.get('.slick-header-menu')
+    cy.get('.slick-header-menu .slick-menu-command-list')
       .should('be.visible')
       .children('.slick-menu-item:nth-of-type(6)')
       .children('.slick-menu-content')
@@ -431,28 +431,28 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(3)')
         .children('.slick-menu-content')
         .should('contain', 'Sort Ascending');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(4)')
         .children('.slick-menu-content')
         .should('contain', 'Sort Descending');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(6)')
         .children('.slick-menu-content')
         .should('contain', 'Remove Filter');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(7)')
         .children('.slick-menu-content')
         .should('contain', 'Remove Sort');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(8)')
         .children('.slick-menu-content')
         .should('contain', 'Hide Column');
@@ -539,28 +539,28 @@ describe('Example 6 - GraphQL Grid', { retries: 1 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .should('be.visible')
         .children('.slick-menu-item:nth-of-type(3)')
         .children('.slick-menu-content')
         .should('contain', 'Trier par ordre croissant');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(4)')
         .children('.slick-menu-content')
         .should('contain', 'Trier par ordre décroissant');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(6)')
         .children('.slick-menu-content')
         .should('contain', 'Supprimer le filtre');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(7)')
         .children('.slick-menu-content')
         .should('contain', 'Supprimer le tri');
 
-      cy.get('.slick-header-menu')
+      cy.get('.slick-header-menu .slick-menu-command-list')
         .children('.slick-menu-item:nth-of-type(8)')
         .children('.slick-menu-content')
         .should('contain', 'Cacher la colonne');
