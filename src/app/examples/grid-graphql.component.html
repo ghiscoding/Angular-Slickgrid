@@ -39,6 +39,10 @@
                   (click)="resetToOriginalPresets()">
             Reset Original Presets
           </button>
+          <label for="serverdelay" class="ml-4">Server Delay: </label>
+          <input id="serverdelay" type="number" data-test="server-delay" style="width: 55px"
+                [(ngModel)]="serverWaitDelay"
+                title="input a fake timer delay to simulate slow server response" />
         </div>
       </div>
       <div class="row mt-1">
