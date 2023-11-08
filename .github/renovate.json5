@@ -24,7 +24,7 @@
       "enabled": false
     },
   ],
-  schedule: ['on friday and tuesday'],
+  schedule: ['every 2 weeks on friday'],
   ignoreDeps: [
     // ignore TypeScript since it has to follow Angular recommended version
     'typescript'
