@@ -1,4 +1,4 @@
-describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', { retries: 1 }, () => {
+describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
   const fullTitles = ['', '', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
 
   it('should display Example title', () => {

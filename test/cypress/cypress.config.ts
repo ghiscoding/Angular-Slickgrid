@@ -10,8 +10,16 @@ export default defineConfig({
   videosFolder: 'videos',
   numTestsKeptInMemory: 5,
   retries: {
-    runMode: 2,
-    openMode: 0,
+    experimentalStrategy: 'detect-flake-and-pass-on-threshold',
+    experimentalOptions: {
+      maxRetries: 2,
+      passesRequired: 1,
+    },
+
+    // you must also explicitly set openMode and runMode to
+    // either true or false when using experimental retries
+    openMode: false, // Cypress UI
+    runMode: true, // run in CI
   },
   e2e: {
     baseUrl: 'http://localhost:4300/#',

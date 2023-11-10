@@ -1,4 +1,4 @@
-describe('Example 8 - Header Menu Plugin', { retries: 1 }, () => {
+describe('Example 8 - Header Menu Plugin', () => {
   const titles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { removeExtraSpaces } from '../plugins/utilities';
 
-describe('Example 2 - Grid with Formatters', { retries: 1 }, () => {
+describe('Example 2 - Grid with Formatters', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/formatter`);
     cy.get('h2').should('contain', 'Example 2: Grid with Formatters');

@@ -1,4 +1,4 @@
-describe('Example 10 - Multiple Grids with Row Selection', { retries: 1 }, () => {
+describe('Example 10 - Multiple Grids with Row Selection', () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   beforeEach(() => {

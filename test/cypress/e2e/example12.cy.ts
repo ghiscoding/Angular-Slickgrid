@@ -1,7 +1,7 @@
 import moment from 'moment-mini';
 import { removeExtraSpaces } from '../plugins/utilities';
 
-describe('Example 12: Localization (i18n)', { retries: 1 }, () => {
+describe('Example 12: Localization (i18n)', () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
   const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', 'Début', 'Fin', 'Terminé', 'Terminé'];
 

@@ -1,4 +1,4 @@
-describe('Example 3 - Grid with Editors', { retries: 1 }, () => {
+describe('Example 3 - Grid with Editors', () => {
   const GRID_ROW_HEIGHT = 35;
   const fullTitles = [
     '', '', 'Title', 'Title, Custom Editor', 'Duration (days)', '% Complete',

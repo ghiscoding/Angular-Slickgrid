@@ -1,6 +1,6 @@
 import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
-describe('Example 30  Composite Editor Modal', { retries: 1 }, () => {
+describe('Example 30  Composite Editor Modal', () => {
   const fullPreTitles = ['', 'Common Factor', 'Analysis', 'Period', 'Item', ''];
   const fullTitles = ['', 'Title', 'Duration', 'Cost', '% Complete', 'Complexity', 'Start', 'Completed', 'Finish', 'Product', 'Country of Origin', 'Action'];
 
