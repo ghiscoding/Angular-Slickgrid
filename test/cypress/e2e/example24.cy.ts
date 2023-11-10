@@ -1,4 +1,4 @@
-describe('Example 24 - Grids in Bootstrap Tabs', { retries: 1 }, () => {
+describe('Example 24 - Grids in Bootstrap Tabs', () => {
   const GRID_ROW_HEIGHT = 35;
   const grid1FullTitles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
   const grid2FullTitles = ['Name', 'Gender', 'Company'];

@@ -1,4 +1,4 @@
-describe('Example 31 - Columns Resize by Content', { retries: 1 }, () => {
+describe('Example 31 - Columns Resize by Content', () => {
   const GRID_ROW_HEIGHT = 33;
 
   beforeEach(() => {

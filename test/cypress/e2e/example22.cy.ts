@@ -1,4 +1,4 @@
-describe('Example 22 - Use of Angular Components', { retries: 1 }, () => {
+describe('Example 22 - Use of Angular Components', () => {
   const fullTitles = ['Title', 'Title with Angular Component', 'Assignee', 'Assignee with Angular Component', '% Complete', 'Start', 'Finish', 'Action'];
 
   it('should display Example title', () => {

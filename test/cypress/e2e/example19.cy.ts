@@ -1,4 +1,4 @@
-describe('Example 19 - Draggable Grouping & Aggregators', { retries: 1 }, () => {
+describe('Example 19 - Draggable Grouping & Aggregators', () => {
   const fullTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort-Driven'];
   const GRID_ROW_HEIGHT = 35;
 

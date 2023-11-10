@@ -7,7 +7,7 @@ const presetMaxDuration = 88;
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
 const presetHighestDay = moment().add(28, 'days').format('YYYY-MM-DD');
 
-describe('Example 25 - Range Filters', { retries: 1 }, () => {
+describe('Example 25 - Range Filters', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/range`);
     cy.get('h2').should('contain', 'Example 25: Filtering from Range of Search Values');

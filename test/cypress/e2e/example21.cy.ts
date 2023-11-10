@@ -1,4 +1,4 @@
-describe('Example 21 - Row Detail View', { retries: 1 }, () => {
+describe('Example 21 - Row Detail View', () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {

@@ -1,4 +1,4 @@
-describe('Example 26 - Cell Menu & Context Menu Plugins', { retries: 1 }, () => {
+describe('Example 26 - Cell Menu & Context Menu Plugins', () => {
   const GRID_ROW_HEIGHT = 35;
   const fullEnglishTitles = ['#', 'Title', '% Complete', 'Start', 'Finish', 'Priority', 'Completed', 'Action'];
   const fullFrenchTitles = ['#', 'Titre', '% Achevée', 'Début', 'Fin', 'Priorité', 'Terminé', 'Action'];

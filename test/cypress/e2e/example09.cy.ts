@@ -1,4 +1,4 @@
-describe('Example 9 - Grid Menu', { retries: 1 }, () => {
+describe('Example 9 - Grid Menu', () => {
   const fullEnglishTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
   const fullFrenchTitles = ['Titre', 'Durée', '% Achevée', 'Début', 'Fin', 'Terminé'];
 

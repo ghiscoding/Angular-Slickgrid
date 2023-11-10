@@ -1,4 +1,4 @@
-describe('Example 32 - Regular & Custom Tooltips', { retries: 1 }, () => {
+describe('Example 32 - Regular & Custom Tooltips', () => {
   const titles = ['', 'Title', 'Duration', 'Description', 'Description 2', 'Cost', '% Complete', 'Start', 'Finish', 'Effort Driven', 'Prerequisites', 'Action'];
   const GRID_ROW_HEIGHT = 33;
 

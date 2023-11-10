@@ -1,4 +1,4 @@
-describe('Example 13 - Custom Backend Server Pagination', { retries: 1 }, () => {
+describe('Example 13 - Custom Backend Server Pagination', () => {
   const fullTitles = ['Note', 'Status', 'Currency', 'Amount', 'Input Date', 'Input Time'];
 
   it('should display Example title', () => {

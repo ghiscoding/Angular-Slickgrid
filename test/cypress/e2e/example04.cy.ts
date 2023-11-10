@@ -1,7 +1,7 @@
 import moment from 'moment-mini';
 import { removeExtraSpaces } from '../plugins/utilities';
 
-describe('Example 4 - Client Side Sort/Filter Grid', { retries: 1 }, () => {
+describe('Example 4 - Client Side Sort/Filter Grid', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/clientside`);
     cy.get('h2').should('contain', 'Example 4: Client Side Sort/Filter');

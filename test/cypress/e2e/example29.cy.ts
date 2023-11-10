@@ -1,4 +1,4 @@
-describe('Example 29 - Tree Data with Aggregators (from a Hierarchical Dataset)', { retries: 1 }, () => {
+describe('Example 29 - Tree Data with Aggregators (from a Hierarchical Dataset)', () => {
   const GRID_ROW_HEIGHT = 33;
   const titles = ['Files', 'Date Modified', 'Description', 'Size'];
   // const defaultSortAscList = ['bucket-list.txt', 'documents', 'misc', 'warranties.txt', 'pdf', 'internet-bill.pdf', 'map.pdf', 'map2.pdf', 'phone-bill.pdf', 'txt', 'todo.txt', 'unclassified.csv', 'unresolved.csv', 'xls', 'compilation.xls', 'music', 'mp3', 'other', 'pop', 'song.mp3', 'theme.mp3', 'rock', 'soft.mp3', 'something.txt'];

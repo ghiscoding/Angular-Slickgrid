@@ -1,4 +1,4 @@
-describe('Example 1 - Basic Grids', { retries: 1 }, () => {
+describe('Example 1 - Basic Grids', () => {
   const fullTitles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {
