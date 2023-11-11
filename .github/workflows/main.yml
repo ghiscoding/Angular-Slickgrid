@@ -71,15 +71,14 @@ jobs:
       - name: Website Prod Build (served for Cypress)
         run: yarn build:demo
 
-      - name: Start HTTP Server
-        run: yarn serve:demo &
-
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
-          working-directory: test/cypress
-          config-file: cypress.config.ts
+          install: false
+          # working-directory: packages/dnd
+          start: yarn serve:demo
           wait-on: 'http://localhost:4300'
+          config-file: test/cypress.config.ts
           browser: chrome
           record: false
         env:
