@@ -194,7 +194,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
             field: 'userId',
             value: 123
           }],
-          isWithCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
+          useCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
           // when dealing with complex objects, we want to keep our field name with double quotes
           // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
           keepArgumentFieldDoubleQuotes: true
@@ -359,13 +359,13 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   setIsWithCursor(isWithCursor: boolean) {
     this.isWithCursor = isWithCursor;
-    this.resetOptions({ isWithCursor: this.isWithCursor });
+    this.resetOptions({ useCursor: this.isWithCursor });
     return true;
   }
 
   private resetOptions(options: Partial<GraphqlServiceOption>) {
     const graphqlService = this.gridOptions.backendServiceApi!.service as GraphqlService;
-    this.angularGrid.paginationService!.setCursorBased(options.isWithCursor!);
+    this.angularGrid.paginationService!.setCursorBased(options.useCursor as boolean);
     graphqlService.updateOptions(options);
     this.gridOptions = { ...this.gridOptions };
     this.angularGrid.paginationService?.goToFirstPage();
