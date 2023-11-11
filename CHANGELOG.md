@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.4.0...v6.5.0) (2023-11-11)
+
+
+### Bug Fixes
+
+* SlickCellRangeSelector stopped event bubbling in editor, fix [#1303](https://github.com/ghiscoding/angular-slickgrid/issues/1303) ([e6581db](https://github.com/ghiscoding/angular-slickgrid/commit/e6581dbfdb004812c4a043889569e1ce33b5c1a5))
+
 # [6.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.3.1...v6.4.0) (2023-11-02)
 
 
