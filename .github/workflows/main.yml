@@ -77,8 +77,11 @@ jobs:
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
-          config-file: test/cypress.config.ts
+          install: false
+          # working-directory: packages/dnd
+          start: yarn serve:demo
           wait-on: 'http://localhost:4300'
+          config-file: test/cypress.config.ts
           browser: chrome
           record: false
         env:
