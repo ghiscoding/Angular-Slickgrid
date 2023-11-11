@@ -365,7 +365,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   private resetOptions(options: Partial<GraphqlServiceOption>) {
     const graphqlService = this.gridOptions.backendServiceApi!.service as GraphqlService;
-    this.angularGrid.paginationService!.setCursorBased(options.isWithCursor!);
+    this.angularGrid.paginationService!.setCursorBased(options.useCursor!);
     this.angularGrid.paginationService?.goToFirstPage();
     graphqlService.updateOptions(options);
     this.gridOptions = { ...this.gridOptions };
