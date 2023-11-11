@@ -77,8 +77,7 @@ jobs:
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
-          working-directory: test/cypress
-          config-file: cypress.config.ts
+          config-file: test/cypress.config.ts
           wait-on: 'http://localhost:4300'
           browser: chrome
           record: false
