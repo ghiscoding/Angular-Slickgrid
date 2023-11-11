@@ -71,9 +71,6 @@ jobs:
       - name: Website Prod Build (served for Cypress)
         run: yarn build:demo
 
-      - name: Start HTTP Server
-        run: yarn serve:demo &
-
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
