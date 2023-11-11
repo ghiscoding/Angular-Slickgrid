@@ -691,10 +691,7 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
       cy.wait(1);
 
       // the page number input should be a label now
-      // cy.get('[data-test=page-number-label]').should('exist').should('have.text', '1');
-      cy.get('[data-test=page-number-input]')
-        .invoke('val')
-        .then(text => expect(text).to.eq('1'));
+      cy.get('[data-test=page-number-label]').should('exist').should('have.text', '1');
     });
 
     it('should change Pagination to the last page', () => {
