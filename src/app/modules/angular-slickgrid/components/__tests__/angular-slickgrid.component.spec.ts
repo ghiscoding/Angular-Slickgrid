@@ -1,9 +1,9 @@
-jest.mock('@slickgrid-universal/common/dist/commonjs/formatters/formatterUtilities');
 import 'jest-extended';
 import { ApplicationRef, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
+  autoAddEditorFormatterToColumnsWithEditor,
   BackendService,
   BackendServiceApi,
   BackendUtilityService,
@@ -39,7 +39,6 @@ import {
   TreeDataService,
   SlickGroupItemMetadataProvider
 } from '@slickgrid-universal/common';
-import * as formatterUtilities from '@slickgrid-universal/common/dist/commonjs/formatters/formatterUtilities';
 import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-component';
@@ -53,6 +52,11 @@ import { AngularUtilService, ContainerService, TranslaterService } from '../../s
 import { GridOption } from '../../models';
 import { MockSlickEvent, MockSlickEventHandler } from '../../../../../../test/mockSlickEvent';
 import { RxJsResourceStub } from '../../../../../../test/rxjsResourceStub';
+
+jest.mock('@slickgrid-universal/common', () => ({
+  ...(jest.requireActual('@slickgrid-universal/common') as any),
+  autoAddEditorFormatterToColumnsWithEditor: jest.fn(),
+}));
 
 declare const Slick: any;
 const slickEventHandler = new MockSlickEventHandler();
@@ -538,7 +542,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(component).toBeTruthy();
-        // expect(formatterUtilities.autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
+        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
       });
     });
 
@@ -565,7 +569,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
         const renderSpy = jest.spyOn(extensionServiceStub, 'renderColumnHeaders');
-        const autoAddFormatterSpy = jest.spyOn(formatterUtilities, 'autoAddEditorFormatterToColumnsWithEditor');
         const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
 
         component.ngAfterViewInit();
@@ -577,7 +580,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(autosizeSpy).toHaveBeenCalled();
         expect(updateSpy).toHaveBeenCalledWith(mockColDefs);
         expect(renderSpy).toHaveBeenCalledWith(mockColDefs, true);
-        // expect(autoAddFormatterSpy).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
+        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
       });
     });
 
