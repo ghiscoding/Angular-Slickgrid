@@ -85,6 +85,7 @@
     "@fnando/sparkline": "^0.3.10",
     "@ng-select/ng-select": "^11.2.0",
     "@ngx-translate/http-loader": "^8.0.0",
+    "@popperjs/core": "^2.11.8",
     "@release-it/conventional-changelog": "^7.0.2",
     "@slickgrid-universal/composite-editor-component": "~3.5.0",
     "@slickgrid-universal/custom-tooltip-plugin": "~3.5.0",

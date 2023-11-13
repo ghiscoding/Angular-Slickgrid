@@ -2951,6 +2951,11 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
+"@popperjs/core@^2.11.8":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@release-it/conventional-changelog@^7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@release-it/conventional-changelog/-/conventional-changelog-7.0.2.tgz#0d4f3a8b3af0657607f14b8a9fedf4a6aa70b304"
