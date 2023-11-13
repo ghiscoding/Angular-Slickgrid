@@ -1,7 +1,6 @@
 import { ApplicationRef, Component } from '@angular/core';
-import { Column, OnSelectedRowsChangedEventArgs, SharedService, SlickEventHandler, SlickGrid, SlickNamespace, } from '@slickgrid-universal/common';
+import { Column, OnSelectedRowsChangedEventArgs, SharedService, SlickEventHandler, SlickGrid, SlickNamespace, SlickRowSelectionModel, } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
-import { SlickRowSelectionModel } from '@slickgrid-universal/common/dist/commonjs/extensions/slickRowSelectionModel';
 import { of } from 'rxjs';
 
 import { GridOption } from '../../models/gridOption.interface';
@@ -10,6 +9,21 @@ import { RowDetailView } from '../../models/rowDetailView.interface';
 import { RxJsResourceStub } from '../../../../../../test/rxjsResourceStub';
 import { SlickRowDetailView } from '../slickRowDetailView';
 jest.mock('@slickgrid-universal/row-detail-view-plugin');
+
+jest.mock('@slickgrid-universal/common', () => ({
+  ...(jest.requireActual('@slickgrid-universal/common') as any),
+  SlickRowSelectionModel: jest.fn().mockImplementation(() => ({
+    constructor: jest.fn(),
+    init: jest.fn(),
+    destroy: jest.fn(),
+    dispose: jest.fn(),
+    getSelectedRows: jest.fn(),
+    setSelectedRows: jest.fn(),
+    getSelectedRanges: jest.fn(),
+    setSelectedRanges: jest.fn(),
+    onSelectedRangesChanged: new Slick.Event(),
+  })),
+}));
 
 declare const Slick: SlickNamespace;
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
@@ -66,22 +80,6 @@ const gridStub = {
   onSelectedRowsChanged: new Slick.Event(),
   onSort: new Slick.Event(),
 } as unknown as SlickGrid;
-
-const mockRowSelectionModel = {
-  constructor: jest.fn(),
-  init: jest.fn(),
-  destroy: jest.fn(),
-  dispose: jest.fn(),
-  getSelectedRows: jest.fn(),
-  setSelectedRows: jest.fn(),
-  getSelectedRanges: jest.fn(),
-  setSelectedRanges: jest.fn(),
-  onSelectedRangesChanged: new Slick.Event(),
-} as unknown as SlickRowSelectionModel;
-
-jest.mock('@slickgrid-universal/common/dist/commonjs/extensions/slickRowSelectionModel', () => ({
-  SlickRowSelectionModel: jest.fn().mockImplementation(() => mockRowSelectionModel),
-}));
 
 @Component({ template: `<h4>Loading...</h4>` })
 class TestPreloadComponent { }
