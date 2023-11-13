@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.5.0...v6.5.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* add ms-select-vanilla missing type & improve pkg exports ([eab7e7e](https://github.com/ghiscoding/angular-slickgrid/commit/eab7e7e1738b0b7f90edab17b88e9ab4b50196ce)), closes [#1313](https://github.com/ghiscoding/angular-slickgrid/issues/1313)
+
 # [6.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.4.0...v6.5.0) (2023-11-11)
 
 
