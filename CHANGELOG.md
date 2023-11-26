@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.0...v6.6.1) (2023-11-26)
+
+
+### Bug Fixes
+
+* add npm publish with provenance support ([30f959c](https://github.com/ghiscoding/angular-slickgrid/commit/30f959c8b42a43a22d8b7b5b3baae11225030801))
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [6.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.5.1...v6.6.0) (2023-11-26)
 
 
@@ -78,8 +88,7 @@ All notable changes to this project will be documented in this file. See [Conven
 
 * **TreeData:** add optional Aggregators for Tree Data totals calc ([236add4](https://github.com/ghiscoding/angular-slickgrid/commit/236add4ea8aa6ad744c07221272e2542f0b220a3))
 
-# Change Log
-All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 
 # [6.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.0.1...v6.1.0) (2023-07-21)
 
