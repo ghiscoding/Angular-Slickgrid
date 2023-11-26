@@ -9,6 +9,7 @@
     "releaseName": "v${version}"
   },
   "npm": {
+    "publish": true,
     "publishPath": "dist/"
   },
   "hooks": {
