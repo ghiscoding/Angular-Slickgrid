@@ -5,7 +5,6 @@
   },
   "github": {
     "release": true,
-    "web": true,
     "releaseName": "v${version}"
   },
   "npm": {
