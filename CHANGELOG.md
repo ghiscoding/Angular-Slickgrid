@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.5.1...v6.6.0) (2023-11-26)
+
+
+### Features
+
+* **GraphQL:** .excludeFieldFromQuery, exclude field but keep fields ([61482dc](https://github.com/ghiscoding/angular-slickgrid/commit/61482dcf1ce59f2d4859526799ff06f495059638))
+
 ## [6.5.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.5.0...v6.5.1) (2023-11-13)
 
 
