@@ -49,7 +49,7 @@
     "url": "https://ko-fi.com/ghiscoding"
   },
   "dependencies": {
-    "@ngx-translate/core": ">=15.0.0 <16.0.0",
+    "@ngx-translate/core": "^15.0.0",
     "@slickgrid-universal/common": "~3.6.0",
     "@slickgrid-universal/custom-footer-component": "~3.6.0",
     "@slickgrid-universal/empty-warning-component": "~3.6.0",

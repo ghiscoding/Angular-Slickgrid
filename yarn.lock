@@ -2637,7 +2637,7 @@
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-16.2.10.tgz#8cce054fe274eabd8fcaec6f03aa386efbddf464"
   integrity sha512-XAVn59zP3ztuKDtw92Xc9+64RK4u4c9g8y5GgtjIWeOwgNXl8bYhAo3uTZzrSrOu96DFZGjsmghFab/7/C2pDg==
 
-"@ngx-translate/core@>=15.0.0 <16.0.0":
+"@ngx-translate/core@^15.0.0":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@ngx-translate/core/-/core-15.0.0.tgz#0fe55b9bd47e75b03d1123658f15fb7b5a534f3c"
   integrity sha512-Am5uiuR0bOOxyoercDnAA3rJVizo4RRqJHo8N3RqJ+XfzVP/I845yEnMADykOHvM6HkVm4SZSnJBOiz0Anx5BA==
