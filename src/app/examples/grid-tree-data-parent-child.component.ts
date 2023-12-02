@@ -108,7 +108,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       enableAutoResize: true,
       enableExcelExport: true,
       excelExportOptions: { exportWithFormatter: true, sanitizeDataExport: true },
-      registerExternalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService()],
       enableFiltering: true,
       showCustomFooter: true, // display some metrics in the bottom custom footer
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected

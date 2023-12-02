@@ -184,7 +184,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
           { columnId: 'duration', direction: 'ASC' },
         ],
       },
-      registerExternalResources: [new SlickCustomTooltip(), new ExcelExportService()],
+      externalResources: [new SlickCustomTooltip(), new ExcelExportService()],
     };
 
     // mock a dataset

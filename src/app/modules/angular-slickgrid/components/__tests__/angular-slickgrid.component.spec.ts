@@ -973,7 +973,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const sortServiceSpy = jest.spyOn(sortServiceStub, 'addRxJsResource');
         const paginationServiceSpy = jest.spyOn(paginationServiceStub, 'addRxJsResource');
 
-        component.gridOptions = { registerExternalResources: [rxjsMock] } as unknown as GridOption;
+        component.gridOptions = { externalResources: [rxjsMock] } as unknown as GridOption;
+        component.registerExternalResources([rxjsMock], true);
         component.initialization(slickEventHandler);
 
         expect(backendUtilitySpy).toHaveBeenCalled();
@@ -1253,7 +1254,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
         const backendExecuteSpy = jest.spyOn(backendUtilityServiceStub, 'executeBackendProcessesCallback');
 
-        component.gridOptions.registerExternalResources = [rxjsMock];
+        component.gridOptions.externalResources = [rxjsMock];
+        component.registerExternalResources([rxjsMock], true);
         component.gridOptions.backendServiceApi!.service.options = { executeProcessCommandOnInit: true };
         component.initialization(slickEventHandler);
 
@@ -1328,7 +1330,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         jest.spyOn(component.gridOptions.backendServiceApi!.service, 'buildQuery').mockReturnValue(query);
         const backendErrorSpy = jest.spyOn(backendUtilityServiceStub, 'onBackendError');
 
-        component.gridOptions.registerExternalResources = [rxjsMock];
+        component.gridOptions.externalResources = [rxjsMock];
+        component.resetExternalResources();
+        component.registerExternalResources([rxjsMock], true);
         component.gridOptions.backendServiceApi!.service.options = { executeProcessCommandOnInit: true };
         component.initialization(slickEventHandler);
 
