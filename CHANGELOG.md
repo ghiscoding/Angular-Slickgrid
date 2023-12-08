@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.4](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.3...v6.6.4) (2023-12-08)
+
+
+### Features
+
+* introduce devMode to support nodejs based unit testing ([fe76745](https://github.com/ghiscoding/angular-slickgrid/commit/fe76745803ecee6420f8d391a07eca443adee46b))
+
 ## [6.6.3](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.2...v6.6.3) (2023-12-08)
 
 
