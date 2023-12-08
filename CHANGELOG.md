@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.3](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.2...v6.6.3) (2023-12-08)
+
+
+### Bug Fixes
+
+* registered external resouces should keep singleton ref ([2724c97](https://github.com/ghiscoding/angular-slickgrid/commit/2724c9741cbac30164976632b422de68bf21dcdf))
+
 ## [6.6.2](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.1...v6.6.2) (2023-11-26)
 
 ## [6.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.0...v6.6.1) (2023-11-26)
