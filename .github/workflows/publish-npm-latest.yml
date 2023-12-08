@@ -73,3 +73,14 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npm whoami
           npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
+
+      - name: Website Prod Build (served for Cypress)
+        run: yarn build:demo
+
+        # deploy (re-publish) GitHub demo page with a Prod build but only when merging to "master" branch
+        # and the commit message contains the text "chore: release"
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
