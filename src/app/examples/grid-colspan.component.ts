@@ -68,7 +68,7 @@ export class GridColspanComponent implements OnInit {
       excelExportOptions: {
         exportWithFormatter: false
       },
-      registerExternalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService()],
     };
 
     this.dataset1 = this.getData(500);
@@ -100,7 +100,7 @@ export class GridColspanComponent implements OnInit {
       excelExportOptions: {
         exportWithFormatter: false
       },
-      registerExternalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService()],
     };
 
     this.dataset2 = this.getData(500);

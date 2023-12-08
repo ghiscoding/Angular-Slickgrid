@@ -297,7 +297,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         columnHeaderStyle: { font: { bold: true, italic: true } }
       },
       i18n: this.translate,
-      registerExternalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService()],
 
       enableContextMenu: true,
       enableCellMenu: true,

@@ -244,7 +244,7 @@ export class GridDraggableGroupingComponent implements OnInit {
       enableTextExport: true,
       enableExcelExport: true,
       excelExportOptions: { sanitizeDataExport: true },
-      registerExternalResources: [this.excelExportService, this.textExportService],
+      externalResources: [this.excelExportService, this.textExportService],
     };
 
     this.loadData(500);
