@@ -96,7 +96,7 @@ export class GridResizeByContentComponent implements OnInit {
         resizeCharWidthInPx: 7.6,
         resizeCalcWidthRatio: 1,
         resizeMaxWidthThreshold: 200,
-        cssClass: 'text-uppercase font-weight-bold', columnGroup: 'Common Factor',
+        cssClass: 'text-uppercase fw-bold', columnGroup: 'Common Factor',
         filterable: true, filter: { model: Filters.compoundInputText },
         editor: {
           model: Editors.longText, required: true, alwaysSaveOnEnterKey: true,
