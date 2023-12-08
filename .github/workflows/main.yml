@@ -92,7 +92,7 @@ jobs:
       - name: Deploy to gh-pages
         if: |
           github.ref == 'refs/heads/master' &&
-          contains(github.event.head_commit.message, format('chore{0} release', ':')) || contains(github.event.head_commit.message, '[update github demo]')
+          contains(github.event.head_commit.message, format('chore{0} release', ':')) || contains(github.event.head_commit.message, '[refresh gh-pages]')
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
