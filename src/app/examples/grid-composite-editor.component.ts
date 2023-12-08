@@ -129,7 +129,7 @@ export class GridCompositeEditorComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
-        cssClass: 'text-uppercase text-bold', columnGroup: 'Common Factor',
+        cssClass: 'text-uppercase font-weight-bold', columnGroup: 'Common Factor',
         filterable: true, filter: { model: Filters.compoundInputText },
         editor: {
           model: Editors.longText, massUpdate: false, required: true, alwaysSaveOnEnterKey: true,
