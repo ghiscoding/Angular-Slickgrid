@@ -20,7 +20,6 @@ export const GlobalGridOptions: Partial<GridOption> = {
     cssClass: 'slick-cell-checkboxsel'
   },
   columnPicker: {
-    fadeSpeed: 0,
     hideForceFitButton: false,
     hideSyncResizeButton: true,
     headerColumnValueExtractor: pickerHeaderColumnValueExtractor

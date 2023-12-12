@@ -1,7 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption, SlickNamespace } from './../modules/angular-slickgrid';
-
-declare const Slick: SlickNamespace;
+import { AngularGridInstance, Column, ColumnEditorDualInput, Editors, FieldType, formatNumber, Formatters, Filters, GridOption, SlickEventHandler } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-frozen.component.html',
@@ -31,7 +29,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
   slickEventHandler: any;
 
   constructor() {
-    this.slickEventHandler = new Slick.EventHandler();
+    this.slickEventHandler = new SlickEventHandler();
   }
 
   ngOnInit(): void {

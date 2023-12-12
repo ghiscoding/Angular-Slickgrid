@@ -19,7 +19,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over 1st row checkbox column and NOT expect any tooltip to show since it is disabled on that column', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0)`).as('checkbox0-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).as('checkbox0-cell');
     cy.get('@checkbox0-cell').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('not.exist');
@@ -27,7 +27,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over Task 2 cell and expect async tooltip to show', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(1)`).as('task1-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).as('task1-cell');
     cy.get('@task1-cell').should('contain', 'Task 2');
     cy.get('@task1-cell').trigger('mouseover');
     cy.get('.slick-custom-tooltip').contains('loading...');
@@ -46,7 +46,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over Task 6 cell and expect async tooltip to show', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(1)`).as('task6-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(1)`).as('task6-cell');
     cy.get('@task6-cell').should('contain', 'Task 6');
     cy.get('@task6-cell').trigger('mouseover');
     cy.get('.slick-custom-tooltip').contains('loading...');
@@ -65,7 +65,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over Task 6 cell on "Start" column and expect a delayed tooltip opening via async process', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(7)`).as('start6-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(7)`).as('start6-cell');
     cy.get('@start6-cell').contains(/\d{4}-\d{2}-\d{2}$/); // use regexp to make sure it's a number
     cy.get('@start6-cell').trigger('mouseover');
     cy.get('.slick-custom-tooltip').should('not.exist');
@@ -90,7 +90,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over 6th row Description and expect full cell content to show in a tooltip because cell has ellipsis and is too long for the cell itself', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(3)`).as('desc6-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(3)`).as('desc6-cell');
     cy.get('@desc6-cell').should('contain', 'This is a sample task description.');
     cy.get('@desc6-cell').trigger('mouseover');
 
@@ -102,7 +102,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over 6th row Description 2 and expect regular tooltip title + concatenated full cell content when using "useRegularTooltipFromFormatterOnly: true"', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(4)`).as('desc2-5-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(4)`).as('desc2-5-cell');
     cy.get('@desc2-5-cell').should('contain', 'This is a sample task description.');
     cy.get('@desc2-5-cell').trigger('mouseover');
 
@@ -113,7 +113,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over 2nd row Duration and expect a custom tooltip shown with 4 label/value pairs displayed', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(2)`).as('duration2-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(2)`).as('duration2-cell');
     cy.get('@duration2-cell').contains(/\d+\sday[s]?$/);
     cy.get('@duration2-cell').trigger('mouseover');
 
@@ -136,7 +136,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over % Complete cell of Task 6 and expect regular tooltip to show with content "x %" where x is a number', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(6)`).as('percentage-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(6)`).as('percentage-cell');
     cy.get('@percentage-cell').find('.percent-complete-bar').should('exist');
     cy.get('@percentage-cell').trigger('mouseover');
 
@@ -147,7 +147,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over Prerequisite cell of Task 6 and expect regular tooltip to show with content "Task 6, Task 5"', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(10)`).as('prereq-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(10)`).as('prereq-cell');
     cy.get('@prereq-cell').should('contain', 'Task 6, Task 5');
     cy.get('@prereq-cell').trigger('mouseover');
 
@@ -227,7 +227,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should click Prerequisite editor of 1st row (Task 2) and expect Task1 & 2 to be selected in the multiple-select drop', () => {
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(10)`).as('prereq-cell');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(10)`).as('prereq-cell');
     cy.get('@prereq-cell')
       .should('contain', 'Task 2, Task 1')
       .click();

@@ -98,7 +98,7 @@ export class GridHeaderButtonComponent implements OnInit {
     };
   }
 
-  handleOnCommand(_e: Event, args: any, gridNo: 1 | 2) {
+  handleOnCommand(_e: any, args: any, gridNo: 1 | 2) {
     const column = args.column;
     const button = args.button;
     const command = args.command;

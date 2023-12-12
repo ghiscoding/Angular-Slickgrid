@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": ["es5", "dom"],
-    "types": ["jest", "node"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "types": [
+      "jest",
+      "jest-extended",
+      "node"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -14,5 +21,7 @@
     "isolatedModules": true,
     "baseUrl": "."
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.spec.ts"
+  ]
 }

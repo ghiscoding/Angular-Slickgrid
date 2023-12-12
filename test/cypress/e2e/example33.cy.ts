@@ -16,12 +16,12 @@ describe('Example 33 - Real-Time Trading Platform', () => {
 
   it('should check first 5 rows and expect certain data', () => {
     for (let i = 0; i < 5; i++) {
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(0)`).contains(/CAD|USD$/);
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(4)`).contains(/Buy|Sell$/);
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(5)`).contains(/\$\(?[0-9\.]*\)?/);
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(6)`).contains(/\$[0-9\.]*/);
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(7)`).contains(/\d$/);
-      cy.get(`[style="top:${GRID_ROW_HEIGHT * i}px"] > .slick-cell:nth(8)`).contains(/\$[0-9\.]*/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(0)`).contains(/CAD|USD$/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(4)`).contains(/Buy|Sell$/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(5)`).contains(/\$\(?[0-9\.]*\)?/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(6)`).contains(/\$[0-9\.]*/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(7)`).contains(/\d$/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * i}px;"] > .slick-cell:nth(8)`).contains(/\$[0-9\.]*/);
     }
   });
 
@@ -52,12 +52,12 @@ describe('Example 33 - Real-Time Trading Platform', () => {
     cy.get('.slick-group-toggle-all')
       .click();
 
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 0}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Currency: CAD');
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(8)`).contains(/\$[0-9\,\.]*/);
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Currency: CAD');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(8)`).contains(/\$[0-9\,\.]*/);
 
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 2}px"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Currency: USD');
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(8)`).contains(/\$[0-9\,\.]*/);
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Currency: USD');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"] > .slick-cell:nth(8)`).contains(/\$[0-9\,\.]*/);
   });
 });
