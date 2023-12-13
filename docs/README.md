@@ -1,3 +1,3 @@
 # Documentation
 
-The `docs` folder of our monorepo is the one-stop-shop for all Angular-Slickgrid documentation.
+The `docs` folder of Angular-Slickgrid is the one-stop-shop for all project related documentation.
