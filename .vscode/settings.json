@@ -1,7 +1,3 @@
 {
-    "typescript.tsdk": "node_modules\\typescript\\lib",
-    "i18n-ally.localesPaths": [
-        "docs/assets/i18n",
-        "src/assets/i18n"
-    ]
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

@@ -33,7 +33,7 @@
     "pack-lib": "npm pack ./dist",
     "preview:release": "release-it --only-version --dry-run",
     "release": "release-it --only-version",
-    "serve:demo": "servor ./docs index.html 4300"
+    "serve:demo": "servor ./website index.html 4300"
   },
   "repository": {
     "type": "git",
