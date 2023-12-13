@@ -7,18 +7,18 @@
 * [Quick start](getting-started/quick-start.md)
 
 ## Styling
-* [Styling CSS/SASS/Themes](/styling/styling.md)
 
-## Interfaces/Models
+* [Styling CSS/SASS/Themes](styling/styling.md)
 
 ## Column Functionalities
+
 * [Cell Menu (Action Menu)](column-functionalities/Cell-Menu.md)
 * [Editors](column-functionalities/Editors.md)
-  * [new Autocomplete (Kraaden-lib)](column-functionalities/editors/Autocomplete-Editor-(Kraaden-lib).md)
-  * [Date Picker (flatpickr)](column-functionalities/editors/Date-Editor-(flatpickr).md)
-  * [LongText (textarea)](column-functionalities/editors/LongText-Editor-(textarea).md)
-  * [Select Dropdown Editor (single/multiple)](column-functionalities/editors/Select-Dropdown-Editor-(single,multiple).md)
-* Filters
+  * [new Autocomplete (Kraaden-lib)](column-functionalities/editors/Autocomplete-Editor-\(Kraaden-lib\).md)
+  * [Date Picker (flatpickr)](column-functionalities/editors/Date-Editor-\(flatpickr\).md)
+  * [LongText (textarea)](column-functionalities/editors/LongText-Editor-\(textarea\).md)
+  * [Select Dropdown Editor (single/multiple)](column-functionalities/editors/Select-Dropdown-Editor-\(single,multiple\).md)
+* [Filters](column-functionalities/filters/README.md)
   * [Input Filter (default)](column-functionalities/filters/Input-Filter.md)
   * [Select Filter (dropdown)](column-functionalities/filters/Select-Filter.md)
   * [Compound Filters](column-functionalities/filters/Compound-Filters.md)
@@ -33,14 +33,14 @@
 * [Available events](events/Available-Events.md)
 * [On Events](events/Grid-&-DataView-Events.md)
 
-## [Global Grid Options](grid-functionalities/Global-Options.md)
-
 ## Localization
+
 * [with Custom Locales](localization/Localization-with-Custom-Locales.md)
 * [with ngx-translate](localization/Localization-with-ngx-translate.md)
-    * [Component Sample](localization/Localization---Component-Sample.md)
+  * [Component Sample](localization/Localization---Component-Sample.md)
 
 ## Testing
+
 * [Testing Patterns](testing/testing-patterns.md)
 
 ## Grid Functionalities
@@ -49,7 +49,7 @@
 * [Resize by Cell Content](grid-functionalities/Resize-by-Cell-Content.md)
 * [Column Picker](grid-functionalities/Column-Picker.md)
 * [Composite Editor Modal](grid-functionalities/Composite-Editor-Modal.md)
-* [Custom Tooltip](grid-functionalities/Custom-Tooltip-(plugin).md)
+* [Custom Tooltip](grid-functionalities/Custom-Tooltip-\(plugin\).md)
 * [Context Menu](grid-functionalities/Context-Menu.md)
 * [Custom Footer](grid-functionalities/Custom-Footer.md)
 * [Export to Excel](grid-functionalities/Export-to-Excel.md)
@@ -58,11 +58,9 @@
 * [Grid State & Presets](grid-functionalities/Grid-State-&-Preset.md)
 * [Grouping & Aggregators](grid-functionalities/Grouping-&-Aggregators.md)
 * [Header Menu & Header Buttons](grid-functionalities/Header-Menu-&-Header-Buttons.md)
-* [Pinning (frozen) of Columns/Rows](grid-functionalities/Pinned-(aka-Frozen)-Columns-Rows.md)
+* [Pinning (frozen) of Columns/Rows](grid-functionalities/Pinned-\(aka-Frozen\)-Columns-Rows.md)
 * [Row Selection](grid-functionalities/Row-Selection.md)
 * [Tree Data Grid](grid-functionalities/Tree-Data-Grid.md)
-
-## [SlickGrid & DataView objects](slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
 
 ## Backend Services
 
