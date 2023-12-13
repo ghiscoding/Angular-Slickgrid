@@ -91,7 +91,7 @@ export class GridRowDetailComponent implements OnInit, OnDestroy {
 ```
 
 ### Changing Addon Options Dynamically
-Row Detail is an addon (commonly known as a plugin and are opt-in addon), because this is not built-in SlickGrid and instead are opt-in, we need to get the instance of that addon object. Once we have the instance, we can use `getOptions` and `setOptions` to get/set any of the addon options, for the list of options available you can see them directly in the [addon row detail](https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowdetailview.js#L10) on the `6pac/SlickGrid` repo.
+Row Detail is an addon (commonly known as a plugin and are opt-in addon), because this is not built-in SlickGrid and instead are opt-in, we need to get the instance of that addon object. Once we have the instance, we can use `getOptions` and `setOptions` to get/set any of the addon options, adding `rowDetail` with intellisense should give you this info.
 
 #### Examples 
 - Dynamically change the Detail View Row Count (how many grid rows do we want to use for the row detail panel)
@@ -107,7 +107,7 @@ changeDetailViewRowCount() {
 ```
 
 ### Calling Addon Methods Dynamically
-Same as previous paragraph, after we get the SlickGrid addon instance, we can call any of the addon methods, for the complete list of methods available you can refer to the [addon Row Detail](https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowdetailview.js#L27) on the `6pac/SlickGrid` repo.
+Same as previous paragraph, after we get the SlickGrid addon instance, we can call any of the addon methods, adding `rowDetail` with intellisense should give you this info.
 
 #### Examples 
 - Dynamically close all Row Detail Panels

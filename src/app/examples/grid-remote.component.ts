@@ -34,7 +34,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
       </li>
       <li>If the demo throws some errors, try again later (there's a limit per day).</li>
       <li>
-        Uses <a href="https://github.com/6pac/SlickGrid/blob/master/slick.remotemodel.js" target="_blank">slick.remotemodel.js</a>
+        Uses <a href="https://github.com/6pac/SlickGrid/blob/master/src/slick.remotemodel.ts" target="_blank">slick.remotemodel.js</a>
         which is hooked up to load search results from Octopart, but can easily be extended
         to support any JSONP-compatible backend that accepts paging parameters.
       </li>

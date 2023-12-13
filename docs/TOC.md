@@ -63,6 +63,7 @@
 * [Grouping & Aggregators](grid-functionalities/Grouping-&-Aggregators.md)
 * [Header Menu & Header Buttons](grid-functionalities/Header-Menu-&-Header-Buttons.md)
 * [Pinning (frozen) of Columns/Rows](grid-functionalities/frozen-columns-rows.md)
+* [Providing data to the grid](grid-functionalities/providing-grid-data.md)
 * [Row Detail](grid-functionalities/row-detail.md)
 * [Row Selection](grid-functionalities/Row-Selection.md)
 * [Tree Data Grid](grid-functionalities/Tree-Data-Grid.md)
