@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.5](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.4...v6.6.5) (2023-12-12)
+
+
+### Bug Fixes
+
+* `devMode` should be `false` or an object & use `!important` on text CSS utils ([271ab1b](https://github.com/ghiscoding/angular-slickgrid/commit/271ab1b431275712218c2d6bf9f5cd5deb5a6ff7))
+
 ## [6.6.4](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.3...v6.6.4) (2023-12-08)
 
 
