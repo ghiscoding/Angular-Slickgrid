@@ -69,10 +69,10 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       <li>This example demonstrates 2 SlickGrid plugins
       <ol>
       <li>Using the <b>Slick.Plugins.CellMenu</b> plugin, often used for an Action Menu(s), 1 or more per grid
-      (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Cell-Menu" target="_blank">Wiki docs</a>).
+      (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/cell-menu" target="_blank">Wiki docs</a>).
     </li>
     <li>Using the <b>Slick.Plugins.ContextMenu</b> plugin, shown after a mouse right+click, only 1 per grid.
-    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Context-Menu" target="_blank">Wiki docs</a>).
+    (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/context-menu" target="_blank">Wiki docs</a>).
     </li>
       </ol>
       <li>It will also "autoAdjustDrop" (bottom/top) and "autoAlignSide" (left/right) by default but could be turned off</li>

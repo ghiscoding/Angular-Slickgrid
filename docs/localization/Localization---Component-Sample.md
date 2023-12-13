@@ -2,7 +2,7 @@
 You need to add a translation key via the property `nameKey` to each column definition, for example: `nameKey: 'TITLE'`
 
 ##### Translation Files
-If you want to manually re-create the translation in your own files, the list of translations that you will need are displayed in the [asset i18n](https://github.com/ghiscoding/angular-slickgrid/tree/master/src/assets/i18n) translation folder (from that file, you need all translations shown before the translation 'BILLING', the next few ones are for the demo page only). If you need more information on how to import translations, please review the other [Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki/Localization#locales) page.
+If you want to manually re-create the translation in your own files, the list of translations that you will need are displayed in the [asset i18n](https://github.com/ghiscoding/angular-slickgrid/tree/master/src/assets/i18n) translation folder (from that file, you need all translations shown before the translation 'BILLING', the next few ones are for the demo page only). If you need more information on how to import translations, please review the other [docs](../localization/Localization-with-ngx-translate.md#locales) page.
 
 ##### Note
 For the `Select` Filter, you will use `labelKey` instead of `label`. Anytime a translation key will come in play, we will add the word `key` to the end (hence `nameKey`, `labelKey`, more to come...)

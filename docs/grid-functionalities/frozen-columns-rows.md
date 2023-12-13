@@ -69,7 +69,7 @@ export class GridBasicComponent implements OnInit {
 ```
 
 ## Change Pinning Dynamically
-You can change the number of pinned columns/rows and even the pinning of columns from top to bottom. For a demo of what that could look like, take a look at the [Animated Gif Demo](/ghiscoding/Angular-Slickgrid/wiki/Pinned-(aka-Frozen)-Columns-Rows#animated-gif-demo) below.
+You can change the number of pinned columns/rows and even the pinning of columns from top to bottom. For a demo of what that could look like, take a look at the [Animated Gif Demo](#animated-gif-demo) below.
 
 ```html
 <div class="row col-sm-12">

@@ -59,7 +59,7 @@ export class GridDemoComponent {
 ```
 
 ### Using Grid Presets & Filter SearchTerm(s)
-What happens when we use the grid `presets` and a [Filter Default SearchTerms](/ghiscoding/angular-slickgrid/wiki/Select-Filter#default-search-terms)? In this case, the `presets` will win over filter `searchTerms`. The cascading order of priorities is the following
+What happens when we use the grid `presets` and a [Filter Default SearchTerms](../column-functionalities/filters/Select-Filter.md#default-search-terms)? In this case, the `presets` will win over filter `searchTerms`. The cascading order of priorities is the following
 1. Do we have any `presets`? Yes use them, else go to step 2
 2. Do we have any Filter `searchTerms`? Yes use them, else go to step 3
 3. No `presets` and no `searchTerms`, load grid with default grid & column definitions

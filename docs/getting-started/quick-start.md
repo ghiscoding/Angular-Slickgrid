@@ -111,8 +111,8 @@ The new updated version of `ng-packagr` use strict metadata and you might get er
 ### 5. Install/Setup `ngx-translate` for Localization (optional)
 #### If you don't want to use any Translate Service and use only 1 Locale then take a look at this [demo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-locales)
 To provide locales other than English (default locale), you have 2 options that you can go with. If you only use English, there is nothing to do (you can still change some of the texts in the grid via option 1.)
-1. Using [Custom Locale](/ghiscoding/angular-slickgrid/wiki/Localization-with-Custom-Locales), that is when you use **only 1** locale (other thank English)... this is a new feature starting from version `2.10.0` and up.
-2. Using [Localization with I18N](/ghiscoding/angular-slickgrid/wiki/Localization), that is when you want to use multiple locales dynamically.
+1. Using [Custom Locale](../localization/Localization-with-Custom-Locales.md), that is when you use **only 1** locale (other thank English)... this is a new feature starting from version `2.10.0` and up.
+2. Using [Localization with I18N](../localization/Localization-with-ngx-translate.md), that is when you want to use multiple locales dynamically.
 3. **NOTE** you still need to install `@ngx-translate` (since it is a peer dependency) but it should be removed after doing a production build since it's optional.
 
 ##### Translation Keys
@@ -127,7 +127,7 @@ Also note that every time you want to use a translation key, you simply have to 
 | optionTitle       | optionTitleKey |
 
 ##### Date Picker - Flatpickr Localization
-If you use multiple locale, you will also need to define which Flatpickr Locale to import, for more info on how to do that then take a look at the [Flatpickr Localization Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki/Compound-Filters#date-picker---flatpickr-localization)
+If you use multiple locale, you will also need to define which Flatpickr Locale to import, for more info on how to do that then take a look at the [Flatpickr Localization Wiki](../column-functionalities/filters/Compound-Filters.md#date-picker---flatpickr-localization)
 
 ### 6. Create a basic grid
 And finally, you are now ready to use it in your project, for example let's create both html/ts files for a `grid-basic.component` example, configure the Column Definitions, Grid Options and pass a Dataset to the grid:
@@ -180,10 +180,10 @@ define Angular-Slickgrid in your View
 ### 7. Explore the Wiki page content
 The last step is really to explore all the pages that are available in this Wiki, all the documentation will be place in here and so you should visit it often. For example a good starter is to look at the following
 - all the `Grid Options` you can take a look at, [Wiki - Grid Options](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/modules/angular-slickgrid/models/gridOption.interface.ts)
-- [Formatters](/ghiscoding/angular-slickgrid/wiki/Formatters)
-- [Editors](/ghiscoding/angular-slickgrid/wiki/Editors)
-- [Filters](/ghiscoding/angular-slickgrid/wiki/Select-Filter)
-- [Grid Menu](/ghiscoding/angular-slickgrid/wiki/Grid-Menu)
+- [Formatters](../column-functionalities/Formatters.md)
+- [Editors](../column-functionalities/Editors.md)
+- [Filters](../column-functionalities/filters/Select-Filter.md)
+- [Grid Menu](../grid-functionalities/Grid-Menu.md)
 ... and much more, just explorer the Wikis through the sidebar index (on your right)
 
 ### 8. How to load data with `HttpClient`?
@@ -199,7 +199,7 @@ The best way to get started is to clone the [Angular-Slickgrid-demos](https://gi
 Like to see the code to a particular Example? Just click on the "see code" that is available in every live examples.
 
 ### 10. Missing Features? (fear not)
-What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Custom Events. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/angular-slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](/ghiscoding/angular-slickgrid/wiki/Grid-&-DataView-Events)
+What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Custom Events. For more info continue reading on [Wiki - SlickGrid & DataView objects](../slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
 
 ### 11. Build Errors/Warnings
 You might also get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` (for Angular 8 to 15) in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):

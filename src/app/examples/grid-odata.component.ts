@@ -22,7 +22,7 @@ const sampleDataRoot = 'assets/data';
 export class GridOdataComponent implements OnInit {
   title = 'Example 5: Grid connected to Backend Server with OData';
   subTitle = `
-    Sorting/Paging connected to a Backend OData Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData" target="_blank">Wiki docs</a>).
+    Sorting/Paging connected to a Backend OData Service (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/backend-services/odata" target="_blank">Docs</a>).
     <br/>
     <ul class="small">
       <li>Only "Name" field is sortable for the demo (because we use JSON files), however "multiColumnSort: true" is also supported</li>
@@ -33,7 +33,7 @@ export class GridOdataComponent implements OnInit {
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>
       </ul>
       <li>OData Service could be replaced by other Service type in the future (GraphQL or whichever you provide)</li>
-      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
+      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/grid-state-and-preset" target="_blank">Docs - Grid Preset</a>
       <li><span class="text-danger">NOTE:</span> For demo purposes, the last column (filter & sort) will always throw an
         error and its only purpose is to demo what would happen when you encounter a backend server error
         (the UI should rollback to previous state before you did the action).
