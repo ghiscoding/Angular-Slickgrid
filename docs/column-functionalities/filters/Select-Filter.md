@@ -521,7 +521,7 @@ For example
 
         if (Array.isArray(collectionFilterAsync)) {
           // add the new row to the grid
-          this.aureliaGrid.gridService.addItemToDatagrid(newRows[0]);
+          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
 
           // then refresh the Filter "collection", we have 2 ways of doing it
 

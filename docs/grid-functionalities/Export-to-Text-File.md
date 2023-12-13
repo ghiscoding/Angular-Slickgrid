@@ -162,4 +162,4 @@ export class MyComponent() implements OnInit {
 
 ### UI Sample
 The Export to Text File handles all characters quite well, from Latin, to Unicode and even Unicorn emoji, it all works on all browsers (`Chrome`, `Firefox`, even `IE11`, I don't have access to older versions). Here's a demo
-![export-to-file](https://github.com/ghiscoding/aurelia-slickgrid/blob/master/screenshots/export-to-file.png)
+![export-to-file](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/screenshots/export-to-file.png)

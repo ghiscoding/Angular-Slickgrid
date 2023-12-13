@@ -634,7 +634,7 @@ describe('SlickRowDetailView', () => {
         }
       });
 
-      it('should call Aurelia Util "disposeAllViewSlot" when grid "onSort" is triggered', (done) => {
+      it('should call Angular Util "disposeAllViewComponents" when grid "onSort" is triggered', (done) => {
         const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
         // const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
         jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { plugin: {} } } as any);

@@ -221,4 +221,4 @@ For example if the backend responds with `{ value: [{ id: 1, nav1: { field1: 'x'
 
 ## UI Sample of the OData demo
 
-![Slickgrid Server Side](https://github.com/ghiscoding/aurelia-slickgrid/blob/master/screenshots/pagination.png)
+![Slickgrid Server Side](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/screenshots/pagination.png)
