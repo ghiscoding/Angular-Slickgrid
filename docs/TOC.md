@@ -9,6 +9,7 @@
 ## Styling
 
 * [Styling CSS/SASS/Themes](styling/styling.md)
+* [SVG Icons](styling/SVG-Icons.md)
 
 ## Column Functionalities
 
