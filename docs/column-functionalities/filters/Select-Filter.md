@@ -22,7 +22,7 @@
 - [Update Filters Dynamically](Input-Filter.md#update-filters-dynamically)
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example10) / [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example10.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
 
 ### Description
 Multiple Select (dropdown) filter is useful when we want to filter the grid 1 or more search term value.

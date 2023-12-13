@@ -7,14 +7,14 @@
 ### Description
 OData Backend Service (for Pagination purposes) to get data from a backend server with the help of OData.
 
+### Demo
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/odata) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-odata.component.ts)
+
 ### Note
-Use it when you need to support **Pagination** (that is when your dataset is rather large, more than 5k rows) with a OData endpoint. If your dataset is small (less than 5k rows), then go with a [regular grid](https://ghiscoding.github.io/slickgrid-universal/#/example01) with the "dataset.bind" property. SlickGrid can easily handle million of rows using a DataView object, but personally when the dataset is known to be large, I usually use a backend service (OData or GraphQL) and when it's small I go with a [regular grid](https://ghiscoding.github.io/slickgrid-universal/#/example01).
+Use it when you need to support **Pagination** (that is when your dataset is rather large, more than 5k rows) with a OData endpoint. If your dataset is small (less than 5k rows), then go with a [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic) with the `[dataset]` binding property. SlickGrid can easily handle million of rows using a DataView object, but personally when the dataset is known to be large, I usually use a backend service (OData or GraphQL) and when it's small I go with a [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic).
 
 ## Implementation
 To connect a backend service into `Slickgrid-Universal`, you simply need to modify your `gridOptions` and add a declaration of `backendServiceApi` and pass it the `service`. See below for the signature and an example further down below.
-
-### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example09) / [Demo ViewModel](https://github.com/ghiscoding/slickgrid-universal/tree/master/examples/vite-demo-vanilla-bundle/src/examples/example09.ts)
 
 ### IMPORTANT NOTE
 All the code below assumes that your Backend Server (probably in C#) will return the data into an `items` property. You could return the array directly **but it is strongly discouraged to do that** because that will conflict with the `metrics` that you will see in the code below. The best approach is to return your data into a property, like `items` or any property name you wish to use, on your backend server side. Your result should have this kind of structure

@@ -20,9 +20,9 @@ Tree Data allows you to display a hierarchical (tree) dataset into the grid, it 
 For Tree Data to work with SlickGrid we need to **mutate** the original dataset, it will add a couple of new properties to your data, these properties are: `__treeLevel`, `__parentId` and `children` (these key names could be changed via the `treeDataOptions`). Also note that these properties become available in every Formatter (built-in and custom) which can be quite useful (especially in the tree level) in some cases... You might be thinking, could we do it without mutating the data? Probably but that would require to do a deep copy of the original data and that can be expensive on the performance side (no one it stopping you from doing a deep copy on your side though). The last thing to note is that internally for Tree Data to work, the lib always has 2 dataset (1x flat dataset and 1x hierarchical dataset which is basically a tree structure) and the lib keeps them in sync internally. So why do we do all of this? Well simply put, SlickGrid itself does not support a Tree Data structure and that is the reason we always have to keep 2 dataset structures internally because SlickGrid only works a flat dataset and nothing else.
 
 ### Demo
-[Demo Parent/Child Relationship](https://ghiscoding.github.io/slickgrid-universal/#/example05) / [Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example05.ts)
+[Demo Parent/Child Relationship](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-parent-child) / [Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-parent-child.component.ts)
 
-[Hierarchial Dataset](https://ghiscoding.github.io/slickgrid-universal/#/example06) / [Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example06.ts)
+[Hierarchial Dataset](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-hierarchical) / [Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-hierarchical.component.ts)
 
 ## Parent/Child Relation Dataset
 This is the most common Tree Data to use, we only use that one in our projects, and requires you to provide a key representing the relation between the parent and children (typically a `parentId`, which the default key when nothing is provided).
@@ -181,7 +181,8 @@ this.gridOptions = {
 
 > **Note** is it mandatory to add a Formatter on the column holding the tree, the Formatter is what creates the expand/collapse icon the parents. This the biggest error that many users forget to do.
 
-You would typically use the built-in `Formatters.tree` to show the tree but in some cases you might want to use your own Formatter and that is fine, it's like any other Custom Formatter. Here's a demo of the [Example 6](https://ghiscoding.github.io/slickgrid-universal/#/example06) Custom Formatter which is specific for showing the collapsing icon and folder and files icons.
+You would typically use the built-in `Formatters.tree` to show the tree but in some cases you might want to use your own Formatter and that is fine, it's like any other Custom Formatter. Here's a demo of the [Example 29](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-hierarchical) Custom Formatter which is specific for showing the collapsing icon and folder and files icons.
+
 ```ts
 treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     const gridOptions = grid.getOptions() as GridOption;
@@ -255,7 +256,7 @@ by default (unless this feature is disabled) all child nodes of the tree will be
 ##### (see animated gif below for a demo)
 as described in previous paragraph on the number 3), we can auto-approve item if it's the column holding the Tree structure and is a Parent that passes the first filter criteria, in other words if we are on the column holding the Tree and its filter is valid (and is also a parent), then skip any other filter(s) that exist on the same line.
 
-For demo purpose, let's take [Example 6](https://ghiscoding.github.io/slickgrid-universal/#/example06) live demo, if we filter with the word `music` on the "Files" column and also a Size that is `> 15` nothing will show up unless we have this flag enabled. The reason is because none of the files have both criteria passing at the same time, however the "Files" column (which is the Tree column) does pass the filter criteria of `music` and so this flag will work and show the folder "music" because we skipped all other criteria, in our case `> 15` on that line, note however that on the following lines (all children), it will require all filters to be valid (and so we are able to see any files under the "music" folder that have a size greater than 15Mb).
+For demo purpose, let's take [Example 29](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-hierarchical) live demo, if we filter with the word `music` on the "Files" column and also a Size that is `> 15` nothing will show up unless we have this flag enabled. The reason is because none of the files have both criteria passing at the same time, however the "Files" column (which is the Tree column) does pass the filter criteria of `music` and so this flag will work and show the folder "music" because we skipped all other criteria, in our case `> 15` on that line, note however that on the following lines (all children), it will require all filters to be valid (and so we are able to see any files under the "music" folder that have a size greater than 15Mb).
 
 ![ub4bGMF8XR](https://user-images.githubusercontent.com/643976/135165158-c5111104-4578-4fa8-8a1c-53755aded53a.gif)
 

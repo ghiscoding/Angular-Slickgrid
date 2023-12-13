@@ -14,7 +14,7 @@
 Compound filters are a combination of 2 elements (Operator Select + Input Filter) used as a filter on a column. This is very useful to make it obvious to the user that there are Operator available and even more useful with a date picker (`Flatpickr`).
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example02) / [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example02.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
 
 ### Available Types
 There are multiple types of compound filters available

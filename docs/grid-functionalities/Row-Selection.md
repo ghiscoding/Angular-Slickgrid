@@ -15,7 +15,7 @@ For row selection, you can simply play with couple of grid options (see below) a
 **Note:** `enableCheckboxSelector` and `enableExcelCopyBuffer` do not work well together, this is because they both share the same `Row.SelectionModel` and one cancels the other. It is recommended to not use `enableExcelCopyBuffer` in that case.
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example07) / [Demo ViewModel](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example07.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/selection) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowselection.component.ts)
 
 ## Single Row Selection
 For a single row selection, you need to have `enableCellNavigation: true`, `enableRowSelection: true` and `multiSelect: false` and as described earlier, subscribe to `onSelectedRowsChanged` (for that you need to bind to `(gridChanged)`).

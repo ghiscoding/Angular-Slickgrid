@@ -24,7 +24,7 @@ To specify a tooltip when hovering a cell
 **NOTE:** this is an opt-in plugin, you must import the necessary plugin from `@slickgrid-universal/custom-tooltip-plugin` and instantiate it in your grid options via `registerExternalResources`, see multiple examples below.
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example16) / [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example16.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/custom-tooltip) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-custom-tooltip.component.ts)
 
 ### via Column Definition
 You can set or change option of an individual column definition custom tooltip.

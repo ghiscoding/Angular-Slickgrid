@@ -38,7 +38,7 @@ isWeekendDay(date: Date): boolean {
 ```
 
 ### Custom Validator
-You can add a Custom Validator from an external function or inline (inline is shown below and comes from [Example 12](https://ghiscoding.github.io/slickgrid-universal/#/example12))
+You can add a Custom Validator from an external function or inline (inline is shown below and comes from [Example 3](https://ghiscoding.github.io/Angular-Slickgrid/#/editor))
 ```ts
 defineGrid() {
   this.columnDefinitions = [

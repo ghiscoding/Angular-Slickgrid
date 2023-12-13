@@ -4,7 +4,7 @@
 - See the [Editors - Wiki](../Editors.md) for more general info about Editors (validators, event handlers, ...)
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example12) | [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example12.ts) - ("Title" column to be more specific)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/editor) | [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-editor.component.ts) - ("Title" column to be more specific)
 
 ### Editor Options
 You can change button texts, textarea size (cols, rows) and also change position of the textarea (auto is the default which will try to automatically find best place to position the textarea).

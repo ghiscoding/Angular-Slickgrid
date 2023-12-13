@@ -14,7 +14,7 @@
 Input filter is the default filter when enabling filters.
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example02) / [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example02.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
 
 ### UI Usage
 All column types support the following operators: (`>`, `>=`, `<`, `<=`, `<>`, `!=`, `=`, `==`, `*`), range filters can also have 1 of these options (`rangeInclusive` or `rangeExclusive`, the inclusive is default)

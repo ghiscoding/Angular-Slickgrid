@@ -6,7 +6,7 @@
 - [Dynamic Query Field](#dynamic-query-field)
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example01) / [Demo ViewModel](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/vite-demo-vanilla-bundle/src/examples/example01.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
 
 ### Description
 Sorting on the client side is really easy, you simply need to enable `sortable` (when not provided, it is considered as disabled) on each columns you want to sort and it will sort as a type string. Oh but wait, sorting as string might not always be ideal, what if we want to sort by number or by date? The answer is to simply pass a `type` as shown below.

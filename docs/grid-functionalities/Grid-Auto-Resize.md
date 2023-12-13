@@ -14,7 +14,7 @@
 Almost all grids from the demos are using the auto-resize feature, and the feature does what its name suggest, it resizes the grid to fill entirely within the container it is contained. It also automatically resizes when the user changes its browser size.
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example02) / [Demo ViewModel](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example02.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/resize-by-content) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-resize-by-content.component.ts)
 
 ### Usage
 All you need to do is enable the Grid Option `enableAutoResize: true` and provide necessary information in the `autoResize`, at minimum you should provide your container an id or class name.

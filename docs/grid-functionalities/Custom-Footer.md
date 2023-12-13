@@ -4,7 +4,7 @@ You can use and show the Custom Footer with 2 left/right containers and will by 
 **NOTE:** The Custom Footer cannot be used in combination with Pagination, you can only show 1 or the other.
 
 ### Demo
-[Demo Page](https://ghiscoding.github.io/slickgrid-universal/#/example02) / [Demo Component](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example02.ts)
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/formatter) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-formatter.component.ts)
 
 ### Usage
 
