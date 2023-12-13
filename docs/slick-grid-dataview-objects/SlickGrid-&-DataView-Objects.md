@@ -36,7 +36,7 @@ Since version `1.x`, we can now access the Slick `Grid` & `DataView` objects dir
 ```
 
 ##### Component
-```javascript
+```typescript
 import { AngularGridInstance, Column, GridOption } from 'angular-slickgrid';
 
 export class MyApp {

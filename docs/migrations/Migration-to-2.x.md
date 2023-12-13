@@ -55,7 +55,7 @@ This new instance will contain all the Angular-Slickgrid Services (that were pre
 - `GroupingAndColspanService` is now exported as `GroupingService`
 - `ControlAndPluginService` is now exported as `PluginService`
 
-```javascript
+```typescript
 export interface AngularGridInstance {
   // Slick Grid & DataView objects
   dataView: any;
