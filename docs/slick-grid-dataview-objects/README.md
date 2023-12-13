@@ -1,2 +1,0 @@
-# slick-grid-dataview-objects
-
