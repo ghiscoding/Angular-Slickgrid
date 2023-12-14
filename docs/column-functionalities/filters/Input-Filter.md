@@ -1,5 +1,3 @@
-##### updated to version `3.x`
-
 #### Index
 - [Usage](#ui-usage)
 - [Filtering with Localization](#filtering-with-localization-i18n)
