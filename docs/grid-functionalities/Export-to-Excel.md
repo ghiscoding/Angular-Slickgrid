@@ -223,7 +223,7 @@ export class MySample {
 ```
 
 ### Show Loading Process Spinner
-If you have lots of data, you might want to show a spinner telling the user that something is happening. You can use the Event Emitters `(onBeforeExportToExcel)` to start your spinner and then `(onAfterExportToExcel)` to stop the spinner once the process is done. You can see a this [Grouping Example](https://ghiscoding.github.io/Angular-Slickgrid/#/grouping) demo which has this feature enabled. 
+If you have lots of data, you might want to show a spinner telling the user that something is happening. You can use the Event Emitters `(onBeforeExportToExcel)` to start your spinner and then `(onAfterExportToExcel)` to stop the spinner once the process is done. You can see a this [Grouping Example](https://ghiscoding.github.io/Angular-Slickgrid/#/grouping) demo which has this feature enabled.
 
 #### View
 ```html
@@ -348,7 +348,8 @@ this.columnDefinitions = [
         const groupType = 'sum';
         const fieldName = columnDef.field;
         return totals[groupType][fieldName];
-    },
+      },
+    }
   }
 ];
 ```

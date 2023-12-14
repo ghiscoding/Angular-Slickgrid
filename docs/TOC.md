@@ -35,6 +35,9 @@
 * [Available events](events/Available-Events.md)
 * [On Events](events/Grid-&-DataView-Events.md)
 
+## Slick Grid/DataView Objects
+* [slickgrid-dataview-objects.md](slick-grid-dataview-objects/slickgrid-dataview-objects.md)
+
 ## Localization
 
 * [with Custom Locales](localization/Localization-with-Custom-Locales.md)

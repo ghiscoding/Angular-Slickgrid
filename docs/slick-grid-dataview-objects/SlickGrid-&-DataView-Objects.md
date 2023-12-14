@@ -73,7 +73,7 @@ export class MyApp {
 ```
 
 ### SlickGrid Events (original SlickGrid)
-You have access to all original SlickGrid events which you can subscribe, for more info refer to the [Wiki - Grid & DataView Events](../events//Grid-&-DataView-Events.md)
+You have access to all original SlickGrid events which you can subscribe, for more info refer to the [Docs - Grid & DataView Events](../events/Grid-&-DataView-Events.md)
 
 ### Usage
-There's already all the necessary information on how to use this on the [Wiki - Grid & DataView Events](../events//Grid-&-DataView-Events.md#view) page, so I suggest you to head over to that Wiki page on how to use the `SlickGrid` and `DataView` objects
+There's already all the necessary information on how to use this on the [Docs - Grid & DataView Events](../events/Grid-&-DataView-Events.md#view) page, so I suggest you to head over to that Documentation page on how to use the `SlickGrid` and `DataView` objects
