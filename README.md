@@ -17,14 +17,14 @@ One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ## Installation
-A good starting point is the **[Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)** and/or simply clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please review all Wikis and closed issues before opening any new issue, also consider asking installation and/or general questions on [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=slickgrid) unless you think there's a bug with the library.
+A good starting point is the **[Docs - Quick Start](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start)** and/or simply clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please review all documentation and closed issues before opening any new issue, also consider asking installation and/or general questions on [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=slickgrid) unless you think there's a bug with the library.
 
 ```sh
 npm install angular-slickgrid
 ```
 
 ### Demo page
-`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. There are also extra styling themes for not just Bootstrap but also Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Wiki - SVG Icons](https://github.com/ghiscoding/Angular-Slickgrid/wiki/SVG-Icons)
+`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. There are also extra styling themes for not just Bootstrap but also Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons)
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
@@ -52,7 +52,7 @@ If you wish to contribute then make sure to follow the steps shown in the [CONTR
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Troubleshooting / Documentation
-The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
+The [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/) is powered by GitBook and is where you'll find all the documentation, so please consult the [Angular-Slickgrid - Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/) before opening any issues. The [Docs - Quick Start](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
 
 For common issues, see the [Troubleshooting Section](#troubleshooting-section) below
 
@@ -92,7 +92,7 @@ Angular-Slickgrid and Slickgrid-Universal both have **100%** Unit Test Coverage,
 You might notice that all demos are coded with mocked dataset in each of the examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's about it. The `dataset` property can be changed or refreshed at any time and it will be reflected in the grid, which is why you can use local data and/or connect it with a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
 ## Main features
-You can see some screenshots below and some instructions below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
+You can see some screenshots below and visit the [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) website.
 
 ## Troubleshooting Section
 
@@ -157,14 +157,14 @@ In Angular 14 and higher, Angular has a `strictTemplates` flag in your `tsconfig
 The reason is because Angular-Slickgrid uses Custom Event for all its events and Angular complains because these Custom Events aren't typed. In order to fix this issue, you have 3 viable approaches:
 
 1. disabled `strictTemplates` in your `tsconfig.json` config
-2. cast the event in the View template to `$any` type 
+2. cast the event in the View template to `$any` type
    - `$any($event)` for example `$any($event).detail.eventData`
 3. cast the event in the component ViewModel to `CustomEvent`
 ```html
 <angular-slickgrid gridId="grid28"
     [columnDefinitions]="columnDefinitions"
     [gridOptions]="gridOptions"
-    [dataset]="dataset"                    
+    [dataset]="dataset"
     (onAngularGridCreated)="angularGridReady($event.detail)">
 </angular-slickgrid>
 ```
@@ -176,7 +176,7 @@ angularGridReady(event: CustomEvent) {
 }
 ```
 
-The simplest is obviously the option 1 but you lose the strictness on the view templates, more details can found under the discussion [(`strictTemplates`) Template error ](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815), I have also opened a similar Stack Overflow question myself: 
+The simplest is obviously the option 1 but you lose the strictness on the view templates, more details can found under the discussion [(`strictTemplates`) Template error ](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815), I have also opened a similar Stack Overflow question myself:
 [How to use Custom Event (not Event Emitter) without `strictTemplates` to complain about `$event` not being a Custom Event type?](https://stackoverflow.com/questions/68490848/how-to-use-custom-event-not-event-emitter-without-stricttemplates-to-complai).
 
 ## Screenshots
