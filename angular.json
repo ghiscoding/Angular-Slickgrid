@@ -24,6 +24,7 @@
               "excel-builder-webpacker",
               "fetch-jsonp",
               "flatpickr",
+              "moment-mini",
               "stream"
             ],
             "assets": [

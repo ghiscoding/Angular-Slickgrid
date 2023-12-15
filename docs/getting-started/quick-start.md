@@ -224,6 +224,7 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
     "dompurify",
     "excel-builder-webpacker",
     "flatpickr",
+    "moment-mini",
     "slickgrid",
     "stream"
   ],
