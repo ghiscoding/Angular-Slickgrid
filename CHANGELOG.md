@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.6](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.5...v6.6.6) (2023-12-15)
+
+
+### Bug Fixes
+
+* externalResouces should also work globally ([6afc9e9](https://github.com/ghiscoding/angular-slickgrid/commit/6afc9e9985a6949e2249411c2e15f8596f4b7228))
+
+# Change Log
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [6.6.5](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.4...v6.6.5) (2023-12-12)
 
 
@@ -31,8 +41,7 @@ All notable changes to this project will be documented in this file. See [Conven
 
 * add npm publish with provenance support ([30f959c](https://github.com/ghiscoding/angular-slickgrid/commit/30f959c8b42a43a22d8b7b5b3baae11225030801))
 
-# Change Log
-All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 
 # [6.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.5.1...v6.6.0) (2023-11-26)
 
