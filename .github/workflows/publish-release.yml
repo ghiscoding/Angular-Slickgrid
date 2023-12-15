@@ -57,9 +57,6 @@ jobs:
       - name: Run yarn install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Run Project Build
-        run: yarn run build
-
       - name: 🧪 Dry-Run - GitHub Release
         if: ${{ inputs.dryrun == true }}
         env:
@@ -93,6 +90,10 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npm whoami
           npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
+
+      - name: Run Project Build
+        if: ${{ inputs.dryrun != true }}
+        run: yarn run build
 
       - name: Website Prod Build (served for Cypress)
         if: ${{ inputs.dryrun != true }}
