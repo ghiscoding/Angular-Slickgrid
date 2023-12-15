@@ -1,13 +1,13 @@
 ## Merging SlickGrid into `Slickgrid-Universal` (dropping `6pac/slickgrid` dep)
-### The aim of this release is to be standalone, improve best practices & move towards CSP compliance while also making the project leaner. 
+### The aim of this release is to be standalone, improve best practices & move towards CSP compliance while also making the project leaner.
 
-There are a few changes, but it's for good reasons 😉 
+There are a few changes, but it's for good reasons 😉
 
-This new major release is dropping SlickGrid dependency (`6pac/slickgrid`) dependency entirely and no longer relies on external SlickGrid code. All core files are now included into the Slickgrid-Universal project instead of being an external dependency which was sometime hard to troubleshoot (which was the case for the past couple years). The main reason to move the core lib into the Slickgrid-Universal project is for simplicity but it also allows us to drop code that we never really used in Slickgrid-Universal (e.g. SlickGrid had its own `autosize` which is different than our implementation in `ResizerService`, see Slickgrid-Universal [Example 31](https://ghiscoding.github.io/Angular-Slickgrid/#/resize-by-content)). Migrating SlickGrid to native JS (dropping jQuery) also required a few DOM utils that were duplicated in both projects, with this release we can now deduplicate these methods. It was hard or impossible to achieve earlier because SlickGrid was always written as a JavaScript library while our project was written in TypeScript, but now that SlickGrid core lib was also migrated to TypeScript (I'm actually the person who worked on that), this is now allowing me to simply copy the new TypeScript code and merge it in here without too much effort. It's also been tested in the wild for couple months already and all bugs were discovered and fixed already, so I know the new code is also stable already. 
+This new major release is dropping SlickGrid dependency (`6pac/slickgrid`) dependency entirely and no longer relies on external SlickGrid code. All core files are now included into the Slickgrid-Universal project instead of being an external dependency which was sometime hard to troubleshoot (which was the case for the past couple years). The main reason to move the core lib into the Slickgrid-Universal project is for simplicity but it also allows us to drop code that we never really used in Slickgrid-Universal (e.g. SlickGrid had its own `autosize` which is different than our implementation in `ResizerService`, see Slickgrid-Universal [Example 31](https://ghiscoding.github.io/Angular-Slickgrid/#/resize-by-content)). Migrating SlickGrid to native JS (dropping jQuery) also required a few DOM utils that were duplicated in both projects, with this release we can now deduplicate these methods. It was hard or impossible to achieve earlier because SlickGrid was always written as a JavaScript library while our project was written in TypeScript, but now that SlickGrid core lib was also migrated to TypeScript (I'm actually the person who worked on that), this is now allowing me to simply copy the new TypeScript code and merge it in here without too much effort. It's also been tested in the wild for couple months already and all bugs were discovered and fixed already, so I know the new code is also stable already.
 
 Another great feature of this new major release is that I made a lot of improvements on the library for CSP (Content Security Policy) compliance, or at least provide ways to be compliant. One of the biggest change in that regard is that you can now create custom Formatters to return native HTML element (I rewrote a few built-in Formatters with that approach) and this is mostly to avoid the use of `innerHTML` which is not CSP safe by default.
 
-With this new major version release, we can now say that the journey to modernize the project is now, for the most part, completed (in summary the following was achieved in Slickgrid-Universal: 1. dropped jQueryUI in v2, dropped jQuery v3 and now in v4 Slickgrid-Universal is no longer relying on external 6pac/SlickGrid dependency and is fully written in TypeScript with full ESM builds) and with that said, I do not expect any major changes (aka breaking) for the foreseeable future... we're pretty much done with the big changes!!! This new release should be a little more performant too with more native code, e.g. some Formatters were rewritten as native. 
+With this new major version release, we can now say that the journey to modernize the project is now, for the most part, completed (in summary the following was achieved in Slickgrid-Universal: 1. dropped jQueryUI in v2, dropped jQuery v3 and now in v4 Slickgrid-Universal is no longer relying on external 6pac/SlickGrid dependency and is fully written in TypeScript with full ESM builds) and with that said, I do not expect any major changes (aka breaking) for the foreseeable future... we're pretty much done with the big changes!!! This new release should be a little more performant too with more native code, e.g. some Formatters were rewritten as native.
 
 #### Major Changes - Quick Summary
 - minimum requirements bump
@@ -81,10 +81,10 @@ undo() {
 }
 ```
 
-### Composite Editor 
+### Composite Editor
 The `CompositeEditor` class got renamed to `SlickCompositeEditor`, so if you were using it with an `instanceof` then you will have to update your code.
 ```diff
-- if (args.editor instanceof CompositeEditor) {
+- if (args.editor instanceof Slick.CompositeEditor) {
 + if (args.editor instanceof SlickCompositeEditor) {
   // ...
 }
@@ -114,7 +114,7 @@ this.gridOptions = {
 - `items` list was renamed as `commandItems` to align with all other Menu extensions
 
 ##### Filter/Editor
-Any Editor/Filter options (internal or 3rd party lib like Flatpickr, Autocompleter, ...) were migrated from `params` to `filterOptions` or `editorOptions`. You can still use `params` for other usage though. 
+Any Editor/Filter options (internal or 3rd party lib like Flatpickr, Autocompleter, ...) were migrated from `params` to `filterOptions` or `editorOptions`. You can still use `params` for other usage though.
 ```diff
 this.columnDefinitions = {
 {
@@ -168,19 +168,19 @@ The benefits of using `cssClass` are non negligible since it will slightly decre
 
 ```diff
 this.columnDefinitions = [
-  { 
+  {
     id: 'firstName', name: 'First Name', field: 'firstName',
 -   formatter: Formatters.bold
 +   cssClass: 'text-bold'
   },
-  { 
+  {
     id: 'lastName', name: 'Last Name', field: 'lastName',
 -   formatter: Formatters.multiple, params: { formatters: [Formatters.uppercase, Formatters.bold] },
 +   cssClass: 'text-uppercase text-bold'
   },
   {
     id: 'deleteIcon', name: '', field: '',
--   formatter: Formatters.deleteIcon, 
+-   formatter: Formatters.deleteIcon,
     // NOTE: we previously accepted "icon" and "formatterIcon" in the past but these names are now removed
 +   formatter: Formatters.icon, params: { iconCssClass: 'fa fa-trash pointer' }
   },
