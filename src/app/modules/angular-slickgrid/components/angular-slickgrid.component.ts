@@ -345,7 +345,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // save resource refs to register before the grid options are merged and possibly deep copied
     // since a deep copy of grid options would lose original resource refs but we want to keep them as singleton
-    const extendedGridOptions = Slick.Utils.extend(GlobalGridOptions, this.forRootConfig, this.gridOptions) as GridOption;
+    const extendedGridOptions = { ...GlobalGridOptions, ...this.forRootConfig, ...this.gridOptions } as GridOption;
     this._registeredResources = extendedGridOptions?.externalResources || extendedGridOptions?.registerExternalResources || [];
     /* istanbul ignore if */
     if (extendedGridOptions?.registerExternalResources) {
