@@ -68,8 +68,12 @@ The `dist/commonjs` folder was renamed as `dist/cjs` to make it shorter and also
 By migrating the SlickGrid core files into the project, we are now taking full advantage of TypeScript classes but that is also indirectly drops the `Slick` namespace on the `window` object. The main usage of the `Slick` namespace for most users, is when you have an editable grid with the "undo" functionality, you will need to update your code as shown below.
 
 ```diff
-+ { SlickGlobalEditorLock }  from '@slickgrid-universal/common';
++ { SlickEventHandler, SlickGlobalEditorLock }  from '@slickgrid-universal/common';
 - declare const Slick: SlickNamespace;
+
+// ..
+- eventHandler = Slick.EventHandler();
++ eventHandler = SlickEventHandler();
 
 // ..
 undo() {
