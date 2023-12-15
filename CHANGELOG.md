@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [7.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.5...v7.0.0) (2023-12-15)
+### Follow the [Migration 7.x Guide](https://ghiscoding.gitbook.io/angular-slickgrid/migrations/migration-to-7.x)
+
+### ⚠ BREAKING CHANGES
+* migrate to Slickgrid-Universal v4.0 new major version PR (#1325) ([65aac1c](https://github.com/ghiscoding/Angular-Slickgrid/commit/65aac1c3e71ffc890dbdc97fcbbaa352fc527a32))
+* upgrade to Angular 17 (#1328) ([b72a828](https://github.com/ghiscoding/Angular-Slickgrid/pull/1328))
+
 
 ## [6.6.5](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.4...v6.6.5) (2023-12-12)
 
