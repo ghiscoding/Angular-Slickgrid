@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
-import { SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
+import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 
 import {
   AngularGridInstance,
@@ -20,16 +20,13 @@ import {
   GridStateChange,
   LongTextEditorOption,
   OnCompositeEditorChangeEventArgs,
+  SlickGlobalEditorLock,
   SlickGrid,
-  SlickNamespace,
   SortComparers,
 } from '../modules/angular-slickgrid';
 
 const NB_ITEMS = 500;
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-
-// using external SlickGrid JS libraries
-declare const Slick: SlickNamespace;
 
 /**
  * Check if the current item (cell) is editable or not
@@ -489,7 +486,7 @@ export class GridCompositeEditorComponent implements OnInit {
   handleValidationError(_e: Event, args: any) {
     if (args.validationResults) {
       let errorMsg = args.validationResults.msg || '';
-      if (args.editor && (args.editor instanceof Slick.CompositeEditor)) {
+      if (args.editor && (args.editor instanceof SlickCompositeEditor)) {
         if (args.validationResults.errors) {
           errorMsg += '\n';
           for (const error of args.validationResults.errors) {
@@ -720,7 +717,7 @@ export class GridCompositeEditorComponent implements OnInit {
   undoLastEdit(showLastEditor = false) {
     const lastEdit = this.editQueue.pop();
     const lastEditCommand = lastEdit?.editCommand;
-    if (lastEdit && lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+    if (lastEdit && lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
       lastEditCommand.undo();
 
       // remove unsaved css class from that cell
@@ -740,7 +737,7 @@ export class GridCompositeEditorComponent implements OnInit {
   undoAllEdits() {
     for (const lastEdit of this.editQueue) {
       const lastEditCommand = lastEdit?.editCommand;
-      if (lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+      if (lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
         lastEditCommand.undo();
 
         // remove unsaved css class from that cell

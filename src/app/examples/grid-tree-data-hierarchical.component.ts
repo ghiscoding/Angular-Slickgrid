@@ -13,6 +13,7 @@ import {
   Formatters,
   GridOption,
   isNumber,
+  SlickDataView,
   // GroupTotalFormatters,
   // italicFormatter,
 } from './../modules/angular-slickgrid';
@@ -253,7 +254,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    const dataView = grid.getData();
+    const dataView = grid.getData<SlickDataView>();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const idx = dataView.getIdxById(dataContext[identifierPropName]) as number;

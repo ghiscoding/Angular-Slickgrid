@@ -1,5 +1,5 @@
 import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
-import type { EventSubscription, RxJsFacade, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
+import type { EventSubscription, OnRowBackToViewportRangeArgs, RxJsFacade, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
 import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionModel, unsubscribeAll } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
@@ -85,7 +85,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   init(grid: SlickGrid) {
     this._grid = grid;
     super.init(this._grid);
-    this.register(grid?.getSelectionModel());
+    this.register(grid?.getSelectionModel() as SlickRowSelectionModel);
   }
 
   /**
@@ -135,7 +135,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onAsyncEndUpdate) {
-          this.eventHandler.subscribe(this.onAsyncEndUpdate, (e: any, args: { grid: SlickGrid; item: any; }) => {
+          this.eventHandler.subscribe(this.onAsyncEndUpdate, (e, args) => {
             // triggers after backend called "onAsyncResponse.notify()"
             this.renderViewModel(args?.item);
 
@@ -146,7 +146,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onAfterRowDetailToggle) {
-          this.eventHandler.subscribe(this.onAfterRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; expandedRows: number[]; }) => {
+          this.eventHandler.subscribe(this.onAfterRowDetailToggle, (e: any, args: { grid: SlickGrid; item: any; expandedRows: Array<number | string>; }) => {
             // display preload template & re-render all the other Detail Views after toggling
             // the preload View will eventually go away once the data gets loaded after the "onAsyncEndUpdate" event
             this.renderPreloadView();
@@ -170,7 +170,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onRowBackToViewportRange) {
-          this.eventHandler.subscribe(this.onRowBackToViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+          this.eventHandler.subscribe(this.onRowBackToViewportRange, (e, args) => {
             // when row is back to viewport range, we will re-render the View Component(s)
             this.handleOnRowBackToViewportRange(e, args);
 
@@ -181,7 +181,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         }
 
         if (this.onRowOutOfViewportRange) {
-          this.eventHandler.subscribe(this.onRowOutOfViewportRange, (e: any, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
+          this.eventHandler.subscribe(this.onRowOutOfViewportRange, (e, args) => {
             if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowOutOfViewportRange === 'function') {
               this.rowDetailViewOptions.onRowOutOfViewportRange(e, args);
             }
@@ -289,7 +289,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
    */
   protected notifyTemplate(item: any) {
     if (this.onAsyncResponse) {
-      this.onAsyncResponse.notify({ item }, undefined, this);
+      this.onAsyncResponse.notify({ item, itemDetail: item }, undefined, this);
     }
   }
 
@@ -352,7 +352,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   }
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
-  protected handleOnRowBackToViewportRange(e: Event, args: { grid: SlickGrid; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
+  protected handleOnRowBackToViewportRange(_e: Event, args: OnRowBackToViewportRangeArgs) {
     if (args?.item) {
       this.redrawAllViewComponents();
     }

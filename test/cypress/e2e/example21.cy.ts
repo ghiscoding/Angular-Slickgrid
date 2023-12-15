@@ -34,7 +34,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_2 .container_2')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_2 .container_2')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -48,7 +48,7 @@ describe('Example 21 - Row Detail View', () => {
     cy.on('window:alert', alertStub);
 
     cy.get('#grid21')
-      .find('.innerDetailView_2 .container_2')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_2 .container_2')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -70,7 +70,7 @@ describe('Example 21 - Row Detail View', () => {
 
   it('should click on the "Call Parent Method" button and expect a Bootstrap Alert to show up with some text containing the Task 2', () => {
     cy.get('#grid21')
-      .find('.innerDetailView_2 .container_2')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_2 .container_2')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -85,7 +85,7 @@ describe('Example 21 - Row Detail View', () => {
     const expectedTasks = ['Task 0', 'Task 1', 'Task 3', 'Task 4', 'Task 5'];
 
     cy.get('#grid21')
-      .find('.innerDetailView_2 .container_2')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_2 .container_2')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -118,7 +118,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_3 .container_3')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_3 .container_3')
       .as('detailContainer3');
 
     cy.get('@detailContainer3')
@@ -130,7 +130,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_0 .container_0')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_0 .container_0')
       .as('detailContainer0');
 
     cy.get('@detailContainer0')
@@ -144,11 +144,11 @@ describe('Example 21 - Row Detail View', () => {
       .scrollTo('top');
 
     cy.get('#grid21')
-      .find('.innerDetailView_0 .container_0')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_0 .container_0')
       .should('not.exist');
 
     cy.get('#grid21')
-      .find('.innerDetailView_1 .container_1')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_1 .container_1')
       .should('not.exist');
 
     cy.get('#grid21')
@@ -171,7 +171,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_0 .container_0')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_0 .container_0')
       .as('detailContainer0');
 
     cy.get('@detailContainer0')
@@ -183,7 +183,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_3 .container_3')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_3 .container_3')
       .as('detailContainer3');
 
     cy.get('@detailContainer3')
@@ -228,11 +228,11 @@ describe('Example 21 - Row Detail View', () => {
       .scrollTo('top');
 
     cy.get('#grid21')
-      .find('.innerDetailView_0 .container_0')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_0 .container_0')
       .should('not.exist');
 
     cy.get('#grid21')
-      .find('.innerDetailView_3 .container_3')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_3 .container_3')
       .should('not.exist');
 
     cy.get('#grid21')
@@ -253,7 +253,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_102 .container_102')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -278,7 +278,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_102 .container_102')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -303,7 +303,7 @@ describe('Example 21 - Row Detail View', () => {
       .should('have.length', 0);
 
     cy.get('#grid21')
-      .find('.innerDetailView_102 .container_102')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -322,7 +322,7 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.innerDetailView_100 .container_100')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_100 .container_100')
       .as('detailContainer');
 
     cy.get('@detailContainer')
@@ -340,7 +340,7 @@ describe('Example 21 - Row Detail View', () => {
       .then(text => expect(text).to.eq('Task 10'));
 
     cy.get('#grid21')
-      .find('.innerDetailView_100 .container_100')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_100 .container_100')
       .should('not.exist');
   });
 });

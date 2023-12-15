@@ -44,7 +44,7 @@ export class GridRowDetailComponent implements OnInit {
     // you can get the SlickGrid RowDetail plugin (addon) instance via 2 ways
 
     // option 1
-    return (this.angularGrid.extensions.rowDetailView.instance || {});
+    return (this.angularGrid.extensions.rowDetailView?.instance || {});
 
     // OR option 2
     // return this.angularGrid?.extensionService.getExtensionInstanceByName(ExtensionName.rowDetailView) || {};
@@ -132,7 +132,7 @@ export class GridRowDetailComponent implements OnInit {
 
   getData() {
     // mock a dataset
-    const tmpData = [];
+    const tmpData: any[] = [];
     for (let i = 0; i < NB_ITEMS; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
@@ -157,7 +157,7 @@ export class GridRowDetailComponent implements OnInit {
   changeDetailViewRowCount() {
     if (this.angularGrid?.extensionService) {
       const options = this.rowDetailInstance.getOptions();
-      if (options && options.panelRows) {
+      if (options?.panelRows) {
         options.panelRows = this.detailViewRowCount; // change number of rows dynamically
         this.rowDetailInstance.setOptions(options);
       }

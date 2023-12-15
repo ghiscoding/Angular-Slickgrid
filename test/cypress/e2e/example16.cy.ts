@@ -491,9 +491,9 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   });
 
   it('should have a persisted frozen column after "Description" and a grid with 4 containers on page load with 2 columns on the left and 3 columns on the right', () => {
-    cy.get('[style="top:0px"]').should('have.length', 2);
-    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 2);
-    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 3);
+    cy.get('[style="top: 0px;"]').should('have.length', 2);
+    cy.get('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 2);
+    cy.get('.grid-canvas-right > [style="top: 0px;"]').children().should('have.length', 3);
   });
 
   it('should click on the reset button and have exact Column Titles position as in beginning', () => {
@@ -570,8 +570,8 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   });
 
   it('should have a persisted frozen column after "Description" and a grid with 4 containers on page load with 2 columns on the left and 3 columns on the right', () => {
-    cy.get('[style="top:0px"]').should('have.length', 2);
-    cy.get('.grid-canvas-left > [style="top:0px"]').children().should('have.length', 4);
-    cy.get('.grid-canvas-right > [style="top:0px"]').children().should('have.length', 3);
+    cy.get('[style="top: 0px;"]').should('have.length', 2);
+    cy.get('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 4);
+    cy.get('.grid-canvas-right > [style="top: 0px;"]').children().should('have.length', 3);
   });
 });

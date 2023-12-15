@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es5",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": ["es2020", "dom"],
-    "types": ["cypress", "node"],
-    "jsx": "preserve"
+    "lib": ["es2021", "dom"],
+    "types": ["cypress", "node"]
   },
   "include": ["**/*.ts"]
 }

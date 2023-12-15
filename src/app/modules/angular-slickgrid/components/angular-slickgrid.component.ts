@@ -1,15 +1,20 @@
-// import 3rd party vendor libs
-import 'slickgrid/slick.core';
-import 'slickgrid/slick.interactions';
-import 'slickgrid/slick.grid';
-import 'slickgrid/slick.dataview';
-
-// ...then everything else...
-import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, Optional, Output, } from '@angular/core';
+import {
+  AfterViewInit,
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnDestroy,
+  Optional,
+  Output,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
-import type {
+import {
   AutocompleterEditor,
   BackendServiceApi,
   BackendServiceOption,
@@ -18,6 +23,7 @@ import type {
   DataViewOption,
   EventSubscription,
   ExternalResource,
+  ItemMetadata,
   Locale,
   Metrics,
   Pagination,
@@ -27,7 +33,7 @@ import type {
   SlickDataView,
   SlickEventHandler,
   SlickGrid,
-  SlickNamespace,
+  Utils as SlickUtils,
 } from '@slickgrid-universal/common';
 
 import {
@@ -76,9 +82,6 @@ import { AngularUtilService } from '../services/angularUtil.service';
 import { SlickRowDetailView } from '../extensions/slickRowDetailView';
 import { ContainerService } from '../services/container.service';
 
-// using external non-typed js libraries
-declare const Slick: SlickNamespace;
-
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
@@ -89,11 +92,11 @@ declare const Slick: SlickNamespace;
     TranslaterService,
   ]
 })
-export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
+export class AngularSlickgridComponent<TData = any> implements AfterViewInit, OnDestroy {
   protected _dataset?: any[] | null;
   protected _columnDefinitions!: Column[];
   protected _currentDatasetLength = 0;
-  protected _eventHandler: SlickEventHandler = new Slick.EventHandler();
+  protected _eventHandler: SlickEventHandler = new SlickEventHandler();
   protected _eventPubSubService!: EventPubSubService;
   protected _angularGridInstances: AngularGridInstance | undefined;
   protected _hideHeaderRowAfterPageLoad = false;
@@ -345,11 +348,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // save resource refs to register before the grid options are merged and possibly deep copied
     // since a deep copy of grid options would lose original resource refs but we want to keep them as singleton
-    this._registeredResources = this.gridOptions?.externalResources || this.gridOptions?.registerExternalResources || [];
-    /* istanbul ignore if */
-    if (this.gridOptions?.registerExternalResources) {
-      console.warn('[Angular-Slickgrid] Please note that the grid option `registerExternalResources` was deprecated and will be removed in next major, please use `externalResources` instead.');
-    }
+    this._registeredResources = this.gridOptions?.externalResources || [];
 
     this.initialization(this._eventHandler);
     this._isGridInitialized = true;
@@ -488,15 +487,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     if (!this.customDataView) {
-      const dataviewInlineFilters = this.gridOptions.dataView && this.gridOptions.dataView.inlineFilters || false;
-      let dataViewOptions: DataViewOption = { inlineFilters: dataviewInlineFilters };
+      const dataviewInlineFilters = this.gridOptions?.dataView?.inlineFilters ?? false;
+      let dataViewOptions: Partial<DataViewOption> = { ...this.gridOptions.dataView, inlineFilters: dataviewInlineFilters };
 
       if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
         this.groupItemMetadataProvider = new SlickGroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
         dataViewOptions = { ...dataViewOptions, groupItemMetadataProvider: this.groupItemMetadataProvider };
       }
-      this.dataView = new Slick.Data.DataView(dataViewOptions);
+      this.dataView = new SlickDataView<TData>(dataViewOptions, this._eventPubSubService);
       this._eventPubSubService.publish('onDataviewCreated', this.dataView);
     }
 
@@ -538,10 +537,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
-    this.slickGrid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
+    this.slickGrid = new SlickGrid<TData, Column<TData>, GridOption<Column<TData>>>(`#${this.gridId}`, this.customDataView || this.dataView as SlickDataView<TData>, this._columnDefinitions, this.gridOptions, this._eventPubSubService);
     this.sharedService.dataView = this.dataView;
     this.sharedService.slickGrid = this.slickGrid;
     this.sharedService.gridContainerElement = this.elm.nativeElement as HTMLDivElement;
+    if (this.groupItemMetadataProvider) {
+      this.slickGrid.registerPlugin(this.groupItemMetadataProvider); // register GroupItemMetadataProvider when Grouping is enabled
+    }
 
     this.extensionService.bindDifferentExtensions();
     this.bindDifferentHooks(this.slickGrid, this.gridOptions, this.dataView);
@@ -791,7 +793,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
    * @param showing
    */
   showHeaderRow(showing = true) {
-    this.slickGrid.setHeaderRowVisibility(showing, false);
+    this.slickGrid.setHeaderRowVisibility(showing);
     if (showing === true && this._isGridInitialized) {
       this.slickGrid.setColumns(this.columnDefinitions);
     }
@@ -851,28 +853,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     }
 
     if (dataView && grid) {
-      const slickgridEventPrefix = this.gridOptions?.defaultSlickgridEventPrefix ?? '';
-
-      // expose all Slick Grid Events through dispatch
-      for (const prop in grid) {
-        if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
-          const gridEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
-          this._eventHandler.subscribe((grid as any)[prop], (event, args) => {
-            return this._eventPubSubService.dispatchCustomEvent(gridEventName, { eventData: event, args });
-          });
-        }
-      }
-
-      // expose all Slick DataView Events through dispatch
-      for (const prop in dataView) {
-        if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
-          this._eventHandler.subscribe((dataView as any)[prop], (event, args) => {
-            const dataViewEventName = this._eventPubSubService.getEventNameByNamingConvention(prop, slickgridEventPrefix);
-            return this._eventPubSubService.dispatchCustomEvent(dataViewEventName, { eventData: event, args });
-          });
-        }
-      }
-
       // on cell click, mainly used with the columnDef.action callback
       this.gridEventService.bindOnCellChange(grid);
       this.gridEventService.bindOnClick(grid);
@@ -941,7 +921,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     // did the user add a colspan callback? If so, hook it into the DataView getItemMetadata
     if (gridOptions && gridOptions.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
       dataView.getItemMetadata = (rowNumber: number) => {
-        let callbackResult = null;
+        let callbackResult: ItemMetadata | null = null;
         if (gridOptions.colspanCallback && gridOptions.colspanCallback) {
           callbackResult = gridOptions.colspanCallback(dataView.getItem(rowNumber));
         }
@@ -1230,7 +1210,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     gridOptions.enablePagination = ((gridOptions.backendServiceApi && gridOptions.enablePagination === undefined) ? true : gridOptions.enablePagination) || false;
 
     // use extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
-    const options = Slick.Utils.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
+    const options = SlickUtils.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
 
     // using copy extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.

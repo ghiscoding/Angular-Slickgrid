@@ -21,14 +21,11 @@ import {
   OnEventArgs,
   OperatorType,
   SortComparers,
-  SlickNamespace,
+  SlickGlobalEditorLock,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Subject } from 'rxjs';
-
-// using external non-typed js libraries
-declare const Slick: SlickNamespace;
 
 const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
@@ -120,7 +117,8 @@ export class GridEditorComponent implements OnInit {
         excludeFromColumnPicker: true,
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
-        formatter: Formatters.editIcon,
+        formatter: Formatters.icon,
+        params: { iconCssClass: 'fa fa-pencil pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -136,7 +134,8 @@ export class GridEditorComponent implements OnInit {
         excludeFromColumnPicker: true,
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
-        formatter: Formatters.deleteIcon,
+        formatter: Formatters.icon,
+        params: { iconCssClass: 'fa fa-trash pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -686,7 +685,7 @@ export class GridEditorComponent implements OnInit {
   undo() {
     const command = this._commandQueue.pop();
     const item = this.angularGrid.dataView.getItem(command.row);
-    if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+    if (command && SlickGlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.gridObj.gotoCell(command.row, command.cell, false);
     }

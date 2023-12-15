@@ -2,7 +2,7 @@ import fetchJsonp from 'fetch-jsonp';
 // import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, Formatter, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Formatter, GridOption, SlickEventHandler } from './../modules/angular-slickgrid';
 
 declare const Slick: any;
 
@@ -22,7 +22,7 @@ const mpnFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) =
   templateUrl: './grid-remote.component.html'
 })
 export class GridRemoteComponent implements OnDestroy, OnInit {
-  private _eventHandler: any = new Slick.EventHandler();
+  private _eventHandler: any = new SlickEventHandler();
 
   title = 'Example 18: Octopart Catalog Search - Remote Model Plugin';
   subTitle = `

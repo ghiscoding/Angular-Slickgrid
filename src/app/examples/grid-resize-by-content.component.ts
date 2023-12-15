@@ -2,10 +2,9 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
-import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleterOption, EditCommand, formatNumber, SortComparers, SlickGrid, SlickNamespace } from '../modules/angular-slickgrid';
+import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleterOption, EditCommand, formatNumber, SortComparers, SlickGrid, SlickGlobalEditorLock } from '../modules/angular-slickgrid';
 
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-declare const Slick: SlickNamespace;
 
 /**
  * Check if the current item (cell) is editable or not
@@ -38,9 +37,9 @@ const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, 
 };
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator = (value: any, args: any) => {
-  if ((value === null || value === undefined || !value.length) && (args.compositeEditorOptions && args.compositeEditorOptions.modalType === 'create' || args.compositeEditorOptions.modalType === 'edit')) {
-    // we will only check if the field is supplied when it's an inline editing OR a composite editor of type create/edit
+const myCustomTitleValidator = (value: any) => {
+  if ((value === null || value === undefined || !value.length)) {
+    // we will only check if the field is supplied when it's an inline editing
     return { valid: false, msg: 'This is a required field.' };
   } else if (!/^(task\s\d+)*$/i.test(value)) {
     return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number.' };
@@ -65,7 +64,6 @@ export class GridResizeByContentComponent implements OnInit {
   editedItems: any = {};
   isUsingDefaultResize = false;
   isGridEditable = true;
-  isCompositeDisabled = false;
   isMassSelectionDisabled = true;
   complexityLevelList = [
     { value: 0, label: 'Very Simple' },
@@ -344,7 +342,6 @@ export class GridResizeByContentComponent implements OnInit {
       rowHeight: 33,
       headerRowHeight: 35,
       editCommandHandler: (item, column, editCommand) => {
-        // composite editors values are saved as array, so let's convert to array in any case and we'll loop through these values
         const prevSerializedValues = Array.isArray(editCommand.prevSerializedValue) ? editCommand.prevSerializedValue : [editCommand.prevSerializedValue];
         const serializedValues = Array.isArray(editCommand.serializedValue) ? editCommand.serializedValue : [editCommand.serializedValue];
         const editorColumns = this.columnDefinitions.filter((col) => col.editor !== undefined);
@@ -365,8 +362,7 @@ export class GridResizeByContentComponent implements OnInit {
           }
         });
 
-        // queued editor only keeps 1 item object even when it's a composite editor,
-        // so we'll push only 1 change at the end but with all columns modified
+        // queued editor, so we'll push only 1 change at the end but with all columns modified
         // this way we can undo the entire row change (for example if user changes 3 field in the editor modal, then doing a undo last change will undo all 3 in 1 shot)
         this.editQueue.push({ item, columns: modifiedColumns, editCommand });
       },
@@ -477,7 +473,6 @@ export class GridResizeByContentComponent implements OnInit {
 
     // then change a single grid options to make the grid non-editable (readonly)
     this.isGridEditable = !this.isGridEditable;
-    this.isCompositeDisabled = !this.isGridEditable;
     if (!this.isGridEditable) {
       this.isMassSelectionDisabled = true;
     }
@@ -558,7 +553,7 @@ export class GridResizeByContentComponent implements OnInit {
   undoLastEdit(showLastEditor = false) {
     const lastEdit = this.editQueue.pop();
     const lastEditCommand = lastEdit?.editCommand;
-    if (lastEdit && lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+    if (lastEdit && lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
       lastEditCommand.undo();
 
       // remove unsaved css class from that cell
@@ -578,7 +573,7 @@ export class GridResizeByContentComponent implements OnInit {
   undoAllEdits() {
     for (const lastEdit of this.editQueue) {
       const lastEditCommand = lastEdit?.editCommand;
-      if (lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+      if (lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
         lastEditCommand.undo();
 
         // remove unsaved css class from that cell

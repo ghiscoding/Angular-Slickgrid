@@ -136,7 +136,7 @@ export class GridRowMoveComponent implements OnInit {
     this.dataset = mockDataset;
   }
 
-  onBeforeMoveRow(e: Event, data: { rows: number[]; insertBefore: number; }) {
+  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
       if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.angularGrid.dataView.getItemCount()))) {
@@ -147,7 +147,7 @@ export class GridRowMoveComponent implements OnInit {
     return true;
   }
 
-  onMoveRows(_e: Event, args: any) {
+  onMoveRows(_e: MouseEvent | TouchEvent, args: any) {
     // rows and insertBefore references,
     // note that these references are assuming that the dataset isn't filtered at all
     // which is not always the case so we will recalcualte them and we won't use these reference afterward
@@ -230,7 +230,8 @@ export class GridRowMoveComponent implements OnInit {
           excludeFromColumnPicker: true,
           excludeFromGridMenu: true,
           excludeFromHeaderMenu: true,
-          formatter: Formatters.editIcon,
+          formatter: Formatters.icon,
+          params: { iconCssClass: 'fa fa-pencil pointer' },
           minWidth: 30,
           maxWidth: 30,
           onCellClick: (clickEvent: Event, args: OnEventArgs) => {
@@ -242,7 +243,8 @@ export class GridRowMoveComponent implements OnInit {
           excludeFromColumnPicker: true,
           excludeFromGridMenu: true,
           excludeFromHeaderMenu: true,
-          formatter: Formatters.deleteIcon,
+          formatter: Formatters.icon,
+          params: { iconCssClass: 'fa fa-trash pointer' },
           minWidth: 30,
           maxWidth: 30,
           onCellClick: (e: Event, args: OnEventArgs) => {

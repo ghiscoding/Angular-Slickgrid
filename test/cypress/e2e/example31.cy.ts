@@ -93,15 +93,15 @@ describe('Example 31 - Columns Resize by Content', () => {
 
     // Row index 3, 4 and 11 (last one will be on 2nd page)
     cy.get('input[type="checkbox"]:checked').should('have.length', 2); // 2x in current page and 1x in next page
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 3}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 4}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 4}px;"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
   });
 
   it('should go to next page and expect 1 row selected in that second page', () => {
     cy.get('.icon-seek-next').click();
 
     cy.get('input[type="checkbox"]:checked').should('have.length', 1); // only 1x row in page 2
-    cy.get(`[style="top:${GRID_ROW_HEIGHT * 1}px"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0) input[type="checkbox"]`).should('be.checked');
   });
 
   it('should click on "Select All" checkbox and expect all rows selected in current page', () => {
