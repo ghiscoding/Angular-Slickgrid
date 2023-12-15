@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.0...v7.0.1) (2023-12-15)
+
+
+### Bug Fixes
+
+* regression externalResouces should work globally, fix [#1329](https://github.com/ghiscoding/angular-slickgrid/issues/1329) ([72fb260](https://github.com/ghiscoding/angular-slickgrid/commit/72fb260bcc88e0adf2ae41c6053ef6a34454fcc3)), closes [#1320](https://github.com/ghiscoding/angular-slickgrid/issues/1320)
+
 # [7.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v6.6.5...v7.0.0) (2023-12-15)
 ### Follow the [Migration 7.x Guide](https://ghiscoding.gitbook.io/angular-slickgrid/migrations/migration-to-7.x)
 
