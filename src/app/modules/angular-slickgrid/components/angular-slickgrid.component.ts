@@ -345,9 +345,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
 
     // save resource refs to register before the grid options are merged and possibly deep copied
     // since a deep copy of grid options would lose original resource refs but we want to keep them as singleton
-    this._registeredResources = this.gridOptions?.externalResources || this.gridOptions?.registerExternalResources || [];
+    const extendedGridOptions = { ...GlobalGridOptions, ...this.forRootConfig, ...this.gridOptions } as GridOption;
+    this._registeredResources = extendedGridOptions?.externalResources || extendedGridOptions?.registerExternalResources || [];
     /* istanbul ignore if */
-    if (this.gridOptions?.registerExternalResources) {
+    if (extendedGridOptions?.registerExternalResources) {
       console.warn('[Angular-Slickgrid] Please note that the grid option `registerExternalResources` was deprecated and will be removed in next major, please use `externalResources` instead.');
     }
 
@@ -355,7 +356,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy {
     this._isGridInitialized = true;
 
     // recheck the empty warning message after grid is shown so that it works in every use case
-    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
+    if (this.gridOptions?.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
       const finalTotalCount = this.dataset.length;
       this.displayEmptyDataWarning(finalTotalCount < 1);
     }
