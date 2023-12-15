@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - version6
       - next
   pull_request:
     branches:
