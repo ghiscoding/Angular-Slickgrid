@@ -348,7 +348,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     // save resource refs to register before the grid options are merged and possibly deep copied
     // since a deep copy of grid options would lose original resource refs but we want to keep them as singleton
-    this._registeredResources = this.gridOptions?.externalResources || [];
+    this._registeredResources = ({ ...this.forRootConfig, ...this.gridOptions } as GridOption)?.externalResources || [];
 
     this.initialization(this._eventHandler);
     this._isGridInitialized = true;
