@@ -91,10 +91,6 @@ jobs:
           npm whoami
           npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
 
-      - name: Run Project Build
-        if: ${{ inputs.dryrun != true }}
-        run: yarn run build
-
       - name: Website Prod Build (served for Cypress)
         if: ${{ inputs.dryrun != true }}
         run: yarn build:demo
