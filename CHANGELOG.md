@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.3](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.2...v7.0.3) (2023-12-16)
+
+
+### Bug Fixes
+
+* **deps:** update all Slickgrid-Universal dependencies ([fdc5fa8](https://github.com/ghiscoding/angular-slickgrid/commit/fdc5fa894e5c301be756d06a42cf4a1c4274d01e))
+
 ## [7.0.2](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.1...v7.0.2) (2023-12-16)
 
 
