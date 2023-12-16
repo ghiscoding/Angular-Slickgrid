@@ -346,10 +346,6 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       throw new Error('Using `<angular-slickgrid>` requires [gridOptions] and [columnDefinitions], it seems that you might have forgot to provide them since at least of them is undefined.');
     }
 
-    // save resource refs to register before the grid options are merged and possibly deep copied
-    // since a deep copy of grid options would lose original resource refs but we want to keep them as singleton
-    this._registeredResources = ({ ...this.forRootConfig, ...this.gridOptions } as GridOption)?.externalResources || [];
-
     this.initialization(this._eventHandler);
     this._isGridInitialized = true;
 
@@ -1255,6 +1251,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   /** Pre-Register any Resource that don't require SlickGrid to be instantiated (for example RxJS Resource & RowDetail) */
   protected preRegisterResources() {
+    this._registeredResources = this.gridOptions?.externalResources || [];
+
     // Angular-Slickgrid requires RxJS, so we'll register it as the first resource
     this.registerRxJsResource(new RxJsResource() as RxJsFacade);
 
