@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.2](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.1...v7.0.2) (2023-12-16)
+
+
+### Bug Fixes
+
+* read external resource when required ([6e9af2a](https://github.com/ghiscoding/angular-slickgrid/commit/6e9af2aa3424bb3d01a4cda6d7926d3f8dfcf820)), closes [#1320](https://github.com/ghiscoding/angular-slickgrid/issues/1320)
+
 ## [7.0.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.0...v7.0.1) (2023-12-15)
 
 
