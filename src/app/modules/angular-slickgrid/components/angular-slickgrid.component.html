@@ -1,4 +1,6 @@
 <div id="slickGridContainer-{{gridId}}" class="gridPane">
+  <ng-container *ngTemplateOutlet="slickgridHeader"></ng-container>
   <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%">
   </div>
+  <ng-container *ngTemplateOutlet="slickgridFooter"></ng-container>
 </div>

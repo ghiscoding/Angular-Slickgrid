@@ -3,6 +3,7 @@ import {
   ApplicationRef,
   ChangeDetectorRef,
   Component,
+  ContentChild,
   ElementRef,
   EventEmitter,
   Inject,
@@ -10,6 +11,7 @@ import {
   OnDestroy,
   Optional,
   Output,
+  TemplateRef,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -264,6 +266,9 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   get registeredResources(): ExternalResource[] {
     return this._registeredResources;
   }
+
+  @ContentChild('slickgridHeader', { static: true }) slickgridHeader?: TemplateRef<any>;
+  @ContentChild('slickgridFooter', { static: true }) slickgridFooter?: TemplateRef<any>;
 
   constructor(
     protected readonly angularUtilService: AngularUtilService,
