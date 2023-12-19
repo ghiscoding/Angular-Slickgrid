@@ -1,0 +1,30 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    {{ title }}
+    <span class="float-end">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-header-footer.component.ts"
+      >
+        <span class="fa fa-link"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+
+  <angular-slickgrid
+    gridId="grid1"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+  >
+    <ng-template #slickgridHeader>
+      <h3>Grid with header and footer slot</h3>
+    </ng-template>
+
+    <ng-template #slickgridFooter>
+      <custom-footer></custom-footer>
+    </ng-template>
+  </angular-slickgrid>
+</div>
