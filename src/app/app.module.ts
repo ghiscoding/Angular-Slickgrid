@@ -61,6 +61,7 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
 // load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
 import 'flatpickr/dist/l10n/fr';
 import { CustomButtonFormatterComponent } from './examples/custom-buttonFormatter.component';
+import { CustomFooterComponent, GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 
 // AoT requires an exported function for factories
 export function createTranslateLoader(http: HttpClient) {
@@ -130,7 +131,9 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     SwtCommonGridTestComponent,
     SwtCommonGridPaginationComponent,
     SwtCommonGridComponent,
-    HomeComponent
+    HomeComponent,
+    GridHeaderFooterComponent,
+    CustomFooterComponent
   ],
   imports: [
     AppRoutingRoutingModule,

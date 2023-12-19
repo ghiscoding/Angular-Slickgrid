@@ -32,6 +32,7 @@ import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
+import { GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -72,6 +73,7 @@ const routes: Routes = [
   { path: 'tree-data-parent-child', component: GridTreeDataParentChildComponent },
   { path: 'tree-data-hierarchical', component: GridTreeDataHierarchicalComponent },
   { path: 'swt', component: SwtCommonGridTestComponent },
+  { path: 'header-footer', component: GridHeaderFooterComponent },
   { path: '', redirectTo: '/trading', pathMatch: 'full' },
   { path: '**', redirectTo: '/trading', pathMatch: 'full' }
 ];
