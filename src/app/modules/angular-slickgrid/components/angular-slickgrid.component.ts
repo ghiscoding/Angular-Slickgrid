@@ -35,7 +35,6 @@ import {
   SlickDataView,
   SlickEventHandler,
   SlickGrid,
-  Utils as SlickUtils,
 } from '@slickgrid-universal/common';
 
 import {
@@ -72,6 +71,7 @@ import { SlickEmptyWarningComponent } from '@slickgrid-universal/empty-warning-c
 import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-component';
 import { SlickPaginationComponent } from '@slickgrid-universal/pagination-component';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
+import { extend } from '@slickgrid-universal/utils';
 import { dequal } from 'dequal/lite';
 
 import { Constants } from '../constants';
@@ -1211,7 +1211,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     gridOptions.enablePagination = ((gridOptions.backendServiceApi && gridOptions.enablePagination === undefined) ? true : gridOptions.enablePagination) || false;
 
     // use extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
-    const options = SlickUtils.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
+    const options = extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
 
     // using copy extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
