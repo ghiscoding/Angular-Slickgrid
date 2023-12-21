@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.3...v7.1.0) (2023-12-21)
+
+
+### Features
+
+* add example for custom header and footer ([2d816da](https://github.com/ghiscoding/angular-slickgrid/commit/2d816daa03a48aea87c0fbf30c02ad8882904145))
+* reimplement highlight row, node-extend also fixes [#1332](https://github.com/ghiscoding/angular-slickgrid/issues/1332), [#1333](https://github.com/ghiscoding/angular-slickgrid/issues/1333) ([5809965](https://github.com/ghiscoding/angular-slickgrid/commit/5809965dab53035d7ad4e5067281e7d951b2e415)), closes [#1334](https://github.com/ghiscoding/angular-slickgrid/issues/1334)
+* render header and footer content children ([9203b0b](https://github.com/ghiscoding/angular-slickgrid/commit/9203b0bec1474f88a874cb1ae4438e092a0adc6a))
+
 ## [7.0.3](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.2...v7.0.3) (2023-12-16)
 
 
