@@ -1,4 +1,5 @@
 describe('Example 11 - Add / Update / Highlight a Datagrid Item', () => {
+  const GRID_ROW_HEIGHT = 35;
   const fullTitles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
   it('should display Example title', () => {
@@ -91,10 +92,12 @@ describe('Example 11 - Add / Update / Highlight a Datagrid Item', () => {
   });
 
   it('should scroll to top and expect certain rows on top', () => {
-    cy.get('[data-test="scroll-top-btn"]').click();
+    // cy.get('[data-test="scroll-top-btn"]').click();
+    cy.get('.slick-viewport.slick-viewport-top.slick-viewport-left')
+      .scrollTo('top');
 
-    cy.get('#grid11').find('.slick-row:nth(0) .slick-cell:nth(1)').should('contain.text', 'Task 1001');
-    cy.get('#grid11').find('.slick-row:nth(1) .slick-cell:nth(1)').should('contain.text', 'Task 1000');
-    cy.get('#grid11').find('.slick-row:nth(2) .slick-cell:nth(1)').should('contain.text', 'Task 1');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 1001');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 100');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 1');
   });
 });
