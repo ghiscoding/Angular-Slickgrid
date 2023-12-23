@@ -102,7 +102,7 @@ If you want to disable pasting values for specific columns you can deactivate it
 ```typescript
 this.columnDefinitions = [
   { 
-    id: 'title', name: 'Title', field: 'id', 
+    id: 'colA', name: 'Col A', field: 'col_a', 
     formatter: Formatters.bold,
     exportWithFormatter: true, 
     sanitizeDataExport: true,
