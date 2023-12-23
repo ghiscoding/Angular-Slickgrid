@@ -9,7 +9,7 @@ All the events are published with a data payload in a `CustomEvent`, so you will
 // 1. with PubSub instance
 this.angularGrid.instances?.eventPubSubService?.subscribe('onCellChange', (payload) => console.log('PubSub, cell changed data:', payload));
 
-// 2. with CustomEvent in the View (see html code below) 
+// 2. with CustomEvent in the View (see html code below)
 handleOnCellChange(e) {
   // `eventData` is the event it was triggered from and `args` is the data payload
   const { eventData, args } = e.detail;
@@ -19,10 +19,10 @@ handleOnCellChange(e) {
 ```
 ```html
 <!-- 2. with CustomEvent in the View -->
-<angular-slickgrid 
+<angular-slickgrid
      gridId="grid2"
-     [columnDefinitions]="columnDefinitions" 
-     [gridOptions]="gridOptions" 
+     [columnDefinitions]="columnDefinitions"
+     [gridOptions]="gridOptions"
      [dataset]="dataset"
      (onCellChange)="handleOnCellChange($event.detail)">
 </angular-slickgrid>
@@ -33,7 +33,7 @@ handleOnCellChange(e) {
 // 1. with PubSub instance
 this.angularGrid.instances?.eventPubSubService?.subscribe('onHeaderMenuCommand', (payload) => console.log('PubSub, header menu command', payload));
 
-// 2. with CustomEvent in the View (see html code below) 
+// 2. with CustomEvent in the View (see html code below)
 handleOnHeaderMenuCommand(e) {
   // detail is the args data payload
   const args = e.detail;
@@ -42,16 +42,21 @@ handleOnHeaderMenuCommand(e) {
 ```
 ```html
 <!-- 2. with CustomEvent in the View -->
-<angular-slickgrid 
+<angular-slickgrid
      gridId="grid2"
-     [columnDefinitions]="columnDefinitions" 
-     [gridOptions]="gridOptions" 
+     [columnDefinitions]="columnDefinitions"
+     [gridOptions]="gridOptions"
      [dataset]="dataset"
      (onHeaderMenuCommand)="handleOnHeaderMenuCommand($event.detail)">
 </angular-slickgrid>
 ```
 
 ---
+
+#### SlickCellExternalCopyManager (extension)
+  - `onCopyCells`
+  - `onCopyCancelled`
+  - `onPasteCells`
 
 #### SlickContextMenu (extension)
   - `onContextMenuClearGrouping`
@@ -112,13 +117,13 @@ handleOnHeaderMenuCommand(e) {
   - `onTreeFullToggleEnd`
   - `onTreeItemToggled`
 
-#### SlickVanillaGridBundle
+#### Angular-Slickgrid Component
   - `onBeforeGridDestroy`
   - `onAfterGridDestroyed`
   - `onBeforeGridCreate`
   - `onDataviewCreated`
   - `onGridCreated`
-  - `onSlickerGridCreated`
+  - `onAngularGridCreated`
   - `onGridStateChanged`
 
 #### SlickGrid
