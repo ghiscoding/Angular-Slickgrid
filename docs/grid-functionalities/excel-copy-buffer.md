@@ -95,3 +95,25 @@ this.gridOptions = {
   },
 };
 ```
+
+### Disable pasting on specific columns
+If you want to disable pasting values for specific columns you can deactivate it using the denyPaste property on the Column config.
+
+```typescript
+this.columnDefinitions = [
+  { 
+    id: 'colA', name: 'Col A', field: 'col_a', 
+    formatter: Formatters.bold,
+    exportWithFormatter: true, 
+    sanitizeDataExport: true,
+    denyPaste: true // <------------
+  }
+];
+```
+
+This will even work in situations where your table copy buffer stretches over disabled cells, by simply skipping them. So for the following config (x = paste disabled; o = paste enabled), pasting a 3 cell stretching table buffer will result in Col A and C being updated but ColB ignoring the paste and keeping its original value
+
+Col A | Col B | Col C \
+\---------------------\
+&nbsp;&nbsp; o &nbsp;&nbsp;  | &nbsp;&nbsp;&nbsp; x &nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; o \
+NEW | &nbsp;&nbsp;&nbsp; x &nbsp;&nbsp; | &nbsp;NEW
