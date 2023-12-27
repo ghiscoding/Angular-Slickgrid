@@ -47,7 +47,7 @@ const gridOptionsMock = {
     useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
     process: () => new Promise((resolve) => resolve('process resolved')),
-    viewComponent: null,
+    viewComponent: null as any,
     onExtensionRegistered: jest.fn(),
     onAsyncResponse: () => { },
     onAsyncEndUpdate: () => { },
@@ -309,11 +309,6 @@ describe('SlickRowDetailView', () => {
         plugin.register();
         plugin.onBeforeRowDetailToggle.notify({ item: columnsMock[0], grid: gridStub }, new SlickEventData(), gridStub);
 
-        // expect(handlerSpy).toHaveBeenCalledTimes(8); // there are an extra 2x on the grid itself
-        // expect(handlerSpy).toHaveBeenCalledWith(
-        //   { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
-        //   expect.anything()
-        // );
         expect(onAsyncRespSpy).not.toHaveBeenCalled();
         expect(onAsyncEndSpy).not.toHaveBeenCalled();
         expect(onAfterRowSpy).not.toHaveBeenCalled();
@@ -655,6 +650,28 @@ describe('SlickRowDetailView', () => {
 
         expect(disposeSpy).toHaveBeenCalled();
         expect(disposeAllSpy).toHaveBeenCalled();
+      });
+
+      it('should call internal event handler subscribe and expect the "onBeforeRowDetailToggle" option to be called and return true when addon notify is called', () => {
+        gridOptionsMock.rowDetailView!.onBeforeRowDetailToggle = undefined;
+        const onAsyncRespSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncResponse');
+        const onAsyncEndSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncEndUpdate');
+        const onAfterRowSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAfterRowDetailToggle');
+        // const onBeforeRowSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onBeforeRowDetailToggle');
+        const onRowOutViewSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowOutOfViewportRange');
+        const onRowBackViewSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowBackToViewportRange');
+
+        plugin.init(gridStub);
+        plugin.onBeforeRowDetailToggle = new SlickEvent();
+        plugin.register();
+        const result = plugin.onBeforeRowDetailToggle.notify({ item: columnsMock[0], grid: gridStub }, new SlickEventData(), gridStub);
+
+        expect(result.getReturnValue()).toEqual(true);
+        expect(onAsyncRespSpy).not.toHaveBeenCalled();
+        expect(onAsyncEndSpy).not.toHaveBeenCalled();
+        expect(onAfterRowSpy).not.toHaveBeenCalled();
+        expect(onRowOutViewSpy).not.toHaveBeenCalled();
+        expect(onRowBackViewSpy).not.toHaveBeenCalled();
       });
     });
 
