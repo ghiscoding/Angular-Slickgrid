@@ -137,7 +137,7 @@ describe('Example 21 - Row Detail View', () => {
       .find('h3')
       .contains('Task 0');
 
-    cy.get('[data-test=close-all-btn]')
+    cy.get('[data-test=collapse-all-btn]')
       .click();
 
     cy.get('.slick-viewport-top.slick-viewport-left')
@@ -164,7 +164,7 @@ describe('Example 21 - Row Detail View', () => {
   });
 
   it('should open a few Row Details, then sort by Title and expect all Row Details to be closed afterward', () => {
-    const expectedTasks = ['Task 1', 'Task 10', 'Task 100', 'Task 101', 'Task 102', 'Task 103', 'Task 104'];
+    const expectedTasks = ['Task 0', 'Task 1', 'Task 10', 'Task 100', 'Task 101', 'Task 102', 'Task 103', 'Task 104'];
 
     cy.get('#grid21')
       .find('.slick-row:nth(0)')
@@ -247,24 +247,28 @@ describe('Example 21 - Row Detail View', () => {
       });
   });
 
-  it('should click open Row Detail of Task 102 then type a title filter of "Task 102" and expect Row Detail to be opened and still be rendered', () => {
+  it('should click open Row Detail of Task 1 and Task 101 then type a title filter of "Task 101" and expect Row Detail to be opened and still be rendered', () => {
     cy.get('#grid21')
       .find('.slick-row:nth(4)')
       .click();
 
     cy.get('#grid21')
-      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
+      .find('.slick-row:nth(1)')
+      .click();
+
+    cy.get('#grid21')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_101')
       .as('detailContainer');
 
     cy.get('@detailContainer')
       .find('h3')
-      .contains('Task 102');
+      .contains('Task 101');
 
     cy.get('.search-filter.filter-title')
-      .type('Task 102');
+      .type('Task 101');
   });
 
-  it('should call "Clear all Filters" from Grid Menu and expect "Task 102" to still be rendered correctly', () => {
+  it('should call "Clear all Filters" from Grid Menu and expect "Task 101" to still be rendered correctly', () => {
     cy.get('#grid21')
       .find('button.slick-grid-menu-button')
       .trigger('click')
@@ -278,15 +282,15 @@ describe('Example 21 - Row Detail View', () => {
       .click();
 
     cy.get('#grid21')
-      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_101')
       .as('detailContainer');
 
     cy.get('@detailContainer')
       .find('h3')
-      .contains('Task 102');
+      .contains('Task 101');
   });
 
-  it('should call "Clear all Sorting" from Grid Menu and expect "Task 102" to still be rendered correctly', () => {
+  it('should call "Clear all Sorting" from Grid Menu and expect all row details to be collapsed', () => {
     cy.get('#grid21')
       .find('button.slick-grid-menu-button')
       .trigger('click')
@@ -302,45 +306,39 @@ describe('Example 21 - Row Detail View', () => {
       .find('.slick-sort-indicator-asc')
       .should('have.length', 0);
 
-    cy.get('#grid21')
-      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_102 .container_102')
-      .as('detailContainer');
-
-    cy.get('@detailContainer')
-      .find('h3')
-      .contains('Task 102');
+    cy.get('.dynamic-cell-detail').should('have.length', 0);
   });
 
   it('should close all row details & make grid editable', () => {
-    cy.get('[data-test="close-all-btn"]').click();
+    cy.get('[data-test="collapse-all-btn"]').click();
     cy.get('[data-test="editable-grid-btn"]').click();
   });
 
-  it('should click on 3rd row detail open icon and expect it to open', () => {
+  it('should click on 5th row detail open icon and expect it to open', () => {
     cy.get('#grid21')
-      .find('.slick-row:nth(2) .slick-cell:nth(0)')
+      .find('.slick-row:nth(4) .slick-cell:nth(0)')
       .click();
 
     cy.get('#grid21')
-      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_100 .container_100')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_101')
       .as('detailContainer');
 
     cy.get('@detailContainer')
       .find('h3')
-      .contains('Task 100');
+      .contains('Task 101');
   });
 
-  it('should click on 1st row "Title" cell to edit it and expect row detail to get closed', () => {
+  it('should click on 2nd row "Title" cell to edit it and expect Task 5 row detail to get closed', () => {
     cy.get('#grid21')
       .find('.slick-row:nth(1) .slick-cell:nth(1)')
       .click();
 
     cy.get('.editor-title')
       .invoke('val')
-      .then(text => expect(text).to.eq('Task 10'));
+      .then(text => expect(text).to.eq('Task 1'));
 
     cy.get('#grid21')
-      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_100 .container_100')
+      .find('.slick-cell + .dynamic-cell-detail .innerDetailView_101')
       .should('not.exist');
   });
 });
