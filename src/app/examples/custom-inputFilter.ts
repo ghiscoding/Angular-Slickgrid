@@ -28,7 +28,7 @@ export class CustomInputFilter implements Filter {
 
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
-    return this.grid?.getOptions() as GridOption;
+    return (this.grid?.getOptions() ?? {}) as GridOption;
   }
 
   /**
