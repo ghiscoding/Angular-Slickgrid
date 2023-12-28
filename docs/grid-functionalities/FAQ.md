@@ -47,7 +47,7 @@ export class GridBasicComponent implements OnInit {
     this.angularGrid = angularGrid;
 
     // update your reference to make use of applied defaults
-    this.gridOptions = this.angularGrid.gridService._gridOptions as GridOption;
+    this.gridOptions = this.angularGrid.slickGrid.getOptions() as GridOption;
   }
 }
 ```
