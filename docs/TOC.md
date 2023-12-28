@@ -71,6 +71,7 @@
 * [Row Detail](grid-functionalities/row-detail.md)
 * [Row Selection](grid-functionalities/Row-Selection.md)
 * [Tree Data Grid](grid-functionalities/Tree-Data-Grid.md)
+* [FAQ](grid-functionalities/FAQ.md)
 
 ## Backend Services
 
