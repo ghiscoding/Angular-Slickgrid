@@ -1,5 +1,3 @@
-##### _updated for version 2.x_
-
 #### Index
 - [Using fixed `collection` or `collectionAsync`](#using-collection-or-collectionasync)
 - [Editor Options (`AutocompleterOption` interface)](#editor-options-autocompleteroption-interface)
