@@ -13,21 +13,4 @@ export interface RowDetailView extends UniversalRowDetailView {
 
   /** View Component that will be loaded in the row detail after the async function completed */
   viewComponent: Type<object>;
-
-  // --
-  // Callback Methods
-
-  /**
-   * HTML Preload Template that will be used before the async process (typically used to show a spinner/loading)
-   * It's preferable to use the "preloadView" property to use an Angular View instead of plain HTML.
-   * If you still wish to use these methods, we strongly suggest you to sanitize your HTML, e.g. "DOMPurify.sanitize()"
-   */
-  preTemplate?: () => string;
-
-  /**
-   * HTML Post Template (when Row Detail data is available) that will be loaded once the async function finishes
-   * It's preferable to use the "preloadView" property to use an Angular View instead of plain HTML
-   * If you still wish to use these methods, we strongly suggest you to sanitize your HTML, e.g. "DOMPurify.sanitize()"
-   */
-  postTemplate?: (item: any) => string;
 }

@@ -249,7 +249,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   }
 
   treeFormatter: Formatter = (_row, _cell, value, _columnDef, dataContext, grid) => {
-    const gridOptions = grid.getOptions() as GridOption;
+    const gridOptions = grid.getOptions();
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
