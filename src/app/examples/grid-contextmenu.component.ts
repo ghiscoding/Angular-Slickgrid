@@ -51,7 +51,7 @@ const priorityExportFormatter: Formatter = (row, cell, value, columnDef, dataCon
 };
 
 const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  const gridOptions = grid?.getOptions?.() as GridOption;
+  const gridOptions = grid.getOptions() as GridOption;
   const translate = gridOptions.i18n;
 
   return translate && translate.instant && translate.instant('TASK_X', { x: value });

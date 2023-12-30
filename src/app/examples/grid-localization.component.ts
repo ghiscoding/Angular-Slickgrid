@@ -22,7 +22,7 @@ const NB_ITEMS = 1500;
 
 // create a custom translate Formatter (typically you would move that a separate file, for separation of concerns)
 const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  const gridOptions = grid?.getOptions?.() as GridOption;
+  const gridOptions = grid.getOptions() as GridOption;
   const translate = gridOptions.i18n as TranslateService;
 
   return translate.instant('TASK_X', { x: value });
