@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.1.0...v7.2.0) (2023-12-30)
+
+
+### Bug Fixes
+
+* sync row defatil grid option to fix build ([870cf47](https://github.com/ghiscoding/angular-slickgrid/commit/870cf47589cc095dd2e87b504fe537193c3b9588))
+
+
+### Features
+
+* (re)add option to cancel Row Detail opening ([03c2c64](https://github.com/ghiscoding/angular-slickgrid/commit/03c2c6498cf1ac62f21c2db62a215b3c63deed1e))
+
 # [7.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.0.3...v7.1.0) (2023-12-21)
 
 
