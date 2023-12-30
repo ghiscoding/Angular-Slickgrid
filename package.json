@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ghiscoding/angular-slickgrid.git"
+    "url": "https://github.com/ghiscoding/angular-slickgrid.git"
   },
   "main": "src/app/modules/angular-slickgrid/index",
   "private": false,

@@ -17,7 +17,7 @@ One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ## Documentation
-A new [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) website is powered by GitBook.
+📕 [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) website powered by GitBook.
 
 ## Installation
 A good starting point is the **[Docs - Quick Start](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start)** and/or simply clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. Please review all documentation and closed issues before opening any new issue, also consider asking installation and/or general questions on [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=slickgrid) unless you think there's a bug with the library.
