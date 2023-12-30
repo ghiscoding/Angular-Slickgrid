@@ -164,8 +164,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
             this.handleOnBeforeRowDetailToggle(e, args);
 
             if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onBeforeRowDetailToggle === 'function') {
-              this.rowDetailViewOptions.onBeforeRowDetailToggle(e, args);
+              return this.rowDetailViewOptions.onBeforeRowDetailToggle(e, args);
             }
+            return true;
           });
         }
 
@@ -329,7 +330,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
    */
   protected handleOnBeforeRowDetailToggle(e: Event, args: { grid: SlickGrid; item: any; }) {
     // expanding
-    if (args && args.item && args.item.__collapsed) {
+    if (args?.item?.__collapsed) {
       // expanding row detail
       const viewInfo: CreatedView = {
         id: args.item[this.datasetIdPropName],
