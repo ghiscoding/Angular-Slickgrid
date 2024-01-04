@@ -11,7 +11,7 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to Angular. SlickGrid beats most other datagrids in terms of features, customizability and performance (it can easily deal with even a million row). Angular-Slickgrid is a wrapper on top of SlickGrid and it requires [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) dependency since the original one was put on pause by its original author for personal reasons and originally we used the `6pac/SlickGrid` fork but that was dropped in v7.0, so we no longer need external SlickGrid dependencies anymore apart from Slickgrid-Universal since [v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3). Also, SlickGrid was recently refactored to be browser native, which means that jQuery is no longer required in Angular-Slickgrid v6.0 and higher.
+One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to Angular. SlickGrid beats most other datagrids in terms of features, customizability and performance (it can easily deal with even a million row). Angular-Slickgrid is a wrapper on top of SlickGrid and it requires [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) dependency, originally we used the `6pac/SlickGrid` fork but that was dropped in >=7.0, so we no longer need external SlickGrid dependencies anymore apart from Slickgrid-Universal since [v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3). Also, SlickGrid was recently refactored to be browser native.
 
 ### License
 [MIT License](LICENSE)
@@ -27,7 +27,7 @@ npm install angular-slickgrid
 ```
 
 ### Demo page
-`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. There are also extra styling themes for not just Bootstrap but also Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons)
+`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. It also with any other framework like Material or Bulma and there are also extra styling themes for not just Bootstrap but also Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons)
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 - `Bootstrap 5 demo with Single Locale` / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-locales)
