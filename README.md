@@ -43,8 +43,8 @@ npm install
 npm start
 ```
 
-### Like it? :star: it
-You like to use **Angular-Slickgrid**? Be sure to upvote :star: and maybe support me with caffeine :coffee: and feel free to contribute. 👷👷‍♀️
+### Like it? ⭐ it
+You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and maybe support me with caffeine [☕](https://ko-fi.com/ghiscoding) and feel free to contribute. 👷👷‍♀️
 
 <a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
