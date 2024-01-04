@@ -582,7 +582,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
-      if (this.slickGrid?.getSelectionModel() && this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+      if (this.slickGrid?.getSelectionModel() && this.gridOptions?.dataView?.hasOwnProperty('syncGridSelection')) {
         // if we are using a Backend Service, we will do an extra flag check, the reason is because it might have some unintended behaviors
         // with the BackendServiceApi because technically the data in the page changes the DataView on every page change.
         let preservedRowSelectionWithBackend = false;

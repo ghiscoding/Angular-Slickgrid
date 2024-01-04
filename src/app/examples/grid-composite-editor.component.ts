@@ -687,11 +687,11 @@ export class GridCompositeEditorComponent implements OnInit {
 
   renderUnsavedCellStyling(item: any, column: Column, editCommand: EditCommand) {
     if (editCommand && item && column) {
-      const row = this.angularGrid.dataView.getRowByItem(item) as number;
-      if (row >= 0) {
+      const row = this.angularGrid.dataView?.getRowByItem(item);
+      if (row !== undefined && row >= 0) {
         const hash = { [row]: { [column.id]: 'unsaved-editable-field' } };
         const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-        this.angularGrid.slickGrid.setCellCssStyles(`unsaved_highlight_${[column.id]}${row}`, hash);
+        this.angularGrid.slickGrid.setCellCssStyles(cssStyleKey, hash);
         this.cellCssStyleQueue.push(cssStyleKey);
       }
     }
