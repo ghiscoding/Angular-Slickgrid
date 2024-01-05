@@ -2,13 +2,16 @@
 
 #### Index
 
-* [Built-in Formatter](Formatters.md#list-of-provided-formatters)
-* [Extra Params/Arguments](Formatters.md#extra-argumentsparams)
-* [Using Multiple Formatters](Formatters.md#using-multiple-formatters)
-* [Custom Formatter](Formatters.md#custom-formatter)
-* [Common Formatter Options](Formatters.md#common-formatter-options)
-* [PostRenderer Formatter](Formatters.md#postrender-formatter)
-* [UI Sample](Formatters.md#ui-sample)
+* [Built-in Formatter](#list-of-provided-formatters)
+* [Extra Params/Arguments](#extra-argumentsparams)
+* [Using Multiple Formatters](#using-multiple-formatters)
+* [Custom Formatter](#custom-formatter)
+  - [Example of a Custom Formatter with HTML string](#example-of-a-custom-formatter-with-html-string)
+  - [Example with `FormatterResultObject` instead of a string](#example-with-formatterresultobject-instead-of-a-string)
+  - [Example of Custom Formatter with Native DOM Element](#example-of-custom-formatter-with-native-dom-element)
+* [Common Formatter Options](#common-formatter-options)
+* [PostRenderer Formatter](#postrender-formatter)
+* [UI Sample](#ui-sample)
 
 #### Definition
 
@@ -16,7 +19,7 @@
 
 A good example of a `Formatter` could be a column name `isActive` which is a `boolean` field with input data as `True` or `False`. User would prefer to simply see a checkbox as a visual indication representing the `True` flag, for this behavior you can use `Formatters.checkmark` which will use [Font-Awesome](http://fontawesome.io/icons/) icon of `fa-check` when `True` or an empty string when `False`.
 
-For a [UI sample](Formatters.md#ui-sample), scroll down below.
+For a [UI sample](#ui-sample), scroll down below.
 
 #### Provided Formatters
 
@@ -127,7 +130,7 @@ SlickGrid only has 1 `formatter` property but if you want to use more than 1 For
 **Note:** please note that combining multiple Formatters has the side effect of cascading the formatted `value` output to the next Formatter. So for example if you use the `complexObject` and `dollar` Formatters, you want to make sure to define them in the correct order in your `formatters: []` array as shown below.
 
 * what if you want to avoid overwriting the `value` with a Custom Formatter?
-  * in that case you can have your Formatter return a [FormatterResultObject](Formatters.md#formatterresultobject), see below.
+  * in that case you can have your Formatter return a [FormatterResultObject](#formatterresultobject), see below.
 
 ```ts
 // Data Example::
@@ -168,9 +171,9 @@ export interface FormatterResultObject {
 }
 ```
 
-#### Example of a Custom Formatter with string output
+#### Example of a Custom Formatter with HTML string
 
-For example, we will use `Font-Awesome` with a `boolean` as input data, and display a (fire) icon when `True` or a (snowflake) when `False`. This custom formatter is actually display in the [UI sample](Formatters.md#ui-sample) shown below.
+For example, we will use `Font-Awesome` with a `boolean` as input data, and display a (fire) icon when `True` or a (snowflake) when `False`. This custom formatter is actually display in the [UI sample](#ui-sample) shown below.
 
 ```ts
 // create a custom Formatter with the Formatter type
@@ -178,7 +181,7 @@ const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: 
   value ? `<i class="fa fa-fire" aria-hidden="true"></i>` : '<i class="fa fa-snowflake-o" aria-hidden="true"></i>';
 ```
 
-**or with `FormatterResultObject` instead of a string**
+#### Example with `FormatterResultObject` instead of a string
 
 Using this object return type will provide the user the same look and feel, it will actually be quite different. The major difference is that all of the options (`addClasses`, `tooltip`, ...) will be added the CSS container of the cell instead of the content of that container. For example a typically cell looks like the following `<div class="slick-cell l4 r4">Task 4</div>` and if use `addClasses: 'red'`, it will end up being `<div class="slick-cell l4 r4 red">Task 4</div>` while if we use a string output of let say `<span class="red">${value></span>`, then our final result of the cell will be `<div class="slick-cell l4 r4"><span class="red">Task 4</span></div>`. This can be useful if you plan to use multiple Formatters and don't want to lose or overwrite the previous Formatter result (we do that in our project).
 
@@ -187,6 +190,27 @@ Using this object return type will provide the user the same look and feel, it w
 const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) =>
   value ? { addClasses: 'fa fa-fire', text: '', tooltip: 'burning fire' } : '<i class="fa fa-snowflake-o" aria-hidden="true"></i>';
 ```
+
+### Example of Custom Formatter with Native DOM Element
+Since version 4.x, you can now also return native DOM element instead of an HTML string. There are 2 main reasons for going with this approach:
+1. CSP Safe by default, since it's native it is 100% CSP Safe (CSP: Content Security Policy)
+2. Performance (the reasons are similar to point 1.)
+   - since it's native it can be appended directly to the grid cell
+   - when it's an HTML string, it has to do 2 extra steps (which is an overhead process)
+      i. sanitize the string (we use [DOMPurify](https://github.com/cure53/DOMPurify) by default)
+      ii. SlickGrid then has to convert it to native element by using `innerHTML` on the grid cell
+
+Demo
+```ts
+export const iconFormatter: Formatter = (_row, _cell, _value, columnDef) => {
+  const iconElm = document.createElement('span');
+  iconElm.className = 'mdi mdi-check';
+
+  return iconElm;
+};
+```
+
+> **Note** you could also use our helper `createDomElement` which allows to create a DOM element and pass properties like `className` in 1 liner (and it also works with intellisense). For example `createDomElement('span', { className: 'bold title', textContent: 'Hello World', title: 'some tooltip description' })` would equal to 4 lines of code.
 
 #### More Complex Example
 
