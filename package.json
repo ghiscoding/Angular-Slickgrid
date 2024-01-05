@@ -58,20 +58,20 @@
     "@slickgrid-universal/row-detail-view-plugin": "~4.2.0",
     "@slickgrid-universal/rxjs-observable": "~4.2.0",
     "dequal": "^2.0.3",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.0.8",
     "rxjs": "^7.8.1",
     "sortablejs": "^1.15.1"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.5",
-    "@angular-devkit/build-angular": "^17.0.8",
+    "@angular-devkit/build-angular": "^17.0.9",
     "@angular-eslint/builder": "^17.1.1",
     "@angular-eslint/eslint-plugin": "^17.1.1",
     "@angular-eslint/eslint-plugin-template": "^17.1.1",
     "@angular-eslint/schematics": "^17.1.1",
     "@angular-eslint/template-parser": "^17.1.1",
     "@angular/animations": "^17.0.8",
-    "@angular/cli": "^17.0.8",
+    "@angular/cli": "^17.0.9",
     "@angular/common": "^17.0.8",
     "@angular/compiler": "^17.0.8",
     "@angular/compiler-cli": "^17.0.8",
@@ -99,8 +99,8 @@
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.6",
     "@types/sortablejs": "^1.15.7",
-    "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
     "bootstrap": "^5.3.2",
     "copyfiles": "^2.4.1",
     "custom-event-polyfill": "^1.0.7",
@@ -110,7 +110,7 @@
     "font-awesome": "^4.7.0",
     "jest": "^29.7.0",
     "jest-extended": "^4.0.2",
-    "jest-preset-angular": "^13.1.4",
+    "jest-preset-angular": "^13.1.5",
     "moment-mini": "^2.29.4",
     "ng-packagr": "^17.0.3",
     "ngx-bootstrap": "^12.0.0",
@@ -118,7 +118,7 @@
     "release-it": "^17.0.1",
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
-    "sass": "^1.69.6",
+    "sass": "^1.69.7",
     "servor": "^4.0.2",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.2",
@@ -131,7 +131,7 @@
     "npm": ">=6.14.13"
   },
   "resolutions": {
-    "caniuse-lite": "1.0.30001571",
+    "caniuse-lite": "1.0.30001574",
     "semver": "^7.5.4"
   }
 }
