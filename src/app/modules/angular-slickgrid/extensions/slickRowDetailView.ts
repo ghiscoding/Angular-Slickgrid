@@ -3,8 +3,8 @@ import type { EventSubscription, OnRowBackToViewportRangeArgs, RxJsFacade, Slick
 import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionModel, unsubscribeAll } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
-import DOMPurify from 'dompurify';
 import { Observable, Subject } from 'rxjs';
+import * as DOMPurify from 'dompurify';
 
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';

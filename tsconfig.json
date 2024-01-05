@@ -33,6 +33,7 @@
         "./node_modules/stream-browserify"
       ]
     },
+    "skipLibCheck": true,
     "strict": true,
     "useDefineForClassFields": false
   },
