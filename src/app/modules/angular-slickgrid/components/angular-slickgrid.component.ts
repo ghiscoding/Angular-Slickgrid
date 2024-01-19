@@ -102,6 +102,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   protected _eventPubSubService!: EventPubSubService;
   protected _angularGridInstances: AngularGridInstance | undefined;
   protected _hideHeaderRowAfterPageLoad = false;
+  protected _isAutosizeColsCalled = false;
   protected _isGridInitialized = false;
   protected _isDatasetInitialized = false;
   protected _isDatasetHierarchicalInitialized = false;
@@ -187,7 +188,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   @Input()
   get dataset(): any[] {
-    return (this.customDataView ? this.slickGrid?.getData?.() : this.dataView?.getItems?.()) || [];
+    return (this.customDataView ? this.slickGrid?.getData?.() : this.dataView?.getItems()) || [];
   }
   set dataset(newDataset: any[]) {
     const prevDatasetLn = this._currentDatasetLength;
@@ -205,8 +206,9 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     // expand/autofit columns on first page load
     // we can assume that if the prevDataset was empty then we are on first load
-    if (this.gridOptions?.autoFitColumnsOnFirstLoad && prevDatasetLn === 0) {
+    if (this.slickGrid && this.gridOptions?.autoFitColumnsOnFirstLoad && prevDatasetLn === 0 && !this._isAutosizeColsCalled) {
       this.slickGrid.autosizeColumns();
+      this._isAutosizeColsCalled = true;
     }
   }
 
@@ -468,6 +470,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   initialization(eventHandler: SlickEventHandler) {
     this.gridOptions.translater = this.translaterService;
     this._eventHandler = eventHandler;
+    this._isAutosizeColsCalled = false;
 
     // when detecting a frozen grid, we'll automatically enable the mousewheel scroll handler so that we can scroll from both left/right frozen containers
     if (this.gridOptions && ((this.gridOptions.frozenRow !== undefined && this.gridOptions.frozenRow >= 0) || this.gridOptions.frozenColumn !== undefined && this.gridOptions.frozenColumn >= 0) && this.gridOptions.enableMouseWheelScrollHandler === undefined) {
@@ -755,6 +758,14 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     }
   }
 
+  setData(data: TData[], shouldAutosizeColumns = false) {
+    if (shouldAutosizeColumns) {
+      this._isAutosizeColsCalled = false;
+      this._currentDatasetLength = 0;
+    }
+    this.dataset = data || [];
+  }
+
   /**
    * Check if there's any Pagination Presets defined in the Grid Options,
    * if there are then load them in the paginationOptions object
@@ -1004,21 +1015,17 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       throw new Error(`[Angular-Slickgrid] You cannot enable both autosize/fit viewport & resize by content, you must choose which resize technique to use. You can enable these 2 options ("autoFitColumnsOnFirstLoad" and "enableAutoSizeColumns") OR these other 2 options ("autosizeColumnsByCellContentOnFirstLoad" and "enableAutoResizeColumnsByCellContent").`);
     }
 
-    // expand/autofit columns on first page load
-    if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
-      grid.autosizeColumns();
-    }
-
     // auto-resize grid on browser resize
     if (options.gridHeight || options.gridWidth) {
       this.resizerService.resizeGrid(0, { height: options.gridHeight, width: options.gridWidth });
     } else {
       this.resizerService.resizeGrid();
     }
-    if (options.enableAutoResize) {
-      if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
-        grid.autosizeColumns();
-      }
+
+    // expand/autofit columns on first page load
+    if (grid && options?.enableAutoResize && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns && !this._isAutosizeColsCalled) {
+      grid.autosizeColumns();
+      this._isAutosizeColsCalled = true;
     }
   }
 
