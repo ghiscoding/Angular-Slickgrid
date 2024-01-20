@@ -1,5 +1,5 @@
 import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
-import type { EventSubscription, OnRowBackToViewportRangeArgs, RxJsFacade, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
+import type { EventSubscription, OnBeforeRowDetailToggleArgs, OnRowBackToViewportRangeArgs, RxJsFacade, SlickEventData, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
 import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionModel, unsubscribeAll } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
@@ -328,7 +328,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
    * if it's expanding we will add it to our View Components reference array if we don't already have it
    * or if it's collapsing we will remove it from our View Components reference array
    */
-  protected handleOnBeforeRowDetailToggle(e: Event, args: { grid: SlickGrid; item: any; }) {
+  protected handleOnBeforeRowDetailToggle(_e: SlickEventData<OnBeforeRowDetailToggleArgs>, args: { grid: SlickGrid; item: any; }) {
     // expanding
     if (args?.item?.__collapsed) {
       // expanding row detail
@@ -353,7 +353,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   }
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
-  protected handleOnRowBackToViewportRange(_e: Event, args: OnRowBackToViewportRangeArgs) {
+  protected handleOnRowBackToViewportRange(_e: SlickEventData<OnRowBackToViewportRangeArgs>, args: OnRowBackToViewportRangeArgs) {
     if (args?.item) {
       this.redrawAllViewComponents();
     }

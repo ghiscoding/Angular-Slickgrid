@@ -3,6 +3,7 @@ import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridAngularComponent } from './examples/grid-angular.component';
 import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
+import { GridBaseRowEditingComponent } from './examples/grid-base-row-editing.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridCompositeEditorComponent } from './examples/grid-composite-editor.component';
@@ -42,6 +43,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'angular-components', component: GridAngularComponent },
   { path: 'additem', component: GridAddItemComponent },
+  { path: 'base-row-editing', component: GridBaseRowEditingComponent },
   { path: 'autoheight', component: GridAutoHeightComponent },
   { path: 'basic', component: GridBasicComponent },
   { path: 'colspan', component: GridColspanComponent },

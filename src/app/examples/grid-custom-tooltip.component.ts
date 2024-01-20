@@ -397,7 +397,7 @@ export class GridCustomTooltipComponent implements OnInit {
     return tmpArray;
   }
 
-  executeCommand(_e: Event, args: MenuCommandItemCallbackArgs) {
+  executeCommand(_e: any, args: MenuCommandItemCallbackArgs) {
     // const columnDef = args.column;
     const command = args.command;
     const dataContext = args.dataContext;
