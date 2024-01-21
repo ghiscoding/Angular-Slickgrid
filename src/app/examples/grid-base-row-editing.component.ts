@@ -39,7 +39,6 @@ export class GridBaseRowEditingComponent implements OnInit {
   }
 
   ngOnInit() {
-    // mock some data (different in each dataset)
     this.dataset = this.getData(NB_ITEMS);
     this.defineGrid();
   }
