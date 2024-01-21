@@ -88,5 +88,8 @@
   "TASK_X": "Tâche {{x}}",
   "TITLE": "Titre",
   "TITLE.NAME": "Nom du Titre",
-  "TRUE": "Vrai"
+  "TRUE": "Vrai",
+  "X_DAY_PLURAL": "{{x}} journée{{plural}}",
+  "RBE_BTN_UPDATE": "Mettre à jour la ligne actuelle",
+  "RBE_BTN_CANCEL": "Annuler la ligne actuelle"
 }

@@ -15,6 +15,7 @@ import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
+import { GridBaseRowEditingComponent } from './examples/grid-base-row-editing.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
@@ -97,6 +98,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridAddItemComponent,
     GridAngularComponent,
     GridAutoHeightComponent,
+    GridBaseRowEditingComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,

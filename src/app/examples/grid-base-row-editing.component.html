@@ -1,0 +1,77 @@
+<h2>
+  Example 35: Row Based Editing
+  <span class="float-end">
+    <a style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-base-row-editing.component.ts">
+      <span class="fa fa-link"></span> code
+    </a>
+  </span>
+</h2>
+
+<div class="subtitle">
+  <ul>
+    <li>
+      The Row Based Edit plugin allows you to edit either a single or multiple
+      specific rows at a time, while disabling the rest of the grid rows.
+    </li>
+    <li>
+      Editedable rows, as well as modified cells are highlighted with a
+      different color, which you can customize using css variables (see
+      <a
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-base-row-editing.component.scss"
+      >
+      grid-base-row-editing.component.scss </a
+      >)
+    </li>
+    <li>
+      Modifications are kept track of and if the cancel button is pressed, all
+      modifications are rolled back.
+    </li>
+    <li>
+      If the save button is pressed, a custom "onBeforeRowUpdated" callback is called, which you can use to save the data with your backend.<br />
+      The callback needs to return a Promise&lt;boolean&gt; and if the promise resolves to true, then the row will be updated, otherwise it will be cancelled and stays in edit mode.
+      You can try out the later by defining a Duration value <b>larger than 40</b>.
+      <br />
+      <small><span class="has-text-danger">NOTE:</span> You can also combine this with e.g. Batch Editing like shown <a href="#/example30">in Example 30</a></small>
+    </li>
+    <li>
+      This example additionally uses the ExcelCopyBuffer Plugin, which you can see also in Slickgrid-Universal
+       <a href="https://ghiscoding.github.io/slickgrid-universal/#/example19">example 19</a>.
+      The example defines a rule that pastes in the first column are prohibited. In combination with the Row Based Editing Plugin though, this rule gets enhanced with the fact
+      that only the edited rows are allowed to be pasted into, while still respecting the original rule.
+    </li>
+  </ul>
+</div>
+
+<section>
+  <div class="row mb-4">
+      <div class="col-sm-8">
+        <button
+          class="btn btn-outline-secondary btn-sm"
+          data-test="single-multi-toggle"
+          (click)="toggleSingleMultiRowEdit()"
+        >
+          Toggle Single/Multi Row Edit
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" data-test="toggle-language" (click)="switchLanguage()">
+        <i class="fa fa-language"></i>
+        Switch Language
+      </button>
+      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+      </div>
+
+      <div class="col-sm-4" [class]="statusClass">
+        <strong>Status: </strong>
+        <span data-test="fetch-result" [textContent]="fetchResult"></span>
+      </div>
+  </div>
+</section>
+
+<angular-slickgrid gridId="grid35"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)">
+</angular-slickgrid>

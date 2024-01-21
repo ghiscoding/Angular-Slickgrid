@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+$slick-button-border-color: #ababab !default;
 
 .btn-group-xs > .btn, .btn-xs {
   padding  : 1px 5px;
@@ -63,4 +64,16 @@
   position: relative;
   top: 6px;
   margin-left: 5px;
+}
+
+.button-style {
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #{$slick-button-border-color};
+  border-radius: 2px;
+  justify-content: center;
+  text-align: center;
+  &:hover {
+    border-color: darken($slick-button-border-color, 10%);
+  }
 }
