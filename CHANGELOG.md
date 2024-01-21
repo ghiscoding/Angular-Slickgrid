@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.2.0...v7.3.0) (2024-01-21)
+
+
+### Features
+
+* **plugin:** new Row Based Editing ([1f768a5](https://github.com/ghiscoding/angular-slickgrid/commit/1f768a575d011fb5ba487988567e6b959a4bdfcd))
+
+
+### Performance Improvements
+
+* **resizer:** `autosizeColumns` is called too many times on page load ([591c0c7](https://github.com/ghiscoding/angular-slickgrid/commit/591c0c74572650b2f0f4c4bb68ed5338e2f63a7d))
+
 # [7.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.1.0...v7.2.0) (2023-12-30)
 
 
