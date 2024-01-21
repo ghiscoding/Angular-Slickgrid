@@ -21,7 +21,7 @@ Default compiled `css` (if you use the plain Bootstrap Theme CSS, you could simp
 ```
 
 #### SASS (`.scss`)
-You could also compile the SASS files with your own customization, for that simply take any of the [_variables.scss](/ghiscoding/angular-slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/_variables.scss) (without the `!default` flag) variable file and make sure to import the Bootstrap Theme afterward. For example, you could modify your `style.scss` with the following changes:
+You could also compile the SASS files with your own customization, for that simply take any of the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) (without the `!default` flag) variable file and make sure to import the Bootstrap Theme afterward. For example, you could modify your `style.scss` with the following changes:
 
 ```scss
 /* for example, let's change the mouse hover color */

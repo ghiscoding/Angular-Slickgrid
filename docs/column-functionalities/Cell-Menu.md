@@ -7,7 +7,7 @@
 - [UI Sample](#ui-sample)
 
 ### Demo
-[Demo](https://ghiscoding.github.io/Angular-Slickgrid/#/context) / [Demo Component](/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-contextmenu.component.ts)
+[Demo](https://ghiscoding.github.io/Angular-Slickgrid/#/context) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-contextmenu.component.ts)
 
 ### Description
 A Cell Menu, most often used as an Action Menu and is more oriented on a row action (e.g. delete current row), it could be defined on 1 or more columns (defined in a column definition) and is triggered by a cell click or touch. The menu can show a list of Commands (to execute an action) and/or Options (to change the value of a field). Also note that the Commands list is following the same structure used in the [Context Menu](../grid-functionalities/Context-Menu.md), [Header Menu](../grid-functionalities/Header-Menu-&-Header-Buttons.md) & [Grid Menu](../grid-functionalities/Grid-Menu.md). The Cell Menu is very similar to the [Context Menu](../grid-functionalities/Context-Menu.md), both were create as SlickGrid plugins during the same period, their main difference is that they get triggered differently (cell click vs mouse right+click) and they serve different purposes. The Cell Menu is more oriented on a row action (e.g. delete current row) while the Context Menu is all about actions for the entire grid (e.g. export to Excel).

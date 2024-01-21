@@ -4,7 +4,7 @@
 - [Resize by Content - Column Options](#resize-by-content---column-options)
 
 ### Demo
-[Demo](https://ghiscoding.github.io/Angular-Slickgrid/#/resize-by-content) / [Demo Component](/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-resize-by-content.component.ts)
+[Demo](https://ghiscoding.github.io/Angular-Slickgrid/#/resize-by-content) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-resize-by-content.component.ts)
 
 ### Description
 The default of Slickgrid-Universal is to fit all columns in the container viewport and for the most part that is a good resize to use and it's fast. However if your grid has a lot of columns then doing a fit to viewport is not exactly great, you have lot of columns a few of these columns will become too small (we strongly suggest adding `minWidth` to every column) and you'll start seeing ellipsis to a few of these columns.
