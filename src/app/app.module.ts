@@ -11,6 +11,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.component';
+import { CustomButtonFormatterComponent } from './examples/custom-buttonFormatter.component';
+import { CustomFooterComponent, GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
@@ -61,8 +63,6 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
 
 // load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
 import 'flatpickr/dist/l10n/fr';
-import { CustomButtonFormatterComponent } from './examples/custom-buttonFormatter.component';
-import { CustomFooterComponent, GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 
 // AoT requires an exported function for factories
 export function createTranslateLoader(http: HttpClient) {
@@ -91,8 +91,9 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
 @NgModule({
   declarations: [
     AppComponent,
-    CustomTitleFormatterComponent,
     CustomButtonFormatterComponent,
+    CustomFooterComponent,
+    CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,
     GridAddItemComponent,
@@ -113,6 +114,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridGraphqlWithoutPaginationComponent,
     GridGroupingComponent,
     GridHeaderButtonComponent,
+    GridHeaderFooterComponent,
     GridHeaderMenuComponent,
     GridLocalizationComponent,
     GridMenuComponent,
@@ -134,8 +136,6 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     SwtCommonGridPaginationComponent,
     SwtCommonGridComponent,
     HomeComponent,
-    GridHeaderFooterComponent,
-    CustomFooterComponent
   ],
   imports: [
     AppRoutingRoutingModule,

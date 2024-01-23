@@ -17,6 +17,7 @@ import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridGraphqlWithoutPaginationComponent } from './examples/grid-graphql-nopage.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
+import { GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
@@ -33,7 +34,6 @@ import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
-import { GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -62,6 +62,7 @@ const routes: Routes = [
   { path: 'gridtabs', component: GridTabsComponent },
   { path: 'draggrouping', component: GridDraggableGroupingComponent },
   { path: 'grouping', component: GridGroupingComponent },
+  { path: 'header-footer', component: GridHeaderFooterComponent },
   { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
@@ -75,7 +76,6 @@ const routes: Routes = [
   { path: 'tree-data-parent-child', component: GridTreeDataParentChildComponent },
   { path: 'tree-data-hierarchical', component: GridTreeDataHierarchicalComponent },
   { path: 'swt', component: SwtCommonGridTestComponent },
-  { path: 'header-footer', component: GridHeaderFooterComponent },
   { path: '', redirectTo: '/trading', pathMatch: 'full' },
   { path: '**', redirectTo: '/trading', pathMatch: 'full' }
 ];
