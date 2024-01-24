@@ -1042,11 +1042,12 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const refreshSpy = jest.spyOn(component, 'refreshGridData');
 
         const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
-        jest.spyOn(mockDataView, 'getItems').mockReturnValue(mockData);
+        jest.spyOn(mockDataView, 'getItems').mockReturnValueOnce(mockData);
         component.gridOptions = {
           enablePagination: true,
           presets: { pagination: { pageSize: 2, pageNumber: expectedPageNumber } }
         };
+        component.paginationOptions = undefined;
         component.paginationOptions = { pageSize: 2, pageNumber: 2, pageSizes: [2, 10, 25, 50], totalItems: 100 };
 
         component.dataset = mockData;
@@ -1163,7 +1164,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.gridOptions.backendServiceApi!.internalPostProcess!({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).not.toHaveBeenCalled();
-        // expect(component.dataset).toEqual([]);
+        expect(component.dataset).toEqual([]);
       });
 
       it('should invoke "updateFilters" method with filters returned from "getColumnFilters" of the Filter Service when there is no Presets defined', () => {
@@ -1949,8 +1950,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(footerSpy).toHaveBeenCalledWith(expectation);
       });
 
-      it.skip('should have custom footer with metrics when the DataView "onSetItemsCalled" event is triggered', () => {
-        const invalidateSpy = jest.spyOn(mockGrid, 'invalidate');
+      it('should have custom footer with metrics when the DataView "onSetItemsCalled" event is triggered', () => {
         const expectation = {
           startTime: expect.toBeDate(),
           endTime: expect.toBeDate(),
@@ -1964,7 +1964,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const footerSpy = jest.spyOn(component.slickFooter!, 'metrics', 'set');
         mockDataView.onSetItemsCalled.notify({ idProperty: 'id', itemCount: 0 });
 
-        expect(invalidateSpy).toHaveBeenCalled();
         expect(footerSpy).toHaveBeenCalledWith(expectation);
         expect(component.metrics).toEqual(expectation);
       });
