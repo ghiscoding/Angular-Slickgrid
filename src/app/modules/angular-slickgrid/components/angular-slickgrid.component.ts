@@ -95,7 +95,7 @@ import { ContainerService } from '../services/container.service';
   ]
 })
 export class AngularSlickgridComponent<TData = any> implements AfterViewInit, OnDestroy {
-  protected _dataset?: any[] | null;
+  protected _dataset?: TData[] | null;
   protected _columnDefinitions!: Column[];
   protected _currentDatasetLength = 0;
   protected _eventHandler: SlickEventHandler = new SlickEventHandler();
@@ -358,7 +358,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     this._isGridInitialized = true;
 
     // recheck the empty warning message after grid is shown so that it works in every use case
-    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
+    if (this.gridOptions?.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
       const finalTotalCount = this.dataset.length;
       this.displayEmptyDataWarning(finalTotalCount < 1);
     }
@@ -789,7 +789,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     newColumnDefinitions = this.swapInternalEditorToSlickGridFactoryEditor(newColumnDefinitions);
 
     if (this.gridOptions.enableTranslate) {
-      this.extensionService.translateColumnHeaders(false, newColumnDefinitions);
+      this.extensionService.translateColumnHeaders(undefined, newColumnDefinitions);
     } else {
       this.extensionService.renderColumnHeaders(newColumnDefinitions, true);
     }
@@ -835,19 +835,15 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       // translate some of them on first load, then on each language change
       if (gridOptions.enableTranslate) {
         this.extensionService.translateAllExtensions();
-        this.translateColumnHeaderTitleKeys();
-        this.translateColumnGroupKeys();
       }
 
       this.subscriptions.push(
-        this.translate.onLangChange.subscribe(() => {
+        this.translate.onLangChange.subscribe(({ lang }) => {
           // publish event of the same name that Slickgrid-Universal uses on a language change event
           this._eventPubSubService.publish('onLanguageChange');
 
           if (gridOptions.enableTranslate) {
-            this.extensionService.translateAllExtensions();
-            this.translateColumnHeaderTitleKeys();
-            this.translateColumnGroupKeys();
+            this.extensionService.translateAllExtensions(lang);
             if (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping) {
               this.groupingService.translateGroupingAndColSpan();
             }
@@ -1405,16 +1401,6 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       }
       return { ...column, editor: column.editor?.model, internalColumnEditor: { ...column.editor } };
     });
-  }
-
-  protected translateColumnHeaderTitleKeys() {
-    // translate all columns (including hidden columns)
-    this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
-  }
-
-  protected translateColumnGroupKeys() {
-    // translate all column groups (including hidden columns)
-    this.extensionUtility.translateItems(this.sharedService.allColumns, 'columnGroupKey', 'columnGroup');
   }
 
   /**
