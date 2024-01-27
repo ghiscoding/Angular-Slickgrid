@@ -21,7 +21,7 @@ MIT
 
 @faker-js/faker
 MIT
-Faker - Copyright (c) 2022-2023
+Faker - Copyright (c) 2022-2024
 
 This software consists of voluntary contributions made by many individuals.
 For exact contribution history, see the revision history
