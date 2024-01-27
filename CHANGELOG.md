@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.3.0...v7.3.1) (2024-01-27)
+
+
+### Performance Improvements
+
+* decrease number of calls to translate all extensions only once ([21a5016](https://github.com/ghiscoding/angular-slickgrid/commit/21a501608359466d5aaf76392b5e392f3e357123))
+
 # [7.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.2.0...v7.3.0) (2024-01-21)
 
 
