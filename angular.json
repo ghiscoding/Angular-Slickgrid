@@ -112,11 +112,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular-slickgrid:build"
+            "buildTarget": "angular-slickgrid:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "angular-slickgrid:build:production"
+              "buildTarget": "angular-slickgrid:build:production"
             }
           }
         },
