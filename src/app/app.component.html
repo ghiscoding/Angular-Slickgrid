@@ -7,19 +7,22 @@
           aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <div class="github-button-container">
+    <a href="https://github.com/ghiscoding/angular-slickgrid">
+      <img src="https://img.shields.io/github/stars/ghiscoding/angular-slickgrid?style=social">
+    </a>
+  </div>
 
-  <div class="navbar-collapse collapse" id="navbarContent">
+  <div class="navbar-collapse collapse justify-content-end me-2" id="navbarContent">
     <ul class="navbar-nav mr-auto">
-      <li>
-        <span class="github-button-container">
-          <a href="https://github.com/ghiscoding/angular-slickgrid">
-            <img src="https://img.shields.io/github/stars/ghiscoding/angular-slickgrid?style=social">
-          </a>
-        </span>
-      </li>
       <li class="nav-item">
         <a class="nav-link" [routerLink]="['/home']">
-          <i class="fa fa-lg fa-home"></i> Home
+          Home
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://ghiscoding.gitbook.io/angular-slickgrid/" target="_blank">
+          Documentation
         </a>
       </li>
     </ul>
