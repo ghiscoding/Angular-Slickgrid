@@ -92,10 +92,6 @@ Slickgrid-Universal has **100%** Unit Test Coverage and all Slickgrid-React Exam
 
 ## Troubleshooting Section
 
-[Angular 12 with WebPack 5 - how to fix polyfill error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#angular-12-with-webpack-5---how-to-fix-polyfill-error)
-
-### `ngcc` Build Warnings (Angular >=8.0 && <16.0)
-[`ngcc` Build Warnings (Angular >=8.0 && <16.0)](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#ngcc-build-warnings-angular-80--160)
-
-#### `strictTemplates` error
-[`strictTemplates` error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#stricttemplates-error)
+- [Angular 12 with WebPack 5 - how to fix polyfill error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#angular-12-with-webpack-5---how-to-fix-polyfill-error)
+- [`ngcc` Build Warnings (Angular >=8.0 && <16.0)](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#ngcc-build-warnings-angular-80--160)
+- [`strictTemplates` error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#stricttemplates-error)
