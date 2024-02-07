@@ -4,7 +4,7 @@ import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionMode
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Observable, Subject } from 'rxjs';
-import * as DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 
 import { GridOption, RowDetailView } from '../models/index';
 import { AngularUtilService } from '../services/angularUtil.service';
