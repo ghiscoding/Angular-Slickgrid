@@ -16,6 +16,8 @@ With this new major version release, we can now say that the journey to moderniz
   - TypeScript builds are now targeting ES2021 (bumped from ES2018)
   - more CSP (Content Security Policy) safe
   - you can create custom Formatter with native HTML element (to be more CSP safe), HTML strings are still accepted
+  - migrate to [Excel-Builder-Vanilla](https://github.com/ghiscoding/excel-builder-vanilla) (since >=4.4.0)
+    - for CSP safe, you also need to add `worker-src 'self' blob:;`
 
 > **Note** for the full internal list of code changes applied in this Slickgrid-Universal release, you can take a look at the [Discussion - Roadmap to 4.0](https://github.com/ghiscoding/slickgrid-universal/discussions/1108)
 
@@ -46,7 +48,7 @@ Since we moved all the code into the Slickgrid-Universal project and is now writ
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "excel-builder-webpacker",
+-   "excel-builder-webpacker",
     "fetch-jsonp",
     "flatpickr",
 -   "slickgrid",
@@ -58,6 +60,7 @@ Since we moved all the code into the Slickgrid-Universal project and is now writ
 -    "node_modules/sortablejs/Sortable.min.js"
   ],
   // ...
+}
 ```
 
 ### Distribution folder
@@ -161,6 +164,27 @@ Some of the DomUtils Service function were renamed, if you use any of them then 
 - `getElementOffsetRelativeToParent` renamed to `getOffsetRelativeToParent`
 - `findFirstElementAttribute` renamed to `findFirstAttribute`
 - `htmlEncodedStringWithPadding` renamed to `htmlEncodeWithPadding`
+
+### Excel Export
+_requires version >=7.4.0_
+
+Migrate to a new [Excel-Builder-Vanilla](https://github.com/ghiscoding/excel-builder-vanilla) which is a fork of the `excel-builder.js` library. The new fork is all about modernizing Excel-Builder, it drops `Q`, `Lodash` and also replace `JSZip` to `fflate`.
+
+By migrating from `JSZip` to `fflate`, the users should remove any `JSZip` references (like `tsconfig.json`)
+
+```diff
+{
+  "compilerOptions": {
+-    "paths": {
+-      "jszip": [
+-        "node_modules/jszip/dist/jszip.min.js"
+-      ]
+-    }
+  }
+}
+```
+
+Also note that `fflate` could use Web Worker for performance reasons and by doing this you might have new CSP errors thrown. You simply need to add a CSP rule to avoid the error `worker-src 'self' blob:;`
 
 ## Formatters / CSP (Content Security Policy) Compliance
 ### Formatters Cleanup & Removals

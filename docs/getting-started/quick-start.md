@@ -40,18 +40,6 @@ Then modify your `angular.json` file with the following Styles and Scripts:
 ],
 ```
 
-#### if you use `@slickgrid-universal/excel-export` you need to update your `tsconfig.app.json`
-You need to change your `tsconfig.app.json` file to include `jszip` path (only required if you use the optional Slickgrid-Universal [Excel-Export](https://github.com/ghiscoding/slickgrid-universal/tree/master/packages/excel-export) package) by adding the following lines. If you forget to do this then your Angular Build will fail with a `jszip` error or `Sortable` error due to default exports that cannot be found. JSZip is used by the Excel Export to compress the data before downloading it and if you use it then the build seems to have problems finding the correct path of jszip unless we tell it where to find it.
-```js
-"compilerOptions": {
-    // ...
-    "allowSyntheticDefaultImports": true,
-    "paths": {
-      "jszip": ["../node_modules/jszip/dist/jszip.min.js"]
-    }
-  },
-```
-
 <a name="step3"></a>
 ### 3. CSS / SASS Styles
 Load the default Bootstrap theme style and/or customize it to your taste (either by using SASS or CSS variables)
@@ -222,10 +210,8 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "excel-builder-webpacker",
     "flatpickr",
     "moment-mini",
-    "slickgrid",
     "stream"
   ],
 }
@@ -258,10 +244,8 @@ This is no longer the case. Verify if you need this module and configure a polyf
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "excel-builder-webpacker",
     "fetch-jsonp",
     "flatpickr",
-    "slickgrid",
     "stream"
   ],
 ],

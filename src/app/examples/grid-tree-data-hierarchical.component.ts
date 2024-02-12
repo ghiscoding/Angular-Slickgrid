@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import {
+  addWhiteSpaces,
   AngularGridInstance,
   Aggregators,
   Column,
@@ -259,19 +260,22 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const idx = dataView.getIdxById(dataContext[identifierPropName]) as number;
     const prefix = this.getFileIcon(value);
+    const treeLevel = dataContext[treeLevelPropName];
+    const exportIndentationLeadingChar = '.';
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const spacer = `<span style="display:inline-block; width:${(15 * dataContext[treeLevelPropName])}px;"></span>`;
+    const spacer = `<span style="display:inline-block; width:${(15 * treeLevel)}px;"></span>`;
+    const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
       const folderPrefix = `<span class="mdi icon color-alt-warning ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></span>`;
       if (dataContext.__collapsed) {
-        return `${spacer} <span class="slick-group-toggle collapsed" level="${dataContext[treeLevelPropName]}"></span>${folderPrefix} ${prefix}&nbsp;${value}`;
+        return `${exportIndentationLeadingChar}${spacer}${indentSpacer} <span class="slick-group-toggle collapsed" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       } else {
-        return `${spacer} <span class="slick-group-toggle expanded" level="${dataContext[treeLevelPropName]}"></span>${folderPrefix} ${prefix}&nbsp;${value}`;
+        return `${exportIndentationLeadingChar}${spacer}${indentSpacer} <span class="slick-group-toggle expanded" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       }
     } else {
-      return `${spacer} <span class="slick-group-toggle" level="${dataContext[treeLevelPropName]}"></span>${prefix}&nbsp;${value}`;
+      return `${exportIndentationLeadingChar}${spacer}${indentSpacer} <span class="slick-group-toggle" level="${treeLevel}"></span>${prefix} ${value}`;
     }
   };
 
