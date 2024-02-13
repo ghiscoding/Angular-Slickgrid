@@ -40,7 +40,7 @@ If you use any of the Slickgrid-Universal extra dependencies then make sure to u
 ```
 
 ### `angular.json` config
-Since we moved all the code into the Slickgrid-Universal project and is now written in TypeScript, we can now say for certain that SlickGrid is no longer detected as CommonJS, we also no longer need SortableJS to be preloaded. So we can do the following changes to `angular.json` config
+Since we moved all the code into the Slickgrid-Universal project and it is now written in TypeScript, we can now say for certain that SlickGrid is no longer detected as CommonJS, we also no longer need SortableJS to be preloaded. So you can do the following changes to your `angular.json` config
 
 ```diff
 # angular.json
@@ -49,7 +49,6 @@ Since we moved all the code into the Slickgrid-Universal project and is now writ
     "autocompleter",
     "dompurify",
 -   "excel-builder-webpacker",
-    "fetch-jsonp",
     "flatpickr",
 -   "slickgrid",
     "stream"

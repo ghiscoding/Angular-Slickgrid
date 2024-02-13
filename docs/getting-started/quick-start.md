@@ -244,11 +244,10 @@ This is no longer the case. Verify if you need this module and configure a polyf
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "fetch-jsonp",
     "flatpickr",
     "stream"
   ],
-],
+},
 ```
 
 ... and that should cover it, now let's code!
