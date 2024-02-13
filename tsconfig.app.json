@@ -5,6 +5,11 @@
     "outDir": "../out-tsc/app",
     "baseUrl": "./"
   },
+  "angularCompilerOptions": {
+    "compilationMode": "full",
+    "preserveWhitespaces": true,
+    "strictMetadataEmit": true
+  },
   "files": [
     "src/main.ts"
   ],
