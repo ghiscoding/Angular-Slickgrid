@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.3.1...v7.4.0) (2024-02-13)
+
+
+### Bug Fixes
+
+* **build:** add compilation mode to fix npm publish ([3e4dc70](https://github.com/ghiscoding/angular-slickgrid/commit/3e4dc7084c4757930e51c7fe9909fb816fefafec))
+* change namespace imports to ESM default imports. Fixes Angular esbuild error on DomPurify with rowDetailView and no pre/post template [#1362](https://github.com/ghiscoding/angular-slickgrid/issues/1362) ([fac2b37](https://github.com/ghiscoding/angular-slickgrid/commit/fac2b37a179f0f601ec36608c5bc2454a5073d34))
+* **demo:** change trading demo full screen z-index lower than ms-select ([ae57fbe](https://github.com/ghiscoding/angular-slickgrid/commit/ae57fbeda1d07577f32df2716cb2c38ea346ca81))
+
+
+### Features
+
+* **ExcelExport:** migrate to Excel-Builder-Vanilla (ESM) ([823317b](https://github.com/ghiscoding/angular-slickgrid/commit/823317bf67d4b2bb05c9d986f893f36e95cc5c8b))
+
 ## [7.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.3.0...v7.3.1) (2024-01-27)
 
 
