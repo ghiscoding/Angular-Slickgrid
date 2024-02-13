@@ -34,7 +34,6 @@
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
-    "compilationMode": "partial",
     "preserveWhitespaces": true,
     "strictMetadataEmit": true
   }
