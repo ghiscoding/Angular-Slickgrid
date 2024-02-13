@@ -21,7 +21,6 @@
             "allowedCommonJsDependencies": [
               "autocompleter",
               "dompurify",
-              "excel-builder-webpacker",
               "fetch-jsonp",
               "flatpickr",
               "moment-mini",

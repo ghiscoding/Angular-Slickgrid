@@ -19,6 +19,16 @@ You can Export to Excel, it will create an Excel file with the `.xlsx` default e
 ### Demo
 [Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/localization) / [Demo Component](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-localization.component.ts)
 
+### CSP (Content Security Policy)
+Since we use the library `Excel-Builder-Vanilla`, which itself uses `fflate` as a dependency, that library uses Web Worker when it can which might throw a CSP error.
+
+The easiest way to fix this problem is to modify your CSP header by adding the rule `worker-src 'self' blob:;`
+
+```html
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; ...other rules...  worker-src 'self' blob:;" />
+```
+
 ### Grid Menu (hamburger menu)
 The Grid Menu already has the "Export to Excel" enabled by default, so you will see it automatically in your Grid Menu. You still have the options to show/hide from the Grid Menu if you wish
 - `hideExportExcelCommand` false by default, so it's optional
@@ -136,7 +146,7 @@ this.gridOptions = {
 ```
 
 ### Styling the Header Titles
-By default the header titles (first row) will be styled as Bold text, however you can choose to style them differently with custom styles as shown below. To find out what styling you can use, you can take a look [Web Archive - Excel Builder](http://web.archive.org/web/20160907052007/http://excelbuilderjs.com/cookbook/fontsAndColors.html) website. The code shown below is used in [Example 26](https://ghiscoding.github.io/Angular-Slickgrid/#/context) if you wish to see the result.
+By default the header titles (first row) will be styled as Bold text, however you can choose to style them differently with custom styles as shown below. To find out what styling you can use, you can take a look at Excel Builder-Vanilla [Documentation](https://ghiscoding.gitbook.io/excel-builder-vanilla/cookbook/fonts-and-colors) website. The code shown below is used in [Example 26](https://ghiscoding.github.io/Angular-Slickgrid/#/context) if you wish to see the result.
 
 ```ts
 this.gridOptions = {
@@ -150,7 +160,7 @@ this.gridOptions = {
 ```
 
 ### Provide a Custom Header Title
-You can optionally add a custom header title, you can see the UI Sample below, (that will be shown on first row of the Excel file) through the `customExcelHeader` callback method. We use the library `Excel-Builder` to create the export, however note that this library is no longer supported (but still the best) and the documentation site no longer exist but you can find all info on [Web Archive - Excel Builder](http://web.archive.org/web/20160907052007/http://excelbuilderjs.com/cookbook/fontsAndColors.html)
+You can optionally add a custom header title, you can see the UI Sample below, (that will be shown on the first row of the Excel file) through the `customExcelHeader` callback method. We use the library `Excel-Builder-Vanilla` to create the export. Visit their [Documentation](https://ghiscoding.gitbook.io/excel-builder-vanilla/) website for more info.
 
 The example below shows a title which uses a merged cell from "B1" to "D1" with a red bold color (pay attention to the color code, you need to add an extra "FF" in front of an html color code).
 #### ViewModel
@@ -163,8 +173,8 @@ export class MyExample {
       externalResources: [new ExcelExportService()],
       excelExportOptions: {
         // optionally pass a custom header to the Excel Sheet
-        // a lot of the info can be found on Web Archive of Excel-Builder
-        // http://web.archive.org/web/20160907052007/http://excelbuilderjs.com/cookbook/fontsAndColors.html
+        // a lot of the info can be found on Excel-Builder-Vanilla
+        // https://ghiscoding.gitbook.io/excel-builder-vanilla/cookbook/fonts-and-colors
         customExcelHeader: (workbook, sheet) => {
           const customTitle = this.translate.currentLang === 'fr' ? 'Titre qui est suffisament long pour être coupé' : 'My header that is long enough to wrap';
           const stylesheet = workbook.getStyleSheet();
