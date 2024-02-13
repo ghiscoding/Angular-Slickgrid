@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.4.0...v7.4.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* **build:** add compilation mode to fix npm publish ([278531b](https://github.com/ghiscoding/angular-slickgrid/commit/278531b9a4a7dfc4b7f4c22c0f58dcb75aa72524))
+* update to latest Slickgrid-Universal v4.4.1 ([0e35d1b](https://github.com/ghiscoding/angular-slickgrid/commit/0e35d1bddee39e8857bfb8ecfe29cf10f77f3414))
+
 # [7.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.3.1...v7.4.0) (2024-02-13)
 
 
