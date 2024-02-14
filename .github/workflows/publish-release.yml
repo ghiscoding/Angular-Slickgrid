@@ -31,7 +31,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ github.event.pull_request.merged != true && contains('["ghiscoding"]', github.actor) != true }}
-        name: Ensure current actor is allowed to run the workflow
+        name: Exit early when current actor is not allowed to push new release
         run: |
           echo "Error: Your GitHub username (${{ github.actor }}) is not on the allowed list of admins for this workflow"
           exit 1
