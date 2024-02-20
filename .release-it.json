@@ -5,7 +5,10 @@
   },
   "github": {
     "release": true,
-    "releaseName": "v${version}"
+    "releaseName": "v${version}",
+    "comments": {
+      "submit": true
+    }
   },
   "npm": {
     "publish": true,
