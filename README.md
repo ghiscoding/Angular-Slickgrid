@@ -11,7 +11,7 @@
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
 ### Brief introduction
-One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to the Angular world. SlickGrid beats most other datagrids in terms of features, customizability and performance (running smoothly with even a million rows). Angular-Slickgrid is a wrapper on top of SlickGrid and it requires [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) dependency, originally we used the `6pac/SlickGrid` fork but that was dropped in >=[v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3) since Slickgrid-Universal is now a standalone project. SlickGrid was also recently rewritten to be browser native (no more ~jQuery~ 🎉).
+One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to the Angular world. SlickGrid beats most other datagrids in terms of features, customizability and performance (running smoothly with even a million rows). Angular-Slickgrid is a wrapper on top of [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) (which is required), in the early beginning we used the `6pac/SlickGrid` fork but that was dropped in >=[v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3) since Slickgrid-Universal is now a standalone project. SlickGrid was also recently rewritten to be browser native (no more ~jQuery~ 🎉).
 
 ### License
 [MIT License](LICENSE)
