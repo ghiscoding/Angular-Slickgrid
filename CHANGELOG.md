@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.4.1...v7.5.0) (2024-03-05)
+
+
+### Bug Fixes
+
+* remove width style on grid container for CSP safe, fixes [#1368](https://github.com/ghiscoding/angular-slickgrid/issues/1368) ([81e5fe1](https://github.com/ghiscoding/angular-slickgrid/commit/81e5fe13eb6aee4a274832560c6eb8dccb08d197))
+* switch to `isomorphic-dompurify` for SSR support ([5b2f29d](https://github.com/ghiscoding/angular-slickgrid/commit/5b2f29d1f5703dcf0670de2d8b4b1d261ec8a983)), closes [/github.com/ghiscoding/Angular-Slickgrid/discussions/838#discussioncomment-8574215](https://github.com//github.com/ghiscoding/Angular-Slickgrid/discussions/838/issues/discussioncomment-8574215)
+
+
+### Features
+
+* add Dark Mode grid option ([91c2726](https://github.com/ghiscoding/angular-slickgrid/commit/91c2726281571180e012c2a3a4419abab76d4bae))
+
 ## [7.4.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.4.0...v7.4.1) (2024-02-13)
 
 
