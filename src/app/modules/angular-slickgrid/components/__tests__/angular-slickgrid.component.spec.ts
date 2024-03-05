@@ -579,7 +579,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
         const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
 
-        component.gridOptions = { enableTranslate: true };
+        component.gridOptions = { enableTranslate: true, darkMode: true };
         component.ngAfterViewInit();
         component.initialization(slickEventHandler);
         component.columnDefinitions = mockColDefs;
