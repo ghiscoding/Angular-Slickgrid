@@ -1,6 +1,6 @@
 ## Dark Mode
 
-When enabled (defaults to false), it will show the grid in Dark Mode by adding `slick-dark-mode` CSS class to the grid. Note that it is defined as a grid option because the grid uses a few elements that could be appended to the DOM `body` (e.g. ColumnPicker, GridMenu, LongTextEditor, CompositeEditorModal, ...) and when Dark Mode is enabled, it needs to advise all of these features that we are using Dark Mode (or Light Mode by default). So whenever any of these features are in play, and before it is appended to the `body`, it will add a `slick-dark-mode` (or `ms-dark-mode` for ms-select) CSS class to that element to let it know that we are in Dark Mode.
+When enabled (defaults to false), it will show the grid in Dark Mode by adding `slick-dark-mode` CSS class to the grid. Note that it is defined as a grid option because the grid uses a few elements that could be appended to the DOM `body` (e.g. ColumnPicker, GridMenu, LongTextEditor, CompositeEditorModal, ...) and when Dark Mode is enabled, it needs to inform all of these features that we are using Dark Mode (or Light Mode by default). So whenever any of these features are in play, and before it is appended to the `body`, it will add a `slick-dark-mode` (or `ms-dark-mode` for ms-select) CSS class to that element to let it know that we are in Dark Mode.
 
 
 ### Toggle Light/Dark Mode
@@ -63,3 +63,9 @@ this.compositeEditorInstance?.openDetails({
   onRendered: (modalElm) => modalElm.dataset.bsTheme = 'dark',
 });
 ```
+
+### Tweaking Some Colors
+
+The Dark Mode Theme was created by setting a few CSS variables, in some cases you might need to tweak some of these variables. Take a look at the Slickgrid-Universal [CSS variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables.scss#L976-L985) to see which variables were reassigned. Also note that if you're using other Themes like Material or Salesforce, then there's also other variables that are set (see [Material variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables-theme-material.scss#L159-L189) or [Salesforce variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables-theme-salesforce.scss#L202-L219))
+
+> **Note** currently the icon color is set only once for **both** the Light & Dark Mode, and for that reason the color is set to a light gray. That will change in the future but that will require a breaking change (major version) and so for a temporary solution a lighter gray color is used.
