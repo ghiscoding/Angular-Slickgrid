@@ -11,19 +11,32 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <h3>Grid 1</h3>
-  <angular-slickgrid gridId="grid1"
-                     [columnDefinitions]="columnDefinitions1"
-                     [gridOptions]="gridOptions1"
-                     [dataset]="dataset1">
-  </angular-slickgrid>
+  <h3>
+    <div class="column">
+      <span class="mr-3">Grid 1</span>
+      <button class="btn btn-outline-secondary btn-sm ms-2" (click)="toggleDarkModeGrid1()" data-test="toggle-dark-mode">
+        <span>Toggle Dark Mode</span>
+      </button>
+    </div>
+  </h3>
+
+  <div class="grid-container1">
+    <angular-slickgrid gridId="grid1"
+                       [columnDefinitions]="columnDefinitions1"
+                       [gridOptions]="gridOptions1"
+                       [dataset]="dataset1"
+                       (onAngularGridCreated)="angularGridReady1($event.detail)">
+    </angular-slickgrid>
+  </div>
 
   <hr />
 
   <h3>Grid 2 <small>(with local Pagination)</small></h3>
-  <angular-slickgrid gridId="grid2"
-                     [columnDefinitions]="columnDefinitions2"
-                     [gridOptions]="gridOptions2"
-                     [dataset]="dataset2">
-  </angular-slickgrid>
+  <div class="grid-container">
+    <angular-slickgrid gridId="grid2"
+                       [columnDefinitions]="columnDefinitions2"
+                       [gridOptions]="gridOptions2"
+                       [dataset]="dataset2">
+    </angular-slickgrid>
+  </div>
 </div>

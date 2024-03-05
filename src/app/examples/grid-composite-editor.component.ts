@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
@@ -36,7 +36,7 @@ const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
  * @returns {boolean} isEditable
  */
 function checkItemIsEditable(dataContext: any, columnDef: Column, grid: SlickGrid) {
-  const gridOptions = grid && grid.getOptions && grid.getOptions();
+  const gridOptions = grid?.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;
   let isEditable = !!(isGridEditable && hasEditor);
@@ -83,7 +83,8 @@ const myCustomTitleValidator = (value: any, args: any) => {
   styleUrls: ['./grid-composite-editor.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GridCompositeEditorComponent implements OnInit {
+export class GridCompositeEditorComponent implements OnDestroy, OnInit {
+  private _darkModeGrid = false;
   title = 'Example 30: Composite Editor Modal';
   subTitle = `Composite Editor allows you to Create, Clone, Edit, Mass Update & Mass Selection Changes inside a nice Modal Window.
   <br>The modal is simply populated by looping through your column definition list and also uses a lot of the same logic as inline editing (see <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/composite-editor-modal" target="_blank">Composite Editor - Wiki</a>.)`;
@@ -120,6 +121,11 @@ export class GridCompositeEditorComponent implements OnInit {
 
     // mock a dataset
     this.dataset = this.loadData(NB_ITEMS);
+  }
+
+  ngOnDestroy() {
+    document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+    document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
   }
 
   prepareGrid() {
@@ -378,6 +384,7 @@ export class GridCompositeEditorComponent implements OnInit {
         container: '#demo-container',
         rightPadding: 10
       },
+      darkMode: this._darkModeGrid,
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       showCustomFooter: true,
@@ -615,6 +622,11 @@ export class GridCompositeEditorComponent implements OnInit {
       resetFormButtonIconCssClass: 'fa fa-undo',
       onClose: () => Promise.resolve(confirm('You have unsaved changes, are you sure you want to close this window?')),
       onError: (error) => alert(error.message),
+      onRendered: (modalElm) => {
+        // Bootstrap requires extra attribute when toggling Dark Mode (data-bs-theme="dark")
+        // we need to manually add this attribute  ourselve before opening the Composite Editor Modal
+        modalElm.dataset.bsTheme = this._darkModeGrid ? 'dark' : 'light';
+      },
       onSave: (formValues, _selection, dataContext) => {
         const serverResponseDelay = 50;
 
@@ -748,6 +760,18 @@ export class GridCompositeEditorComponent implements OnInit {
     }
     this.angularGrid.slickGrid.invalidate(); // re-render the grid only after every cells got rolled back
     this.editQueue = [];
+  }
+
+  toggleDarkModeGrid() {
+    this._darkModeGrid = !this._darkModeGrid;
+    if (this._darkModeGrid) {
+      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
+    } else {
+      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+    }
+    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkModeGrid });
   }
 
   mockProducts() {

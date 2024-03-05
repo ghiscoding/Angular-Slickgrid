@@ -1,19 +1,23 @@
 $slick-button-border-color: #ababab !default;
 
 .editable-field {
+  // box-shadow: inset 0 0 0 1px lightblue !important;
   background-color: rgba(227, 240, 251, 0.569) !important;
+}
+.slick-dark-mode .editable-field {
+  background-color: rgb(105 123 145 / 57%) !important
 }
 .unsaved-editable-field {
   background-color: #fbfdd1 !important;
 }
-.button-style {
-  cursor: pointer;
-  background-color: white;
-  border: 1px solid #{$slick-button-border-color};
-  border-radius: 2px;
-  justify-content: center;
-  text-align: center;
-  &:hover {
-    border-color: darken($slick-button-border-color, 10%);
-  }
+.slick-dark-mode .unsaved-editable-field {
+  background-color: rgba(255, 183, 50, 0.8) !important;
+  color: white;
+}
+
+.slick-dark-mode {
+  --bs-btn-color: #bebebe;
+}
+.panel-wm {
+  width: calc(100vw - 12px);
 }
