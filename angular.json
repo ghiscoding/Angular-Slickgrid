@@ -20,9 +20,9 @@
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "autocompleter",
-              "dompurify",
               "fetch-jsonp",
               "flatpickr",
+              "isomorphic-dompurify",
               "moment-mini",
               "stream"
             ],
