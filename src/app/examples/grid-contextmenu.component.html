@@ -1,6 +1,10 @@
 <div class="container-fluid">
   <h2>
     {{title}}
+    <button class="btn btn-outline-secondary btn-sm ms-3" (click)="toggleDarkModeGrid()"
+          data-test="toggle-dark-mode">
+      <span>Toggle Dark Mode</span>
+    </button>
     <span class="float-end">
       <a style="font-size: 18px"
          target="_blank"

@@ -90,6 +90,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       </ol>
     </ul>`;
 
+  private _darkModeGrid = false;
   private subscriptions: Subscription[] = [];
   angularGrid!: AngularGridInstance;
   columnDefinitions!: Column[];
@@ -124,6 +125,8 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // also unsubscribe all Angular Subscriptions
     unsubscribeAllObservables(this.subscriptions);
+    document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+    document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
   }
 
   prepareGrid() {
@@ -284,6 +287,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         container: '#demo-container',
         rightPadding: 10
       },
+      darkMode: this._darkModeGrid,
       enableCellNavigation: true,
       enableFiltering: true,
       enableSorting: true,
@@ -541,5 +545,17 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         this.selectedLanguage = nextLanguage;
       })
     );
+  }
+
+  toggleDarkModeGrid() {
+    this._darkModeGrid = !this._darkModeGrid;
+    if (this._darkModeGrid) {
+      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
+    } else {
+      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+    }
+    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkModeGrid });
   }
 }

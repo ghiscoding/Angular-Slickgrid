@@ -1,3 +1,10 @@
+@import '@slickgrid-universal/common/dist/styles/sass/variables';
+
+// :root {
+//   --slick-button-style-bg-color: #fff;
+//   --slick-button-border-color: #c7c7c7;
+// }
+
 /* You can add global styles to this file, and also import other style files */
 $slick-button-border-color: #ababab !default;
 
@@ -20,9 +27,6 @@ $slick-button-border-color: #ababab !default;
     border-right: 1px solid #d0d0d0;
     overflow-y: auto;
     padding: 10px;
-
-    /* the height is 100% minus the 2 navbars */
-    height: calc(100vh - 56px);
     li {
       width: 100%;
     }
@@ -66,14 +70,53 @@ $slick-button-border-color: #ababab !default;
   margin-left: 5px;
 }
 
+.slick-dark-mode {
+  --slick-button-style-bg-color: #212121;
+  --slick-button-border-color: #626262;
+}
 .button-style {
   cursor: pointer;
-  background-color: white;
-  border: 1px solid #{$slick-button-border-color};
+  background-color: var(--slick-button-style-bg-color, $slick-button-style-bg-color);
+  border: 1px solid #{var(--slick-button-border-color, $slick-button-border-color)};
   border-radius: 2px;
   justify-content: center;
   text-align: center;
   &:hover {
     border-color: darken($slick-button-border-color, 10%);
   }
+}
+
+.panel-wm-content {
+  background-color: #fff;
+  /* the height is 100% minus the 2 navbars */
+  height: calc(100vh - 56px);
+
+  h3 {
+    color: #333;
+  }
+  .subtitle {
+    color: #727272;
+  }
+}
+.panel-wm-content.dark-mode {
+  background-color: #212529;
+  color: #dddddd;
+  h3 {
+    color: #dddddd;
+  }
+  .subtitle {
+    color: #cbcbcb;
+  }
+  .btn-outline-secondary {
+    color: #dfdfdf;
+  }
+}
+
+.ms-dark-mode,
+.ms-drop.ms-dark-mode,
+.slick-dark-mode .ms-dark-mode,
+.slick-dark-mode {
+  --slick-checkbox-selector-unchecked-color: #0298e3;
+  --slick-column-picker-checkbox-color: #0298e3;
+  --slick-pagination-icon-color: #0298e3;
 }

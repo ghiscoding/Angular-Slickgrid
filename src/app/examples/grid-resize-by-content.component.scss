@@ -6,14 +6,3 @@ $slick-button-border-color: #ababab !default;
 .unsaved-editable-field {
   background-color: #fbfdd1 !important;
 }
-.button-style {
-  cursor: pointer;
-  background-color: white;
-  border: 1px solid #{$slick-button-border-color};
-  border-radius: 2px;
-  justify-content: center;
-  text-align: center;
-  &:hover {
-    border-color: darken($slick-button-border-color, 10%);
-  }
-}

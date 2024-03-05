@@ -98,6 +98,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   protected _dataset?: TData[] | null;
   protected _columnDefinitions!: Column[];
   protected _currentDatasetLength = 0;
+  protected _darkMode = false;
   protected _eventHandler: SlickEventHandler = new SlickEventHandler();
   protected _eventPubSubService!: EventPubSubService;
   protected _angularGridInstances: AngularGridInstance | undefined;
@@ -361,6 +362,11 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (this.gridOptions?.enableEmptyDataWarningMessage && Array.isArray(this.dataset)) {
       const finalTotalCount = this.dataset.length;
       this.displayEmptyDataWarning(finalTotalCount < 1);
+    }
+
+    // add dark mode CSS class when enabled
+    if (this.gridOptions.darkMode) {
+      this.setDarkMode(true);
     }
   }
 
@@ -779,6 +785,14 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     return paginationOptions;
   }
 
+  setDarkMode(dark = false) {
+    if (dark) {
+      this.sharedService.gridContainerElement?.classList.add('slick-dark-mode');
+    } else {
+      this.sharedService.gridContainerElement?.classList.remove('slick-dark-mode');
+    }
+  }
+
   /**
    * Dynamically change or update the column definitions list.
    * We will re-render the grid so that the new header and data shows up correctly.
@@ -893,6 +907,13 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
         this._eventHandler.subscribe(grid.onColumnsReordered, (_e, args) => {
           this.sharedService.hasColumnsReordered = true;
           this.sharedService.visibleColumns = args.impactedColumns;
+        });
+
+        this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
+          // add/remove dark mode CSS class when enabled
+          if (args.optionsBefore.darkMode !== args.optionsAfter.darkMode && this.gridContainerElement) {
+            this.setDarkMode(args.optionsAfter.darkMode);
+          }
         });
 
         // load any presets if any (after dataset is initialized)
