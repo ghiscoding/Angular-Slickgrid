@@ -256,6 +256,7 @@ const mockGrid = {
   onClick: new MockSlickEvent(),
   onClicked: new MockSlickEvent(),
   onColumnsReordered: new MockSlickEvent(),
+  onSetOptions: new MockSlickEvent(),
   onRendered: jest.fn(),
   onScroll: jest.fn(),
   onSelectedRowsChanged: new MockSlickEvent(),
@@ -467,6 +468,24 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     expect(component.eventHandler).toEqual(slickEventHandler);
     expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
     expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
+  });
+
+  it('should change Dark Mode by using "setOptions" when triggered with "onSetOptions" event', () => {
+    component.gridOptions = { darkMode: false };
+    component.initialization(slickEventHandler);
+    mockGrid.onSetOptions.notify({ optionsBefore: { darkMode: false }, optionsAfter: { darkMode: true }, grid: mockGrid });
+
+    expect(component.eventHandler).toEqual(slickEventHandler);
+    expect(divContainer.classList.contains('slick-dark-mode')).toBeTruthy();
+  });
+
+  it('should change back to Light Mode by using "setOptions" when triggered with "onSetOptions" event', () => {
+    component.gridOptions = { darkMode: true };
+    component.initialization(slickEventHandler);
+    mockGrid.onSetOptions.notify({ optionsBefore: { darkMode: true }, optionsAfter: { darkMode: false }, grid: mockGrid });
+
+    expect(component.eventHandler).toEqual(slickEventHandler);
+    expect(divContainer.classList.contains('slick-dark-mode')).toBeFalsy();
   });
 
   it('should create a grid and expect multiple event published', () => {

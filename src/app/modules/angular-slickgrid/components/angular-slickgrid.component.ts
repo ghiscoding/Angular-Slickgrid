@@ -787,9 +787,9 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   setDarkMode(dark = false) {
     if (dark) {
-      this.gridContainerElement?.classList.add('slick-dark-mode');
+      this.sharedService.gridContainerElement?.classList.add('slick-dark-mode');
     } else {
-      this.gridContainerElement?.classList.remove('slick-dark-mode');
+      this.sharedService.gridContainerElement?.classList.remove('slick-dark-mode');
     }
   }
 

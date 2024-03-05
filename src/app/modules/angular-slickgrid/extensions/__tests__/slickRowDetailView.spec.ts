@@ -575,7 +575,7 @@ describe('SlickRowDetailView', () => {
 
         plugin.init(gridStub);
         plugin.onAsyncResponse = new SlickEvent();
-        plugin.onAsyncResponse.subscribe((_e: Event, response: any) => {
+        plugin.onAsyncResponse.subscribe((_e: any, response: any) => {
           expect(response).toEqual(expect.objectContaining({ item: mockItem }));
           done();
         });
@@ -590,7 +590,7 @@ describe('SlickRowDetailView', () => {
 
         plugin.init(gridStub);
         plugin.onAsyncResponse = new SlickEvent();
-        plugin.onAsyncResponse.subscribe((_e: Event, response: any) => {
+        plugin.onAsyncResponse.subscribe((_e: any, response: any) => {
           expect(response).toEqual(expect.objectContaining({ item: mockItem }));
           done();
         });
