@@ -64,6 +64,35 @@ this.compositeEditorInstance?.openDetails({
 });
 ```
 
+### Grid Menu
+By default there is no command for toggling the Dark Mode from the Grid Menu, however you can show the command at any time via the following settings:
+
+```ts
+export class MyDemo {
+  isDarkModeEnabled = false;
+
+  defineGrid() {
+    this.gridOptions = {
+      darkMode: this.isDarkModeEnabled,
+      gridMenu: {
+        hideToggleDarkModeCommand: false, // hidden by default
+
+        // you can optionally add extra command to toggle your own page styling as well
+        onCommand: (_, args) => {
+          // ...
+        },
+
+        // you can also change the icon and/or command name
+        iconToggleDarkModeCommand: 'fa fa-moon-o',
+        commandLabels: {
+          toggleDarkModeCommand: 'Toggle Dark Mode',
+        },
+      }
+    };
+  }
+}
+```
+
 ### Tweaking Some Colors
 
 The Dark Mode Theme was created by setting a few CSS variables, in some cases you might need to tweak some of these variables. Take a look at the Slickgrid-Universal [CSS variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables.scss#L976-L985) to see which variables were reassigned. Also note that if you're using other Themes like Material or Salesforce, then there's also other variables that are set (see [Material variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables-theme-material.scss#L159-L189) or [Salesforce variables](https://github.com/ghiscoding/slickgrid-universal/blob/670946dcedd330a70d2e88127a0042474e7a5348/packages/common/src/styles/_variables-theme-salesforce.scss#L202-L219))
