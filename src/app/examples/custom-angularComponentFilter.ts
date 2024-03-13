@@ -63,8 +63,8 @@ export class CustomAngularComponentFilter implements Filter {
 
     if (!this.columnFilter || !this.columnFilter.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
       throw new Error(`[Angular-Slickgrid] For Filter with Angular Component to work properly, you need to provide the "AngularUtilService" via the Filter "params" OR the Grid Options "params"
-      Example: this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomAngularComponentFilter, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
-      OR this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomAngularComponentFilter, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
+      Example: this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomFilter, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
+      OR this.columnDefs = [{ id: 'title', field: 'title', filter: { model: CustomFilter, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
 
     if (this.columnFilter?.params.component) {
