@@ -239,8 +239,8 @@ this.columnDefinitions = [
      id: 'description', name: 'Description', field: 'description',
      filter: {
 -       type: FilterType.custom,
--       customFilter: new CustomInputFilter()
-+       model: new CustomInputFilter() // create a new instance to make each Filter independent from each other
+-       customFilter: CustomInputFilter
++       model: CustomInputFilter // create a new instance to make each Filter independent from each other
      }
    },
    {
