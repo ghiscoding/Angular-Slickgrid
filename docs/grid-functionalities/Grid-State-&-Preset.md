@@ -202,21 +202,19 @@ export class ExampleComponent implements OnInit, OnDestroy {
 ```
 
 ## How to Load Grid with certain Columns Preset (example hide certain Column(s) on load)
-You can show/hide or even change column position all via the `presets`, yes `presets` is that powerful. All you need is to pass all Columns that you want to show as part of the `columns` property of `presets`. Typically you already have the entire columns definition since you just defined it, so you can re-use that and just use `map` to loop through and populate the `columns` according to the structure needed (see [preset structure](#structure)). What you have to know is that whatever array you pass will drive what the user will see and at which order the columns will show (basically the array order does matter). If a Columns is omitted from that array, then it will become a hidden column (you can still show it through Grid Menu or Column Picker).
+You can show/hide or even change a column position via the `presets`, yes `presets` is that powerful. All you need to do is to pass all Columns that you want to show as part of the `columns` property of `presets`. Typically you already have the entire columns definition since you just defined it, so you can loop through it and just use `map` to list the `columns` according to the structure needed (see [preset structure](Grid-State-&-Preset#structure.md)). What you have to know is that whatever array you provide to `presets`, that will equal to what the user will see and also in which order the columns will show (the array order does matter in this case). If a Columns is omitted from that array, then it will be considered to be a hidden column (you can still show it through Grid Menu and/or Column Picker).
 
 So let say that we want to hide the last Column on page load, we can just find the column by it's `id` that you want to hide and pass the new column definition to the `presets` (again make sure to follow the correct preset structure).
 
-##### Component
+##### View
 ```ts
 this.columnDefinitions = [
-  // your definition
+  // initial column definitions
 ];
 
-// for example, let's hide last column, we can just use `pop()` last column
-// and use `map()` to only pull required field for presets to work
-const mappedColumnDefinitions = this.columnDefinitions.map((col) => {
-  return { columnId: col.id, width: col.width };
-});
+// for example, let's hide last column, we can just use `pop()` to ommit last column
+// and use `map()` to pull only the required field for presets to work
+const mappedColumnDefinitions = this.columnDefinitions.map(col => ({ columnId: col.id, width: col.width }));
 mappedColumnDefinitions.pop();
 
 // then pass it to the presets
@@ -228,7 +226,8 @@ this.gridOptions = {
 ```
 This would be the easiest way to do it.
 
-As pointed out earlier, the `presets` requires a specific structure where the `columns` is the list of columns to show/hide with their possible widths and also the position in the array is very important as it defines the position shown in the UI
+As pointed out earlier, the `presets` requires a specific structure where the `columns` is the list of columns to show/hide with their possible widths. Also worth mentioning again that the position in the array is very important as it defines the position shown in the UI.
+
 ```ts
 this.gridOptions = {
       enableFiltering: true,
