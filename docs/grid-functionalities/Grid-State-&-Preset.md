@@ -91,6 +91,9 @@ export interface GridState {
     pageNumber: number;
     pageSize: number;
   };
+  pinning?: CurrentPinning;
+  rowSelection?: CurrentRowSelection | null;
+  treeData?: Partial<TreeToggleStateChange> | null;
 }
 ```
 
