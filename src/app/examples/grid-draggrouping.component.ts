@@ -7,6 +7,7 @@ import {
   Aggregators,
   Column,
   DelimiterType,
+  Editors,
   FieldType,
   FileType,
   Filters,
@@ -93,6 +94,14 @@ export class GridDraggableGroupingComponent implements OnInit {
         width: 70,
         sortable: true,
         filterable: true,
+        editor: {
+          model: Editors.float,
+          // required: true,
+          decimal: 2,
+          valueStep: 1,
+          maxValue: 10000,
+          alwaysSaveOnEnterKey: true,
+        },
         filter: { model: Filters.slider, operator: '>=' },
         type: FieldType.number,
         groupTotalsFormatter: GroupTotalFormatters.sumTotals,
@@ -103,6 +112,7 @@ export class GridDraggableGroupingComponent implements OnInit {
             return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
           aggregators: [
+            new Aggregators.Sum('duration'),
             new Aggregators.Sum('cost')
           ],
           aggregateCollapsed: false,
@@ -202,6 +212,7 @@ export class GridDraggableGroupingComponent implements OnInit {
           getter: 'effortDriven',
           formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span style="color:green">(${g.count} items)</span>`,
           aggregators: [
+            new Aggregators.Sum('duration'),
             new Aggregators.Sum('cost')
           ],
           collapsed: false
@@ -215,6 +226,10 @@ export class GridDraggableGroupingComponent implements OnInit {
         rightPadding: 10
       },
       enableDraggableGrouping: true,
+      autoEdit: true, // true single click (false for double-click)
+      autoCommitEdit: true,
+      editable: true,
+      enableCellNavigation: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 40,
@@ -366,6 +381,11 @@ export class GridDraggableGroupingComponent implements OnInit {
     } else if (groups.length === 0 && caller === 'remove-group') {
       this.clearGroupingSelects();
     }
+  }
+
+  onCellChanged() {
+    // when user changes a cell, we need to advise the DataView for the grouping to update its totals
+    this.angularGrid.dataView?.refresh();
   }
 
   showPreHeader() {
