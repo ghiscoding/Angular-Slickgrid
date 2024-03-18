@@ -206,7 +206,6 @@ You can show/hide or even change a column position via the `presets`, yes `prese
 
 So let say that we want to hide the last Column on page load, we can just find the column by it's `id` that you want to hide and pass the new column definition to the `presets` (again make sure to follow the correct preset structure).
 
-##### View
 ```ts
 this.columnDefinitions = [
   // initial column definitions
