@@ -21,7 +21,6 @@ import {
   BackendServiceApi,
   BackendServiceOption,
   Column,
-  ColumnEditor,
   DataViewOption,
   EventSubscription,
   ExternalResource,
@@ -1107,19 +1106,23 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
   protected loadEditorCollectionAsync(column: Column) {
-    const collectionAsync = column && column.editor && (column.editor as ColumnEditor).collectionAsync;
-    if (collectionAsync instanceof Observable) {
-      this.subscriptions.push(
-        collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
-      );
-    } else if (collectionAsync instanceof Promise) {
-      // wait for the "collectionAsync", once resolved we will save it into the "collection"
-      // the collectionAsync can be of 3 types HttpClient, HttpFetch or a Promise
-      collectionAsync.then((response: any | any[]) => {
-        if (Array.isArray(response)) {
-          this.updateEditorCollection(column, response); // from Promise
-        }
-      });
+    if (column?.editor) {
+      const collectionAsync = column.editor.collectionAsync;
+      column.editor.disabled = true; // disable the Editor DOM element, we'll re-enable it after receiving the collection with "updateEditorCollection()"
+
+      if (collectionAsync instanceof Observable) {
+        this.subscriptions.push(
+          collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
+        );
+      } else if (collectionAsync instanceof Promise) {
+        // wait for the "collectionAsync", once resolved we will save it into the "collection"
+        // the collectionAsync can be of 3 types HttpClient, HttpFetch or a Promise
+        collectionAsync.then((response: any | any[]) => {
+          if (Array.isArray(response)) {
+            this.updateEditorCollection(column, response); // from Promise
+          }
+        });
+      }
     }
   }
 
@@ -1420,7 +1423,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       if (column?.editor?.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
-      return { ...column, editor: column.editor?.model, internalColumnEditor: { ...column.editor } };
+      return { ...column, editorClass: column.editor?.model, internalColumnEditor: { ...column.editor } };
     });
   }
 
@@ -1430,23 +1433,25 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
    */
   protected updateEditorCollection<T = any>(column: Column<T>, newCollection: T[]) {
-    (column.editor as ColumnEditor).collection = newCollection;
-    (column.editor as ColumnEditor).disabled = false;
+    if (this.slickGrid && column.editor) {
+      column.editor.collection = newCollection;
+      column.editor.disabled = false;
 
-    // find the new column reference pointer & re-assign the new editor to the internalColumnEditor
-    if (Array.isArray(this.columnDefinitions)) {
-      const columnRef = this.columnDefinitions.find((col: Column) => col.id === column.id);
-      if (columnRef) {
-        columnRef.internalColumnEditor = column.editor as ColumnEditor;
+      // find the new column reference pointer & re-assign the new editor to the internalColumnEditor
+      if (Array.isArray(this.columnDefinitions)) {
+        const columnRef = this.columnDefinitions.find((col: Column) => col.id === column.id);
+        if (columnRef) {
+          columnRef.internalColumnEditor = column.editor;
+        }
       }
-    }
 
-    // get current Editor, remove it from the DOM then re-enable it and re-render it with the new collection.
-    const currentEditor = this.slickGrid.getCellEditor() as AutocompleterEditor | SelectEditor;
-    if (currentEditor?.disable && currentEditor?.renderDomElement) {
-      currentEditor.destroy();
-      currentEditor.disable(false);
-      currentEditor.renderDomElement(newCollection);
+      // get current Editor, remove it from the DOM then re-enable it and re-render it with the new collection.
+      const currentEditor = this.slickGrid.getCellEditor() as AutocompleterEditor | SelectEditor;
+      if (currentEditor?.disable && currentEditor?.renderDomElement) {
+        currentEditor.destroy();
+        currentEditor.disable(false);
+        currentEditor.renderDomElement(newCollection);
+      }
     }
   }
 }
