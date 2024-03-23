@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.5.0...v7.6.0) (2024-03-23)
+
+
+### Bug Fixes
+
+* Filter `model` is now `FilterConstructor` and shouldn't be newed ([6831c53](https://github.com/ghiscoding/angular-slickgrid/commit/6831c53b4fc4c9c7ec23358a088a0050e2c9b7a9))
+* hide Toggle Dark Mode from Grid Menu by default ([6ccd6f3](https://github.com/ghiscoding/angular-slickgrid/commit/6ccd6f35f7eb0e27d76ddd0dcf598bf14ca9a55d))
+
+
+### Features
+
+* rename SG `editorClass` & deprecate `internalColumnEditor` ([e9664e0](https://github.com/ghiscoding/angular-slickgrid/commit/e9664e0525d2bcd7f7e7ce7c504597fd88c58528))
+
 # [7.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.4.1...v7.5.0) (2024-03-05)
 
 
