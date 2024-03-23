@@ -123,7 +123,7 @@ export class GridAngularComponent implements OnInit {
         filterable: true,
         sortable: true,
         filter: {
-          model: new CustomAngularComponentFilter(), // create a new instance to make each Filter independent from each other
+          model: CustomAngularComponentFilter, // create a new instance to make each Filter independent from each other
           collection: this.assignees,
           params: {
             component: FilterNgSelectComponent,
@@ -155,7 +155,7 @@ export class GridAngularComponent implements OnInit {
         filterable: true,
         sortable: true,
         filter: {
-          model: new CustomAngularComponentFilter(), // create a new instance to make each Filter independent from each other
+          model: CustomAngularComponentFilter, // create a new instance to make each Filter independent from each other
           collection: this.assignees,
           params: {
             component: FilterNgSelectComponent,

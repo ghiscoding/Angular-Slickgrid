@@ -88,6 +88,7 @@
                      [dataset]="dataset"
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
+                     (onCellChange)="onCellChanged()"
                      (onAngularGridCreated)="angularGridReady($event.detail)">
   </angular-slickgrid>
 </div>
