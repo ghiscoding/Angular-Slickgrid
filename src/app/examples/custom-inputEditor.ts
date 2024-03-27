@@ -26,7 +26,7 @@ export class CustomInputEditor implements Editor {
 
   /** Get Column Editor object */
   get columnEditor(): ColumnEditor {
-    return this.columnDef?.internalColumnEditor ?? {};
+    return this.columnDef?.editor ?? {};
   }
 
   get hasAutoCommitEdit(): boolean {

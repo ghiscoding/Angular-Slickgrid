@@ -47,7 +47,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Get the Collection */
   get collection(): any[] {
-    return this.columnDef?.internalColumnEditor!.collection ?? [];
+    return this.columnDef?.editor!.collection ?? [];
   }
 
   /** Get Column Definition object */
@@ -57,7 +57,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Get Column Editor object */
   get columnEditor(): ColumnEditor {
-    return this.columnDef?.internalColumnEditor ?? {};
+    return this.columnDef?.editor ?? {};
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */

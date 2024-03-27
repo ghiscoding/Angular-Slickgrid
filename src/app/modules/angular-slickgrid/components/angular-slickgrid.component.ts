@@ -1437,7 +1437,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       column.editor.collection = newCollection;
       column.editor.disabled = false;
 
-      // find the new column reference pointer & re-assign the new editor to the internalColumnEditor
+      // @deprecated `internalColumnEditor`, if there's already an internalColumnEditor we'll use it, else it would be inside the editor
       if (Array.isArray(this.columnDefinitions)) {
         const columnRef = this.columnDefinitions.find((col: Column) => col.id === column.id);
         if (columnRef) {
