@@ -427,8 +427,8 @@ export class GridResizeByContentComponent implements OnInit {
 
     if (column && item) {
       if (!checkItemIsEditable(item, column, grid)) {
-        // event.preventDefault();
-        e.stopImmediatePropagation();
+        e.preventDefault(); // OR eventData.preventDefault();
+        return false;
       }
     }
     return false;

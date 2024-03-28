@@ -534,7 +534,7 @@ With that in mind and the code from the SO answer, we end up with the following 
 #### Component
 ```ts
   verifyCellIsEditableBeforeEditing(e, args): boolean {
-    // your logic here should return true/false if it's editable or not
+    // you can call `event.preventDefault()` to make cell not editable
     // args contains the dataContext and other Slickgrid arguments
   }
 ```

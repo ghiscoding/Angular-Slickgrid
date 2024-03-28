@@ -527,7 +527,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
 
     if (column && item) {
       if (!checkItemIsEditable(item, column, grid)) {
-        e.stopImmediatePropagation();
+        e.preventDefault(); // OR eventData.preventDefault();
         return false;
       }
     }
