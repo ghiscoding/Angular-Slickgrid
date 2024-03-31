@@ -105,10 +105,10 @@ describe('Example 30  Composite Editor Modal', () => {
   });
 
   it('should not be able to change the "Finish" dates on first 2 rows', () => {
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(8)`).should('contain', '').click(); // this date should also always be initially empty
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(8)`).should('contain', '').click({ force: true }); // this date should also always be initially empty
     cy.get(`.flatpickr-day.today:visible`).should('not.exist');
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(8)`).should('contain', '').click(); // this date should also always be initially empty
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(8)`).should('contain', '').click({ force: true }); // this date should also always be initially empty
     cy.get(`.flatpickr-day.today:visible`).should('not.exist');
   });
 
