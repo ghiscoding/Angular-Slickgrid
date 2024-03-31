@@ -35,6 +35,9 @@ $slick-button-border-color: #ababab !default;
 
 // it's preferable to use CSS Variables (or SASS) but if you want to change colors of your tooltip for 1 column in particular you can do it this way
 // e.g. change css of 5th column 4 (zero index: l4)
+.l4 {
+  --slick-tooltip-color: #fff;
+}
 .l4 .header-tooltip-title,
 .l4 .headerrow-tooltip-title {
   color: #ffffff;
