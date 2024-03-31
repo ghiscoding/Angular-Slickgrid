@@ -110,6 +110,7 @@ export class GridCustomTooltipComponent implements OnInit {
         // define tooltip options here OR for the entire grid via the grid options (cell tooltip options will have precedence over grid options)
         customTooltip: {
           useRegularTooltip: true, // note regular tooltip will try to find a "title" attribute in the cell formatter (it won't work without a cell formatter)
+          useRegularTooltipFromCellTextOnly: true,
         },
       },
       {
@@ -158,7 +159,12 @@ export class GridCustomTooltipComponent implements OnInit {
         formatter: Formatters.percentCompleteBar,
         sortable: true, filterable: true,
         filter: { model: Filters.slider, operator: '>=' },
-        customTooltip: { useRegularTooltip: true, },
+        customTooltip: {
+          position: 'center',
+          formatter: (_row, _cell, value) => typeof value === 'string' && value.includes('%') ? value : `${value}%`,
+          headerFormatter: undefined,
+          headerRowFormatter: undefined
+        },
       },
       {
         id: 'start', name: 'Start', field: 'start', sortable: true,
@@ -434,12 +440,12 @@ export class GridCustomTooltipComponent implements OnInit {
 
   tooltipFormatter(row: number, cell: number, value: any, column: Column, dataContext: any, grid: SlickGrid) {
     const tooltipTitle = 'Custom Tooltip';
-    const effortDrivenHtml = Formatters.checkmarkMaterial(row, cell, dataContext.effortDriven, column, dataContext, grid);
+    const effortDrivenHtml = Formatters.checkmarkMaterial(row, cell, dataContext.effortDriven, column, dataContext, grid) as HTMLElement;
 
     return `<div class="header-tooltip-title">${tooltipTitle}</div>
     <div class="tooltip-2cols-row"><div>Id:</div> <div>${dataContext.id}</div></div>
     <div class="tooltip-2cols-row"><div>Title:</div> <div>${dataContext.title}</div></div>
-    <div class="tooltip-2cols-row"><div>Effort Driven:</div> <div>${effortDrivenHtml}</div></div>
+    <div class="tooltip-2cols-row"><div>Effort Driven:</div> <div>${effortDrivenHtml.outerHTML || ''}</div></div>
     <div class="tooltip-2cols-row"><div>Completion:</div> <div>${this.loadCompletionIcons(dataContext.percentComplete)}</div></div>
     `;
   }
@@ -449,9 +455,9 @@ export class GridCustomTooltipComponent implements OnInit {
 
     // use a 2nd Formatter to get the percent completion
     // any properties provided from the `asyncPost` will end up in the `__params` property (unless a different prop name is provided via `asyncParamsPropName`)
-    const completionBar = Formatters.percentCompleteBarWithText(row, cell, dataContext.percentComplete, column, dataContext, grid);
+    const completionBar = Formatters.percentCompleteBarWithText(row, cell, dataContext.percentComplete, column, dataContext, grid) as HTMLElement;
     const out = `<div class="color-sf-primary-dark header-tooltip-title">${tooltipTitle}</div>
-      <div class="tooltip-2cols-row"><div>Completion:</div> <div>${completionBar}</div></div>
+      <div class="tooltip-2cols-row"><div>Completion:</div> <div>${completionBar.outerHTML || ''}</div></div>
       <div class="tooltip-2cols-row"><div>Lifespan:</div> <div>${dataContext.__params.lifespan.toFixed(2)}</div></div>
       <div class="tooltip-2cols-row"><div>Ratio:</div> <div>${dataContext.__params.ratio.toFixed(2)}</div></div>
     `;

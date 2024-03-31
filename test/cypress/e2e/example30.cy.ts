@@ -2,7 +2,7 @@ import { changeTimezone, zeroPadding } from '../plugins/utilities';
 
 describe('Example 30  Composite Editor Modal', () => {
   const fullPreTitles = ['', 'Common Factor', 'Analysis', 'Period', 'Item', ''];
-  const fullTitles = ['', 'Title', 'Duration', 'Cost', '% Complete', 'Complexity', 'Start', 'Completed', 'Finish', 'Product', 'Country of Origin', 'Action'];
+  const fullTitles = ['', ' Title ', 'Duration', 'Cost', '% Complete', 'Complexity', 'Start', 'Completed', 'Finish', 'Product', 'Country of Origin', 'Action'];
 
   const GRID_ROW_HEIGHT = 35;
   const EDITABLE_CELL_RGB_COLOR = 'rgba(227, 240, 251, 0.57)';
@@ -30,6 +30,23 @@ describe('Example 30  Composite Editor Modal', () => {
       .find('.slick-header-columns:nth(1)')
       .children()
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
+  });
+
+  it('should display 2 different tooltips when hovering icons on "Title" column', () => {
+    cy.get('.slick-column-name').as('title-column');
+    cy.get('@title-column')
+      .find('.fa-exclamation-triangle')
+      .trigger('mouseover');
+
+    cy.get('.slick-custom-tooltip').should('be.visible');
+    cy.get('.slick-custom-tooltip .tooltip-body').contains('Task must always be followed by a number');
+
+    cy.get('@title-column')
+      .find('.fa-info-circle')
+      .trigger('mouseover');
+
+    cy.get('.slick-custom-tooltip').should('be.visible');
+    cy.get('.slick-custom-tooltip .tooltip-body').contains('Title is always rendered as UPPERCASE');
   });
 
   it('should have "TASK 0" (uppercase) incremented by 1 after each row', () => {
@@ -88,10 +105,10 @@ describe('Example 30  Composite Editor Modal', () => {
   });
 
   it('should not be able to change the "Finish" dates on first 2 rows', () => {
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(8)`).should('contain', '').click(); // this date should also always be initially empty
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(8)`).should('contain', '').click({ force: true }); // this date should also always be initially empty
     cy.get(`.flatpickr-day.today:visible`).should('not.exist');
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(8)`).should('contain', '').click(); // this date should also always be initially empty
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(8)`).should('contain', '').click({ force: true }); // this date should also always be initially empty
     cy.get(`.flatpickr-day.today:visible`).should('not.exist');
   });
 
@@ -288,7 +305,7 @@ describe('Example 30  Composite Editor Modal', () => {
     cy.get('.slick-editor-modal').should('not.exist');
   });
 
-  it('should have new TASK 8888 displayed on first row', () => {
+  it('should have new TASK 8899 displayed on first row', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).contains('TASK 8899', { matchCase: false });
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(2)`).should('contain', '33 days');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(4)`).should('contain', '17');

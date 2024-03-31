@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 
 import {
@@ -64,7 +65,7 @@ const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, 
   const gridOptions = grid && grid.getOptions && grid.getOptions();
   const isEditableLine = gridOptions.editable && columnDef.editor;
   value = (value === null || value === undefined) ? '' : value;
-  return isEditableLine ? { text: value, addClasses: 'editable-field', toolTip: 'Click to Edit' } : value;
+  return isEditableLine ? { text: value, addClasses: 'editable-field' } : value;
 };
 
 // you can create custom validator to pass to an inline editor
@@ -131,7 +132,8 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
   prepareGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
+        id: 'title', name: '<span title="Task must always be followed by a number" class="color-warning-dark fa fa-exclamation-triangle"></span> Title <span title="Title is always rendered as UPPERCASE" class="fa fa-info-circle"></span>',
+        field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
         cssClass: 'text-uppercase fw-bold', columnGroup: 'Common Factor',
         filterable: true, filter: { model: Filters.compoundInputText },
         editor: {
@@ -397,7 +399,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
       excelExportOptions: {
         exportWithFormatter: false
       },
-      externalResources: [new ExcelExportService(), this.compositeEditorInstance],
+      externalResources: [new ExcelExportService(), new SlickCustomTooltip(), this.compositeEditorInstance],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
