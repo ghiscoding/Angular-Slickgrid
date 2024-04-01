@@ -19,7 +19,6 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
-              "autocompleter",
               "fetch-jsonp",
               "flatpickr",
               "isomorphic-dompurify",
