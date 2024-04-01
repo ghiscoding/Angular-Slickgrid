@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.6.0...v7.6.1) (2024-04-01)
+
+
+### Bug Fixes
+
+* allow multiple tooltips per grid cell ([85cabd7](https://github.com/ghiscoding/angular-slickgrid/commit/85cabd70066b5421aaae621670e742c492be86a2))
+
 # [7.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.5.0...v7.6.0) (2024-03-23)
 
 
