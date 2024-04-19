@@ -79,7 +79,7 @@ this.columnDefinitions = [
       // example with a fixed Collection (or collectionAsync)
       editorOptions: {
         showOnFocus: true, // display the list on focus of the autocomplete (without the need to type anything)
-      },
+      } as AutocompleterOption,
       enableRenderHtml: true, // this flag only works with a fixed Collection
       // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
       collection: [
@@ -101,6 +101,17 @@ editor: {
   editorOptions: {
     minLength: 3,
   } as AutocompleterOption
+}
+```
+
+#### Grid Option `defaultEditorOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultEditorOptions` Grid Option. Note that they are set via the editor type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `editorOptions` (also note that each key is already typed with the correct editor option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultEditorOptions: { 
+    autocompleter: { debounceWaitMs: 150 }, // typed as AutocompleterOption
+  }
 }
 ```
 

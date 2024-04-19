@@ -46,6 +46,19 @@ editor: {
   } as MultipleSelectOption
 }
 ```
+
+#### Grid Option `defaultEditorOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultEditorOptions` Grid Option. Note that they are set via the editor type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `editorOptions` (also note that each key is already typed with the correct editor option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultEditorOptions: { 
+    // Note: that `select` combines both multipleSelect & singleSelect
+    select: { minHeight: 350 }, // typed as MultipleSelectOption
+  }
+}
+```
+
 ### Complex Object
 If your `field` string has a dot (.) it will automatically assume that it is dealing with a complex object. There are however some options you can use with a complex object, the following options from the `ColumnEditor` might be useful to you
 ```ts

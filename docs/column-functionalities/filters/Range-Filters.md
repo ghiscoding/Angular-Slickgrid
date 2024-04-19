@@ -2,7 +2,7 @@
 - [Using an Inclusive Range](#using-an-inclusive-range-default-is-exclusive)
 - [Using 2 dots (..) notation](#using-2-dots--notation)
 - [Using a Slider Range](#using-a-slider-range-filter)
-  - [Filter Options (`JQueryUiSliderOption` interface)](#filter-options-jqueryuislideroption-interface)
+  - [Filter Options](#filter-options)
 - [Using a Date Range](#using-a-date-range-filter)
    - [Filter Options (`FlatpickrOption` interface)](#filter-options-flatpickroption-interface)
 - [Update Filters Dynamically](Input-Filter.md#update-filters-dynamically)
@@ -71,7 +71,7 @@ The slider range filter is very useful if you can just want to use the mouse to 
 
 ##### Component
 ```ts
-import { Filters, Formatters, GridOption, JQueryUiSliderOption, OperatorType } from 'angular-slickgrid';
+import { Filters, Formatters, GridOption, SliderRangeOption, OperatorType } from 'angular-slickgrid';
 
 export class GridBasicComponent implement OnInit {
   columnDefinitions: Column[];
@@ -93,9 +93,8 @@ export class GridBasicComponent implement OnInit {
           operator: OperatorType.rangeInclusive, // optional, defaults to exclusive
           params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
 
-          // you can also optionally pass any option of the jQuery UI Slider
-          // however you can't override the `change` and `slide` events since they are used by the lib
-          filterOptions: { min: 0, step: 5 } as JQueryUiSliderOption
+          // you can also optionally pass any option of the Slider filter
+          filterOptions: { sliderStartValue: 5 } as SliderRangeOption
         }
       },
     ];
@@ -107,16 +106,29 @@ export class GridBasicComponent implement OnInit {
 }
 ```
 
-##### Filter Options (`JQueryUiSliderOption` interface)
-All the available options that can be provided as `filterOptions` to your column definitions can be found under this [FlatpickrOption interface](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/interfaces/jQueryUiSliderOption.interface.ts) and you should cast your `filterOptions` to that interface to make sure that you use only valid options of the jQueryUI Slider library.
+##### Filter Options
+All the available options that can be provided as `filterOptions` to your column definitions and you should try to cast your `filterOptions` to the specific interface as much as possible to make sure that you use only valid options of allowed by the targeted filter
 
 ```ts
 filter: {
   model: Filters.sliderRange,
   filterOptions: {
-    min: 0,
-    step: 5
-  } as JQueryUiSliderOption
+    sliderStartValue: 5
+  } as SliderOption
+}
+```
+
+#### Grid Option `defaultFilterOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultFilterOptions` Grid Option. Note that they are set via the filter type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `filterOptions` (also note that each key is already typed with the correct filter option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultFilterOptions: { 
+    // Note: that `date`, `select` and `slider` are combining both compound & range filters together
+    date: { minDate: 'today' },
+    select: { minHeight: 350 }, // typed as MultipleSelectOption
+    slider: { sliderStartValue: 10 }
+  }
 }
 ```
 

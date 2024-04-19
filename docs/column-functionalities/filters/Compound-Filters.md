@@ -175,6 +175,20 @@ export class AppComponent {
 }
 ```
 
+#### Grid Option `defaultFilterOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultFilterOptions` Grid Option. Note that they are set via the filter type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `filterOptions` (also note that each key is already typed with the correct filter option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultFilterOptions: { 
+    // Note: that `date`, `select` and `slider` are combining both compound & range filters together
+    date: { minDate: 'today' },
+    select: { minHeight: 350 }, // typed as MultipleSelectOption
+    slider: { sliderStartValue: 10 }
+  }
+}
+```
+
 ### Compound Operator List (custom list)
 Each Compound Filter will try to define the best possible Operator List depending on what Field Type you may have (for example we can have StartsWith Operator on a string but not on a number). If you want to provide your own custom Operator List to a Compound Filter, you can do that via the `compoundOperatorList` property (also note that your Operator must be a valid OperatorType/OperatorString).
 
