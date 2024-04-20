@@ -118,14 +118,10 @@ export class GridBasicComponent implements OnInit {
           editorOptions: {
             minLength: 3, // minimum count of character that the user needs to type before it queries to the remote
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText // geobytes requires a query with "q" queryParam representing the chars typed (e.g.:  gd.geobytes.com/AutoCompleteCity?q=van
-                },
-                success: (data) => updateCallback(data)
-              });
+              // assuming your API call returns a label/value pair
+              yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
             }
           },
         },
@@ -138,18 +134,12 @@ export class GridBasicComponent implements OnInit {
           filterOptions: {
             minLength: 3, // minimum count of character that the user needs to type before it queries to the remote
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  updateCallback(data);
-                }
-              });
-            }
-          },
+              // assuming your API call returns a label/value pair
+              yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
+            },
+          }
         }
       }
     ];
