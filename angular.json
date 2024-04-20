@@ -19,6 +19,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
+              "@fnando/sparkline",
               "fetch-jsonp",
               "flatpickr",
               "isomorphic-dompurify",
