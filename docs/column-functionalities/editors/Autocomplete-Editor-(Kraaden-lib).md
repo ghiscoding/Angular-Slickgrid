@@ -79,7 +79,7 @@ this.columnDefinitions = [
       // example with a fixed Collection (or collectionAsync)
       editorOptions: {
         showOnFocus: true, // display the list on focus of the autocomplete (without the need to type anything)
-      },
+      } as AutocompleterOption,
       enableRenderHtml: true, // this flag only works with a fixed Collection
       // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
       collection: [
@@ -101,6 +101,17 @@ editor: {
   editorOptions: {
     minLength: 3,
   } as AutocompleterOption
+}
+```
+
+#### Grid Option `defaultEditorOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultEditorOptions` Grid Option. Note that they are set via the editor type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `editorOptions` (also note that each key is already typed with the correct editor option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultEditorOptions: {
+    autocompleter: { debounceWaitMs: 150 }, // typed as AutocompleterOption
+  }
 }
 ```
 
@@ -133,9 +144,10 @@ export class GridBasicComponent {
             fetch: (searchText, updateCallback) => {
               // assuming your API call returns a label/value pair
               yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
-                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]); })
-                 .catch(error => console.log('Error:', error);
-          },
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
+            },
+          }
         } as AutocompleterOption,
       },
     ];
@@ -166,8 +178,9 @@ this.columnDefinitions = [
         fetch: (searchText, updateCallback) => {
           // assuming your API call returns a label/value pair
           yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
-            .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]); })
-            .catch(error => console.log('Error:', error);
+            .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+            .catch(error => console.log('Error:', error));
+        }
       },
     } as AutocompleterOption,
   }
@@ -204,8 +217,9 @@ export class GridBasicComponent {
             minLength: 1,
             fetch: (searchText, updateCallback) => {
               yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
-                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]); })
-                 .catch(error => console.log('Error:', error);
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
+            }
           },
           renderItem: {
             layout: 'twoRows',
@@ -270,7 +284,7 @@ export class GridBasicComponent {
             },
             fetch: (searchText, updateCallback) => {
               yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
-                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]); })
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
                  .catch(error => console.log('Error:', error);
             },
             renderItem: {
@@ -351,14 +365,10 @@ export class GridBasicComponent {
           editorOptions: {
             minLength: 3, // minimum count of character that the user needs to type before it queries to the remote
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText // geobytes requires a query with "q" queryParam representing the chars typed (e.g.:  gd.geobytes.com/AutoCompleteCity?q=van
-                },
-                success: (data) => updateCallback(data)
-              });
+              // assuming your API call returns a label/value pair
+              yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
             }
           },
         },
@@ -371,16 +381,10 @@ export class GridBasicComponent {
           editorOptions: {
             minLength: 3, // minimum count of character that the user needs to type before it queries to the remote
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  updateCallback(data);
-                }
-              });
+              // assuming your API call returns a label/value pair
+              yourAsyncApiCall(searchText) // typically you'll want to return no more than 10 results
+                 .then(result => updateCallback((results.length > 0) ? results : [{ label: 'No match found.', value: '' }]))
+                 .catch(error => console.log('Error:', error));
             }
           },
         }

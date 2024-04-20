@@ -4,7 +4,7 @@
 - See the [Editors - Wiki](../Editors.md) for more general info about Editors (validators, event handlers, ...)
 
 ### Information
-The Date Editor is provided through an external library named [Flatpickr](https://flatpickr.js.org/examples/) and all options from that library can be added to your `editorOptions` (see below [Editor Options]()), so in order to add things like minimum date, disabling dates, ... just review all the [Flatpickr Examples](https://flatpickr.js.org/examples/) and then add them into `editorOptions`. Also just so you know, `editorOptions` is use by all other editors as well to expose external library like Flatpickr, Multiple-Select.js, etc...
+The Date Editor is provided through an external library named [Flatpickr](https://flatpickr.js.org/examples/) and all options from that library can be added to your `editorOptions` (see below), so in order to add things like minimum date, disabling dates, ... just review all the [Flatpickr Examples](https://flatpickr.js.org/examples/) and then add them into `editorOptions`. Also just so you know, `editorOptions` is use by all other editors as well to expose external library like Flatpickr, Multiple-Select.js, etc...
 
 ### Demo
 [Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/editor) | [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-editor.component.ts)
@@ -22,9 +22,8 @@ defineGrid() {
       editor: {
         model: Editors.date,
         editorOptions: {
-          editorOptions: {
-            minDate: 'today',
-            disable: [(date: Date) => this.isWeekendDay(date)], // disable weekend days (Sat, Sunday)
+          minDate: 'today',
+          disable: [(date: Date) => this.isWeekendDay(date)], // disable weekend days (Sat, Sunday)
         } as FlatpickrOption,
       },
     },
@@ -34,6 +33,17 @@ defineGrid() {
 /** Returns true when it's a weekend day (Saturday, Sunday) */
 isWeekendDay(date: Date): boolean {
   return (date.getDay() === 0 || date.getDay() === 6);
+}
+```
+
+#### Grid Option `defaultEditorOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultEditorOptions` Grid Option. Note that they are set via the editor type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `editorOptions` (also note that each key is already typed with the correct editor option interface), for example
+
+```ts
+this.gridOptions = {
+  defaultEditorOptions: { 
+    date: { minDate: 'today' }, // typed as FlatpickrOption
+  }
 }
 ```
 
