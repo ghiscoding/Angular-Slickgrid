@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.7.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.6.1...v7.7.0) (2024-04-20)
+
+
+### Features
+
+* add global `defaultEditorOptions` & `defaultFilterOptions` ([4c6d1de](https://github.com/ghiscoding/angular-slickgrid/commit/4c6d1de6c80dd462511ceea726a52ac82256fdc0))
+
 ## [7.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v7.6.0...v7.6.1) (2024-04-01)
 
 
