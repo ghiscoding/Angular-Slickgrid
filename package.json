@@ -60,7 +60,8 @@
     "dequal": "^2.0.3",
     "isomorphic-dompurify": "^2.7.0",
     "rxjs": "^7.8.1",
-    "sortablejs": "^1.15.2"
+    "sortablejs": "^1.15.2",
+    "vanilla-calendar-picker": "^2.10.2"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.5",
@@ -94,7 +95,6 @@
     "@slickgrid-universal/odata": "~4.7.0",
     "@slickgrid-universal/text-export": "~4.7.0",
     "@types/dompurify": "^3.0.5",
-    "@types/flatpickr": "^3.1.2",
     "@types/fnando__sparkline": "^0.3.7",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.7",

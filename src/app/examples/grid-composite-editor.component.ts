@@ -13,7 +13,6 @@ import {
   Editors,
   FieldType,
   Filters,
-  FlatpickrOption,
   formatNumber,
   Formatter,
   Formatters,
@@ -24,6 +23,7 @@ import {
   SlickGlobalEditorLock,
   SlickGrid,
   SortComparers,
+  VanillaCalendarOption,
 } from '../modules/angular-slickgrid';
 
 const NB_ITEMS = 500;
@@ -249,16 +249,17 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
         editor: {
           model: Editors.date,
           editorOptions: {
-            minDate: 'today',
+            range: { min: 'today' },
 
             // if we want to preload the date picker with a different date,
-            // we could toggle the `closeOnSelect: false`, set the date in the picker and re-toggle `closeOnSelect: true`
-            // closeOnSelect: false,
-            // onOpen: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => {
-            //   instance.setDate('2021-06-04', true);
-            //   instance.set('closeOnSelect', true);
-            // },
-          } as FlatpickrOption,
+            // we could do it by assigning settings.seleted.dates
+            // NOTE: vanilla-calendar doesn't automatically focus the picker to the year/month and you need to do it yourself
+            // selected: {
+            //   dates: ['2021-06-04'],
+            //   month: 6 - 1, // Note: JS Date month (only) is zero index based, so June is 6-1 => 5
+            //   year: 2021
+            // }
+          } as VanillaCalendarOption,
           massUpdate: true,
           validator: (value, args) => {
             const dataContext = args && args.item;

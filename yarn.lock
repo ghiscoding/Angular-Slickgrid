@@ -12329,6 +12329,11 @@ validate-npm-package-name@^5.0.0:
   dependencies:
     builtins "^5.0.0"
 
+vanilla-calendar-picker@^2.10.2:
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/vanilla-calendar-picker/-/vanilla-calendar-picker-2.10.2.tgz#b9a062e0c89ab296de45ac9ad88ff6f013159601"
+  integrity sha512-nW6xFZjs+xPMHTnH5z7Dqh0ydyzwG5009CRpvL31LcDC+05YCEB2VkjTsOJzPcizZBPH9yQ1Vv4FoCyx2GZ7Gg==
+
 vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"

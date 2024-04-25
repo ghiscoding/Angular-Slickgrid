@@ -112,14 +112,18 @@ describe('Example 25 - Range Filters', () => {
   });
 
   it('should change the "Finish" date in the picker and expect all rows to be within new dates range', () => {
-    cy.get('.flatpickr.search-filter.filter-finish')
+    cy.get('.date-picker.search-filter.filter-finish')
       .click();
 
-    cy.get('.flatpickr-day.inRange')
+    cy.get('.vanilla-calendar-day_selected-first')
+      .should('exist');
+
+    cy.get('.vanilla-calendar-day_selected-intermediate')
       .should('have.length.gte', 2);
 
-    // cy.get('.flatpickr-day.selected.endRange')
-    //   .should('contain', moment().add(25, 'days').day() - 1);
+    cy.get('.vanilla-calendar-day_selected-last')
+      .should('exist');
+    // .should('contain', moment().add(28, 'days').day() - 1);
   });
 
   it('should change the "Duration" input filter and expect all rows to be within new range', () => {
@@ -201,7 +205,7 @@ describe('Example 25 - Range Filters', () => {
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${dynamicLowestDay} to ${dynamicHighestDay}`));
+        .then(text => expect(text).to.eq(`${dynamicLowestDay} — ${dynamicHighestDay}`));
 
       cy.get('#grid25')
         .find('.slick-row')
@@ -222,7 +226,7 @@ describe('Example 25 - Range Filters', () => {
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${currentYear}-01-01 to ${currentYear}-12-31`));
+        .then(text => expect(text).to.eq(`${currentYear}-01-01 — ${currentYear}-12-31`));
 
       cy.get('.ms-parent.search-filter.filter-completed > button > span')
         .should('contain', 'True');
