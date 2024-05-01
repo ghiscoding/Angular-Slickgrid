@@ -190,7 +190,7 @@ export class GridAngularComponent implements OnInit {
 
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           enableRenderHtml: true,
-          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="fa fa-percent" style="color:cadetblue"></i>' })),
+          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="mdi mdi-percent-outline" style="color:cadetblue"></i>' })),
           customStructure: {
             value: 'value',
             label: 'label',
@@ -242,20 +242,20 @@ export class GridAngularComponent implements OnInit {
         name: 'Action',
         field: 'id',
         maxWidth: 100,
-        formatter: () => `<div class="cell-menu-dropdown">Action<i class="fa fa-caret-down"></i></div>`,
+        formatter: () => `<div class="cell-menu-dropdown">Action<i class="mdi mdi-chevron-down"></i></div>`,
         cellMenu: {
           commandTitle: 'Commands',
           commandItems: [
             {
               command: 'help',
               title: 'Help',
-              iconCssClass: 'fa fa-question-circle text-info',
+              iconCssClass: 'mdi mdi-help-circle text-info',
               positionOrder: 66,
               action: () => alert('Please Help!'),
             },
             {
               command: 'delete-row', title: 'Delete Row', positionOrder: 64,
-              iconCssClass: 'fa fa-times color-danger', cssClass: 'red', textCssClass: 'text-italic color-danger-light',
+              iconCssClass: 'mdi mdi-close color-danger', cssClass: 'red', textCssClass: 'text-italic color-danger-light',
               action: (_event, args) => this.angularGrid.gridService.deleteItemById(args.dataContext.id)
             },
           ]

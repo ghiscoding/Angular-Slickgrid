@@ -3,7 +3,6 @@
 - [SASS Styling](#sass-styling)
 - [Compound Input Filter](#how-to-use-compoundinput-filter)
 - [Compound Date Filter](#how-to-use-compounddate-filter)
-  - [Filter Options (`FlatpickrOption` interface)](#filter-options-flatpickroption-interface)
 - [Compound Operator List (custom list)](#compound-operator-list-custom-list)
 - [Compound Operator Alternate Texts](#compound-operator-alternate-texts)
 - [Filter Complex Object](../Input-Filter.md#how-to-filter-complex-objects)
@@ -11,7 +10,7 @@
 - [How to avoid filtering when only Operator dropdown is changed?](#how-to-avoid-filtering-when-only-operator-dropdown-is-changed)
 
 ### Description
-Compound filters are a combination of 2 elements (Operator Select + Input Filter) used as a filter on a column. This is very useful to make it obvious to the user that there are Operator available and even more useful with a date picker (`Flatpickr`).
+Compound filters are a combination of 2 elements (Operator Select + Input Filter) used as a filter on a column. This is very useful to make it obvious to the user that there are Operator available and even more useful with a date picker (`Vanilla-Calendar`).
 
 ### Demo
 [Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
@@ -21,11 +20,8 @@ There are multiple types of compound filters available
 1. `Filters.compoundInputText` adds an Operator combine to an Input of type `text` (alias to `Filters.compoundInput`).
 2. `Filters.compoundInputNumber` adds an Operator combine to an Input of type `number`.
 3. `Filters.compoundInputPassword` adds an Operator combine to an Input of type `password.
-4. `Filters.compoundDate` adds an Operator combine to a Date Picker (flatpickr).
+4. `Filters.compoundDate` adds an Operator combine to a Date Picker.
 5. `Filters.compoundSlider` adds an Operator combine to a Slider Filter.
-
-### SASS Styling
-You can change the `$flatpickr-bgcolor` and any of the `$compound-filter-X` SASS [variables](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss#L660) for styling. For more info on how to use SASS in your project, read the [Wiki - Styling](../../styling/styling.md)
 
 ### How to use CompoundInput Filter
 Simply set the flag `filterable` to True and use the filter type `Filters.compoundInput`. Here is an example with a full column definition:
@@ -125,53 +121,15 @@ this.gridOptions = {
 };
 ```
 
-#### Filter Options (`FlatpickrOption` interface)
-All the available options that can be provided as `filterOptions` to your column definitions can be found under this [FlatpickrOption interface](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/interfaces/flatpickrOption.interface.ts) and you should cast your `filterOptions` to that interface to make sure that you use only valid options of the [Flatpickr](https://flatpickr.js.org/) library.
+#### Filter Options (`VanillaCalendarOption` interface)
+All the available options that can be provided as `filterOptions` to your column definitions can be found under this [VanillaCalendarOption interface](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/interfaces/vanillaCalendarOption.interface.ts) and you should cast your `filterOptions` with the expected interface to make sure that you use only valid settings of the [Vanilla-Calendar](https://vanilla-calendar.pro/docs/reference/additionally/settings) library.
 
 ```ts
 filter: {
   model: Filters.compoundDate,
   filterOptions: {
-    minDate: 'today'
-  } as FlatpickrOption
-}
-```
-
-### Date Picker - Flatpickr Localization
-In order to use different locale, you will have to import whichever Flatpickr locale you need. The best place to do these imports is in your App Module so it's global and you do it only once. In some rare cases it might not be sufficient, you move the import into your first entry component, typically the App Component
-
-```ts
-import { AngularSlickgridModule } from 'angular-slickgrid';
-
-// load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
-import 'flatpickr/dist/l10n/fr';
-
-@NgModule({
-  declarations: [/*...*/],
-  imports: [
-    // ...
-    AngularSlickgridModule.forRoot({
-      // add any Global Grid Options/Config you might want
-    })
-  ],
-  providers: [/*...*/],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
-
-or in the App Component
-```ts
-import { Component } from '@angular/core';
-import 'flatpickr/dist/l10n/fr';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent {
-  title = 'Angular SlickGrid Demo';
+    range: { min: 'today' }
+  } as VanillaCalendarOption
 }
 ```
 
@@ -180,10 +138,10 @@ You could also define certain options as a global level (for the entire grid or 
 
 ```ts
 this.gridOptions = {
-  defaultFilterOptions: { 
+  defaultFilterOptions: {
     // Note: that `date`, `select` and `slider` are combining both compound & range filters together
-    date: { minDate: 'today' },
-    select: { minHeight: 350 }, // typed as MultipleSelectOption
+    date: { range: { min: 'today' } },  // typed as VanillaCalendarOption
+    select: { minHeight: 350 },         // typed as MultipleSelectOption
     slider: { sliderStartValue: 10 }
   }
 }

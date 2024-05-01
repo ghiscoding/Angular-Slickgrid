@@ -1,6 +1,7 @@
 import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, } from '@slickgrid-universal/graphql';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 import {
   AngularGridInstance,
   Column,
@@ -11,7 +12,6 @@ import {
   GridOption,
   GridStateChange,
   Metrics,
-  MultipleSelectOption,
   OperatorType,
   SortDirection,
   unsubscribeAllObservables,
@@ -140,7 +140,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         resizeOnShowHeaderRow: true,
         commandItems: [
           {
-            iconCssClass: 'fa fa-times text-danger',
+            iconCssClass: 'mdi mdi-close text-danger',
             title: 'Reset Grid',
             disabled: false,
             command: 'reset-grid',

@@ -29,12 +29,6 @@ export class GridTreeDataParentChildComponent implements OnInit {
       <li>If you do not have the Tree Level (indent), you could call "convertParentChildArrayToHierarchicalView()" then call "convertHierarchicalViewToParentChildArray()"</li>
       <li>You could also pass the result of "convertParentChildArrayToHierarchicalView()" to "dataset-hierarchical.bind" as defined in the next Hierarchical Example</li>
     </ul>
-    <li><b>Styling - Material Theme</b></li>
-    <ul>
-      <li>The Material Theme was created with SASS and compiled in CSS (<a href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/slickgrid-theme-material.scss" target="_blank">slickgrid-theme-material.scss</a>), you can override any of its SASS variables</li>
-      <li>We use a small subset of <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a></li>
-      <li>you might need to refresh the page to clear the browser cache and see the correct theme</li>
-    </ul>
   </ul>`;
 
   angularGrid!: AngularGridInstance;
@@ -90,7 +84,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
       {
         id: 'effortDriven', name: 'Effort Driven', width: 80, minWidth: 20, maxWidth: 80, cssClass: 'cell-effort-driven', field: 'effortDriven',
         exportWithFormatter: false,
-        formatter: Formatters.checkmark, cannotTriggerInsert: true,
+        formatter: Formatters.checkmarkMaterial, cannotTriggerInsert: true,
         filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
@@ -141,40 +135,11 @@ export class GridTreeDataParentChildComponent implements OnInit {
         // treeData: { toggledItems: [{ itemId: 1, isCollapsed: false }] },
       },
 
-      // change header/cell row height for material design theme
+      // change header/cell row height
       headerRowHeight: 45,
       rowHeight: 40,
       // if you're dealing with lots of data, it is recommended to use the filter debounce
       filterTypingDebounce: 250,
-
-      // use Material Design SVG icons
-      contextMenu: {
-        iconCollapseAllGroupsCommand: 'mdi mdi-arrow-collapse',
-        iconExpandAllGroupsCommand: 'mdi mdi-arrow-expand',
-        iconClearGroupingCommand: 'mdi mdi-close',
-        iconCopyCellValueCommand: 'mdi mdi-content-copy',
-        iconExportCsvCommand: 'mdi mdi-download',
-        iconExportExcelCommand: 'mdi mdi-file-excel-outline',
-        iconExportTextDelimitedCommand: 'mdi mdi-download',
-      },
-      gridMenu: {
-        iconCssClass: 'mdi mdi-menu',
-        iconClearAllFiltersCommand: 'mdi mdi-filter-remove-outline',
-        iconClearAllSortingCommand: 'mdi mdi-swap-vertical',
-        iconExportCsvCommand: 'mdi mdi-download',
-        iconExportExcelCommand: 'mdi mdi-file-excel-outline',
-        iconExportTextDelimitedCommand: 'mdi mdi-download',
-        iconRefreshDatasetCommand: 'mdi mdi-sync',
-        iconToggleFilterCommand: 'mdi mdi-flip-vertical',
-        iconTogglePreHeaderCommand: 'mdi mdi-flip-vertical',
-      },
-      headerMenu: {
-        iconClearFilterCommand: 'mdi mdi mdi-filter-remove-outline',
-        iconClearSortCommand: 'mdi mdi-swap-vertical',
-        iconSortAscCommand: 'mdi mdi-sort-ascending',
-        iconSortDescCommand: 'mdi mdi-flip-v mdi-sort-descending',
-        iconColumnHideCommand: 'mdi mdi-close',
-      }
     };
   }
 

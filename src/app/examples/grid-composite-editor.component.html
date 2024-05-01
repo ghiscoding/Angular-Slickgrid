@@ -9,7 +9,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-composite-editor.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -17,50 +17,50 @@
 
   <div class="mb-2">
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
-      <button type="button" class="btn btn-outline-secondary" data-test="toggle-readonly-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="toggle-readonly-btn"
               (click)="toggleGridEditReadonly()">
-        <i class="fa fa-table"></i> Toggle Edit/Readonly Grid
+        <i class="mdi mdi-table-edit"></i> Toggle Edit/Readonly Grid
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="undo-last-edit-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="undo-last-edit-btn"
               (click)="undoLastEdit()">
-        <i class="fa fa-undo"></i> Undo Last Edit
+        <i class="mdi mdi-undo"></i> Undo Last Edit
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="undo-open-editor-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="undo-open-editor-btn"
               (click)="undoLastEdit(true)">
-        <i class="fa fa-undo"></i> Undo Last Edit &amp; Open Editor
+        <i class="mdi mdi-undo"></i> Undo Last Edit &amp; Open Editor
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="undo-all-edits-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="undo-all-edits-btn"
               (click)="undoAllEdits()">
-        <i class="fa fa-history"></i> Undo All Edits
+        <i class="mdi mdi-history"></i> Undo All Edits
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="save-all-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="save-all-btn"
               (click)="saveAll()">
-        <i class="fa fa-save"></i> Save All
+          <span>Save All</span>
       </button>
     </div>
   </div>
 
   <div class="mb-3">
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-create-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="open-modal-create-btn"
               (click)="openCompositeModal('create')" [disabled]="isCompositeDisabled">
-        <i class="fa fa-plus"></i> Item Create
+        <i class="mdi mdi-shape-square-plus"></i> Item Create
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-clone-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="open-modal-clone-btn"
               (click)="openCompositeModal('clone')" [disabled]="isCompositeDisabled">
-        <i class="fa fa-clone"></i> Item Clone
+        <i class="mdi mdi-content-copy"></i> Item Clone
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-edit-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="open-modal-edit-btn"
               (click)="openCompositeModal('edit')" [disabled]="isCompositeDisabled">
-        <i class="fa fa-pencil"></i> Item Edit
+        <i class="mdi mdi-pencil"></i> Item Edit
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-mass-update-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="open-modal-mass-update-btn"
               (click)="openCompositeModal('mass-update')" [disabled]="isCompositeDisabled">
-        <i class="fa fa-pencil-square-o"></i> Mass Update
+        <i class="mdi mdi-pencil-box-multiple-outline"></i> Mass Update
       </button>
-      <button type="button" class="btn btn-outline-secondary" data-test="open-modal-mass-selection-btn"
+      <button type="button" class="btn btn-outline-secondary btn-icon" data-test="open-modal-mass-selection-btn"
               (click)="openCompositeModal('mass-selection')" [disabled]="isMassSelectionDisabled">
-        <i class="fa fa-check-square-o"></i> Update Selected
+        <i class="mdi mdi-order-bool-ascending-variant"></i> Update Selected
       </button>
     </div>
   </div>

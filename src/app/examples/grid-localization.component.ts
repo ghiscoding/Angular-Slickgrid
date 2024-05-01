@@ -109,7 +109,7 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
       {
         id: 'completedBool', name: 'Completed', field: 'completedBool', nameKey: 'COMPLETED', minWidth: 100,
         sortable: true,
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         exportCustomFormatter: Formatters.translateBoolean,
         filterable: true,
         filter: {

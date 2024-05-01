@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-graphql.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -16,26 +16,26 @@
       <div [class]="status.class" role="alert" data-test="status">
         <strong>Status: </strong> {{status.text}}
         <span [hidden]="!processing">
-          <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+          <i class="mdi mdi-sync mdi-spin-1s"></i>
         </span>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-sorting"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-filters-sorting"
                   (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
-            <i class="fa fa-filter text-danger"></i>
+            <i class="mdi mdi-filter text-danger"></i>
             Clear all Filter & Sorts
           </button>
-          <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter"
                   (click)="setFiltersDynamically()">
             Set Filters Dynamically
           </button>
-          <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting"
                   (click)="setSortingDynamically()">
             Set Sorting Dynamically
           </button>
-          <button class="btn btn-outline-secondary btn-sm" data-test="reset-presets"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="reset-presets"
                   (click)="resetToOriginalPresets()">
             Reset Original Presets
           </button>
@@ -47,8 +47,8 @@
       </div>
       <div class="row mt-1">
         <div class="col-md-12">
-          <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
-            <i class="fa fa-language"></i>
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="language-button" (click)="switchLanguage()">
+            <i class="mdi mdi-translate"></i>
             Switch Language
           </button>
           <strong>Locale:</strong>
@@ -76,11 +76,11 @@
       <div class="row mb-2">
         <div class="col-md-12">
           <label>Programmatically go to first/last page:</label>
-          <button class="btn btn-outline-secondary btn-xs px-2" data-test="goto-first-page" (click)="goToFirstPage()">
-            <i class="fa fa-caret-left fa-lg"></i>
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToFirstPage()">
+            <i class="mdi mdi-page-first"></i>
           </button>
-          <button class="btn btn-outline-secondary btn-xs px-2" data-test="goto-last-page" (click)="goToLastPage()">
-            <i class="fa fa-caret-right fa-lg"></i>
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToLastPage()">
+            <i class="mdi mdi-page-last"></i>
           </button>
         </div>
       </div>

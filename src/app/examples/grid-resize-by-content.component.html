@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-resize-by-content.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -16,41 +16,41 @@
   <div class="row">
     <div class="ml-2 mb-2 mr-2">
       <div class="btn-group" data-bs-toggle="buttons">
-        <label class="btn btn-sm btn-outline-secondary {{isUsingDefaultResize ? 'active' : ''}}"
+        <label class="btn btn-sm btn-outline-secondary btn-icon {{isUsingDefaultResize ? 'active' : ''}}"
                data-test="autosize-columns-btn">
           <input type="radio" class="btn-check" name="options"
                  [checked]="isUsingDefaultResize"
                  (click)="handleDefaultResizeColumns()">
-          <i class="fa fa-expand"></i> (default resize) by "autosizeColumns"
+          <i class="mdi mdi-arrow-expand"></i> (default resize) by "autosizeColumns"
         </label>
-        <label class="btn btn-sm btn-outline-secondary {{isUsingDefaultResize ? '' : 'active'}}"
+        <label class="btn btn-sm btn-outline-secondary btn-icon {{isUsingDefaultResize ? '' : 'active'}}"
                data-test="resize-by-content-btn">
           <input type="radio" class="btn-check" name="options"
                  [checked]="!isUsingDefaultResize"
                  (click)="handleNewResizeColumns()">
-          <i class="fa fa-expand"></i> Resize by Cell Content
+          <i class="mdi mdi-arrow-expand"></i> Resize by Cell Content
         </label>
       </div>
     </div>
 
     <div class="mb-2">
       <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
-        <button type="button" class="btn btn-outline-secondary" (click)="setSelectedRowIds()"
+        <button type="button" class="btn btn-outline-secondary btn-icon" (click)="setSelectedRowIds()"
                 data-test="set-dynamic-rows-btn"
                 title="Change Row Selection across multiple pages">
           <span>Change Row Selection</span>
         </button>
-        <button type="button" class="btn btn-outline-secondary" data-test="toggle-readonly-btn"
+        <button type="button" class="btn btn-outline-secondary btn-icon" data-test="toggle-readonly-btn"
                 (click)="toggleGridEditReadonly()">
-          <i class="fa fa-table"></i> Toggle Readonly
+          <i class="mdi mdi-table-edit"></i> Toggle Readonly
         </button>
-        <button type="button" class="btn btn-outline-secondary" data-test="undo-last-edit-btn"
+        <button type="button" class="btn btn-outline-secondary btn-icon" data-test="undo-last-edit-btn"
                 (click)="undoLastEdit()">
-          <i class="fa fa-undo"></i> Undo Last Edit
+          <i class="mdi mdi-undo"></i> Undo Last Edit
         </button>
-        <button type="button" class="btn btn-outline-secondary" data-test="save-all-btn"
+        <button type="button" class="btn btn-outline-secondary btn-icon" data-test="save-all-btn"
                 (click)="saveAll()">
-          <i class="fa fa-save"></i> Save All
+          <span>Save All</span>
         </button>
       </div>
     </div>

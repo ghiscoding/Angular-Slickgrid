@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-frozen.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -17,7 +17,7 @@
       <input id="pinned-rows" class="form-control" type="number" [(ngModel)]="frozenRowCount">
     </div>
     <div class="col-auto gr-2">
-      <button class="btn btn-outline-secondary btn-sm" (click)="changeFrozenRowCount()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenRowCount()">
         Set
       </button>
     </div>
@@ -27,7 +27,7 @@
       <input id="pinned-columns" class="form-control" type="number" [(ngModel)]="frozenColumnCount">
     </div>
     <div class="col-auto">
-      <button class="btn btn-outline-secondary btn-sm" (click)="changeFrozenColumnCount()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenColumnCount()">
         Set
       </button>
     </div>
@@ -35,17 +35,17 @@
 
   <div class="row">
     <div class="col-12">
-      <button class="btn btn-outline-secondary btn-sm" (click)="setFrozenColumns(-1)"
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns(-1)"
               data-test="remove-frozen-column-button">
-        <i class="fa fa-times fa-lg"></i> Remove Frozen Columns
+        <i class="mdi mdi-close"></i> Remove Frozen Columns
       </button>
-      <button class="btn btn-outline-secondary btn-sm" (click)="setFrozenColumns(2)" data-test="set-3frozen-columns">
-        <i class="fa fa-thumb-tack fa-lg"></i> Set 3 Frozen Columns
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns(2)" data-test="set-3frozen-columns">
+        <i class="mdi mdi-pin-outline"></i> Set 3 Frozen Columns
       </button>
 
       <span style="margin-left: 15px">
-        <button class="btn btn-outline-secondary btn-sm" (click)="toggleFrozenBottomRows()">
-          <i class="fa fa-random fa-lg"></i> Toggle Pinned Rows
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="toggleFrozenBottomRows()">
+          <i class="mdi mdi-flip-vertical"></i> Toggle Pinned Rows
         </button>
         <span style="font-weight: bold;">: {{ isFrozenBottom ? 'Bottom' : 'Top' }}</span>
       </span>

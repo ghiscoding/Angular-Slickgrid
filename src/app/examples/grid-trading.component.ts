@@ -23,7 +23,7 @@ const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
   const fragment = new DocumentFragment();
   const spanElm = document.createElement('span');
-  spanElm.className = `fa fa-arrow-${direction} text-${direction === 'up' ? 'success' : 'danger'}`;
+  spanElm.className = `mdi mdi-arrow-${direction} text-${direction === 'up' ? 'success' : 'danger'}`;
   fragment.appendChild(spanElm);
   if (value instanceof HTMLElement) {
     fragment.appendChild(value);
@@ -31,8 +31,8 @@ const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   return fragment;
 };
 
-const transactionTypeFormatter: Formatter = (row: number, cell: number, value: string) =>
-  `<span <span class="fa fa-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-info' : 'text-warning'}"></span> ${value}`;
+const transactionTypeFormatter: Formatter = (_row, _cell, value: string) =>
+  `<span class="mdi mdi-16px mdi-v-align-sub mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-info' : 'text-warning'}"></span> ${value}`;
 
 const historicSparklineFormatter: Formatter = (row: number, cell: number, value: string, col: Column, dataContext: any) => {
   const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -187,7 +187,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       },
       draggableGrouping: {
         dropPlaceHolderText: 'Drop a column header here to group by any of these available columns: Currency, Market or Type',
-        deleteIconCssClass: 'fa fa-times',
+        deleteIconCssClass: 'mdi mdi-close',
       },
       enableDraggableGrouping: true,
       createPreHeaderPanel: true,

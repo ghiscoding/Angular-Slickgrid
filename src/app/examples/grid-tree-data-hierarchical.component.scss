@@ -1,70 +1,54 @@
-/* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.lite.scss';
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
 
-.avg-total {
-  color: #ac76ff;
-}
-.bold {
-  font-weight: bold;
-}
-.total-suffix {
-  margin-left: 10px;
-}
-.hidden {
-  display: none;
-}
-
-/*
-  www.OnlineWebFonts.Com
-  You must credit the author Copy this link on your web
-  <div>Font made from <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>is licensed by CC BY 3.0</div>
-*/
-@font-face {
-  font-family: "SalesforceSans-Regular";
-  src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot"); /* IE9*/
-  src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff2") format("woff2"), /* chrome firefox */
-  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff") format("woff"), /* chrome firefox */
-  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.ttf") format("truetype"), /* chrome firefox opera Safari, Android, iOS 4.2+*/
-  url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.svg#SalesforceSans-Regular") format("svg"); /* iOS 4.1- */
-}
-.icon {
-    align-items: center;
+#grid28 {
+  .slick-cell {
     display: inline-flex;
-    justify-content: center;
-    height: 1rem;
-    width: 1rem;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .avg-total {
+    color: #ac76ff;
+  }
+  .bold {
+    font-weight: bold;
+  }
+  .total-suffix {
+    margin-left: 10px;
+  }
+  .hidden {
+    display: none;
+  }
+
+  .mdi-file-pdf-outline {
+    color: #f14668;
+    opacity: 0.9;
+  }
+
+  .mdi-folder, .mdi-folder-open {
+    color: #ffa500;
+    opacity: 0.9;
+  }
+  .mdi-file-music-outline {
+    color: #3298dc;
+    opacity: 0.9;
+  }
+  .mdi-file-excel-outline {
+    color: #1E9F75;
+    opacity: 0.9;
+  }
+  .mdi-file-document-outline,
+  .mdi-file-question-outline {
+    color: #686868;
+    opacity: 0.9;
+  }
+
+  .display-inline-block {
+    display: inline-block;
+  }
 }
 
-.avg-total {
-  color: #ac76ff;
+// create a few 15px indentation multiplied by level number
+@for $i from 1 through 6 {
+  .width-#{$i*15}px { width: #{$i * 15}px; }
 }
-.bold {
-  font-weight: bold;
-}
-.total-suffix {
-  margin-left: 10px;
-}
-
-/** You can use the following code OR use the .color-x CSS classes */
-
-// .icon.mdi-file-pdf-outline {
-//   /** 1. use `filter` color */
-//   // filter: invert(62%) sepia(93%) saturate(5654%) hue-rotate(325deg) brightness(100%) contrast(90%);
-
-//   /** 2. or use the SASS @mixin (from Angular-Slickgrid "sass-utilities.scss") that will produce the `filter` color */
-//   @include recolor(#f14668, 0.9);
-// }
-
-// .icon.mdi-folder, .icon.mdi-folder-open {
-//   @include recolor(#ffa500, 0.9);
-// }
-// .icon.mdi-file-music-outline {
-//   @include recolor(#3298dc, 0.9);
-// }
-// .icon.mdi-file-excel-outline {
-//   @include recolor(#1E9F75, 0.9);
-// }
-// .icon.mdi-file-document-outline {
-//   @include recolor(#686868, 0.9);
-// }

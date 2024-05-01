@@ -47,7 +47,7 @@ this.columnDefinitions = [
     }
   },
   {
-    id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark,
+    id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmarkMaterial,
     type: FieldType.number, editor: { model: Editors.checkbox }
   }
 ];
@@ -252,12 +252,12 @@ By default HTML is not rendered and the `label` will simply show HTML as text. B
 this.columnDefinitions = [
   {
     id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-    formatter: Formatters.checkmark,
+    formatter: Formatters.checkmarkMaterial,
     type: FieldType.boolean,
     editor: {
       // display checkmark icon when True
       enableRenderHtml: true,
-      collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
+      collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="mdi mdi-check"></i> ` }, { value: false, label: 'False' }],
       model: Editors.singleSelect
     }
   }
@@ -455,7 +455,7 @@ Some of the Editors could receive extra options, which is mostly the case for Ed
 ```ts
 this.columnDefinitions = [{
   id: 'start', name: 'Start Date', field: 'start',
-  editor: { 
+  editor: {
     model: Editors.date,
     editorOptions: { minDate: 'today' }
   }
@@ -467,10 +467,10 @@ You could also define certain options as a global level (for the entire grid or 
 
 ```ts
 this.gridOptions = {
-  defaultEditorOptions: { 
+  defaultEditorOptions: {
     autocompleter: { debounceWaitMs: 150 }, // typed as AutocompleterOption
     date: { minDate: 'today' },
-    longText: { cols: 50, rows: 5 } 
+    longText: { cols: 50, rows: 5 }
   }
 }
 ```

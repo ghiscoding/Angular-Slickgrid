@@ -68,7 +68,7 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
             // also note that the internal custom commands are in the positionOrder range of 50-60,
             // if you want yours at the bottom then start with 61, below 50 will make your command(s) show on top
             {
-              iconCssClass: 'fa fa-question-circle',
+              iconCssClass: 'mdi mdi-help-circle',
 
               // you can disable a command with certain logic
               // HOWEVER note that if you use "itemUsabilityOverride" has precedence when it is defined
@@ -148,7 +148,7 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
       headerMenu: {
         hideSortCommands: false,
         hideColumnHideCommand: false,
-        subItemChevronClass: 'fa fa-chevron-right',
+        subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
         // you can use the "onCommand" (in Grid Options) and/or the "action" callback (in Column Definition)
         onCommand: (_e, args) => {
           // e.preventDefault(); // preventing default event would keep the menu open after the execution

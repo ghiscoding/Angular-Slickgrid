@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import fetchJsonp from 'fetch-jsonp';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 
 import {
   AngularGridInstance,
@@ -13,7 +13,6 @@ import {
   EditorValidator,
   FieldType,
   Filters,
-  FlatpickrOption,
   Formatter,
   Formatters,
   GridOption,
@@ -22,6 +21,7 @@ import {
   OperatorType,
   SortComparers,
   SlickGlobalEditorLock,
+  type VanillaCalendarOption,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
@@ -115,7 +115,7 @@ export class GridEditorComponent implements OnInit {
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.icon,
-        params: { iconCssClass: 'fa fa-pencil pointer' },
+        params: { iconCssClass: 'mdi mdi-pencil pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -132,7 +132,7 @@ export class GridEditorComponent implements OnInit {
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.icon,
-        params: { iconCssClass: 'fa fa-trash pointer' },
+        params: { iconCssClass: 'mdi mdi-trash-can pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -237,7 +237,7 @@ export class GridEditorComponent implements OnInit {
 
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           enableRenderHtml: true,
-          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="fa fa-percent" style="color:cadetblue"></i>' })),
+          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="mdi mdi-percent-outline" style="color:cadetblue"></i>' })),
           customStructure: {
             value: 'value',
             label: 'label',
@@ -261,7 +261,7 @@ export class GridEditorComponent implements OnInit {
           // },
           editorOptions: {
             maxHeight: 400
-          }
+          } as MultipleSelectOption
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
@@ -304,19 +304,20 @@ export class GridEditorComponent implements OnInit {
         saveOutputType: FieldType.dateUtc, // save output date formattype: FieldType.date,
         editor: {
           model: Editors.date,
-          // override any of the Flatpickr options through "editorOptions"
+          // override any of the calendar picker options through "editorOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
           editorOptions: {
-            minDate: 'today',
+            range: { date: 'today' },
 
             // if we want to preload the date picker with a different date,
-            // we could toggle the `closeOnSelect: false`, set the date in the picker and re-toggle `closeOnSelect: true`
-            // closeOnSelect: false,
-            // onOpen: (selectedDates: Date[] | Date, dateStr: string, instance: FlatpickrInstance) => {
-            //   instance.setDate('2021-12-31', true);
-            //   instance.set('closeOnSelect', true);
-            // },
-          } as FlatpickrOption
+            // we could do it by assigning settings.seleted.dates
+            // NOTE: vanilla-calendar doesn't automatically focus the picker to the year/month and you need to do it yourself
+            // selected: {
+            //   dates: ['2021-06-04'],
+            //   month: 6 - 1, // Note: JS Date month (only) is zero index based, so June is 6-1 => 5
+            //   year: 2021
+            // }
+          } as VanillaCalendarOption
         },
       }, {
         id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
@@ -408,7 +409,7 @@ export class GridEditorComponent implements OnInit {
           model: Filters.singleSelect,
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
         },
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         editor: {
           model: Editors.checkbox,
         },
@@ -562,7 +563,7 @@ export class GridEditorComponent implements OnInit {
     // mock a dataset
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
-      const randomYear = 2000 + Math.floor(Math.random() * 10);
+      const randomYear = 2000 + this.randomBetween(4, 15);
       const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
@@ -585,6 +586,10 @@ export class GridEditorComponent implements OnInit {
       });
     }
     return tempDataset;
+  }
+
+  randomBetween(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   onCellChanged(e: Event, args: any) {

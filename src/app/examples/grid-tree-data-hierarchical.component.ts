@@ -15,8 +15,6 @@ import {
   GridOption,
   isNumber,
   SlickDataView,
-  // GroupTotalFormatters,
-  // italicFormatter,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -29,13 +27,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   subTitle = `<ul>
     <li><b>NOTE #1:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
     <li><b>NOTE #2:</b> Tree Totals are only calculated once and are <b>NOT</b> recalculated while filtering data, if you do want that feature then you will need to enable <code>autoRecalcTotalsOnFilterChange</code> <i>(see checkbox below)</i></li>
-    <li><b>Styling - Salesforce Theme</b></li>
-    <ul>
-      <li>The Salesforce Theme was created with SASS and compiled in CSS (<a href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/modules/angular-slickgrid/styles/slickgrid-theme-salesforce.scss" target="_blank">slickgrid-theme-salesforce.scss</a>), you can override any of its SASS variables</li>
-      <li>We use a small subset of <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a></li>
-      <li>you might need to refresh the page to clear the browser cache and see the correct theme</li>
-    </ul>
-  `;
+  </ul>`;
 
   angularGrid!: AngularGridInstance;
   dataViewObj: any;
@@ -163,7 +155,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         // add optional debounce time to limit number of execution that recalc is called, mostly useful on large dataset
         // autoRecalcTotalsDebounce: 250
       },
-      // change header/cell row height for salesforce theme
+      // change header/cell row height
       headerRowHeight: 35,
       rowHeight: 33,
       showCustomFooter: true,

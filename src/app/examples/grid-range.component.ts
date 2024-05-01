@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
   AngularGridInstance,
@@ -13,7 +14,6 @@ import {
   GridOption,
   GridStateChange,
   Metrics,
-  MultipleSelectOption,
   OperatorType,
   SliderRangeOption,
   unsubscribeAllObservables,
@@ -141,7 +141,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       },
       {
         id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 90,
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
         filter: {

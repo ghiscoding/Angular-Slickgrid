@@ -130,7 +130,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
       {
-        id: 'completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark, width: 100,
+        id: 'completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmarkMaterial, width: 100,
         type: FieldType.boolean,
         sortable: true,
         filterable: true,

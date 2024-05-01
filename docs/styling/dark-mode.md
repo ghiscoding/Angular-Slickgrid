@@ -83,7 +83,7 @@ export class MyDemo {
         },
 
         // you can also change the icon and/or command name
-        iconToggleDarkModeCommand: 'fa fa-moon-o',
+        iconToggleDarkModeCommand: 'mdi mdi-brightness-4',
         commandLabels: {
           toggleDarkModeCommand: 'Toggle Dark Mode',
         },

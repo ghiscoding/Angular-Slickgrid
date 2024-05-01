@@ -69,7 +69,7 @@ By default HTML is not rendered and the `label` will simply show HTML as text. B
 this.columnDefinitions = [
   {
     id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-    formatter: Formatters.checkmark,
+    formatter: Formatters.checkmarkMaterial,
     type: FieldType.boolean,
     editor: {
       model: Editors.autocompleter,

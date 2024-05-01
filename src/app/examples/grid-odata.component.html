@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-odata.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -25,7 +25,7 @@
       <div [class]="status.class" role="alert" data-test="status">
         <strong>Status: </strong> {{status.text}}
         <span [hidden]="!processing">
-          <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+          <i class="mdi mdi-sync mdi-spin-1s"></i>
         </span>
       </div>
     </div>
@@ -38,11 +38,11 @@
 
   <div class="row">
     <div class="col-sm-4">
-      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter"
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter"
               (click)="setFiltersDynamically()">
         Set Filters Dynamically
       </button>
-      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting"
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting"
               (click)="setSortingDynamically()">
         Set Sorting Dynamically
       </button>
@@ -92,11 +92,11 @@
 
       <span class="ms-2">
         <label>Programmatically go to first/last page:</label>
-        <button class="btn btn-outline-secondary btn-xs px-2" data-test="goto-first-page" (click)="goToFirstPage()">
-          <i class="fa fa-caret-left fa-lg"></i>
+        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToFirstPage()">
+          <i class="mdi mdi-page-first"></i>
         </button>
-        <button class="btn btn-outline-secondary btn-xs px-2" data-test="goto-last-page" (click)="goToLastPage()">
-          <i class="fa fa-caret-right fa-lg"></i>
+        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToLastPage()">
+          <i class="mdi mdi-page-last"></i>
         </button>
       </span>
     </div>

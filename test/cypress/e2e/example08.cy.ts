@@ -37,6 +37,9 @@ describe('Example 8 - Header Menu Plugin', () => {
     cy.get('.slick-menu-item .slick-menu-content')
       .contains('Hide Column')
       .should('exist');
+
+    cy.get('[data-test=selected-locale]')
+      .click();
   });
 
   it(`should be still be able to click on the Help command of 2nd column "Duration" and expect an alert`, () => {

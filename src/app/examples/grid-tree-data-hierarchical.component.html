@@ -13,31 +13,31 @@
 
   <div class="row">
     <div class="col-md-7">
-      <button (click)="addNewFile()" data-test="add-item-btn" class="btn btn-primary btn-sm">
+      <button (click)="addNewFile()" data-test="add-item-btn" class="btn btn-primary btn-sm btn-icon">
         <span class="icon mdi mdi-plus color-white"></span>
         <span>Add New Pop Song</span>
       </button>
-      <button (click)="deleteFile()" data-test="remove-item-btn" class="btn btn-outline-secondary btn-sm" [disabled]="isRemoveLastInsertedPopSongDisabled">
+      <button (click)="deleteFile()" data-test="remove-item-btn" class="btn btn-outline-secondary btn-sm btn-icon" [disabled]="isRemoveLastInsertedPopSongDisabled">
         <span class="mdi mdi-minus"></span>
         <span>Remove Last Inserted Pop Song</span>
       </button>
-      <button (click)="collapseAll()" data-test="collapse-all-btn" class="btn btn-outline-secondary btn-sm">
+      <button (click)="collapseAll()" data-test="collapse-all-btn" class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-arrow-collapse"></span>
         <span>Collapse All</span>
       </button>
-      <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm">
+      <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-arrow-expand"></span>
         <span>Expand All</span>
       </button>
-      <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-btn" (click)="clearFilters()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-filters-btn" (click)="clearFilters()">
         <span class="mdi mdi-close"></span>
         <span>Clear Filters</span>
       </button>
-      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm btn-icon"
               title="console.log of the Flat dataset">
         <span>Log Flat Structure</span>
       </button>
-      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm btn-icon"
               title="console.log of the Hierarchical Tree dataset">
         <span>Log Hierarchical Structure</span>
       </button>

@@ -18,10 +18,10 @@ A Row Detail allows you to open a detail panel which can contain extra and/or mo
 
 ##### View
 ```html
-<angular-slickgrid 
-    gridId="grid2" 
+<angular-slickgrid
+    gridId="grid2"
     [columnDefinitions]="columnDefinitions"
-    [gridOptions]="gridOptions" 
+    [gridOptions]="gridOptions"
     [dataset]="dataset"
     (onAngularGridCreated)="angularGridReady($event.detail)">
 </angular-slickgrid>
@@ -93,7 +93,7 @@ export class GridRowDetailComponent implements OnInit, OnDestroy {
 ### Changing Addon Options Dynamically
 Row Detail is an addon (commonly known as a plugin and are opt-in addon), because this is not built-in SlickGrid and instead are opt-in, we need to get the instance of that addon object. Once we have the instance, we can use `getOptions` and `setOptions` to get/set any of the addon options, adding `rowDetail` with intellisense should give you this info.
 
-#### Examples 
+#### Examples
 - Dynamically change the Detail View Row Count (how many grid rows do we want to use for the row detail panel)
 ```ts
 changeDetailViewRowCount() {
@@ -109,7 +109,7 @@ changeDetailViewRowCount() {
 ### Calling Addon Methods Dynamically
 Same as previous paragraph, after we get the SlickGrid addon instance, we can call any of the addon methods, adding `rowDetail` with intellisense should give you this info.
 
-#### Examples 
+#### Examples
 - Dynamically close all Row Detail Panels
 ```ts
 closeAllRowDetail() {
@@ -132,14 +132,14 @@ closeRowDetail(gridRowIndex: number) {
 ```
 
 ### Row Detail - Preload Component (loading spinner)
-Most of the time we would get data asynchronously, during that time we can show a loading spinner to the user via the `preloadComponent` grid option. 
+Most of the time we would get data asynchronously, during that time we can show a loading spinner to the user via the `preloadComponent` grid option.
 
 ###### View
 ```ts
 import { Component } from '@angular/core';
 
 @Component({
-  template: `<h4><i class="fa fa-refresh fa-spin fa-2x fa-fw"></i>Loading...</h4>`
+  template: `<h4><i class="mdi mdi-sync mdi-spin-1s mdi-50px"></i>Loading...</h4>`
 })
 export class RowDetailPreloadComponent {}
 ```
@@ -188,7 +188,7 @@ Same concept as the preload, we pass an Angular Component to the `viewComponent`
     <div class="row">
       <div class="col-xs-3"><label>Start:</label> <span>{{model?.start | date: 'yyyy-MM-dd'}}</span></div>
       <div class="col-xs-3"><label>Finish:</label> <span>{{model?.finish | date: 'yyyy-MM-dd'}}</span></div>
-      <div class="col-xs-2"><label>Effort Driven:</label> <i [class]="model?.effortDriven ? 'fa fa-check' : ''"></i></div>
+      <div class="col-xs-2"><label>Effort Driven:</label> <i [class]="model?.effortDriven ? 'mdi mdi-check' : ''"></i></div>
     </div>
 
     <hr>
@@ -231,7 +231,7 @@ export class RowDetailViewComponent {
   }
 }
 ```
-###### App Module 
+###### App Module
 Also make sure that it's part of your App Module `entryComponents` array since this will be a dynamically created component.
 
 ```ts
@@ -336,7 +336,7 @@ export class RowDetailViewComponent {
       // then you can delete the item from the dataView
       this.dataView.deleteItem(model.id);
 
-      // and perhaps display a flash message by calling a method on the Parent Component 
+      // and perhaps display a flash message by calling a method on the Parent Component
       this.parent.showFlashMessage(`Deleted row with ${model.title}`, 'danger');
     }
   }

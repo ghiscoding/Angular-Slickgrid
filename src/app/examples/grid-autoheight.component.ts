@@ -72,7 +72,7 @@ export class GridAutoHeightComponent implements OnInit {
       },
       {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmark, sortable: true,
+        formatter: Formatters.checkmarkMaterial, sortable: true,
         type: FieldType.number
       }
     ];
