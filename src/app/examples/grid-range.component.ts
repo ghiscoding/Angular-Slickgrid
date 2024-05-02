@@ -55,7 +55,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
         <li>by default the range is inclusive which would be the same as defining the filter options to "operator: 'RangeInclusive'" or "operator: OperatoryType.rangeInclusive"</li>
         <li>you can also set the inverse (exclusive) by defining the filter options to "operator: 'RangeExclusive'" or "operator: OperatoryType.rangeExclusive"</li>
       </ul>
-      <li>Date Range with Flatpickr Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
+      <li>Date Range with Vanilla Calendar Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
     </ul>
   `;
   private subscriptions: Subscription[] = [];

@@ -170,13 +170,12 @@ export interface FormatterResultObject {
 }
 ```
 
-#### Example of a Custom Formatter with HTML string
+### Example of a Custom Formatter with HTML string
 
-For example, we will use `Font-Awesome` with a `boolean` as input data, and display a (fire) icon when `True` or a (snowflake) when `False`. This custom formatter is actually display in the [UI sample](#ui-sample) shown below.
-
+For example, we will use our optional SVG icons `.mdi` with a `boolean` as input data, and display a (fire) icon when `True` or a (snowflake) when `False`. This custom formatter is actually display in the [UI sample](#ui-sample) shown below.
 ```ts
 // create a custom Formatter with the Formatter type
-const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) =>
+const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
   value ? `<i class="mdi mdi-fire" aria-hidden="true"></i>` : '<i class="mdi mdi-snowflake" aria-hidden="true"></i>';
 ```
 

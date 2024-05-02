@@ -90,30 +90,7 @@ this.columnDefinitions = [
 ];
 ```
 
-So to make it more clear, the `saveOutputType` is the format that will be sent to the `onCellChange` event, then the `outputType` is how the date will show up in the date picker (Flatpickr) and finally the `type` is basically the input format (coming from your dataset). Note however that each property are cascading, if 1 property is missing it will go to the next one until 1 is found... for example, on the `onCellChange` if you aren't defining `saveOutputType`, it will try to use `outputType`, if again none is provided it will try to use `type` and finally if none is provided it will use `FieldType.dateIso` as the default.
-
-#### Date Picker - Flatpickr Localization
-In order to use different locale, you will have to import whichever Flatpickr locale you need. The best place to do these imports is in your App Module so it's global and you do it only once.
-
-```ts
-import { AngularSlickgridModule } from 'angular-slickgrid';
-
-// load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
-import 'flatpickr/dist/l10n/fr';
-
-@NgModule({
-  declarations: [/*...*/],
-  imports: [
-    // ...
-    AngularSlickgridModule.forRoot({
-      // add any Global Grid Options/Config you might want
-    })
-  ],
-  providers: [/*...*/],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
+So to make it more clear, the `saveOutputType` is the format that will be sent to the `onCellChange` event, then the `outputType` is how the date will show up in the date picker (Vanilla-Calendar) and finally the `type` is basically the input format (coming from your dataset). Note however that each property are cascading, if 1 property is missing it will go to the next one until 1 is found... for example, on the `onCellChange` if you aren't defining `saveOutputType`, it will try to use `outputType`, if again none is provided it will try to use `type` and finally if none is provided it will use `FieldType.dateIso` as the default.
 
 ## AutoComplete Editor
 The AutoComplete Editor has the same configuration (except for the `model: Editors.autoComplete`) as the AutoComplete Filter, so you can refer to the [AutoComplete Filter Wiki](filters/Autocomplete-Filter-(Kraaden-lib).md) for more info on how to use it.

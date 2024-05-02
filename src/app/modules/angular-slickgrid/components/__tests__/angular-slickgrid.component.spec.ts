@@ -57,8 +57,6 @@ import { GridOption } from '../../models';
 import { MockSlickEvent, MockSlickEventHandler } from '../../../../../../test/mockSlickEvent';
 import { RxJsResourceStub } from '../../../../../../test/rxjsResourceStub';
 
-jest.mock('flatpickr', () => { });
-
 const mockSlickRowDetailView = {
   create: jest.fn(),
   init: jest.fn(),
