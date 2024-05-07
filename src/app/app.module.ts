@@ -1,4 +1,3 @@
-import { AppRoutingRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -8,8 +7,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import DOMPurify from 'dompurify';
 
 import { AppComponent } from './app.component';
+import { AppRoutingRoutingModule } from './app-routing.module';
 import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.component';
 import { CustomButtonFormatterComponent } from './examples/custom-buttonFormatter.component';
 import { CustomFooterComponent, GridHeaderFooterComponent } from './examples/grid-header-footer.component';
@@ -155,7 +156,8 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       autoResize: {
         container: '#grid-container',
         rightPadding: 10
-      }
+      },
+      sanitizer: (dirtyHtml) => DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ['level'], RETURN_TRUSTED_TYPE: true })
     })
   ],
   providers: [

@@ -1,27 +1,34 @@
 ## CSP Compliance
-The library is now, at least mostly, CSP (Content Security Policy) compliant since `v4.0`, however there are some exceptions to be aware of. When using any html string as template (for example with Custom Formatter returning an html string), you will not be fully compliant unless you return `TrustedHTML`. You can achieve this by using the `sanitizer` method in combo with [DOMPurify](https://github.com/cure53/DOMPurify) to return `TrustedHTML` as shown below and with that in place you should be CSP compliant.
+The library is for the most part CSP (Content Security Policy) compliant since `v4.0` **but** only if you configure the `sanitizer` grid option. We were previously using `DOMPurify` internally in the project (in version <=4.x) but it was made optional in version 5 and higher. The main reason to make it optional was because most users would use `dompurify` but some users who require SSR support would want to use `isomorphic-dompurify`. You could also skip the `sanitizer` configuration, but that is not recommended.
 
-> **Note** the default sanitizer in Slickgrid-Universal is actually already configured to return `TrustedHTML` but the CSP safe in the DataView is opt-in via `useCSPSafeFilter`
+> **Note** even if the `sanitizer` is optional, we **strongly suggest** that you configure it as a global grid option to avoid possible XSS attacks from your data and also to be CSP compliant. Note that for Salesforce users, you do not have to configure it since Salesforce already use DOMPurify internally.
+
+As mentioned above, the project is mostly CSP compliant, however there are some exceptions to be aware of. When using any html string as template (for example with Custom Formatter returning an html string), you will not be fully compliant unless you return `TrustedHTML`. You can achieve this by using the `sanitizer` method in combo with [DOMPurify](https://github.com/cure53/DOMPurify) to return `TrustedHTML` as shown below and with that in place you should be CSP compliant.
+
+```ts
+// prefer the global grid options if possible
+this.gridOptions = {
+  sanitizer: (dirtyHtml) => DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ['level'], RETURN_TRUSTED_TYPE: true })
+};
+```
+
+> **Note** If you're wondering about the `ADD_ATTR: ['level']`, well the "level" is a custom attribute used by SlickGrid Grouping/Draggable Grouping to track the grouping level depth and it must be kept.
+
+> **Note** the DataView is not CSP safe by default, it is opt-in via the `useCSPSafeFilter` option.
 
 ```typescript
 import DOMPurify from 'dompurify';
-import { GridOption } from 'angular-slickgrid';
+import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
-export class Example1 {
-  gridOptions: GridOption;
-
-  prepareGrid() {
-    // ...
-
-    this.gridOptions = {
-      // NOTE: DOM Purify is already configured in Slickgrid-Universal with the configuration shown below
-      sanitizer: (html) => DOMPurify.sanitize(html, { RETURN_TRUSTED_TYPE: true }),
-      // you could also optionally use the sanitizerOptions instead
-      // sanitizerOptions: { RETURN_TRUSTED_TYPE: true }
-    }
-  }
+// DOM Purify is already configured in Slickgrid-Universal with the configuration shown below
+this.gridOptions = {
+  sanitizer: (html) => DOMPurify.sanitize(html, { RETURN_TRUSTED_TYPE: true }),
+  // you could also optionally use the sanitizerOptions instead
+  // sanitizerOptions: { RETURN_TRUSTED_TYPE: true }
 }
+this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, this.gridOptions, this.dataset);
 ```
+
 with this code in place, we can use the following CSP meta tag (which is what we use in the lib demo, ref: [index.html](https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/vite-demo-vanilla-bundle/index.html#L8-L14))
 ```html
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'nonce-random-string'; require-trusted-types-for 'script'; trusted-types dompurify">

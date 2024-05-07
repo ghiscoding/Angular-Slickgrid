@@ -224,6 +224,3 @@ this.columnDefinitions = [
   }
 ];
 ```
-
-### Change Default DOMPurify Options (sanitize html)
-If you find that the HTML that you passed is being sanitized and you wish to change it, then you can change the default `sanitizeHtmlOptions` property defined in the Global Grid Options, for more info on how to change these global options, see the `Global Grid Options` and also take a look at the [GitHub - DOMPurify](https://github.com/cure53/DOMPurify#can-i-configure-it) configurations.

@@ -7,9 +7,6 @@ Install the `Angular-Slickgrid`, and other external packages like `Bootstrap`
 (Bootstrap is optional, you can choose other framework if you wish)
 ```bash
 npm install --save angular-slickgrid bootstrap # the last dep is optional
-
-# install required @types
-npm install --save-dev @types/sortablejs @types/dompurify
 ```
 #### Important note about `ngx-translate`
 #### Now optional
