@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import fetchJsonp from 'fetch-jsonp';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 
 import {
   AngularGridInstance,
@@ -20,7 +21,7 @@ import {
   OperatorType,
   SortComparers,
   SlickGlobalEditorLock,
-  VanillaCalendarOption,
+  type VanillaCalendarOption,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
@@ -114,7 +115,7 @@ export class GridEditorComponent implements OnInit {
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.icon,
-        params: { iconCssClass: 'fa fa-pencil pointer' },
+        params: { iconCssClass: 'mdi mdi-pencil pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -131,7 +132,7 @@ export class GridEditorComponent implements OnInit {
         excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.icon,
-        params: { iconCssClass: 'fa fa-trash pointer' },
+        params: { iconCssClass: 'mdi mdi-trash-can pointer' },
         minWidth: 30,
         maxWidth: 30,
         // use onCellClick OR grid.onClick.subscribe which you can see down below
@@ -236,7 +237,7 @@ export class GridEditorComponent implements OnInit {
 
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           enableRenderHtml: true,
-          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="fa fa-percent" style="color:cadetblue"></i>' })),
+          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="mdi mdi-percent-outline" style="color:cadetblue"></i>' })),
           customStructure: {
             value: 'value',
             label: 'label',
@@ -260,7 +261,7 @@ export class GridEditorComponent implements OnInit {
           // },
           editorOptions: {
             maxHeight: 400
-          }
+          } as MultipleSelectOption
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
@@ -408,7 +409,7 @@ export class GridEditorComponent implements OnInit {
           model: Filters.singleSelect,
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
         },
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         editor: {
           model: Editors.checkbox,
         },

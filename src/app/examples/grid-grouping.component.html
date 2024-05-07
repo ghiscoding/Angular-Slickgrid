@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-grouping.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -14,34 +14,34 @@
 
   <div class="row">
     <div class="col-sm-12">
-      <button class="btn btn-outline-secondary btn-xs" data-test="add-500-rows-btn" (click)="loadData(500)">
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="add-500-rows-btn" (click)="loadData(500)">
         500 rows
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="add-50k-rows-btn" (click)="loadData(50000)">
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="add-50k-rows-btn" (click)="loadData(50000)">
         50k rows
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="clear-grouping-btn" (click)="clearGrouping()">
-        <i class="fa fa-times"></i> Clear grouping
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="clear-grouping-btn" (click)="clearGrouping()">
+        <i class="mdi mdi-close"></i> Clear grouping
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="collapse-all-btn" (click)="collapseAllGroups()">
-        <i class="fa fa-compress"></i> Collapse all groups
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="collapse-all-btn" (click)="collapseAllGroups()">
+        <i class="mdi mdi-arrow-collapse"></i> Collapse all groups
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="expand-all-btn" (click)="expandAllGroups()">
-        <i class="fa fa-expand"></i> Expand all groups
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="expand-all-btn" (click)="expandAllGroups()">
+        <i class="mdi mdi-arrow-expand"></i> Expand all groups
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="export-excel-btn" (click)="exportToExcel()">
-        <i class="fa fa-file-excel-o text-success"></i> Export to Excel
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="export-excel-btn" (click)="exportToExcel()">
+        <i class="mdi mdi-file-excel-outline text-success"></i> Export to Excel
       </button>
     </div>
   </div>
   <hr />
   <div class="row">
     <div class="col-sm-12">
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-value-btn"
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="group-duration-sort-value-btn"
               (click)="groupByDuration()">
         Group by duration &amp; sort groups by value
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-count-btn"
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="group-duration-sort-count-btn"
               (click)="groupByDurationOrderByCount(false)">
         Group by duration &amp; sort groups by count
       </button>
@@ -49,20 +49,20 @@
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-sort-count-collapse-btn"
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="group-duration-sort-count-collapse-btn"
               (click)="groupByDurationOrderByCount(true)">
         Group by duration &amp; sort groups by count, aggregate collapsed
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-effort-btn"
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="group-duration-effort-btn"
               (click)="groupByDurationEffortDriven()">
         Group by duration then effort-driven
       </button>
-      <button class="btn btn-outline-secondary btn-xs" data-test="group-duration-effort-percent-btn"
+      <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="group-duration-effort-percent-btn"
               (click)="groupByDurationEffortDrivenPercent()">
         Group by duration then effort-driven then percent.
       </button>
       <span [hidden]="!processing">
-        <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+        <i class="mdi mdi-sync mdi-spin-1s"></i>
       </span>
     </div>
   </div>

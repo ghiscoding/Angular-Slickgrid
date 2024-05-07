@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 @Component({
   template:
     `<h4>
-      <i class="fa fa-refresh fa-spin fa-2x fa-fw"></i>
+      <i class="mdi mdi-sync mdi-spin-1s mdi-50px"></i>
       Loading...
     </h4>`
 })
-export class RowDetailPreloadComponent {}
+export class RowDetailPreloadComponent { }

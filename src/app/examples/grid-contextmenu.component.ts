@@ -18,9 +18,9 @@ import {
 
 const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
   if (dataContext.priority === 3) { // option 3 is High
-    return `<div class="cell-menu-dropdown-outline">Action<i class="fa fa-caret-down"></i></div>`;
+    return `<div class="cell-menu-dropdown-outline">Action<i class="mdi mdi-chevron-down"></i></div>`;
   }
-  return `<div class="disabled">Action <i class="fa fa-caret-down"></i></div>`;
+  return `<div class="disabled">Action <i class="mdi mdi-chevron-down"></i></div>`;
 };
 
 const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
@@ -30,7 +30,7 @@ const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) 
   let output = '';
   const count = +(value >= 3 ? 3 : value);
   const color = count === 3 ? 'red' : (count === 2 ? 'orange' : 'yellow');
-  const icon = `<i class="fa fa-star ${color}" aria-hidden="true"></i>`;
+  const icon = `<i class="mdi mdi-star ${color}" aria-hidden="true"></i>`;
 
   for (let i = 1; i <= count; i++) {
     output += icon;
@@ -166,7 +166,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       {
         id: 'completed', nameKey: 'COMPLETED', field: 'completed',
         exportCustomFormatter: Formatters.translateBoolean,
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         sortable: true, filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' }],
@@ -209,7 +209,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
             { command: 'command1', title: 'Command 1', cssClass: 'orange', positionOrder: 61 },
             {
               command: 'delete-row', titleKey: 'DELETE_ROW', positionOrder: 64,
-              iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold',
+              iconCssClass: 'mdi mdi-close', cssClass: 'red', textCssClass: 'bold',
               // only show command to 'Delete Row' when the task is not completed
               itemVisibilityOverride: (args) => {
                 return !args.dataContext.completed;
@@ -223,7 +223,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
             {
               command: 'help',
               titleKey: 'HELP', // use "title" without translation and "titleKey" with TranslateService
-              iconCssClass: 'fa fa-question-circle',
+              iconCssClass: 'mdi mdi-help-circle',
               positionOrder: 66,
             },
             { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 67, },
@@ -260,8 +260,8 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
           ],
           optionTitleKey: 'CHANGE_COMPLETED_FLAG',
           optionItems: [
-            { option: true, titleKey: 'TRUE', iconCssClass: 'fa fa-check-square-o' },
-            { option: false, titleKey: 'FALSE', iconCssClass: 'fa fa-square-o' },
+            { option: true, titleKey: 'TRUE', iconCssClass: 'mdi mdi-check-box-outline' },
+            { option: false, titleKey: 'FALSE', iconCssClass: 'mdi mdi-checkbox-blank-outline' },
             {
               option: null, title: 'null', cssClass: 'italic',
               // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
@@ -400,13 +400,13 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
       commandTitleKey: 'COMMANDS', // this title is optional, you could also use "commandTitle" when not using Translate
       commandItems: [
         { divider: true, command: '', positionOrder: 61 },
-        { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', positionOrder: 62 },
+        { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'mdi mdi-close', cssClass: 'red', textCssClass: 'bold', positionOrder: 62 },
         // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
         // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
         // 'divider',
         { divider: true, command: '', positionOrder: 63 },
         {
-          command: 'help', titleKey: 'HELP', iconCssClass: 'fa fa-question-circle', positionOrder: 64,
+          command: 'help', titleKey: 'HELP', iconCssClass: 'mdi mdi-help-circle', positionOrder: 64,
           // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
           action: (e, args) => {
             // action callback.. do something
@@ -468,15 +468,15 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
             // action callback.. do something
           },
         },
-        { option: 1, iconCssClass: 'fa fa-star-o yellow', titleKey: 'LOW' },
-        { option: 2, iconCssClass: 'fa fa-star-half-o orange', titleKey: 'MEDIUM' },
-        { option: 3, iconCssClass: 'fa fa-star red', titleKey: 'HIGH' },
+        { option: 1, iconCssClass: 'mdi mdi-star-outline yellow', titleKey: 'LOW' },
+        { option: 2, iconCssClass: 'mdi mdi-star orange', titleKey: 'MEDIUM' },
+        { option: 3, iconCssClass: 'mdi mdi-star red', titleKey: 'HIGH' },
         // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
         // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
         'divider',
         // { divider: true, option: '', positionOrder: 3 },
         {
-          option: 4, title: 'Extreme', iconCssClass: 'fa fa-fire', disabled: true,
+          option: 4, title: 'Extreme', iconCssClass: 'mdi mdi-fire', disabled: true,
           // only shown when the task is Not Completed
           itemVisibilityOverride: (args) => {
             const dataContext = args && args.dataContext;
@@ -486,9 +486,9 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
         {
           // we can also have multiple nested sub-menus
           option: null, title: 'Sub-Options (demo)', subMenuTitleKey: 'CHANGE_PRIORITY', optionItems: [
-            { option: 1, iconCssClass: 'fa fa-star-o yellow', titleKey: 'LOW' },
-            { option: 2, iconCssClass: 'fa fa-star-half-o orange', titleKey: 'MEDIUM' },
-            { option: 3, iconCssClass: 'fa fa-star red', titleKey: 'HIGH' },
+            { option: 1, iconCssClass: 'mdi mdi-star-outline yellow', titleKey: 'LOW' },
+            { option: 2, iconCssClass: 'mdi mdi-star orange', titleKey: 'MEDIUM' },
+            { option: 3, iconCssClass: 'mdi mdi-star red', titleKey: 'HIGH' },
           ]
         }
       ],

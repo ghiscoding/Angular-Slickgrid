@@ -12,28 +12,41 @@ Default compiled `css` (if you use the plain Bootstrap Theme CSS, you could simp
 ```json
 "styles": [
     "../node_modules/bootstrap/dist/css/bootstrap.css",
-    "../node_modules/font-awesome/css/font-awesome.css",
-    "../node_modules/flatpickr/dist/flatpickr.css",
-    "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.css",
     "styles.css",
     "../node_modules/angular-slickgrid/styles/css/slickgrid-theme-bootstrap.css"
 ],
 ```
 
-#### SASS (`.scss`)
-You could also compile the SASS files with your own customization, for that simply take any of the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) (without the `!default` flag) variable file and make sure to import the Bootstrap Theme afterward. For example, you could modify your `style.scss` with the following changes:
+### Using built-in Themes
+The Material & Salesforce Themes are using SVGs internally for the icons used by the grid. Each built-in Themes have CSS and SASS files associated with each theme. To take benefit of this, just import whichever CSS/SASS file associated with the Theme you wish to use.
 
+##### with CSS
 ```scss
-/* for example, let's change the mouse hover color */
+/* style.css */
+@import '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-bootstrap.css';
+
+// or other Themes
+// @import '@slickgrid-universal/common/dist/styles/styles/css/slickgrid-theme-material.css';
+// @import '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-salesforce.css';
+```
+
+##### with SASS
+```scss
+/* change any SASS variables before loading the theme */
+$slick-primary-color: green;
 $slick-cell-odd-background-color: lightyellow;
 $slick-row-mouse-hover-color: lightgreen;
 
-/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '../node_modules/angular-slickgrid/styles/sass/slickgrid-theme-bootstrap.scss';
+/* style.scss */
+@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+
+// or other Themes
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss';
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
 ```
 
 ### Using CSS Variables _(instead of SASS)_
-You could change the SlickGrid styling with your own customization using [CSS Variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties). The variables that you can use (over 800 of them) are all predefined as SASS variables in the [_variables.scss](/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) file, you will simply have to rename the `$slick-` prefix with a `--slick-` prefix to the variable name to use them as CSS Variables. To be clear, you don't need SASS but the variables names were all declared as SASS and that is what the lib will use internally but you can optionally use them all as plain CSS Variables.
+You could change the SlickGrid styling with your own customization using [CSS Variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties). The variables that you can use (over 800 of them) are all predefined as SASS variables in the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) file, you will simply have to rename the `$slick-` prefix with a `--slick-` prefix to the variable name to use them as CSS Variables. To be clear, you don't need SASS but the variables names were all declared as SASS and that is what the lib will use internally but you can optionally use them all as plain CSS Variables.
 
 For example, if we take the following 3 SASS variables (`$slick-header-menu-display`, `$slick-primary-color-dark` and `$slick-header-filter-row-border-bottom`) we can use the CSS Variables equivalent as the following
 
@@ -46,25 +59,187 @@ For example, if we take the following 3 SASS variables (`$slick-header-menu-disp
 }
 ```
 
-**NOTE:** you could use `:host` to only change current grid styling, **however** there are many DOM elements that are appended to the Document `body` (Grid Menu, Column Picker, Select Filter/Editor, Context Menu, ...) and the style **will not** be applied with `:host` and so in most cases you would want to use `:root` to make a global change which will also work with elements appended to the `body`.
+> **Note:** you could use `:host` to only change current grid styling, **however** there are many DOM elements that are appended to the DOM `body` (Grid Menu, Column Picker, Select Filter/Editor, Context Menu, ...) and the styles **will not** be applied when simply using `:host` and so in most cases you would want to use `:root` (if possible) to make a global change which will also work with elements appended to the `body`. Also note that `:root` is not available in Salesforce LWC and so you unfortunately won't be able to style everything in Salesforce.
 
-### Bootstrap support
-The creation of `Angular-Slickgrid` started with `Bootstrap 3` and now it's up to `Bootstrap 5` as the [Bootstrap](https://getbootstrap.com/) library keeps evolving.
-- [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
-- [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
+### Using Custom SVGs with SASS
+You could use Custom SVGs and create your own Theme and/or a different set of SVG Icons, each of the icons used in Slickgrid-Universal has an associated SASS variables ending with the suffix `"icon-svg-path"` which allow you to override any of the SVG vector path. All SVG icons are generated by following AntFu's [icons in pure CSS](https://antfu.me/posts/icons-in-pure-css) approach. If you want create your own SVGs in pure CSS, you can use the `generateSvgStyle()` function from our [`sass-utilities.scss`](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/sass-utilities.scss) (take a look at the [`slickgrid-icons.scss`](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/slickgrid-icons.scss) on its usage)
 
-### Other UI frameworks
-Note that Bootstrap is totally optional, you could use any other UI framework, also 2 new themes were added in version `2.18.x`, first is a Material Design Theme and also a Salesforce Theme.
-- Material Theme - [demo](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-parent-child)
-- Salesforce Theme - [demo](https://ghiscoding.github.io/Angular-Slickgrid/#/tree-data-hierarchical)
+##### with SVG
+```scss
+$slick-primary-color: blue;
+$slick-icon-group-color: $slick-primary-color;
+$slick-icon-group-collapsed-svg-path: "M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z";
+$slick-icon-group-expanded-svg-path: "M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z";
+$slick-icon-group-font-size:   13px;
 
-For more demo, you can also take a look at my other repo (Slickgrid-Universal) [demos](https://ghiscoding.github.io/slickgrid-universal).  Also, note that Bootstrap is completely optional (and has been for some time), the other demo that I mentioned was created using only the [Bulma](https://bulma.io/documentation) CSS framework, you will also notice that only the Material & Salesforce Themes were used across these multiple examples.
+// then on the last line, import the Theme that you wish to override
+@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+```
 
-Each of these Styling Themes are compiled in CSS and created from a SASS file, so you can use either or. Both Themes are shown in each Tree Data demo
-- **Note:** you might need to refresh the page to see the theme correctly since the styling is global and if you change page, the style will follow on the next page (unless you refresh).
+> **Note** since the SVG are generated by a SASS function, you can easily override an SVG path in SASS but that is not the case with CSS variable. We still have a way to override an SVG via CSS variable but it requires to override the entire SVG content (not just its path) as can be seen below (also notice that the CSS variable is named without the `"-path"` suffix and also note that the URL must be encoded)
 
-### SVG Icons
-The 2 new Themes were created with only SVG icons, most of the icons were pulled from the [Material Design Icons](https://materialdesignicons.com/) set. If you wish to create your own set of SVG Icons, you can refer to the new [docs - SVG Icons](../styling/SVG-Icons.md)
--  [docs - SVG Icons](../styling/SVG-Icons.md).
+```css
+:root {
+  --slick-checkbox-icon-checked-svg: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 24 24" display="inline-block" height="1em" width="1em" vertical-align="text-bottom" xmlns="http://www.w3.org/2000/svg" %3E%3Cpath fill="currentColor" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"/%3E%3C/svg%3E');
+}
+```
+the SASS equivalent is a lot easier to override
+```scss
+$slick-checkbox-icon-checked-svg-path: "M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"
+```
 
-**Note:** Just to point out that both the Fonts and SVG icons are supported, the default Bootstrap theme will keep Font-Awesome 4 so that it still works for everyone. You could however use SASS to override the Font and use SVG, again see the [docs - SVG Icons](../styling/SVG-Icons.md) for more details.
+### SVG icons
+The project has a few built-in icons (sort, grouping, row detail, row move, row selection) and you can change them via SASS (or CSS with a bit more work). For that reason, all Styling Themes  Since this release now has pure CSS SVG icons, I decided to delete any Font-Awesome references (mostly in the Bootstrap Theme) because all the built-in icons are now all SVG icons (sort, grouping, row detail, row move) (you can change them using SASS). However, there are a few plugins that use external icons via CSS classes (mostly all menu plugins like Header Menu, Grid Menu, Content Menu, ...) and for that reason **all Styling Themes now include default SVG icons** (even the Bootstrap Theme).
+
+What if you want to use your own font/SVG library?
+This can be answered in 2 parts:
+1. the built-in icons can only be changed via SASS (or CSS with extra work), see above on how to change them.
+2. for all other area using icons via CSS classes (e.g. all menu plugins), you can use the "lite" Themes and then make sure to update all the menu plugins with the correct CSS classes, for example the global grid options of the Grid Menu is configured with the following CSS classes and you'll want to remap them with the correct CSS classes to fit your need:
+
+```ts
+// default global grid options
+export const GlobalGridOptions = {
+  gridMenu: {
+    iconCssClass: 'mdi mdi-menu',
+    iconClearAllFiltersCommand: 'mdi mdi-filter-remove-outline',
+    iconClearAllSortingCommand: 'mdi mdi-sort-variant-off',
+    iconClearFrozenColumnsCommand: 'mdi mdi-pin-off-outline',
+    iconExportCsvCommand: 'mdi mdi-download',
+    iconExportExcelCommand: 'mdi mdi-file-excel-outline',
+    iconExportTextDelimitedCommand: 'mdi mdi-download',
+    iconRefreshDatasetCommand: 'mdi mdi-sync',
+    iconToggleDarkModeCommand: 'mdi mdi-brightness-4',
+    iconToggleFilterCommand: 'mdi mdi-flip-vertical',
+    iconTogglePreHeaderCommand: 'mdi mdi-flip-vertical',
+  }
+}
+```
+
+and here's the file size difference with the "lite" version
+
+![image](https://github.com/ghiscoding/slickgrid-universal/assets/643976/0edc9962-d881-49d2-bc47-1f698213ad5e)
+
+### How to change SVG color?
+#### The following works for both CSS and SASS
+The new version 5.x of this project is now creating SVG icons as pure CSS, this mean that you can colorize the icons the same way that you would change a text color. We also provide a few different color CSS classes which start with the prefixes `$color-` or `$text-color-` (e.g. `$color-primary`).
+
+### SVG Colors - CSS Classes
+Since SVG can now be colorize via the `color` the same as any other text, there isn't much to do. However a small subset of default colors is provided that can be used with the SVG icons or any text (basically took the same colors used by Bootstrap [here](https://getbootstrap.com/docs/4.5/utilities/colors/)). We also added a `light` and `dark` shades for of each colors (except `color-light`, `color-dark` since there's no need), they both use a 6% lighter/darker shades (you can override the shade with `$color-lighten-percentage` and the same for darken). These colors can be used with the `color-X` (for example `color-primary`), also note that the primary color will follow your `$slick-primary-color` that you might have already overriden (it could also be different in each styling theme, shown below is the Salesforce theme colors). If you find that the colors are not exactly the colors you're looking for, we've also took some colors taken from [UiKit](https://getuikit.com/) and tagged them as `color-alt-X`.
+
+**NOTE 1:** The `colors.scss` is **only** included in the Material and Salesforce Themes since those are the only 2 themes currently using SVGs. If you wish to use these colors then simply add the necessary css/scss file.
+
+![image](https://github.com/ghiscoding/slickgrid-universal/assets/643976/986f16af-4e2b-4961-b2b5-32afc780b078)
+
+```scss
+// SASS colors
+$text-color-primary: $slick-primary-color;
+$text-color-secondary: #6c757d;
+$text-color-success: #28a745;
+$text-color-danger: #dc3545;
+$text-color-warning: #ffc107;
+$text-color-info: #17a2b8;
+$text-color-light: #f8f9fa;
+$text-color-dark: #343a40;
+$text-color-body: #212529;
+$text-color-muted: #6c757d;
+$text-color-white: #ffffff;
+$text-color-alt-default: #1e87f0;
+$text-color-alt-warning: #faa05a;
+$text-color-alt-danger: #f0506e;
+$text-color-alt-success: #32d296;
+$text-color-se-primary: #3dcd58;
+$text-color-se-link: #42b4e6;
+$text-color-se-link-dark: #337ab7;
+$text-color-se-danger: #b10043;
+$text-color-se-secondary: #9fa0a4;
+$text-color-se-warning: #e47f00;
+$text-color-se-warning-light: #ffd100;
+
+// lighter/darker shades
+$text-color-lighten-percentage: 6%;
+$text-color-darken-percentage: 6%;
+```
+
+##### HTML Color Test
+```html
+<div>
+  <span class="text-color-primary"> text-color-primary <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-primary-light"> text-color-primary-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-primary-dark"> text-color-primary-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-secondary"> text-color-secondary <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-secondary-light"> text-color-secondary-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-secondary-dark"> text-color-secondary-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-success"> text-color-success <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-success-light"> text-color-success-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-success-dark"> text-color-success-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-danger"> text-color-danger <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-danger-light"> text-color-danger-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-danger-dark"> text-color-danger-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-warning"> text-color-warning <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-warning-light"> text-color-warning-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-warning-dark"> text-color-warning-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-info"> text-color-info <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-info-light"> text-color-info-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-info-dark"> text-color-info-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-body"> text-color-body <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-body-light"> text-color-body-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-body-dark"> text-color-body-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-muted"> text-color-muted <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-muted-light"> text-color-muted-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-muted-dark"> text-color-muted-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-dark"> text-color-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div style="background-color: rgb(34, 34, 34)">
+  <span class="text-color-light"> text-color-light <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div style="background-color: rgb(34, 34, 34)">
+  <span class="text-color-white"> text-color-white <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-alt-default"> text-color-alt-default <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-default-light"> text-color-alt-default-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-default-dark"> text-color-alt-default-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-alt-warning"> text-color-alt-warning <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-warning-light"> text-color-alt-warning-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-warning-dark"> text-color-alt-warning-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-alt-success"> text-color-alt-success <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-success-light"> text-color-alt-success-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-success-dark"> text-color-alt-success-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div>
+  <span class="text-color-alt-danger"> text-color-alt-danger <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-danger-light"> text-color-alt-danger-light <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-alt-danger-dark"> text-color-alt-danger-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div><span class="text-color-se-primary"> text-color-se-primary <i class="mdi mdi-help-circle"></i></span></div>
+<div>
+  <span class="text-color-se-link"> text-color-se-link <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-se-link-dark"> text-color-se-link-dark <i class="mdi mdi-help-circle"></i></span>
+</div>
+<div><span class="text-color-se-secondary"> text-color-se-secondary <i class="mdi mdi-help-circle"></i></span></div>
+<div><span class="text-color-se-danger"> text-color-se-danger <i class="mdi mdi-help-circle"></i></span></div>
+<div>
+  <span class="text-color-se-warning"> text-color-se-warning <i class="mdi mdi-help-circle"></i></span> -
+  <span class="text-color-se-warning-light"> text-color-se-warning-light <i class="mdi mdi-help-circle"></i></span>
+</div>
+```

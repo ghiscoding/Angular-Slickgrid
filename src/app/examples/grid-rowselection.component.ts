@@ -74,7 +74,7 @@ export class GridRowSelectionComponent implements OnInit {
       },
       {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmark, type: FieldType.boolean,
+        formatter: Formatters.checkmarkMaterial, type: FieldType.boolean,
         sortable: true, filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
@@ -99,7 +99,7 @@ export class GridRowSelectionComponent implements OnInit {
       },
       {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmark, type: FieldType.boolean,
+        formatter: Formatters.checkmarkMaterial, type: FieldType.boolean,
         sortable: true, filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],

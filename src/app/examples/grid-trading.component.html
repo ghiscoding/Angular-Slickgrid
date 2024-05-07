@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-trading.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -22,13 +22,13 @@
           </span>
         </div>
         <span class="ms-3 me-1">
-          <button class="btn btn-outline-secondary btn-sm" data-test="start-btn" (click)="startSimulation()">
-            <li class="fa fa-play"></li> Start Simulation
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="start-btn" (click)="startSimulation()">
+            <li class="mdi mdi-play-circle-outline"></li> Start Simulation
           </button>
         </span>
         <span class="me-3">
-          <button class="btn btn-outline-secondary btn-sm" data-test="stop-btn" (click)="stopSimulation()">
-            <li class="fa fa-stop"></li> Stop Simulation
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="stop-btn" (click)="stopSimulation()">
+            <li class="mdi mdi-stop-circle-outline"></li> Stop Simulation
           </button>
         </span>
         <span class="mx-1">
@@ -42,8 +42,8 @@
           <input type="number" id="highlight-input" data-test="highlight-input" [(ngModel)]="highlightDuration">
         </span>
         <div class="ms-auto">
-          <button class="btn btn-outline-secondary btn-sm" (click)="toggleFullScreen()">
-            <li [class]="isFullScreen ? 'fa fa-compress' : 'fa fa-arrows-alt'"></li> Toggle Full-Screen
+          <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="toggleFullScreen()">
+            <li [class]="isFullScreen ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'"></li> Toggle Full-Screen
           </button>
         </div>
       </div>

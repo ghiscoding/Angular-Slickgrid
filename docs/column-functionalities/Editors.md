@@ -47,7 +47,7 @@ this.columnDefinitions = [
     }
   },
   {
-    id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark,
+    id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmarkMaterial,
     type: FieldType.number, editor: { model: Editors.checkbox }
   }
 ];
@@ -90,30 +90,7 @@ this.columnDefinitions = [
 ];
 ```
 
-So to make it more clear, the `saveOutputType` is the format that will be sent to the `onCellChange` event, then the `outputType` is how the date will show up in the date picker (Flatpickr) and finally the `type` is basically the input format (coming from your dataset). Note however that each property are cascading, if 1 property is missing it will go to the next one until 1 is found... for example, on the `onCellChange` if you aren't defining `saveOutputType`, it will try to use `outputType`, if again none is provided it will try to use `type` and finally if none is provided it will use `FieldType.dateIso` as the default.
-
-#### Date Picker - Flatpickr Localization
-In order to use different locale, you will have to import whichever Flatpickr locale you need. The best place to do these imports is in your App Module so it's global and you do it only once.
-
-```ts
-import { AngularSlickgridModule } from 'angular-slickgrid';
-
-// load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
-import 'flatpickr/dist/l10n/fr';
-
-@NgModule({
-  declarations: [/*...*/],
-  imports: [
-    // ...
-    AngularSlickgridModule.forRoot({
-      // add any Global Grid Options/Config you might want
-    })
-  ],
-  providers: [/*...*/],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
+So to make it more clear, the `saveOutputType` is the format that will be sent to the `onCellChange` event, then the `outputType` is how the date will show up in the date picker (Vanilla-Calendar) and finally the `type` is basically the input format (coming from your dataset). Note however that each property are cascading, if 1 property is missing it will go to the next one until 1 is found... for example, on the `onCellChange` if you aren't defining `saveOutputType`, it will try to use `outputType`, if again none is provided it will try to use `type` and finally if none is provided it will use `FieldType.dateIso` as the default.
 
 ## AutoComplete Editor
 The AutoComplete Editor has the same configuration (except for the `model: Editors.autoComplete`) as the AutoComplete Filter, so you can refer to the [AutoComplete Filter Wiki](filters/Autocomplete-Filter-(Kraaden-lib).md) for more info on how to use it.
@@ -252,12 +229,12 @@ By default HTML is not rendered and the `label` will simply show HTML as text. B
 this.columnDefinitions = [
   {
     id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-    formatter: Formatters.checkmark,
+    formatter: Formatters.checkmarkMaterial,
     type: FieldType.boolean,
     editor: {
       // display checkmark icon when True
       enableRenderHtml: true,
-      collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
+      collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="mdi mdi-check"></i> ` }, { value: false, label: 'False' }],
       model: Editors.singleSelect
     }
   }
@@ -455,7 +432,7 @@ Some of the Editors could receive extra options, which is mostly the case for Ed
 ```ts
 this.columnDefinitions = [{
   id: 'start', name: 'Start Date', field: 'start',
-  editor: { 
+  editor: {
     model: Editors.date,
     editorOptions: { minDate: 'today' }
   }
@@ -467,10 +444,10 @@ You could also define certain options as a global level (for the entire grid or 
 
 ```ts
 this.gridOptions = {
-  defaultEditorOptions: { 
+  defaultEditorOptions: {
     autocompleter: { debounceWaitMs: 150 }, // typed as AutocompleterOption
     date: { minDate: 'today' },
-    longText: { cols: 50, rows: 5 } 
+    longText: { cols: 50, rows: 5 }
   }
 }
 ```

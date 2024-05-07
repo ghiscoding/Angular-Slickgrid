@@ -9,7 +9,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-contextmenu.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -19,11 +19,11 @@
     <div class="col-12">
       <span class="context-menu">
         <strong>Context Menu:</strong>
-        <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(false)"
+        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showContextCommandsAndOptions(false)"
                 data-test="context-menu-priority-only-button">
           Show Priority Options Only
         </button>
-        <button class="btn btn-outline-secondary btn-xs" (click)="showContextCommandsAndOptions(true)"
+        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showContextCommandsAndOptions(true)"
                 data-test="context-menu-commands-and-priority-button">
           Show Commands & Priority Options
         </button>
@@ -31,11 +31,11 @@
 
       <span class="cell-menu">
         <strong>Cell Menu:</strong>
-        <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(false)"
+        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showCellMenuCommandsAndOptions(false)"
                 data-test="cell-menu-commands-and-options-false-button">
           Show Action Commands Only
         </button>
-        <button class="btn btn-outline-secondary btn-xs" (click)="showCellMenuCommandsAndOptions(true)"
+        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showCellMenuCommandsAndOptions(true)"
                 data-test="cell-menu-commands-and-options-true-button">
           Show Actions Commands & Completed Options
         </button>
@@ -44,8 +44,8 @@
   </div>
   <div class="row locale">
     <div class="col-12">
-      <button class="btn btn-outline-secondary btn-xs" (click)="switchLanguage()" data-test="language-button">
-        <i class="fa fa-language"></i>
+      <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="switchLanguage()" data-test="language-button">
+        <i class="mdi mdi-translate"></i>
         Switch Language
       </button>
       <b>Locale:</b>

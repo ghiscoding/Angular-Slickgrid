@@ -19,6 +19,12 @@ $slick-button-border-color: #ababab !default;
   vertical-align: middle;
 }
 
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .side-menu {
   margin-left: 15px;
 
@@ -49,10 +55,10 @@ $slick-button-border-color: #ababab !default;
     color: red;
 }
 .faded {
-    opacity: 0.2;
+    opacity: 0.7;
 }
 .faded:hover {
-    opacity: 0.5;
+    opacity: 1;
 }
 .pointer {
   cursor: pointer !important;

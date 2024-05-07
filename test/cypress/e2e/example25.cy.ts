@@ -123,7 +123,6 @@ describe('Example 25 - Range Filters', () => {
 
     cy.get('.vanilla-calendar-day_selected-last')
       .should('exist');
-    // .should('contain', moment().add(28, 'days').day() - 1);
   });
 
   it('should change the "Duration" input filter and expect all rows to be within new range', () => {

@@ -1,177 +1,181 @@
 #### Index
-- [Usage](#ui-usage)
-- [Filtering with Localization](#filtering-with-localization-i18n)
-- [Filter Complex Object](#how-to-filter-complex-objects)
-- [Update Filters Dynamically](#update-filters-dynamically)
-- [Query Different Field (Filter/Sort)](#query-different-field)
-- [Dynamic Query Field](#dynamic-query-field)
-- [Debounce/Throttle Text Search (wait for user to stop typing before filtering)](#debouncethrottle-text-search-wait-for-user-to-stop-typing-before-filtering)
-- [Ignore Locale Accent in Text Filter/Sorting](#ignore-locale-accent-in-text-filtersorting)
+- [Using an Inclusive Range](#using-an-inclusive-range-default-is-exclusive)
+- [Using 2 dots (..) notation](#using-2-dots--notation)
+- [Using a Slider Range](#using-a-slider-range-filter)
+  - [Filter Options](#filter-options)
+- [Using a Date Range](#using-a-date-range-filter)
+- [Update Filters Dynamically](Input-Filter.md#update-filters-dynamically)
 
-### Description
-Input filter is the default filter when enabling filters.
+### Introduction
+Range filters allows you to search for a value between 2 min/max values, the 2 most common use case would be to filter between 2 numbers or dates, you can do that with the Slider & Date Range Filters. The range can also be defined as inclusive (`>= 0 and <= 10`) or exclusive (`> 0 and < 10`), the default is exclusive but you can change that, see below for more info.
 
-### Demo
-[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
+### Using an Inclusive Range (default is Exclusive)
+By default all the range filters are with exclusive range, which mean between value `x` and `y` but without including them. If you wish to include the `x` and `y` values, you can change that through the `operator` property.
 
-### UI Usage
-All column types support the following operators: (`>`, `>=`, `<`, `<=`, `<>`, `!=`, `=`, `==`, `*`), range filters can also have 1 of these options (`rangeInclusive` or `rangeExclusive`, the inclusive is default)
-Example:
-- Number type
-  - `>100` => bigger than 100
-  - `<>100` => not include number 100
-  - `15..44` => between 15 and 44 (you can also provide option `rangeInclusive` or `rangeExclusive`, inclusive is default)
-- Date types
-  - `>=2001-01-01` => bigger or equal than date `2001-01-01`
-  - `<02/28/17` => smaller than date `02/28/17`
-  - `2001-01-01..2002-02-22` => between 2001-01-01 and 2002-02-22
-- String type
-  - `<>John` (not include the sub-string `John`)
-  - `John*` => starts with the sub-string `John`
-  - `*Doe` => ends with the sub-string `Doe`
-  - `ab..ef` => anything between "af" and "ef"
-    - refer to ASCII table, it is however case insensitive
-
-Note that you could do the same functionality with a Compound Filter.
-
-#### Note
-For filters to work properly (default is `string`), make sure to provide a `FieldType` (type is against the dataset, not the Formatter), for example on a Date Filters, we can set the `FieldType` of dateUtc/date (from dataset) can use an extra option of `filterSearchType` to let user filter more easily. For example, with a column having a "UTC Date" coming from the dataset but has a `formatter: Formatters.dateUs`, you can type a date in US format `>02/28/2017`, also when dealing with UTC you have to take the time difference in consideration.
-
-### How to use Input Filter
-Simply set the flag `filterable` to True and and enable the filters in the Grid Options. Here is an example with a full column definition:
+For example
 ```ts
-// define you columns, in this demo Effort Driven will use a Select Filter
+// your columns definition
 this.columnDefinitions = [
-  { id: 'title', name: 'Title', field: 'title' },
-  { id: 'description', name: 'Description', field: 'description', filterable: true }
-];
+  {
+    id: 'duration', field: 'duration', name: 'Duration',
+    filterable: true,
+    filter: {
+      model: Filters.input,
+      operator: OperatorType.rangeInclusive // defaults to exclusive
 
-// you also need to enable the filters in the Grid Options
-this.gridOptions = {
-   enableFiltering: true
-};
+      // or use the string (case sensitive)
+      operator: 'RangeInclusive', // defaults to exclusive
+    }
+  },
+];
 ```
 
-### Filtering with Localization (i18n)
-When using a regular grid with a JSON dataset (that is without using Backend Service API), the filter might not working correctly on cell values that are translated (because it will try to filter against the translation key instead of the actual formatted value). So to bypass this problem, a new extra `params` was created to resolve this, you need to set `useFormatterOuputToFilter` to True and the filter will, has the name suggest, use the output of the Formatter to filter against. Example:
+## Using 2 dots (..) notation
+You can use a regular input filter with the 2 dots (..) notation to represent a range, for example `5..90` would search between the value 5 and 90 (exclusive search unless specified).
+
+##### Component
 ```ts
-// define you columns, in this demo Effort Driven will use a Select Filter
-this.columnDefinitions = [
-  { id: 'title', name: 'Title', field: 'id',
-    headerKey: 'TITLE',
-    formatter: this.taskTranslateFormatter,  // <-- this could be a custom Formatter or the built-in translateFormatter
-    filterable: true,
-    params: { useFormatterOuputToFilter: true } // <-- set this flag to True
-  },
-  { id: 'description', name: 'Description', field: 'description', filterable: true }
-];
+import { Filters, Formatters, GridOption, OperatorType } from '@slickgrid-universal/common';
 
-// you also need to enable the filters in the Grid Options
-this.gridOptions = {
-   enableFiltering: true
-};
+export class GridBasicComponent {
+  columnDefinitions: Column[];
+  gridOptions: GridOption;
+  dataset: any[];
 
-// using a custom translate Formatter OR translateFormatter
-taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
-  return this.i18n.tr('TASK_X', { x: value });
+  attached(): void {
+    // your columns definition
+    this.columnDefinitions = [
+      {
+        id: 'duration', field: 'duration', name: 'Duration',
+        type: 'number', // you can optionally specify that the data are numbers
+        filterable: true,
+
+        // input filter is the default, so you can skip this unless you want to specify the `operator`
+        filter: {
+          model: 'input',
+          operator: OperatorType.rangeInclusive // defaults to exclusive
+        }
+      },
+    ];
+
+    this.gridOptions = {
+      // your grid options config
+    }
+  }
 }
 ```
 
-### How to Filter Complex Objects?
-You can filter complex objects using the dot (.) notation inside the `field` property defined in your Columns Definition.
+### Using a Slider Range Filter
+The slider range filter is very useful if you can just want to use the mouse to drag/slide a cursor, you can also optionally show/hide the slider values on screen (hiding them would giving you more room without but without the precision).
 
-For example, let say that we have this dataset
-```ts
-const dataset = [
- { item: 'HP Desktop', buyer: { id: 1234, address: { street: '123 belleville', zip: 123456 }},
- { item: 'Lenovo Mouse', buyer: { id: 456, address: { street: '456 hollywood blvd', zip: 789123 }}
-];
-```
-
-We can now filter the zip code from the buyer's address using this filter:
-```ts
-this.columnDefinitions = [
-  {
-    // the zip is a property of a complex object which is under the "buyer" property
-    // it will use the "field" property to explode (from "." notation) and find the child value
-    id: 'zip', name: 'ZIP', field: 'buyer.address.zip', filterable: true
-   // id: 'street',  ...
-];
-```
-
-### Update Filters Dynamically
-You can update/change the Filters dynamically (on the fly) via the `updateFilters` method from the `FilterService`. Note that calling this method will override all filters and replace them with the new array of filters provided. For example, you could update the filters from a button click or a select dropdown list with predefined filter set.
-
-##### View
-```html
-<button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
-    Set Filters Dynamically
-</button>
-
-<angular-slickgrid gridId="grid1"
-   [columnDefinitions]="columnDefinitions"
-   [gridOptions]="gridOptions"
-   [dataset]="dataset"
-   (onAngularGridCreated)="angularGridReady($event.detail)">
-</angular-slickgrid>
-```
 ##### Component
 ```ts
-export class Example {
-  angularGrid: AngularGridInstance;
+import { Filters, Formatters, GridOption, SliderRangeOption, OperatorType } from '@slickgrid-universal/commomn';
 
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
-  }
+export class GridBasicComponent {
+  columnDefinitions: Column[];
+  gridOptions: GridOption;
+  dataset: any[];
 
-  setFiltersDynamically() {
-    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
-    this.angularGrid.filterService.updateFilters([
-      { columnId: 'duration', searchTerms: [2, 25, 48, 50] },
-      { columnId: 'complete', searchTerms: [95], operator: '<' },
-      { columnId: 'effort-driven', searchTerms: [true] },
-      { columnId: 'start', operator: '>=', searchTerms: ['2001-02-28'] },
-    ]);
+  attached(): void {
+    // your columns definition
+    this.columnDefinitions = [
+      {
+        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 120,
+        sortable: true,
+        formatter: Formatters.progressBar,
+        type: 'number',
+        filterable: true,
+        filter: {
+          model: Filters.sliderRange,
+          maxValue: 100, // or you can use the filterOptions as well
+          operator: OperatorType.rangeInclusive, // optional, defaults to exclusive
+          params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
+
+          // you can also optionally pass any option of the Slider filter
+          filterOptions: { sliderStartValue: 5 } as SliderRangeOption
+        }
+      },
+    ];
+
+    this.gridOptions = {
+      // your grid options config
+    }
   }
+}
 ```
 
-#### Extra Arguments
-The `updateFilters` method has 2 extra arguments:
-- 2nd argument, defaults to true, is to emit a filter changed event (the GridStateService uses this event)
-  - optional and defaults to true `updateFilters([], true)`
-- 3rd argument is to trigger a backend query (when using a Backend Service like OData/GraphQL), this could be useful when using updateFilters & updateSorting and you wish to only send the backend query once.
-  - optional and defaults to true `updateFilters([], true, true)`
+##### Filter Options
+All the available options that can be provided as `filterOptions` to your column definitions and you should try to cast your `filterOptions` to the specific interface as much as possible to make sure that you use only valid options of allowed by the targeted filter
 
-### Query Different Field
-Sometime you want to display a certain column (let say `countryName`) but you want to filter from a different column (say `countryCode`), in such use case you can use 1 of these 4 optional
-- `queryField`: this will affect both the Filter & Sort
-- `queryFieldFilter`: this will affect only the Filter
-- `queryFieldSorter`: this will affect only the Sort
-- `queryFieldNameGetterFn`: dynamically change column to do Filter/Sort (see below)
-
-### Dynamic Query Field
-What if you a field that you only know which field to query only at run time and depending on the item object (`dataContext`)?
-We can defined a `queryFieldNameGetterFn` callback that will be executed on each row when Filtering and/or Sorting.
 ```ts
-queryFieldNameGetterFn: (dataContext) => {
-  // do your logic and return the field name will be queried
-  // for example let say that we query "profitRatio" when we have a profit else we query "lossRatio"
-  return dataContext.profit > 0 ? 'profitRatio' : 'lossRatio';
-},
+filter: {
+  model: Filters.sliderRange,
+  filterOptions: {
+    sliderStartValue: 5
+  } as SliderOption
+}
 ```
 
-### Debounce/Throttle Text Search (wait for user to stop typing before filtering)
-When having a large dataset, it might be useful to add a debounce delay so that typing multiple character successively won't affect the search time, you can use the `filterTypingDebounce` grid option for that use case. What it will do is simply wait for the user to finish typing before executing the filter condition, you typically don't want to put this number too high and I find that between 250-500 is a good number.
+#### Grid Option `defaultFilterOptions
+You could also define certain options as a global level (for the entire grid or even all grids) by taking advantage of the `defaultFilterOptions` Grid Option. Note that they are set via the filter type as a key name (`autocompleter`, `date`, ...) and then the content is the same as `filterOptions` (also note that each key is already typed with the correct filter option interface), for example
+
 ```ts
 this.gridOptions = {
-   filterTypingDebounce: 250,
-};
+  defaultFilterOptions: {
+    // Note: that `date`, `select` and `slider` are combining both compound & range filters together
+    date: { range: { min: 'today' } },
+    select: { minHeight: 350 }, // typed as MultipleSelectOption
+    slider: { sliderStartValue: 10 }
+  }
+}
 ```
 
-### Ignore Locale Accent in Text Filter/Sorting
-You can ignore latin accent (or any other language accent) in text filter via the Grid Option `ignoreAccentOnStringFilterAndSort` flag (default is false)
+### Using a Date Range Filter
+The date range filter allows you to search data between 2 dates (it uses [Vanilla-Calendar Range](https://vanilla-calendar.pro/) feature).
+
+##### Component
+import { Filters, Formatters, GridOption, OperatorType, VanillaCalendarOption } from '@slickgrid-universal/common';
+
+```typescript
+export class GridBasicComponent {
+  columnDefinitions: Column[];
+  gridOptions: GridOption;
+  dataset: any[];
+
+  attached(): void {
+    // your columns definition
+    this.columnDefinitions = [
+      {
+        id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH',
+        minWidth: 75, width: 120, exportWithFormatter: true,
+        formatter: Formatters.dateIso, sortable: true,
+        type: FieldType.date,
+        filterable: true,
+        filter: {
+          model: Filters.dateRange,
+
+          // override any of the Vanilla-Calendar options through "filterOptions"
+          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption
+        }
+      },
+    ];
+
+    this.gridOptions = {
+      // your grid options config
+    }
+  }
+}
+```
+
+#### Filter Options (`VanillaCalendarOption` interface)
+All the available options that can be provided as `filterOptions` to your column definitions can be found under this [VanillaCalendarOption interface](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/interfaces/vanillaCalendarOption.interface.ts) and you should cast your `filterOptions` with the expected interface to make sure that you use only valid settings of the [Vanilla-Calendar](https://vanilla-calendar.pro/docs/reference/additionally/settings) library.
+
 ```ts
-this.gridOptions = {
-   ignoreAccentOnStringFilterAndSort: true,
-};
+filter: {
+  model: Filters.compoundDate,
+  filterOptions: {
+    range: { min: 'today' }
+  } as VanillaCalendarOption
+}
 ```

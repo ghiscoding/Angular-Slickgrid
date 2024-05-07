@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-clientside.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -17,25 +17,25 @@
     {{metrics.totalItemCount}} items
   </span>
   <div class="btn-group" role="group">
-    <button class="btn btn-sm btn-outline-secondary" data-test="scroll-top-btn" (click)="scrollGridTop()">
-      <i class="fa fa-arrow-up"></i>
+    <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="scroll-top-btn" (click)="scrollGridTop()">
+      <i class="mdi mdi-arrow-down mdi-rotate-180"></i>
     </button>
-    <button class="btn btn-sm btn-outline-secondary" data-test="scroll-bottom-btn" (click)="scrollGridBottom()">
-      <i class="fa fa-arrow-down"></i>
+    <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="scroll-bottom-btn" (click)="scrollGridBottom()">
+      <i class="mdi mdi-arrow-down"></i>
     </button>
   </div>
-  <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters"
+  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-filters"
           (click)="angularGrid.filterService.clearFilters()">
     Clear Filters
   </button>
-  <button class="btn btn-outline-secondary btn-sm" data-test="clear-sorting"
+  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-sorting"
           (click)="angularGrid.sortService.clearSorting()">
     Clear Sorting
   </button>
-  <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
     Set Filters Dynamically
   </button>
-  <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
     Set Sorting Dynamically
   </button>
 

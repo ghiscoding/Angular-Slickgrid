@@ -51,7 +51,6 @@
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/app/slickgrid-custom-variables.scss",
               "src/styles.scss"

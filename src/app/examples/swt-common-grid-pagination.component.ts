@@ -17,11 +17,11 @@ import { GridOption } from '../modules/angular-slickgrid';
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
-                    <a class="page-link icon-seek-first fa fa-angle-double-left"
+                    <a class="page-link icon-seek-first mdi mdi-page-first"
                     aria-label="First" (click)="changeToFirstPage($event)"> </a>
                 </li>
                 <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
-                    <a class="page-link icon-seek-prev fa fa-angle-left"
+                    <a class="page-link icon-seek-prev mdi mdi-chevron-down mdi-rotate-240"
                     aria-label="Previous" (click)="changeToPreviousPage($event)"> </a>
                 </li>
             </ul>
@@ -37,11 +37,11 @@ import { GridOption } from '../modules/angular-slickgrid';
             <ul class="pagination">
                 <li class="page-item"
                     [ngClass]="pageNumber === pageCount ? 'disabled' : ''"><a
-                    class="page-link icon-seek-next text-center fa fa-lg fa-angle-right"
+                    class="page-link icon-seek-next text-center mdi-chevron-down mdi-rotate-90"
                     aria-label="Next" (click)="changeToNextPage($event)"> </a></li>
                 <li class="page-item"
                     [ngClass]="pageNumber === pageCount ? 'disabled' : ''"><a
-                    class="page-link icon-seek-end fa fa-lg fa-angle-double-right"
+                    class="page-link icon-seek-end mdi mdi-page-last"
                     aria-label="Last" (click)="changeToLastPage($event)"> </a></li>
             </ul>
         </nav>
@@ -49,7 +49,7 @@ import { GridOption } from '../modules/angular-slickgrid';
             <ul class="pagination">
                 <li class="">
                     <span [hidden]="!processing" class="page-spin">
-                        <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+                        <i class="mdi mdi-sync mdi-spin-1s"></i>
                     </span>
                 </li>
             </ul>
@@ -62,7 +62,7 @@ import { GridOption } from '../modules/angular-slickgrid';
               height: 32px;
               background-color: transparent;
               cursor: default;
-              animation: fa-spin 1.2s infinite linear !important;
+              animation: mdi-sync mdi-spin infinite linear !important;
             }
             .page-spin:hover {
                 background-color: transparent;

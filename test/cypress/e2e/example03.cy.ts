@@ -152,7 +152,7 @@ describe('Example 3 - Grid with Editors', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(11)`).click();
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(11) > input.editor-checkbox.editor-effort-driven`).check().blur();
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(10)`).click(); // the blur seems to not always work, so just click on another cell
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(11)`).find('.fa-check.checkmark-icon');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(11)`).find('.mdi-check.checkmark-icon');
 
     cy.get('.slick-viewport.slick-viewport-top.slick-viewport-left')
       .scrollTo('top');

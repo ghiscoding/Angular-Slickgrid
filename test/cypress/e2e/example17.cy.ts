@@ -420,13 +420,13 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
     cy.get('.slick-row')
       .first()
       .children('.slick-cell')
-      .children('.fa.fa-pencil')
+      .children('.mdi.mdi-pencil')
       .should('have.length', 1);
 
     cy.get('.slick-row')
       .first()
       .children('.slick-cell:nth(1)')
-      .children('.fa.fa-trash')
+      .children('.mdi.mdi-trash-can')
       .should('have.length', 1);
   });
 });

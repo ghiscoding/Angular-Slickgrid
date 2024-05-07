@@ -146,26 +146,3 @@ The final step is that you need the actual translations. Note that `ngx-translat
 "copy:i18n": "cross-env copyfiles -f node_modules/angular-slickgrid/i18n/*.json src/assets/i18n"
 ```
 If you want to manually re-create the translation in your own files, the list of translations that you will need are displayed in the [asset i18n](https://github.com/ghiscoding/angular-slickgrid/tree/master/src/assets/i18n) translation folder (from that file, you need all translations shown before the 'BILLING', the next few ones are for the demo page only)
-
-### Date Picker - Flatpickr Localization
-In order to use different locale, you will have to import whichever Flatpickr locale you need. The best place to do these imports is in your App Module so it's global and you do it only once.
-
-```ts
-import { AngularSlickgridModule } from 'angular-slickgrid';
-
-// load necessary Flatpickr Locale(s), but make sure it's imported AFTER the SlickgridModule import
-import 'flatpickr/dist/l10n/fr';
-
-@NgModule({
-  declarations: [/*...*/],
-  imports: [
-    // ...
-    AngularSlickgridModule.forRoot({
-      // add any Global Grid Options/Config you might want
-    })
-  ],
-  providers: [/*...*/],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
