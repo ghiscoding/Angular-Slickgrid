@@ -84,7 +84,7 @@
   </div>
   <div class="row mt-2 mb-1">
     <div class="col-md-12">
-      <button class="btn btn-outline-danger btn-sm" data-test="throw-page-error-btn"
+      <button class="btn btn-outline-danger btn-sm btn-icon" data-test="throw-page-error-btn"
               (click)="throwPageChangeError()">
         <span>Throw Error Going to Last Page... </span>
         <i class="mdi mdi-page-last"></i>
@@ -92,12 +92,14 @@
 
       <span class="ms-2">
         <label>Programmatically go to first/last page:</label>
-        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToFirstPage()">
-          <i class="mdi mdi-page-first"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToLastPage()">
-          <i class="mdi mdi-page-last"></i>
-        </button>
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToFirstPage()">
+            <i class="mdi mdi-page-first"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToLastPage()">
+            <i class="mdi mdi-page-last"></i>
+          </button>
+        </div>
       </span>
     </div>
   </div>

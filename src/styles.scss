@@ -13,7 +13,7 @@ $slick-button-border-color: #ababab !default;
   font-size  : 12px;
   line-height  : 1.5;
   border-radius : 3px;
-  margin: 0 2px;
+  margin: 0;
   font-size: 12px;
   height: 22px;
   vertical-align: middle;
@@ -68,6 +68,12 @@ $slick-button-border-color: #ababab !default;
 }
 .text-danger {
   color: red !important;
+}
+.mdi-pencil.pointer:hover {
+  color: #00bfff;
+}
+.mdi-trash-can.pointer:hover {
+  color: #ff002b;
 }
 
 .github-button-container {
