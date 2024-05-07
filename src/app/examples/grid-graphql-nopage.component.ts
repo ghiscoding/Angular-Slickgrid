@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GraphqlService, GraphqlResult, GraphqlServiceApi, } from '@slickgrid-universal/graphql';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 
 import {
   AngularGridInstance,
@@ -9,7 +10,6 @@ import {
   Formatters,
   GridOption,
   Metrics,
-  MultipleSelectOption,
   OperatorType,
 } from './../modules/angular-slickgrid';
 import { Observable } from 'rxjs';

@@ -207,7 +207,7 @@ export class GridDraggableGroupingComponent implements OnInit {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
           model: Filters.singleSelect
         },
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         grouping: {
           getter: 'effortDriven',
           formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span style="color:green">(${g.count} items)</span>`,
@@ -251,8 +251,8 @@ export class GridDraggableGroupingComponent implements OnInit {
       },
       draggableGrouping: {
         dropPlaceHolderText: 'Drop a column header here to group by the column',
-        // groupIconCssClass: 'fa fa-outdent',
-        deleteIconCssClass: 'fa fa-times',
+        // groupIconCssClass: 'mdi mdi-drag-vertical',
+        deleteIconCssClass: 'mdi mdi-close',
         onGroupChanged: (e, args) => this.onGroupChanged(args),
         onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
       },

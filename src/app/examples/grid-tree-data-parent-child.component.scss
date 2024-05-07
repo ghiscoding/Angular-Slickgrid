@@ -1,10 +1,10 @@
 /* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.lite.scss';
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.lite.scss';
 
-.icon {
-    align-items: center;
+#grid28 {
+  .slick-cell {
     display: inline-flex;
-    justify-content: center;
-    height: 1rem;
-    width: 1rem;
+    align-items: center;
+    gap: 4px;
+  }
 }

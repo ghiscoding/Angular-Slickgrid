@@ -52,7 +52,7 @@ Inside the column definition there are couple of flags you can set and also some
 - `exportCustomFormatter` will let you choose a different Formatter when exporting
   - For example, you might have `formatter: Formatters.checkmark` but you want to see a boolean translated value, in this case you would define an extra property of `exportCustomFormatter: Formatters.translateBoolean`.
 - you can set `exportCsvForceToKeepAsString` flag, this one will wrap the cell value into double quotes and add an equal sign in the front, this is especially useful on a column that could be turned into an exponential number by Excel. For example, we could have "1E06" and without this flag will become (1.0E06) in Excel, unless we enable the flag which will become `="1E06"` which will keep it as a string, also note that it will be shown as "1E06" but if you click on the cell value, you will see `="1E06"`
-- set `sanitizeDataExport` to remove any HTML/Script code from being export. For example if your value is `<span class="fa fa-check">True</span>` will export `True` without any HTML (data is sanitized).
+- set `sanitizeDataExport` to remove any HTML/Script code from being export. For example if your value is `<span class="mdi mdi-check">True</span>` will export `True` without any HTML (data is sanitized).
    - this flag can be used in the Grid Options (all columns) or in a Column Definition (per column).
 
 #### Behaviors
@@ -81,7 +81,7 @@ defineGrid() {
       formatter: Formatters.dateIso // this formatter will be used for the export
     },
     { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED',
-      formatter: Formatters.checkmark,              // will display a checkmark icon in the UI
+      formatter: Formatters.checkmarkMaterial,              // will display a checkmark icon in the UI
       customFormatter: Formatters.translateBoolean, // will export a translated value, e.g. in French, True would show as 'Vrai'
     }
   ];
@@ -135,12 +135,12 @@ export class MySample {
 ```
 
 ### Show Loading Process Spinner
-If you have lots of data, you might want to show a spinner telling the user that something is happening. You can use the Event Emitters `(onBeforeExportToTextFile)` to start your spinner and then `(onAfterExportToTextFile)` to stop the spinner once the process is done. You can see a this [Grouping Example](https://ghiscoding.github.io/Angular-Slickgrid/#/grouping) demo which has this feature enabled. 
+If you have lots of data, you might want to show a spinner telling the user that something is happening. You can use the Event Emitters `(onBeforeExportToTextFile)` to start your spinner and then `(onAfterExportToTextFile)` to stop the spinner once the process is done. You can see a this [Grouping Example](https://ghiscoding.github.io/Angular-Slickgrid/#/grouping) demo which has this feature enabled.
 
 #### View
 ```html
 <span [hidden]="!processing">
-   <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+   <i class="mdi mdi-sync mdi-spin-1s"></i>
 </span>
 
 <angular-slickgrid gridId="grid2"

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
   AngularGridInstance,
@@ -13,7 +14,6 @@ import {
   GridOption,
   GridStateChange,
   Metrics,
-  MultipleSelectOption,
   OperatorType,
   SliderRangeOption,
   unsubscribeAllObservables,
@@ -55,7 +55,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
         <li>by default the range is inclusive which would be the same as defining the filter options to "operator: 'RangeInclusive'" or "operator: OperatoryType.rangeInclusive"</li>
         <li>you can also set the inverse (exclusive) by defining the filter options to "operator: 'RangeExclusive'" or "operator: OperatoryType.rangeExclusive"</li>
       </ul>
-      <li>Date Range with Flatpickr Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
+      <li>Date Range with Vanilla Calendar Date Picker, they will also use the locale, choose a start date then drag or click on the end date</li>
     </ul>
   `;
   private subscriptions: Subscription[] = [];
@@ -141,7 +141,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       },
       {
         id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 90,
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
         filter: {

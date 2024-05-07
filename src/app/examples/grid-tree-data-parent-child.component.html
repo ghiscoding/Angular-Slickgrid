@@ -13,39 +13,39 @@
 
   <div class="row" style="margin-bottom: 4px;">
     <div class="col-md-12">
-      <button class="btn btn-outline-secondary btn-sm" data-test="add-500-rows-btn" (click)="loadData(500)">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="add-500-rows-btn" (click)="loadData(500)">
         500 rows
       </button>
-      <button class="btn btn-outline-secondary btn-sm" data-test="add-50k-rows-btn" (click)="loadData(25000)">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="add-50k-rows-btn" (click)="loadData(25000)">
         25k rows
       </button>
-      <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-sm btn-icon"
               data-test="change-filter-dynamically">
         <span class="mdi mdi-filter-outline"></span>
         <span>Dynamically Change Filter (% complete &lt; 40)</span>
       </button>
       <button (click)="collapseAllWithoutEvent()" data-test="collapse-all-noevent-btn"
-              class="btn btn-outline-secondary btn-sm">
+              class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-arrow-collapse"></span>
         <span>Collapse All (without triggering event)</span>
       </button>
       <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
-              class="btn btn-outline-secondary btn-sm"
+              class="btn btn-outline-secondary btn-sm btn-icon"
               [disabled]="hasNoExpandCollapseChanged">
         <span class="icon mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
       </button>
-      <button (click)="collapseAllWithoutEvent()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="collapseAllWithoutEvent()" class="btn btn-outline-secondary btn-sm btn-icon"
               data-test="collapse-all-noevent-btn">
         <span class="mdi mdi-arrow-collapse"></span>
         <span>Collapse All (without triggering event)</span>
       </button>
-      <button (click)="dynamicallyToggledFirstParent()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="dynamicallyToggledFirstParent()" class="btn btn-outline-secondary btn-sm btn-icon"
               data-test="dynamically-toggle-first-parent-btn">
         <span>Dynamically Toggle First Parent</span>
       </button>
       <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
-              class="btn btn-outline-secondary btn-sm"
+              class="btn btn-outline-secondary btn-sm btn-icon"
               [disabled]="hasNoExpandCollapseChanged">
         <span class="mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
@@ -56,34 +56,34 @@
 
   <div class="row">
     <div class="col-md-12">
-      <button (click)="addNewRow()" data-test="add-item-btn" class="btn btn-primary btn-sm">
+      <button (click)="addNewRow()" data-test="add-item-btn" class="btn btn-primary btn-sm btn-icon">
         <span class="icon mdi mdi-plus color-white"></span>
         <span>Add New Item (in 1st group)</span>
       </button>
-      <button (click)="updateFirstRow()" data-test="update-item-btn" class="btn btn-outline-secondary btn-sm">
+      <button (click)="updateFirstRow()" data-test="update-item-btn" class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-pencil"></span>
         <span>Update 1st Row Item</span>
       </button>
-      <button (click)="collapseAll()" data-test="collapse-all-btn" class="btn btn-outline-secondary btn-sm">
+      <button (click)="collapseAll()" data-test="collapse-all-btn" class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-arrow-collapse"></span>
         <span>Collapse All</span>
       </button>
-      <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm">
+      <button (click)="expandAll()" data-test="expand-all-btn" class="btn btn-outline-secondary btn-sm btn-icon">
         <span class="icon mdi mdi-arrow-expand"></span>
         <span>Expand All</span>
       </button>
-      <button (click)="logTreeDataToggledItems()" class="btn btn-outline-secondary btn-sm">
+      <button (click)="logTreeDataToggledItems()" class="btn btn-outline-secondary btn-sm btn-icon">
         <span>Log Tree Toggled Items</span>
       </button>
-      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-sm btn-icon"
               title="console.log of the Flat dataset">
         <span>Log Flat Structure</span>
       </button>
-      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm"
+      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-sm btn-icon"
               title="console.log of the Hierarchical Tree dataset">
         <span>Log Hierarchical Structure</span>
       </button>
-      <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-sm">
+      <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-sm btn-icon">
         <span>Dynamically Change Filter (% complete &lt; 40)</span>
       </button>
     </div>

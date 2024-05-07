@@ -139,7 +139,7 @@ export class GridGroupingComponent implements OnInit {
         minWidth: 20, width: 80, maxWidth: 80,
         cssClass: 'cell-effort-driven',
         field: 'effortDriven',
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         sortable: true,
         filterable: true,
         filter: {

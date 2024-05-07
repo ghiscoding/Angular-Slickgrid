@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
-import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleterOption, EditCommand, formatNumber, SortComparers, SlickGrid, SlickGlobalEditorLock } from '../modules/angular-slickgrid';
+import { AngularGridInstance, Column, GridOption, Filters, Formatter, LongTextEditorOption, FieldType, Editors, Formatters, AutocompleterOption, EditCommand, formatNumber, SortComparers, SlickGrid, SlickGlobalEditorLock, VanillaCalendarOption } from '../modules/angular-slickgrid';
 
 const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
 
@@ -163,7 +163,7 @@ export class GridResizeByContentComponent implements OnInit {
       {
         id: 'completed', name: 'Completed', field: 'completed', width: 80, minWidth: 75, maxWidth: 100,
         cssClass: 'text-center', columnGroup: 'Period',
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         exportWithFormatter: false,
         filterable: true, sortable: true,
         filter: {
@@ -181,7 +181,7 @@ export class GridResizeByContentComponent implements OnInit {
         exportCustomFormatter: Formatters.dateUs,
         editor: {
           model: Editors.date,
-          editorOptions: { minDate: 'today' },
+          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption,
           validator: (value, args) => {
             const dataContext = args && args.item;
             if (dataContext && (dataContext.completed && !value)) {
@@ -256,7 +256,7 @@ export class GridResizeByContentComponent implements OnInit {
       {
         id: 'action', name: 'Action', field: 'action', width: 70, minWidth: 70, maxWidth: 70,
         excludeFromExport: true,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px;"><span class="fa fa-chevron-down text-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto" style="width: 35px;"><span class="mdi mdi-chevron-down text-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           commandTitle: 'Commands',
@@ -264,14 +264,14 @@ export class GridResizeByContentComponent implements OnInit {
             {
               command: 'help',
               title: 'Help!',
-              iconCssClass: 'fa fa-question-circle',
+              iconCssClass: 'mdi mdi-help-circle',
               positionOrder: 66,
               action: () => alert('Please Help!'),
             },
             'divider',
             {
               command: 'delete-row', title: 'Delete Row', positionOrder: 64,
-              iconCssClass: 'fa fa-times color-danger', cssClass: 'red', textCssClass: 'text-italic color-danger-light',
+              iconCssClass: 'mdi mdi-close color-danger', cssClass: 'red', textCssClass: 'text-italic color-danger-light',
               // only show command to 'Delete Row' when the task is not completed
               itemVisibilityOverride: (args) => {
                 return !args.dataContext?.completed;
@@ -675,81 +675,57 @@ export class GridResizeByContentComponent implements OnInit {
   /** List of icons that are supported in this lib Material Design Icons */
   getRandomIcon(iconIndex?: number) {
     const icons = [
-      'fa-500px',
-      'fa-address-book',
-      'fa-address-book-o',
-      'fa-address-card',
-      'fa-address-card-o',
-      'fa-adjust',
-      'fa-adn',
-      'fa-align-center',
-      'fa-align-justify',
-      'fa-align-left',
-      'fa-align-right',
-      'fa-amazon',
-      'fa-ambulance',
-      'fa-american-sign-language-interpreting',
-      'fa-anchor',
-      'fa-android',
-      'fa-angellist',
-      'fa-angle-double-down',
-      'fa-angle-double-left',
-      'fa-angle-double-right',
-      'fa-angle-double-up',
-      'fa-angle-down',
-      'fa-angle-left',
-      'fa-angle-right',
-      'fa-angle-up',
-      'fa-apple',
-      'fa-archive',
-      'fa-area-chart',
-      'fa-arrow-circle-down',
-      'fa-arrow-circle-left',
-      'fa-arrow-circle-o-down',
-      'fa-arrow-circle-o-left',
-      'fa-arrow-circle-o-right',
-      'fa-arrow-circle-o-up',
-      'fa-arrow-circle-right',
-      'fa-arrow-circle-up',
-      'fa-arrow-down',
-      'fa-arrow-left',
-      'fa-arrow-right',
-      'fa-arrow-up',
-      'fa-arrows',
-      'fa-arrows-alt',
-      'fa-arrows-h',
-      'fa-arrows-v',
-      'fa-assistive-listening-systems',
-      'fa-asterisk',
-      'fa-at',
-      'fa-audio-description',
-      'fa-backward',
-      'fa-balance-scale',
-      'fa-ban',
-      'fa-bandcamp',
-      'fa-bank (alias)',
-      'fa-bar-chart',
-      'fa-barcode',
-      'fa-bars',
-      'fa-bath',
-      'fa-battery-empty',
-      'fa-battery-full',
-      'fa-battery-half',
-      'fa-battery-quarter',
-      'fa-battery-three-quarters',
-      'fa-bed',
-      'fa-beer',
-      'fa-behance',
-      'fa-behance-square',
-      'fa-bell',
-      'fa-bell-o',
-      'fa-bell-slash',
-      'fa-bell-slash-o',
-      'fa-bicycle',
-      'fa-binoculars',
-      'fa-birthday-cake',
-      'fa-bitbucket',
-      'fa-bitbucket-square',
+      'mdi-arrow-collapse',
+      'mdi-arrow-expand',
+      'mdi-cancel',
+      'mdi-check',
+      'mdi-checkbox-blank-outline',
+      'mdi-check-box-outline',
+      'mdi-checkbox-marked',
+      'mdi-close',
+      'mdi-close-circle',
+      'mdi-close-circle-outline',
+      'mdi-close-thick',
+      'mdi-content-copy',
+      'mdi-database-refresh',
+      'mdi-download',
+      'mdi-file-document-outline',
+      'mdi-file-excel-outline',
+      'mdi-file-music-outline',
+      'mdi-file-pdf-outline',
+      'mdi-filter-remove-outline',
+      'mdi-flip-vertical',
+      'mdi-folder',
+      'mdi-folder-open',
+      'mdi-help-circle',
+      'mdi-help-circle-outline',
+      'mdi-history',
+      'mdi-information',
+      'mdi-information-outline',
+      'mdi-link',
+      'mdi-link-variant',
+      'mdi-menu',
+      'mdi-microsoft-excel',
+      'mdi-minus',
+      'mdi-page-first',
+      'mdi-page-last',
+      'mdi-paperclip',
+      'mdi-pin-off-outline',
+      'mdi-pin-outline',
+      'mdi-playlist-plus',
+      'mdi-playlist-remove',
+      'mdi-plus',
+      'mdi-redo',
+      'mdi-refresh',
+      'mdi-shape-square-plus',
+      'mdi-sort-ascending',
+      'mdi-sort-descending',
+      'mdi-swap-horizontal',
+      'mdi-swap-vertical',
+      'mdi-sync',
+      'mdi-table-edit',
+      'mdi-table-refresh',
+      'mdi-undo',
     ];
     const randomNumber = Math.floor((Math.random() * icons.length - 1));
     return icons[iconIndex ?? randomNumber];
@@ -763,7 +739,7 @@ export class GridResizeByContentComponent implements OnInit {
       </div>
       <div>
         <span class="autocomplete-top-left">
-          <span class="mdfai ${item.itemTypeName === 'I' ? 'fa-info-circle' : 'fa-copy'}"></span>
+          <span class="mdfai ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'}"></span>
           ${item.itemName}
         </span>
       <div>
@@ -781,7 +757,7 @@ export class GridResizeByContentComponent implements OnInit {
           </div>
           <div>
             <span class="autocomplete-top-left">
-              <span class="fa ${item.itemTypeName === 'I' ? 'fa-info-circle' : 'fa-copy'}"></span>
+              <span class="fa ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'}"></span>
               ${item.itemName}
             </span>
             <span class="autocomplete-top-right">${formatNumber(item.listPrice, 2, 2, false, '$')}</span>

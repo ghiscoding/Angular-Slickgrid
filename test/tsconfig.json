@@ -6,6 +6,7 @@
       "dom"
     ],
     "types": [
+      "cypress-real-events",
       "jest",
       "jest-extended",
       "node"

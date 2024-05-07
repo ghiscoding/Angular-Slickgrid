@@ -5,23 +5,23 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowdetail.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-6">
-    <button class="btn btn-outline-secondary btn-xs" (click)="changeEditableGrid()" data-test="editable-grid-btn">
+    <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="changeEditableGrid()" data-test="editable-grid-btn">
       Make Grid Editable
     </button>
-    <button class="btn btn-outline-secondary btn-xs" (click)="closeAllRowDetail()" data-test="collapse-all-btn">
+    <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="closeAllRowDetail()" data-test="collapse-all-btn">
       Close All Row Details
     </button>
     &nbsp;&nbsp;
     <label for="">Detail View Rows Shown: </label>
     <input type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount">
-    <button class="btn btn-outline-secondary btn-xs" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
+    <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
       Set
     </button>
   </div>

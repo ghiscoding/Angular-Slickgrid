@@ -74,7 +74,7 @@ export class GridCustomTooltipComponent implements OnInit {
           // example 2 (async):
           // when using async, the `formatter` will contain the loading spinner
           // you will need to provide an `asyncPost` function returning a Promise and also `asyncPostFormatter` formatter to display the result once the Promise resolves
-          formatter: () => `<div><span class="fa fa-spinner fa-pulse fa-fw"></span> loading...</div>`,
+          formatter: () => `<div><span class="mdi mdi-load mdi-spin-1s"></span> loading...</div>`,
           asyncProcess: () => new Promise(resolve => {
             setTimeout(() => resolve({ ratio: Math.random() * 10 / 10, lifespan: Math.random() * 100 }), this.serverApiDelay);
           }),
@@ -187,7 +187,7 @@ export class GridCustomTooltipComponent implements OnInit {
       },
       {
         id: 'finish', name: 'Finish', field: 'finish', sortable: true,
-        editor: { model: Editors.date, editorOptions: { minDate: 'today' }, },
+        editor: { model: Editors.date, editorOptions: { range: { min: 'today' } }, },
         // formatter: Formatters.dateIso,
         type: FieldType.date, outputType: FieldType.dateIso,
         formatter: Formatters.dateIso,
@@ -270,7 +270,7 @@ export class GridCustomTooltipComponent implements OnInit {
       },
       {
         id: 'action', name: 'Action', field: 'action', width: 70, minWidth: 70, maxWidth: 70,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px;"><span class="fa fa-ellipsis-v text-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto" style="width: 35px;"><span class="mdi mdi-dots-vertical text-primary"></span></div>`,
         excludeFromExport: true,
         cellMenu: {
           hideCloseButton: false,
@@ -480,7 +480,7 @@ export class GridCustomTooltipComponent implements OnInit {
     }
     for (let i = 0; i < iconCount; i++) {
       const iconColor = iconCount === 5 ? 'text-success' : iconCount >= 3 ? 'text-warning' : 'text-secondary';
-      output += `<span class="fa fa-check-circle-o ${iconColor}"></span>`;
+      output += `<span class="mdi mdi-check-circle-outline ${iconColor}"></span>`;
     }
     return output;
   }

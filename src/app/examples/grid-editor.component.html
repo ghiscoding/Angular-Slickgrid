@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-editor.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -26,8 +26,8 @@
       </span>
       <div class="row col-sm-12">
         <span>
-          <button class="btn btn-outline-secondary btn-sm" (click)="undo()" data-test="undo-btn">
-            <i class="fa fa-undo"></i>
+          <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="undo()" data-test="undo-btn">
+            <i class="mdi mdi-undo"></i>
             Undo last edit(s)
           </button>
           <label class="checkbox-inline control-label" for="autoCommitEdit">
@@ -39,10 +39,10 @@
       </div>
       <div class="row" style="margin-top: 5px">
         <div class="col-sm-12">
-          <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.filterService.clearFilters()">
+          <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="angularGrid.filterService.clearFilters()">
             Clear Filters
           </button>
-          <button class="btn btn-outline-secondary btn-sm" (click)="angularGrid.sortService.clearSorting()">
+          <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="angularGrid.sortService.clearSorting()">
             Clear Sorting
           </button>
           <button class="btn btn-sm btn-outline-primary" (click)="addItem()"
@@ -52,14 +52,14 @@
       </div>
       <div class="row" style="margin-top: 5px">
         <div class="col-sm-12">
-          <button class="btn btn-outline-secondary btn-sm" data-test="add-title-column"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="add-title-column"
                   (click)="dynamicallyAddTitleHeader()">
-            <i class="fa fa-plus"></i>
+            <i class="mdi mdi-shape-square-plus"></i>
             Dynamically Duplicate Title Column
           </button>
-          <button class="btn btn-outline-secondary btn-sm" data-test="remove-title-column"
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="remove-title-column"
                   (click)="dynamicallyRemoveLastColumn()">
-            <i class="fa fa-minus"></i>
+            <i class="mdi mdi-minus"></i>
             Dynamically Remove Last Column
           </button>
         </div>

@@ -5,7 +5,7 @@
       <a style="font-size: 18px"
          target="_blank"
          href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-localization.component.ts">
-        <span class="fa fa-link"></span> code
+        <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
@@ -15,27 +15,27 @@
 
   <div class="row">
     <div class="col-sm-12">
-      <button class="btn btn-outline-secondary btn-sm" data-test="language-button" (click)="switchLanguage()">
-        <i class="fa fa-language"></i>
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="language-button" (click)="switchLanguage()">
+        <i class="mdi mdi-translate"></i>
         Switch Language
       </button>
       <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
       <span style="margin-left: 20px">
-        <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('csv')">
-          <i class="fa fa-download"></i>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="exportToFile('csv')">
+          <i class="mdi mdi-download"></i>
           Download to CSV
         </button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="exportToFile('txt')">
-          <i class="fa fa-download"></i>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="exportToFile('txt')">
+          <i class="mdi mdi-download"></i>
           Download to Text
         </button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="exportToExcel()">
-          <i class="fa fa-file-excel-o text-success"></i>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="exportToExcel()">
+          <i class="mdi mdi-file-excel-outline text-success"></i>
           Download to Excel
         </button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="dynamicallyAddTitleHeader()">
-          <i class="fa fa-plus"></i>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="dynamicallyAddTitleHeader()">
+          <i class="mdi mdi-shape-square-plus"></i>
           Dynamically Duplicate Title Column
         </button>
       </span>

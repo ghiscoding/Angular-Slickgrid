@@ -38,7 +38,7 @@ this.columnDefinitions = [
             console.log(args.dataContext, args.column); // action callback.. do something
           }
         },
-        { command: 'help', title: 'HELP', iconCssClass: 'fa fa-question-circle', positionOrder: 62 },
+        { command: 'help', title: 'HELP', iconCssClass: 'mdi mdi-help-circle', positionOrder: 62 },
         // you can add sub-menus by adding nested `commandItems`
         {
          // we can also have multiple nested sub-menus
@@ -74,8 +74,8 @@ this.columnDefinitions = [
     cellMenu: {
       optionTitle: 'Change Effort Driven Flag', // optional, add title
       optionItems: [
-        { option: true, title: 'True', iconCssClass: 'fa fa-check-square-o' },
-        { option: false, title: 'False', iconCssClass: 'fa fa-square-o' },
+        { option: true, title: 'True', iconCssClass: 'mdi mdi-check-box-outline' },
+        { option: false, title: 'False', iconCssClass: 'mdi mdi-checkbox-blank-outline' },
         { divider: true, command: '', positionOrder: 60 },
       ],
       // subscribe to Context Menu onOptionSelected event (or use the "action" callback on each option)
@@ -174,9 +174,9 @@ this.columnDefinitions = [
           const dataContext = args && args.dataContext;
           return !dataContext.completed;
         },
-        { option: 1, iconCssClass: 'fa fa-star-o yellow', title: 'Low' },
-        { option: 2, iconCssClass: 'fa fa-star-half-o orange', title: 'Medium' },
-        { option: 3, iconCssClass: 'fa fa-star red', title: 'High' },
+        { option: 1, iconCssClass: 'mdi mdi-star-outline yellow', title: 'Low' },
+        { option: 2, iconCssClass: 'mdi mdi-star orange', title: 'Medium' },
+        { option: 3, iconCssClass: 'mdi mdi-star red', title: 'High' },
       ]
     }
   }
@@ -191,9 +191,9 @@ this.columnDefinitions = [
     cellMenu: {
       optionTitleKey: 'COMMANDS', // optionally pass a title to show over the Options
       optionItems: [
-        { option: 1, titleKey: 'LOW', iconCssClass: 'fa fa-star-o yellow' },
-        { option: 2, titleKey: 'MEDIUM', iconCssClass: 'fa fa-star-half-o orange' },
-        { option: 3, titleKey: 'HIGH', iconCssClass: 'fa fa-star red' },
+        { option: 1, titleKey: 'LOW', iconCssClass: 'mdi mdi-star-outline yellow' },
+        { option: 2, titleKey: 'MEDIUM', iconCssClass: 'mdi mdi-star orange' },
+        { option: 3, titleKey: 'HIGH', iconCssClass: 'mdi mdi-star red' },
       ]
     }
   }

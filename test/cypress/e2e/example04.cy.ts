@@ -9,7 +9,7 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
 
   describe('Load Grid with Presets', () => {
     const presetDurationValues = [98, 10];
-    const presetUsDateShort = '04/20/25';
+    const presetUsDateShort = '4/20/25';
 
     it('should have "Duration" fields within the inclusive range of the preset filters and be displayed in the Filter itself', () => {
       cy.get('.ms-filter.search-filter.filter-duration.filled')

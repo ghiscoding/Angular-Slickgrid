@@ -52,7 +52,7 @@ export class GridRowMoveComponent implements OnInit {
       },
       {
         id: 'effort-driven', name: 'Completed', field: 'effortDriven',
-        formatter: Formatters.checkmark,
+        formatter: Formatters.checkmarkMaterial,
         filterable: true, sortable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
@@ -231,7 +231,7 @@ export class GridRowMoveComponent implements OnInit {
           excludeFromGridMenu: true,
           excludeFromHeaderMenu: true,
           formatter: Formatters.icon,
-          params: { iconCssClass: 'fa fa-pencil pointer' },
+          params: { iconCssClass: 'mdi mdi-pencil pointer' },
           minWidth: 30,
           maxWidth: 30,
           onCellClick: (clickEvent: Event, args: OnEventArgs) => {
@@ -244,7 +244,7 @@ export class GridRowMoveComponent implements OnInit {
           excludeFromGridMenu: true,
           excludeFromHeaderMenu: true,
           formatter: Formatters.icon,
-          params: { iconCssClass: 'fa fa-trash pointer' },
+          params: { iconCssClass: 'mdi mdi-trash-can pointer' },
           minWidth: 30,
           maxWidth: 30,
           onCellClick: (e: Event, args: OnEventArgs) => {

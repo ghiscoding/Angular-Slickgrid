@@ -3,10 +3,10 @@
 > **NOTE** these instructions are for the latest Angular-Slickgrid v7.x and might be different for earlier versions of the lib.
 
 ### 1. Install NPM Package
-Install the `Angular-Slickgrid`, and other external packages like `Bootstrap` and `Font-Awesome`
-(Bootstrap, Font-Awesome are optional, you can choose other lib if you wish)
+Install the `Angular-Slickgrid`, and other external packages like `Bootstrap`
+(Bootstrap is optional, you can choose other framework if you wish)
 ```bash
-npm install --save angular-slickgrid bootstrap font-awesome # the last deps are optional
+npm install --save angular-slickgrid bootstrap # the last dep is optional
 
 # install required @types
 npm install --save-dev @types/sortablejs @types/dompurify
@@ -31,8 +31,6 @@ Then modify your `angular.json` file with the following Styles and Scripts:
 ```js
 "styles": [
     "node_modules/bootstrap/dist/css/bootstrap.min.css",    // optional, install when you use Bootstrap
-    "node_modules/font-awesome/css/font-awesome.min.css",   // optional, install when you use Font-Awesome
-    "node_modules/flatpickr/dist/flatpickr.css",
     "styles.css"
 ],
 "scripts": [
@@ -52,7 +50,6 @@ Default compiled `css` (if you use the plain Bootstrap Theme CSS, you could simp
 ```json
 "styles": [
     "node_modules/bootstrap/dist/css/bootstrap.css",
-    "node_modules/font-awesome/css/font-awesome.css",
     "styles.css",
     "node_modules/@slickgrid-universal/common/dist/styles/css/slickgrid-theme-bootstrap.css"
 ],
@@ -113,9 +110,6 @@ Also note that every time you want to use a translation key, you simply have to 
 | title             | titleKey       |
 | columnGroup       | columnGroupKey |
 | optionTitle       | optionTitleKey |
-
-##### Date Picker - Flatpickr Localization
-If you use multiple locale, you will also need to define which Flatpickr Locale to import, for more info on how to do that then take a look at the [Flatpickr Localization Docs](../column-functionalities/filters/Compound-Filters.md#date-picker---flatpickr-localization)
 
 ### 6. Create a basic grid
 And finally, you are now ready to use it in your project, for example let's create both html/ts files for a `grid-basic.component` example, configure the Column Definitions, Grid Options and pass a Dataset to the grid:
@@ -198,7 +192,6 @@ module.exports = {
     'angular-slickgrid': {
       ignorableDeepImportMatchers: [
         /slickgrid\//,
-        /flatpickr/,
       ]
     },
   }
@@ -210,7 +203,6 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "flatpickr",
     "stream"
   ],
 }
@@ -243,7 +235,6 @@ This is no longer the case. Verify if you need this module and configure a polyf
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "flatpickr",
     "stream"
   ],
 },
