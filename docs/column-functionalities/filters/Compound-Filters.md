@@ -48,7 +48,8 @@ The column definition `type` will affect the list of Operators shown, for exampl
 
 
 ### How to use CompoundDate Filter
-Again set the column definition flag `filterable: true` and use the filter type `Filters.compoundDate`. Here is an example with a full column definition:
+As any other columns, set the column definition flag `filterable: true` and use the filter type `Filters.compoundDate`. Here is an example with a full column definition:
+
 ```ts
 // define you columns, in this demo Effort Driven will use a Select Filter
 this.columnDefinitions = [
@@ -71,6 +72,8 @@ this.gridOptions = {
    enableFiltering: true
 };
 ```
+
+> **Note** we use [Tempo](https://tempo.formkit.com/) to parse and format Dates to the chosen format via the `type` option when provided in your column definition.
 
 #### Dealing with different input/ouput dates (example: UTC)
 What if your date input (from your dataset) has a different output on the screen (UI)?

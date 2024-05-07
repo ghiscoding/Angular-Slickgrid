@@ -16,7 +16,7 @@ import {
   SortDirection,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
-import moment from 'moment-mini';
+import { addDay, format } from '@formkit/tempo';
 import { Subscription } from 'rxjs';
 
 const defaultPageSize = 20;
@@ -123,8 +123,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       },
     ];
 
-    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.gridOptions = {
       gridHeight: 200,
@@ -312,8 +312,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   setFiltersDynamically() {
-    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
@@ -334,8 +334,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   resetToOriginalPresets() {
-    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.angularGrid.filterService.updateFilters([
       // you can use OperatorType or type them as string, e.g.: operator: 'EQ'

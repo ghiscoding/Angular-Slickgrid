@@ -1,4 +1,5 @@
-import moment from 'moment-mini';
+import { format } from '@formkit/tempo';
+
 import { removeExtraSpaces } from '../plugins/utilities';
 
 describe('Example 12: Localization (i18n)', () => {
@@ -48,8 +49,7 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.right-footer')
         .should($span => {
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          const now = new Date();
-          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+          const dateFormatted = format(new Date(), 'YYYY-MM-DD, hh:mm a');
           expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
         });
     });
@@ -118,9 +118,8 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
-          const now = new Date();
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          const dateFormatted = moment(now).format('YYYY-MM-DD, hh:mm a');
+          const dateFormatted = format(new Date(), 'YYYY-MM-DD, hh:mm a');
           expect(text).to.eq(`Dernière mise à jour ${dateFormatted} | 1500 de 1500 éléments`);
         });
     });

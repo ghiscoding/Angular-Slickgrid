@@ -203,7 +203,6 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
   "allowedCommonJsDependencies": [
     "autocompleter",
     "dompurify",
-    "moment-mini",
     "stream"
   ],
 }

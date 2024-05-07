@@ -22,7 +22,6 @@
               "@fnando/sparkline",
               "fetch-jsonp",
               "isomorphic-dompurify",
-              "moment-mini",
               "stream"
             ],
             "assets": [
