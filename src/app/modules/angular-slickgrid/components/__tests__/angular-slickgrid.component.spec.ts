@@ -507,8 +507,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   it('should update column definitions when onPluginColumnsChanged event is triggered with updated columns', () => {
     const colsChangeSpy = jest.spyOn(component.columnDefinitionsChange, 'emit');
     const columnsMock = [
-      { id: 'firstName', field: 'firstName', editor: undefined, internalColumnEditor: {} },
-      { id: 'lastName', field: 'lastName', editor: undefined, internalColumnEditor: {} }
+      { id: 'firstName', field: 'firstName', editor: undefined },
+      { id: 'lastName', field: 'lastName', editor: undefined }
     ];
 
     component.ngAfterViewInit();
@@ -568,7 +568,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(component).toBeTruthy();
-        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
+        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined }], customEditableInputFormatter);
       });
     });
 
@@ -577,7 +577,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const translateSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
 
         component.gridOptions = { enableTranslate: true, darkMode: true };
         component.ngAfterViewInit();
@@ -595,7 +595,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
         const renderSpy = jest.spyOn(extensionServiceStub, 'renderColumnHeaders');
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
 
         component.ngAfterViewInit();
         component.columnDefinitions = mockColDefs;
@@ -606,7 +606,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(autosizeSpy).toHaveBeenCalled();
         expect(updateSpy).toHaveBeenCalledWith(mockColDefs);
         expect(renderSpy).toHaveBeenCalledWith(mockColDefs, true);
-        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }], customEditableInputFormatter);
+        expect(autoAddEditorFormatterToColumnsWithEditor).toHaveBeenCalledWith([{ id: 'name', field: 'name', editor: undefined }], customEditableInputFormatter);
       });
     });
 
@@ -768,8 +768,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         setTimeout(() => {
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor!.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor!.model).toEqual(Editors.text);
+          expect(component.columnDefinitions[0].editor!.model).toEqual(Editors.text);
           done();
         });
       });
@@ -794,8 +793,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         setTimeout(() => {
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor!.collection).toEqual(mockCollection);
-          expect(component.columnDefinitions[0].internalColumnEditor!.model).toEqual(Editors.text);
+          expect(component.columnDefinitions[0].editor!.model).toEqual(Editors.text);
           expect(disableSpy).toHaveBeenCalledWith(false);
           expect(destroySpy).toHaveBeenCalled();
           expect(renderSpy).toHaveBeenCalledWith(mockCollection);
@@ -1463,7 +1461,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should reflect columns with an extra checkbox selection column in the grid when "enableCheckboxSelector" is set', () => {
         const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
         const mockCol = { id: 'firstName', field: 'firstName' };
-        const mockCols = [{ id: '_checkbox_selector', field: '_checkbox_selector', editor: undefined, internalColumnEditor: {} }, mockCol];
+        const mockCols = [{ id: '_checkbox_selector', field: '_checkbox_selector', editor: undefined }, mockCol];
         const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
         const setColSpy = jest.spyOn(mockGrid, 'setColumns');
 
@@ -1478,7 +1476,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should reflect columns with an extra row detail column in the grid when "enableRowDetailView" is set', () => {
         const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
         const mockCol = { id: 'firstName', field: 'firstName' };
-        const mockCols = [{ id: '_detail_selector', field: '_detail_selector', editor: undefined, internalColumnEditor: {} }, mockCol];
+        const mockCols = [{ id: '_detail_selector', field: '_detail_selector', editor: undefined }, mockCol];
         const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
         const setColSpy = jest.spyOn(mockGrid, 'setColumns');
 
@@ -1493,7 +1491,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should reflect columns with an extra row move column in the grid when "enableRowMoveManager" is set', () => {
         const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
         const mockCol = { id: 'firstName', field: 'firstName' };
-        const mockCols = [{ id: '_move', field: '_move', editor: undefined, internalColumnEditor: {} }, mockCol];
+        const mockCols = [{ id: '_move', field: '_move', editor: undefined }, mockCol];
         const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
         const setColSpy = jest.spyOn(mockGrid, 'setColumns');
 
@@ -1509,9 +1507,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
         const mockCol = { id: 'firstName', field: 'firstName' };
         const mockCols = [
-          { id: '_move', field: '_move', editor: undefined, internalColumnEditor: {} },
-          { id: '_checkbox_selector', field: '_checkbox_selector', editor: undefined, internalColumnEditor: {} },
-          { id: '_detail_selector', field: '_detail_selector', editor: undefined, internalColumnEditor: {} },
+          { id: '_move', field: '_move', editor: undefined },
+          { id: '_checkbox_selector', field: '_checkbox_selector', editor: undefined },
+          { id: '_detail_selector', field: '_detail_selector', editor: undefined },
           mockCol
         ];
         const getAssocColSpy = jest.spyOn(gridStateServiceStub, 'getAssociatedGridColumns').mockReturnValue([mockCol]);
@@ -1798,7 +1796,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       // });
 
       it('should display an Empty Warning Message when "enableEmptyDataWarningMessage" is enabled and the dataset is empty', (done) => {
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
         const mockGridOptions = { enableTranslate: true, enableEmptyDataWarningMessage: true, };
         jest.spyOn(mockGrid, 'getOptions').mockReturnValue(mockGridOptions);
         jest.spyOn(mockGrid, 'getGridPosition').mockReturnValue({ top: 10, left: 20 } as any);
@@ -1854,7 +1852,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should have a Custom Footer when "showCustomFooter" is enabled and there are no Pagination used', (done) => {
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
         const mockGridOptions = { enableTranslate: true, showCustomFooter: true, customFooterOptions: { hideRowSelectionCount: false, } } as GridOption;
         jest.spyOn(mockGrid, 'getOptions').mockReturnValue(mockGridOptions);
 
@@ -1889,7 +1887,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should have a Custom Footer and custom texts when "showCustomFooter" is enabled with different metricTexts defined', (done) => {
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
 
         component.gridOptions = {
           enableTranslate: false,
@@ -1933,7 +1931,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
-        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined }];
 
         component.gridOptions = { enablePagination: true, showCustomFooter: true };
         component.columnDefinitions = mockColDefs;
