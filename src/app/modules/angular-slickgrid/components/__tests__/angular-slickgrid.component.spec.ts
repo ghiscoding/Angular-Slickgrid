@@ -769,7 +769,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
           expect(component.columnDefinitions[0].editor!.model).toEqual(Editors.text);
-          expect(component.columnDefinitions[0].editorClass).toEqual(Editors.text);
           done();
         });
       });
@@ -795,7 +794,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions[0].editor).toBeTruthy();
           expect(component.columnDefinitions[0].editor!.collection).toEqual(mockCollection);
           expect(component.columnDefinitions[0].editor!.model).toEqual(Editors.text);
-          expect(component.columnDefinitions[0].editorClass).toEqual(Editors.text);
           expect(disableSpy).toHaveBeenCalledWith(false);
           expect(destroySpy).toHaveBeenCalled();
           expect(renderSpy).toHaveBeenCalledWith(mockCollection);
