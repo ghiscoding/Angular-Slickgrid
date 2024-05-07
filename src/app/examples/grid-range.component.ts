@@ -18,7 +18,7 @@ import {
   SliderRangeOption,
   unsubscribeAllObservables,
 } from '../modules/angular-slickgrid';
-import moment from 'moment-mini';
+import { addDay, format } from '@formkit/tempo';
 import { Subscription } from 'rxjs';
 
 const NB_ITEMS = 1500;
@@ -153,8 +153,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     ];
 
     const today = new Date();
-    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(today.getDate() < 14 ? 30 : 25, 'days').format('YYYY-MM-DD');
+    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = format(addDay(new Date(), today.getDate() < 14 ? 30 : 25), 'YYYY-MM-DD');
 
     this.gridOptions = {
       autoResize: {
@@ -201,7 +201,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomDuration = randomBetween(0, 365);
-      const randomYear = randomBetween(moment().year(), moment().year() + 1);
+      const randomYear = randomBetween(new Date().getFullYear(), new Date().getFullYear() + 1);
       const randomMonth = randomBetween(0, 12);
       const randomDay = randomBetween(10, 28);
       const randomPercent = randomBetween(0, 100);
@@ -250,8 +250,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   }
 
   setFiltersDynamically() {
-    const presetLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
-    const presetHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
+    const presetLowestDay = format(addDay(new Date(), -5), 'YYYY-MM-DD');
+    const presetHighestDay = format(addDay(new Date(), 25), 'YYYY-MM-DD');
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
@@ -271,7 +271,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
 
   usePredefinedFilter(filterValue: string) {
     let filters: any[] = [];
-    const currentYear = moment().year();
+    const currentYear = new Date().getFullYear();
 
     switch (filterValue) {
       case 'currentYearTasks':

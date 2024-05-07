@@ -1,8 +1,9 @@
-import moment from 'moment-mini';
+import { addDay, format } from '@formkit/tempo';
+
 import { removeWhitespaces } from '../plugins/utilities';
 
-const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
 
 describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
   it('should display Example title', () => {

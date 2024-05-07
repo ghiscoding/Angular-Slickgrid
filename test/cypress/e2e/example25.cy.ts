@@ -1,12 +1,19 @@
-import moment from 'moment-mini';
+import { addDay, format, isAfter, isBefore, isEqual } from '@formkit/tempo';
 
 const presetMinComplete = 5;
 const presetMaxComplete = 80;
 const presetMinDuration = 4;
 const presetMaxDuration = 88;
 const today = new Date();
-const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
-const presetHighestDay = moment().add(today.getDate() < 14 ? 30 : 25, 'days').format('YYYY-MM-DD');
+const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
+const presetHighestDay = format(addDay(new Date(), today.getDate() < 14 ? 30 : 25), 'YYYY-MM-DD');
+
+function isBetween(inputDate: Date | string, minDate: Date | string, maxDate: Date | string, isInclusive = false) {
+  if (isInclusive) {
+    return isEqual(inputDate, minDate) || isEqual(inputDate, maxDate);
+  }
+  return isAfter(inputDate, minDate) || isBefore(inputDate, maxDate);
+}
 
 describe('Example 25 - Range Filters', () => {
   it('should display Example title', () => {
@@ -53,7 +60,7 @@ describe('Example 25 - Range Filters', () => {
         cy.wrap($row)
           .children('.slick-cell:nth(4)')
           .each(($cell) => {
-            const isDateBetween = moment($cell.text()).isBetween(presetLowestDay, presetHighestDay, null as any, '[]'); // [] is inclusive, () is exclusive
+            const isDateBetween = isBetween($cell.text(), presetLowestDay, presetHighestDay, true);
             expect(isDateBetween).to.eq(true);
           });
       });
@@ -119,7 +126,7 @@ describe('Example 25 - Range Filters', () => {
       .should('have.length.gte', 2);
 
     // cy.get('.flatpickr-day.selected.endRange')
-    //   .should('contain', moment().add(25, 'days').day() - 1);
+    //   .should('contain', format(addDay(new Date(), 25, 'days').day() - 1);
   });
 
   it('should change the "Duration" input filter and expect all rows to be within new range', () => {
@@ -156,9 +163,9 @@ describe('Example 25 - Range Filters', () => {
     const dynamicMaxComplete = 85;
     const dynamicMinDuration = 14;
     const dynamicMaxDuration = 78;
-    const currentYear = moment().year();
-    const dynamicLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
-    const dynamicHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
+    const currentYear = new Date().getFullYear();
+    const dynamicLowestDay = format(addDay(new Date(), -5), 'YYYY-MM-DD');
+    const dynamicHighestDay = format(addDay(new Date(), 25), 'YYYY-MM-DD');
 
     it('should click on Set Dynamic Filters', () => {
       cy.get('[data-test=set-dynamic-filter]')
@@ -209,7 +216,7 @@ describe('Example 25 - Range Filters', () => {
           cy.wrap($row)
             .children('.slick-cell:nth(4)')
             .each(($cell) => {
-              const isDateBetween = moment($cell.text()).isBetween(dynamicLowestDay, dynamicHighestDay, null as any, '[]'); // [] is inclusive, () is exclusive
+              const isDateBetween = isBetween($cell.text(), dynamicLowestDay, dynamicHighestDay, true);
               expect(isDateBetween).to.eq(true);
             });
         });

@@ -23,7 +23,6 @@
               "fetch-jsonp",
               "flatpickr",
               "isomorphic-dompurify",
-              "moment-mini",
               "stream"
             ],
             "assets": [
