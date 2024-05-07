@@ -75,6 +75,7 @@ const gridStub = {
   getOptions: () => gridOptionsMock,
   getSelectionModel: jest.fn(),
   setSelectionModel: jest.fn(),
+  sanitizeHtmlString: (s: string) => s,
   onColumnsReordered: new SlickEvent(),
   onSelectedRowsChanged: new SlickEvent(),
   onSort: new SlickEvent(),

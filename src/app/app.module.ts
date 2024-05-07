@@ -157,6 +157,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
         container: '#grid-container',
         rightPadding: 10
       },
+      // we strongly suggest you add DOMPurify as a sanitizer
       sanitizer: (dirtyHtml) => DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ['level'], RETURN_TRUSTED_TYPE: true })
     })
   ],
