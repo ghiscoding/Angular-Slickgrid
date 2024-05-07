@@ -193,7 +193,7 @@ Since version 4.x, you can now also return native DOM element instead of an HTML
 2. Performance (the reasons are similar to point 1.)
    - since it's native it can be appended directly to the grid cell
    - when it's an HTML string, it has to do 2 extra steps (which is an overhead process)
-      i. sanitize the string (we use [DOMPurify](https://github.com/cure53/DOMPurify) by default)
+      i. sanitize the string (when a sanitizer, for example [DOMPurify](https://github.com/cure53/DOMPurify))
       ii. SlickGrid then has to convert it to native element by using `innerHTML` on the grid cell
 
 Demo

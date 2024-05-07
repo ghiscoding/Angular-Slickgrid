@@ -20,8 +20,8 @@
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "@fnando/sparkline",
+              "dompurify",
               "fetch-jsonp",
-              "isomorphic-dompurify",
               "stream"
             ],
             "assets": [
