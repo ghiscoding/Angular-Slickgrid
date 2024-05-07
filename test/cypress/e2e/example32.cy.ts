@@ -70,7 +70,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   it('should mouse over Task 6 cell on "Start" column and expect a delayed tooltip opening via async process', () => {
     cy.get('.slick-custom-tooltip').should('not.exist');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(7)`).as('start6-cell');
-    cy.get('@start6-cell').contains(/\d{4}-\d{2}-\d{2}$/); // use regexp to make sure it's a number
+    cy.get('@start6-cell').contains(/\d{4}-\d{1,2}-\d{1,2}$/); // use regexp to make sure it's a number
     cy.get('@start6-cell').trigger('mouseover');
 
     cy.wait(10);

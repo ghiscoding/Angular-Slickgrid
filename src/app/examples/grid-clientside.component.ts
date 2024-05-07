@@ -136,7 +136,6 @@ export class GridClientSideComponent implements OnInit {
         filter: {
           model: Filters.compoundDate,
           // override any of the date picker options through "filterOptions"
-          // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
           filterOptions: { range: { date: 'today' } } as VanillaCalendarOption
         }
       },

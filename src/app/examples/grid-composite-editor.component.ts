@@ -249,7 +249,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
         editor: {
           model: Editors.date,
           editorOptions: {
-            range: { date: 'today' }, // set minimum date as today
+            range: { min: 'today' },
 
             // if we want to preload the date picker with a different date,
             // we could do it by assigning settings.seleted.dates
