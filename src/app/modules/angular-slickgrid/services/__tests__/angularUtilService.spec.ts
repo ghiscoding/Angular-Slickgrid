@@ -4,7 +4,6 @@ import { AngularUtilService } from '..';
 
 const DOM_ELEMENT_ID = 'row-detail123';
 const DOM_PARENT_ID = 'parent-detail';
-jest.mock('flatpickr', () => { });
 
 const viewContainerRefStub = {
   createComponent: jest.fn(),

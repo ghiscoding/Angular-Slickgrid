@@ -187,7 +187,7 @@ export class GridCustomTooltipComponent implements OnInit {
       },
       {
         id: 'finish', name: 'Finish', field: 'finish', sortable: true,
-        editor: { model: Editors.date, editorOptions: { minDate: 'today' }, },
+        editor: { model: Editors.date, editorOptions: { range: { min: 'today' } }, },
         // formatter: Formatters.dateIso,
         type: FieldType.date, outputType: FieldType.dateIso,
         formatter: Formatters.dateIso,

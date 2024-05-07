@@ -32,11 +32,7 @@ Object.defineProperty(window, 'location', {
   },
 });
 
-// Jest has a hard time with Flatpickr/MomentJS because they export as default, to bypass this problem we can mock the require .default
-jest.mock('flatpickr', () => {
-  const actual = jest.requireActual('flatpickr');
-  return { __esModule: true, ...actual, default: actual };
-});
+// Jest has a hard time with MomentJS because they export as default, to bypass this problem we can mock the require .default
 jest.mock('moment-mini', () => {
   const actual = jest.requireActual('moment-mini');
   return { __esModule: true, ...actual, default: actual };

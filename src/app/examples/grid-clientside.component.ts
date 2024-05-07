@@ -8,12 +8,12 @@ import {
   Column,
   FieldType,
   Filters,
-  FlatpickrOption,
   Formatters,
   GridOption,
   GridStateChange,
   Metrics,
   OperatorType,
+  VanillaCalendarOption,
 } from './../modules/angular-slickgrid';
 import { CustomInputFilter } from './custom-inputFilter';
 
@@ -135,9 +135,9 @@ export class GridClientSideComponent implements OnInit {
         type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateTimeIsoAmPm, filterable: true,
         filter: {
           model: Filters.compoundDate,
-          // override any of the Flatpickr options through "filterOptions"
+          // override any of the calendar picker options through "filterOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
-          filterOptions: { minDate: 'today' } as FlatpickrOption
+          filterOptions: { range: { min: 'today' } } as VanillaCalendarOption
         }
       },
       {

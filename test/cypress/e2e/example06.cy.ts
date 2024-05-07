@@ -21,9 +21,6 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
   it('should have English Text inside some of the Filters', () => {
     cy.get('.search-filter.filter-gender .ms-choice > span')
       .contains('Male');
-
-    cy.get('.flatpickr-input')
-      .should('contain.value', 'to'); // date range will contains (y to z) or in French (y au z)
   });
 
   it('should have GraphQL query with defined Grid Presets', () => {
@@ -44,7 +41,7 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     cy.get('.search-filter.filter-finish')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq(`${presetLowestDay} to ${presetHighestDay}`));
+      .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
     cy.get('[data-test=alert-graphql-query]').should('exist');
     cy.get('[data-test=alert-graphql-query]').should('contain', 'GraphQL Query');
@@ -326,7 +323,7 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     cy.get('.search-filter.filter-finish')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq(`${presetLowestDay} to ${presetHighestDay}`));
+      .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
@@ -644,7 +641,7 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${presetLowestDay} au ${presetHighestDay}`));
+        .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
@@ -670,9 +667,6 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
 
       cy.get('.search-filter.filter-gender .ms-choice > span')
         .contains('Masculin');
-
-      cy.get('.flatpickr-input')
-        .should('contain.value', 'au'); // date range will contains (y to z) or in French (y au z)
     });
 
     it('should switch locale to English', () => {
