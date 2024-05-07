@@ -22,17 +22,20 @@ const currencyFormatter: Formatter = (cell: number, row: number, value: string) 
 const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
   const fragment = new DocumentFragment();
+  const divElm = document.createElement('div');
+  divElm.className = 'd-inline-flex align-items-center';
   const spanElm = document.createElement('span');
   spanElm.className = `mdi mdi-arrow-${direction} text-${direction === 'up' ? 'success' : 'danger'}`;
-  fragment.appendChild(spanElm);
+  divElm.appendChild(spanElm);
+  fragment.appendChild(divElm);
   if (value instanceof HTMLElement) {
-    fragment.appendChild(value);
+    divElm.appendChild(value);
   }
   return fragment;
 };
 
 const transactionTypeFormatter: Formatter = (_row, _cell, value: string) =>
-  `<span class="mdi mdi-16px mdi-v-align-sub mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-info' : 'text-warning'}"></span> ${value}`;
+  `<div class="d-inline-flex align-items-center"><span class="me-1 mdi mdi-16px mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-info' : 'text-warning'}"></span> ${value}</div>`;
 
 const historicSparklineFormatter: Formatter = (row: number, cell: number, value: string, col: Column, dataContext: any) => {
   const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -150,7 +153,6 @@ export class GridTradingComponent implements OnDestroy, OnInit {
           formatters: [Formatters.dollarColored, priceFormatter],
           maxDecimal: 2,
         }
-
       },
       {
         id: 'price', name: 'Price', field: 'price', filterable: true, sortable: true, minWidth: 70, width: 70,

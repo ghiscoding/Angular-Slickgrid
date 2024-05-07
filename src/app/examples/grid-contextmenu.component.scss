@@ -26,23 +26,30 @@
   cursor: pointer;
 }
 
-.disabled {
-  color: #ccc;
-}
-
 .cell-menu-dropdown-outline {
-  border: 1px solid #a3a3a3;
+  border: 1px solid #a0a0a0;
   border-radius: 4px;
   width: max-content;
   padding: 2px 14px;
   cursor: pointer;
-  &:hover {
+  &:hover:not(.disabled) {
     background-color: #a3a3a3;
     color: #ffffff;
   }
 
   .mdi-caret-down {
     margin-left: 5px;
+  }
+}
+
+.disabled {
+  color: #d4d4d4;
+  border: 1px solid #d8d8d8;
+}
+.slick-dark-mode {
+  .disabled {
+    border: 1px solid #616161;
+    color: #686868;
   }
 }
 

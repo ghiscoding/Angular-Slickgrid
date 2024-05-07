@@ -14,13 +14,15 @@
   <div class="row">
     <div class="col-sm-4" style="max-width: 205px;">
       Pagination
-      <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page"
-              (click)="goToGrid1FirstPage()">
-              <i class="mdi mdi-page-first"></i>
-      </button>
-      <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid1LastPage()">
-        <i class="mdi mdi-page-last"></i>
-      </button>
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page"
+                (click)="goToGrid1FirstPage()">
+                <i class="mdi mdi-page-first"></i>
+        </button>
+        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid1LastPage()">
+          <i class="mdi mdi-page-last"></i>
+        </button>
+      </div>
     </div>
     <div class="col-sm-8">
       <div class="alert alert-success">
@@ -48,12 +50,14 @@
       Pagination: <input type="checkbox" (change)="togglePaginationGrid2()" [checked]="isGrid2WithPagination"
              data-test="toggle-pagination-grid2" />
       <span style="margin-left: 5px" *ngIf="isGrid2WithPagination">
-        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToGrid2FirstPage()">
-          <i class="mdi mdi-page-first"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid2LastPage()">
-          <i class="mdi mdi-page-last"></i>
-        </button>
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToGrid2FirstPage()">
+            <i class="mdi mdi-page-first"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid2LastPage()">
+            <i class="mdi mdi-page-last"></i>
+          </button>
+        </div>
       </span>
     </div>
     <div class="col-sm-8">

@@ -20,7 +20,7 @@ const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) =>
   if (dataContext.priority === 3) { // option 3 is High
     return `<div class="cell-menu-dropdown-outline">Action<i class="mdi mdi-chevron-down"></i></div>`;
   }
-  return `<div class="disabled">Action <i class="mdi mdi-chevron-down"></i></div>`;
+  return `<div class="cell-menu-dropdown-outline disabled">Action <i class="mdi mdi-chevron-down"></i></div>`;
 };
 
 const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
