@@ -43,7 +43,7 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
           cy.wrap($row)
             .children('.slick-cell:nth(5)')
             .each(($cell) => {
-              const isDateValid = isBefore(parse($cell.text(), 'M/D/YY'), presetUsDateShort);
+              const isDateValid = isBefore(parse($cell.text(), 'M/D/YY'), parse(presetUsDateShort, 'M/D/YY'));
               expect(isDateValid).to.eq(true);
             });
         });
