@@ -18,6 +18,7 @@ const NB_ITEMS = 1000;
   templateUrl: './grid-rowdetail.component.html'
 })
 export class GridRowDetailComponent implements OnInit {
+  private _darkMode = false;
   title = 'Example 21: Row Detail View';
   subTitle = `
     Add functionality to show extra information with a Row Detail View, (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/row-detail" target="_blank">Wiki docs</a>)
@@ -87,6 +88,7 @@ export class GridRowDetailComponent implements OnInit {
       rowSelectionOptions: {
         selectActiveRow: true
       },
+      darkMode: this._darkMode,
       datasetIdPropertyName: 'rowId', // optionally use a different "id"
       rowDetailView: {
         // optionally change the column index position of the icon (defaults to 0)
@@ -215,6 +217,23 @@ export class GridRowDetailComponent implements OnInit {
         resolve(itemDetail);
       }, 1000);
     });
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    this.toggleBodyBackground();
+    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkMode });
+    this.closeAllRowDetail();
+  }
+
+  toggleBodyBackground() {
+    if (this._darkMode) {
+      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
+    } else {
+      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+    }
   }
 
   private randomNumber(min: number, max: number) {

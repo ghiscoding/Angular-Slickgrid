@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 
@@ -23,7 +23,8 @@ import {
 @Component({
   templateUrl: './grid-draggrouping.component.html'
 })
-export class GridDraggableGroupingComponent implements OnInit {
+export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
+  private _darkMode = false;
   title = 'Example 19: Draggable Grouping & Aggregators';
   subTitle = `
       <ul>
@@ -64,6 +65,11 @@ export class GridDraggableGroupingComponent implements OnInit {
     this.defineGrid();
   }
 
+  ngOnDestroy() {
+    document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+    document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+  }
+
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid; // grid object
@@ -81,7 +87,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         sortable: true,
         grouping: {
           getter: 'title',
-          formatter: (g) => `Title: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Title: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('cost')
           ],
@@ -107,7 +113,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         groupTotalsFormatter: GroupTotalFormatters.sumTotals,
         grouping: {
           getter: 'duration',
-          formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Duration: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
           comparer: (a, b) => {
             return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
@@ -130,7 +136,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
         grouping: {
           getter: 'percentComplete',
-          formatter: (g) => `% Complete: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `% Complete: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('cost')
           ],
@@ -150,7 +156,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         exportWithFormatter: true,
         grouping: {
           getter: 'start',
-          formatter: (g) => `Start: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Start: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('cost')
           ],
@@ -170,7 +176,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         exportWithFormatter: true,
         grouping: {
           getter: 'finish',
-          formatter: (g) => `Finish: ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Finish: ${g.value} <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('cost')
           ],
@@ -189,7 +195,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         type: FieldType.number,
         grouping: {
           getter: 'cost',
-          formatter: (g) => `Cost: ${g.value} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Cost: ${g.value} <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('cost')
           ],
@@ -210,7 +216,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         formatter: Formatters.checkmarkMaterial,
         grouping: {
           getter: 'effortDriven',
-          formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span style="color:green">(${g.count} items)</span>`,
+          formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span class="text-primary">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('duration'),
             new Aggregators.Sum('cost')
@@ -256,6 +262,7 @@ export class GridDraggableGroupingComponent implements OnInit {
         onGroupChanged: (e, args) => this.onGroupChanged(args),
         onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
       },
+      darkMode: this._darkMode,
       enableTextExport: true,
       enableExcelExport: true,
       excelExportOptions: { sanitizeDataExport: true },
@@ -414,5 +421,21 @@ export class GridDraggableGroupingComponent implements OnInit {
   toggleDraggableGroupingRow() {
     this.clearGrouping();
     this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    this.toggleBodyBackground();
+    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkMode });
+  }
+
+  toggleBodyBackground() {
+    if (this._darkMode) {
+      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
+    } else {
+      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+    }
   }
 }
