@@ -191,7 +191,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     iconClearSortCommand: 'mdi mdi-sort-variant-off',
     iconFreezeColumns: 'mdi mdi-pin-outline',
     iconSortAscCommand: 'mdi mdi-sort-ascending',
-    iconSortDescCommand: 'mdi mdi-flip-v mdi-sort-descending',
+    iconSortDescCommand: 'mdi mdi-sort-descending',
     iconColumnHideCommand: 'mdi mdi-close',
     iconColumnResizeByContentCommand: 'mdi mdi-arrow-expand-horizontal',
     hideColumnResizeByContentCommand: false,
