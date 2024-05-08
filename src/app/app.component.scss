@@ -34,7 +34,7 @@ section {
 }
 
 .panel-wm {
-  padding-top: $navbar-height;
+  padding: #{$navbar-height} 0 0 0;
 
   .nav-stacked {
     padding-bottom: 30px;
@@ -50,15 +50,15 @@ section {
   }
 
   .panel-wm-content {
-    padding-left: ($side-menu-width + 5px);
-    padding-right: 15px;
+    margin-left: $side-menu-width;
+    padding-right: 20px;
   }
 
   .panel-wm-left {
     position: fixed;
     z-index: 400;
     transition: left 0.15s;
-    top: calc(#{$navbar-height});
+    top: $navbar-height;
     bottom: 0;
     left: 0;
     background-color: #f5f5f5;

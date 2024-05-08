@@ -47,3 +47,16 @@ $sparkline-color: #00b78d;
   // fill: none;
   fill: rgba($sparkline-color, 0.03);
 }
+
+.slick-dark-mode,
+.dark-mode {
+  .changed-gain {
+    background-color: #00ff001d !important;
+  }
+  .changed-loss {
+    background-color: #ff00001b !important;
+  }
+  .trading-platform.full-screen {
+    background-color: #33393e;
+  }
+}

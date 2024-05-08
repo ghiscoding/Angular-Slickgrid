@@ -53,6 +53,7 @@ const historicSparklineFormatter: Formatter = (row: number, cell: number, value:
   encapsulation: ViewEncapsulation.None,
 })
 export class GridTradingComponent implements OnDestroy, OnInit {
+  private _darkMode = false;
   title = 'Example 33: Real-Time Trading Platform';
   subTitle = `Simulate a stock trading platform with lot of price changes
     <ul>
@@ -87,6 +88,8 @@ export class GridTradingComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     this.stopSimulation();
+    document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+    document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
@@ -193,6 +196,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       },
       enableDraggableGrouping: true,
       createPreHeaderPanel: true,
+      darkMode: this._darkMode,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 40,
       enableCellNavigation: true,
@@ -317,6 +321,22 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       this.isFullScreen = true;
     }
     this.angularGrid.resizerService.resizeGrid();
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    this.toggleBodyBackground();
+    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkMode });
+  }
+
+  toggleBodyBackground() {
+    if (this._darkMode) {
+      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
+    } else {
+      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
+    }
   }
 
   private randomNumber(min: number, max: number, floor = true) {
