@@ -4,6 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![NPM downloads](https://img.shields.io/npm/dy/angular-slickgrid)](https://npmjs.org/package/angular-slickgrid)
 [![npm](https://img.shields.io/npm/v/angular-slickgrid.svg?logo=npm&logoColor=fff&label=npm)](https://www.npmjs.com/package/angular-slickgrid)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/angular-slickgrid?color=success&label=gzip)](https://bundlephobia.com/result?p=angular-slickgrid)
 
 [![Actions Status](https://github.com/ghiscoding/Angular-Slickgrid/workflows/CI%20Build/badge.svg)](https://github.com/ghiscoding/Angular-Slickgrid/actions)
 [![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg?logo=cypress)](https://www.cypress.io/)
@@ -17,7 +18,7 @@ One of the best JavasSript datagrid [SlickGrid](https://github.com/mleibman/Slic
 [MIT License](LICENSE)
 
 ## Documentation
-📕 [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) website powered by GitBook (_for version >=7, or use the [Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) for older versions_).
+📕 [Documentation](https://ghiscoding.gitbook.io/angular-slickgrid/getting-started/quick-start) website powered by GitBook for version 7+ (_... or use the [Wikis](https://github.com/ghiscoding/Angular-Slickgrid/wiki) for older versions_).
 
 For common issues, see the [Troubleshooting Section](#troubleshooting-section) below
 
