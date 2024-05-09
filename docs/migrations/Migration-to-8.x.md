@@ -27,6 +27,7 @@ To summarize, the goal of this new release was mainly to improve UI/UX (mostly f
 
 #### Major Changes - Quick Summary
 - minimum requirements bump
+  - Angular >=18.0
   - Node >=v18.x
   - Bootstrap >=v5.x (or any other UI framework)
   - SASS >=v1.35 (`dart-sass`)
