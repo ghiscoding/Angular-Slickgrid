@@ -1,4 +1,4 @@
-## Version 5 - Better UI and Dark Mode with Pure CSS SVG icons ✨
+## Version 8 - Better UI and Dark Mode with Pure CSS SVG icons ✨
 This new release brings a lot of changes oriented towards better UI/UX, our SVG icons are now pure CSS and can be colorized like any other text via the native CSS `color` property (which helps a lot to improve the Dark Mode Theme).
 
 Another noticeable UI change is the migration from [Flatpickr](https://flatpickr.js.org/) to [Vanilla-Calendar-Picker](https://github.com/ghiscoding/vanilla-calendar-picker) (which is a fork of [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/) and we'll hopefully drop the fork in the near future if possible), there are multiple reasons to migrate our date picker to another library as shown below. Another change that is mostly internal but is also indirectly connected to the date picker is the migration from MomentJS to [Tempo](https://tempo.formkit.com/) which is modern and is packaged as ESM which is great for Tree Shaking.
@@ -27,6 +27,7 @@ With this release, and after 7 years of development as a 1 man show (myself @ghi
 
 #### Major Changes - Quick Summary
 - minimum requirements bump
+  - Angular v18.0+
   - Node v18.0+
   - Bootstrap v5.0+ (or any other UI framework)
   - SASS v1.35+ (`dart-sass`)
@@ -251,6 +252,20 @@ this.gridOptions = {
 I really wanted to replace MomentJS for a long timeeee... (it's been deprecated for years and is CJS only), but it was really hard to find a good replacement (I tried many alternatives like `DayJS`, `Luxon`, `date-fns` and they all had problems at least for a datagrid use case where parsing & formatting is important)... and here comes [Tempo](https://tempo.formkit.com/)! With Tempo, I was finally able to migrate by taking advantage of their `parse()` and `format()` functions, which are the most important in a datagrid usage. The library also has plenty of extra, and optional, functions as well, for example `addDay()`, `diffDays()`, ... Another great thing about Tempo is that they use the same format/parse [tokens](https://tempo.formkit.com/#format-tokens) as MomentJS, so the conversion on that side was super easy.
 
 The migration to Tempo should be transparent to most users like you. **However** if you are currently using MomentJS in your project, then I would suggest you to consider trying [Tempo](https://tempo.formkit.com/) in order to modernize your project and also lower your dependencies count. The other great advantage of Tempo is that it's ESM and it helped a lot in decreasing our build size footprint because ESM also means that it is Tree Shakable (only import and build what you use). By using Bundlephobia and comparing [@slickgrid-universal@4.7.0](https://bundlephobia.com/package/@slickgrid-universal/common@4.7.0) we can see that `moment-mini` is taking 41.5Kb, while Tempo takes only 16.6Kb in [@slickgrid-universal@5.0.0](https://bundlephobia.com/package/@slickgrid-universal/common@5.0.0), that is a decrease of almost 25Kb (ESM makes a huge difference).
+
+### `allowedCommonJsDependencies`
+Lastly since we got rid of MomentJS and replaced Flatpickr, you can remove a few dependencies from your `allowedCommonJsDependencies` in your `angular.json`.
+
+```diff
+{
+  "allowedCommonJsDependencies": [
+    "dompurify",
+-   "flatpickr",
+-   "moment-mini",
+    "stream"
+  ],
+}
+```
 
 ### Smaller Size - Full ESM
 
