@@ -22,7 +22,7 @@
   "plugins": {
     "@release-it/conventional-changelog": {
       "header": "# Change Log\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.",
-      "preset": "angular",
+      "preset": "conventionalcommits",
       "infile": "CHANGELOG.md"
     }
   }
