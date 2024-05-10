@@ -43,6 +43,18 @@ For most breaking changes, a quick Search & Replace in your code editor should s
 
 ## Changes
 
+### Slickgrid-Universal
+If you use any of the Slickgrid-Universal extra dependencies then make sure to upgrade them as well to the new major `4.0.0` version so that they work with Slickgrid-React `7.0.0`
+
+```diff
+  "dependencies": {
+-   "@slickgrid-universal/excel-export": "^4.7.0",
++   "@slickgrid-universal/excel-export": "^5.0.0",
+-   "angular-slickgrid": "^7.7.0",
++   "angular-slickgrid": "^8.0.0",
+}
+```
+
 ### Styling
 
 #### CSS classes `.color-xx` are all removed (use `.text-color-xx` or native `color` instead)
