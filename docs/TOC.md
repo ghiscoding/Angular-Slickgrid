@@ -92,9 +92,10 @@
 
 ## Migrations
 
-* [Migration Guide to 2.x](migrations/Migration-to-2.x.md)
-* [Migration Guide to 3.x](migrations/Migration-to-3.x.md)
-* [Migration Guide to 4.x](migrations/Migration-to-4.x.md)
-* [Migration Guide to 5.x](migrations/Migration-to-5.x.md)
-* [Migration Guide to 6.x](migrations/Migration-to-6.x.md)
-* [Migration Guide to 7.x](migrations/Migration-to-7.x.md)
+* [Migration Guide to 2.x](migrations/migration-to-2.x.md)
+* [Migration Guide to 3.x](migrations/migration-to-3.x.md)
+* [Migration Guide to 4.x](migrations/migration-to-4.x.md)
+* [Migration Guide to 5.x](migrations/migration-to-5.x.md)
+* [Migration Guide to 6.x](migrations/migration-to-6.x.md)
+* [Migration Guide to 7.x](migrations/migration-to-7.x.md)
+* [Migration Guide to 8.x](migrations/migration-to-8.x.md)
