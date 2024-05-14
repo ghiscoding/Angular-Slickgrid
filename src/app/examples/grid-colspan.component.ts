@@ -60,6 +60,9 @@ export class GridColspanComponent implements OnInit {
       preHeaderPanelHeight: 28,
       explicitInitialization: true,
       colspanCallback: this.renderDifferentColspan,
+      gridMenu: {
+        iconButtonContainer: 'preheader' // we can display the grid menu icon in either the preheader or in the column header (default)
+      },
       enableExcelExport: true,
       excelExportOptions: {
         exportWithFormatter: false

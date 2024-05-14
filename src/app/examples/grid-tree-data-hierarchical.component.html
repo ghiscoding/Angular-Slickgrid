@@ -13,7 +13,7 @@
 
   <div class="row">
     <div class="col-md-7">
-      <button (click)="addNewFile()" data-test="add-item-btn" class="btn btn-primary btn-xs btn-icon">
+      <button (click)="addNewFile()" data-test="add-item-btn" class="btn btn-xs btn-icon btn-primary">
         <span class="icon mdi mdi-plus color-white"></span>
         <span>Add New Pop Song</span>
       </button>
@@ -48,7 +48,7 @@
         <input type="text" class="form-control search-string" data-test="search-string"
                placeholder="search value" autocomplete="off" [(ngModel)]="searchString"
                (ngModelChange)="searchStringChanged()">
-        <button class="btn btn-outline-secondary" data-test="clear-search-string" (click)="clearSearch()">
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center" data-test="clear-search-string" (click)="clearSearch()">
           <span class="icon mdi mdi-close-thick"></span>
         </button>
       </div>

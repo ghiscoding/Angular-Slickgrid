@@ -25,6 +25,10 @@ $slick-button-border-color: #ababab !default;
   gap: 4px;
 }
 
+.gap-4px {
+  gap: 4px;
+}
+
 .side-menu {
   margin-left: 15px;
 
@@ -85,6 +89,9 @@ $slick-button-border-color: #ababab !default;
 .slick-dark-mode {
   --slick-button-style-bg-color: #212121;
   --slick-button-border-color: #626262;
+  .text-primary {
+    color: #599BFE !important;
+  }
 }
 .button-style {
   cursor: pointer;
@@ -122,13 +129,4 @@ $slick-button-border-color: #ababab !default;
   .btn-outline-secondary {
     color: #dfdfdf;
   }
-}
-
-.ms-dark-mode,
-.ms-drop.ms-dark-mode,
-.slick-dark-mode .ms-dark-mode,
-.slick-dark-mode {
-  --slick-checkbox-selector-unchecked-color: #0298e3;
-  --slick-column-picker-checkbox-color: #0298e3;
-  --slick-pagination-icon-color: #0298e3;
 }
