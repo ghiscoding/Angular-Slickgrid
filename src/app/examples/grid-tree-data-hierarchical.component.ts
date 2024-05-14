@@ -98,10 +98,10 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
             if (avgVal !== undefined && sumVal !== undefined) {
               // when found Avg & Sum, we'll display both
-              return isNaN(sumVal) ? '' : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+              return isNaN(sumVal) ? '' : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             } else if (sumVal !== undefined) {
               // or when only Sum is aggregated, then just show Sum
-              return isNaN(sumVal) ? '' : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+              return isNaN(sumVal) ? '' : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             }
           }
           // reaching this line means it's a regular dataContext without totals, so regular formatter output will be used
@@ -260,7 +260,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
-      const folderPrefix = `<span class="mdi icon color-alt-warning ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></span>`;
+      const folderPrefix = `<span class="mdi icon ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></span>`;
       if (dataContext.__collapsed) {
         return `<span class="hidden">${exportIndentationLeadingChar}</span>${spacer}${indentSpacer} <span class="slick-group-toggle collapsed" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       } else {
@@ -274,13 +274,13 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   getFileIcon(value: string) {
     let prefix = '';
     if (value.includes('.pdf')) {
-      prefix = '<span class="mdi icon mdi-file-pdf-outline color-danger"></span>';
+      prefix = '<span class="mdi icon mdi-file-pdf-outline"></span>';
     } else if (value.includes('.txt')) {
-      prefix = '<span class="mdi icon mdi-file-document-outline color-muted-light"></span>';
+      prefix = '<span class="mdi icon mdi-file-document-outline"></span>';
     } else if (value.includes('.xls')) {
-      prefix = '<span class="mdi icon mdi-file-excel-outline color-success"></span>';
+      prefix = '<span class="mdi icon mdi-file-excel-outline"></span>';
     } else if (value.includes('.mp3')) {
-      prefix = '<span class="mdi icon mdi-file-music-outline color-info"></span>';
+      prefix = '<span class="mdi icon mdi-file-music-outline"></span>';
     }
     return prefix;
   }

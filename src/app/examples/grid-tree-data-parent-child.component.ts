@@ -124,7 +124,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
         titleFormatter: (_row, _cell, value, _def, dataContext) => {
           let prefix = '';
           if (dataContext.treeLevel > 0) {
-            prefix = `<span class="mdi mdi-subdirectory-arrow-right mdi-v-align-sub color-se-secondary"></span>`;
+            prefix = `<span class="mdi mdi-subdirectory-arrow-right"></span>`;
           }
           return `${prefix}<span class="bold">${value}</span> <span style="font-size:11px; margin-left: 15px;">(parentId: ${dataContext.parentId})</span>`;
         },
@@ -227,7 +227,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
 
   showSpinner() {
     if (this.isLargeDataset) {
-      this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-24px color-alt-success';
+      this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-24px';
     }
   }
 
