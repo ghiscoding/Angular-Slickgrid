@@ -7,6 +7,10 @@ on:
         type: boolean
         required: false
         description: Dry-Run
+      version:
+        description: 'Fixed Version'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -79,8 +83,20 @@ jobs:
               name: 'OTP to publish package'
               description: 'OTP from authenticator app'
 
+      - name: Fixed Version Release
+        if: ${{ inputs.version != '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm whoami
+          npx release-it ${{ inputs.version }} --ci --dry-run --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false
+          
       - name: GitHub Release 🏷️ / NPM Publish 📦
-        if: ${{ inputs.dryrun != true }}
+        if: ${{ inputs.dryrun != true && inputs.version == '' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
