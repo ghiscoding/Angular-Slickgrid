@@ -27,6 +27,8 @@
 ### Description
 Multiple Select (dropdown) filter is useful when we want to filter the grid 1 or more search term value.
 
+We use an external lib named [multiple-select-vanilla](https://github.com/ghiscoding/multiple-select-vanilla).
+
 #### Note
 For this filter to work you will need to add [Multiple-Select.js](http://wenzhixin.net.cn/p/multiple-select) to your project. This is a customized version of the original (thought all the original [lib options](http://wenzhixin.net.cn/p/multiple-select/docs/) are available so you can still consult the original site for all options). Couple of small options were added to suit SlickGrid-Universal needs, which is why it points to `slickgrid-universal/dist/lib` folder. This lib is required if you plan to use `multipleSelect` or `singleSelect` Filters. What was customized to (compare to the original)
 - `okButton` option was added to add an OK button for simpler closing of the dropdown after selecting multiple options.

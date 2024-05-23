@@ -132,7 +132,7 @@ this.gridOptions = {
 ```
 
 ### Using a Date Range Filter
-The date range filter allows you to search data between 2 dates (it uses [Vanilla-Calendar Range](https://vanilla-calendar.pro/) feature).
+The date range filter allows you to search data between 2 dates, it uses the [Vanilla-Calendar Range](https://vanilla-calendar.pro/) feature.
 
 > **Note** we use [Tempo](https://tempo.formkit.com/) to parse and format Dates to the chosen format via the `type` option when provided in your column definition.
 

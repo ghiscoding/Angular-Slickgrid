@@ -110,7 +110,7 @@ For example, if we have an input date in UTC format and we want to display a Dat
 this.columnDefinitions = [
   { id: 'title', name: 'Title', field: 'title' },
   { id: 'description', name: 'Description', field: 'description', filterable: true },
-  { id: 'utcDate', name: 'UTC Date', field: 'utcDate',
+  { id: 'utcDate', name: 'UTC Date', field: 'utcDate', // if your type has hours/minutes, then the date picker will include date+time
     type: 'dateUtc',
     formatter: Formatters.dateTimeIsoAmPm,
     outputType: 'dateTimeIsoAmPm',

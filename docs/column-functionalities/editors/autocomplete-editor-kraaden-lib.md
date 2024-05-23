@@ -17,6 +17,8 @@
 ### Introduction
 AutoComplete is a functionality that let the user start typing characters and the autocomplete will try to give suggestions according to the characters entered. The collection can be a fixed JSON files (collection of strings or objects) or can also be an external remote resource to an external API. For a demo of what that could look like, take a look at the [animated gif demo](#animated-gif-demo) below.
 
+We use an external lib named [Autocomplete](https://github.com/kraaden/autocomplete) (aka `autocompleter` on npm) by Kraaden.
+
 ## Using `collection` or `collectionAsync`
 If you want to pass the entire list to the AutoComplete (like a JSON file or a Web API call), you can do so using the `collection` or the `collectionAsync` (the latter will load it asynchronously). You can also see that the Editor and Filter have almost the exact same configuration (apart from the `model` that is obviously different).
 
