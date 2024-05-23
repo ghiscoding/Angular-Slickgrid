@@ -1,6 +1,31 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.7.0...v8.0.0) (2024-05-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Angular 18
+* make DOMPurify as optional
+* migrate from Moment to Tempo
+* remove Font-Awesome and use new SVG icons
+* **common:** migrate from Flatpickr to Vanilla-Calendar
+
+### Features
+
+* **common:** migrate from Flatpickr to Vanilla-Calendar ([109f155](https://github.com/ghiscoding/angular-slickgrid/commit/109f155ec0a81a604a8ac157d6d4c2e7144df4ec))
+* make DOMPurify as optional ([8bb566e](https://github.com/ghiscoding/angular-slickgrid/commit/8bb566eb901e4f44b98414444fc9e53e6f4462aa))
+* migrate from Moment to Tempo ([a27b6e9](https://github.com/ghiscoding/angular-slickgrid/commit/a27b6e9cc3c600d33f88bbea523e171b03a41d67))
+* remove Font-Awesome and use new SVG icons ([d73cc9c](https://github.com/ghiscoding/angular-slickgrid/commit/d73cc9c9b5b750f63cbad13f875defe45ca775bb))
+* upgrade to Angular 18 ([97b27e4](https://github.com/ghiscoding/angular-slickgrid/commit/97b27e494dabef77c4f53a1ecf9f762e3a3badf0))
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([7f4e145](https://github.com/ghiscoding/angular-slickgrid/commit/7f4e1452196a16e75a4ecc5d5f39eb081740ba50))
+* small styling issues & better primary color support w/Dark Mode ([01a16e2](https://github.com/ghiscoding/angular-slickgrid/commit/01a16e26d68e2b614d1eaad234fb90f4ecd34433))
+
 # [7.7.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.6.1...v7.7.0) (2024-04-20)
 
 
