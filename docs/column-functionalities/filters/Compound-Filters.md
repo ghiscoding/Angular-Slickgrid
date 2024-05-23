@@ -165,10 +165,10 @@ this.columnDefinitions = [
       model: Filters.compoundSlider,
       // here is our custom list that will override default list
       compoundOperatorList: [
-        { operator: '', description: '' },
-        { operator: '=', description: 'Equal to' },
-        { operator: '<', description: 'Less than' },
-        { operator: '>', description: 'Greater than' },
+        { operator: '', desc: '' },
+        { operator: '=', desc: 'Equal to' },
+        { operator: '<', desc: 'Less than' },
+        { operator: '>', desc: 'Greater than' },
       ]
     }
   }
