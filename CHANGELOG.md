@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. See [Conven
 
 ## [8.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.7.0...v8.0.0) (2024-05-23)
 
+> [!NOTE]
+> #### Follow the [Migration 8.x Guide](https://github.com/ghiscoding/angular-slickgrid/wiki/Migration-to-8.x) 📖
 
 ### ⚠ BREAKING CHANGES
 
