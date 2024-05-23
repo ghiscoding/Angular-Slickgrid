@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -17,7 +17,7 @@ const NB_ITEMS = 1000;
 @Component({
   templateUrl: './grid-rowdetail.component.html'
 })
-export class GridRowDetailComponent implements OnInit {
+export class GridRowDetailComponent implements OnDestroy, OnInit {
   private _darkMode = false;
   title = 'Example 21: Row Detail View';
   subTitle = `
@@ -53,6 +53,11 @@ export class GridRowDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.defineGrid();
+  }
+
+  ngOnDestroy(): void {
+    document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
+    document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
   }
 
   /* Define grid Options and Columns */
