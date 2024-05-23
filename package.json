@@ -126,8 +126,7 @@
     "zone.js": "~0.14.5"
   },
   "engines": {
-    "node": ">=14.17.0",
-    "npm": ">=6.14.13"
+    "node": ">=18.19.1"
   },
   "resolutions": {
     "caniuse-lite": "1.0.30001617",
