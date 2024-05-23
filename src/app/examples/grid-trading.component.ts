@@ -5,6 +5,7 @@ import {
   Aggregators,
   AngularGridInstance,
   Column,
+  createDomElement,
   deepCopy,
   FieldType,
   Filters,
@@ -39,14 +40,39 @@ const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
 const transactionTypeFormatter: Formatter = (_row, _cell, value: string) =>
   `<div class="d-inline-flex align-items-center"><span class="me-1 mdi mdi-16px mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-info' : 'text-warning'}"></span> ${value}</div>`;
 
-const historicSparklineFormatter: Formatter = (row: number, cell: number, value: string, col: Column, dataContext: any) => {
+const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col, dataContext) => {
+  if (dataContext.historic.length < 2) {
+    return '';
+  }
   const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svgElem.setAttributeNS(null, 'width', '135');
   svgElem.setAttributeNS(null, 'height', '30');
   svgElem.setAttributeNS(null, 'stroke-width', '2');
   svgElem.classList.add('sparkline');
-  sparkline(svgElem, dataContext.historic, { interactive: true });
-  return svgElem.outerHTML;
+  sparkline(svgElem, dataContext.historic, {
+    cursorwidth: 2,
+    onmousemove: (event, datapoint) => {
+      const svg = (event.target as HTMLElement).closest('svg');
+      const tooltip = svg?.nextElementSibling as HTMLElement;
+      if (tooltip) {
+        tooltip.hidden = false;
+        tooltip.textContent = `$${(datapoint.value * 100 / 100).toFixed(2)}`;
+        tooltip.style.top = `${event.offsetY}px`;
+        tooltip.style.left = `${event.offsetX + 20}px`;
+      }
+    },
+    onmouseout: (event) => {
+      const svg = (event.target as HTMLElement).closest('svg');
+      const tooltip = svg?.nextElementSibling as HTMLElement;
+      if (tooltip) {
+        tooltip.hidden = true;
+      }
+    }
+  });
+  const div = document.createElement('div');
+  div.appendChild(svgElem);
+  div.appendChild(createDomElement('div', { className: 'trading-tooltip', hidden: true }));
+  return div;
 };
 
 @Component({
