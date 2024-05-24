@@ -1,6 +1,6 @@
 # Quick start
 
-> **NOTE** the Documentations shown on this website are meant to be used with Angular-Slickgrid v7.x or higher, refer to the project [Wikis](https://github.com/ghiscoding/Angular-Slickgrid/wiki) for earlier versions of the project.
+> **NOTE** The Documentations shown on this website are meant for Angular-Slickgrid v7.x and higher, for older versions please refer to the project [Wikis](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
 
 ### 1. Install NPM Package
 Install the `Angular-Slickgrid`, and other external packages like `Bootstrap`
@@ -65,6 +65,7 @@ $row-mouse-hover-color: lightgreen;
 ```
 
 ### 4. Include it in your App Module
+> #### For Standalone (without App Module), see this Stack Overflow [answer](https://stackoverflow.com/a/78527155/1212166)
 
 Include `AngularSlickgridModule` in your App Module (app.module.ts)
 **Note**
