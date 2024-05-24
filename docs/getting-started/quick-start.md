@@ -64,22 +64,62 @@ $row-mouse-hover-color: lightgreen;
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
 ```
 
-### 4. Include it in your App Module
-> #### For Standalone (without App Module), see this Stack Overflow [answer](https://stackoverflow.com/a/78527155/1212166)
+### 4. Include it in your App Module (or App Config for Standalone)
+Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it.
 
-Include `AngularSlickgridModule` in your App Module (app.module.ts)
+#### App Module 
+Include `AngularSlickgridModule` in your App Module (`app.module.ts`)
 **Note**
-Make sure to add the `forRoot` since it will throw an error in the console when not provided.
+Make sure to add the `forRoot` since it will throw an error in the console when missing.
 
 ```typescript
 import { AngularSlickgridModule } from 'angular-slickgrid';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [ AngularSlickgridModule.forRoot() ], // forRoot() is required, it won't work without it
+  imports: [AngularSlickgridModule.forRoot()], // forRoot() is REQUIRED
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+```
+
+#### Standalone (App Config)
+> #### see this Stack Overflow [answer](https://stackoverflow.com/a/78527155/1212166) for more details and Stackblitz demo
+
+If your app is using standalone style, go to `app.config.ts`
+
+```ts
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from './app.routes';
+import { AngularSlickgridModule } from 'angular-slickgrid';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    importProvidersFrom(AngularSlickgridModule.forRoot()), // <- notice!
+  ],
+};
+```
+
+Then import the `AngularSlickgridModule` to the `app.component.ts`
+
+```ts
+import { RouterOutlet } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Column, GridOption, AngularSlickgridModule } from 'angular-slickgrid';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, AngularSlickgridModule], // <- notice!
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+})
+export class AppComponent {
+    // ...
 ```
 
 #### Angular 7+
