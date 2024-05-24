@@ -1,6 +1,6 @@
 # Quick start
 
-> **NOTE** these instructions are for the latest Angular-Slickgrid v7.x and might be different for earlier versions of the lib.
+> **NOTE** the Documentations shown on this website are meant to be used with Angular-Slickgrid v7.x or higher, refer to the project [Wikis](https://github.com/ghiscoding/Angular-Slickgrid/wiki) for earlier versions of the project.
 
 ### 1. Install NPM Package
 Install the `Angular-Slickgrid`, and other external packages like `Bootstrap`
