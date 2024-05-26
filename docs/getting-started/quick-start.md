@@ -239,14 +239,13 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
 ```json
 "options": {
   "allowedCommonJsDependencies": [
-    "autocompleter",
-    "dompurify",
+    "dompurify", // when you install it
     "stream"
   ],
 }
 ```
 
-### 12. Angular 12 with WebPack 5 - how to fix polyfill error
+### 12. Angular 12 and higher with WebPack 5 - how to fix polyfill error
 Since Angular 12 switched to WebPack 5, you might get some new errors and you will need to add some polyfills manually to get the Excel Builder (Excel Export) to work.
 
 #### The error you might get
@@ -271,8 +270,7 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```
 "options": {
   "allowedCommonJsDependencies": [
-    "autocompleter",
-    "dompurify",
+    "dompurify", // when you install it
     "stream"
   ],
 },
