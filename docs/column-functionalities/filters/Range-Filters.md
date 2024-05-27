@@ -158,7 +158,7 @@ export class GridBasicComponent {
           model: Filters.dateRange,
 
           // override any of the Vanilla-Calendar options through "filterOptions"
-          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption
+          filterOptions: { range: { min: 'today' } } as VanillaCalendarOption
         }
       },
     ];
