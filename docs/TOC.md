@@ -27,7 +27,7 @@
   * [Compound Filters](column-functionalities/filters/Compound-Filters.md)
   * [Range Filters](column-functionalities/filters/Range-Filters.md)
   * [Custom Filter](column-functionalities/filters/custom-filter.md)
-  * [Styling Filled Filters](column-functionalities/filters/Styling-Filled-Filters.md)
+  * [Styling Filled Filters](column-functionalities/filters/styling-filled-filters.md)
   * [Single Search Filter](column-functionalities/filters/Single-Search-Filter.md)
 * [Formatters](column-functionalities/Formatters.md)
 * [Sorting](column-functionalities/Sorting.md)
