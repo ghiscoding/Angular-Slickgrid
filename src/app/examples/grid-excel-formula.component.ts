@@ -422,6 +422,7 @@ export class GridExcelFormulaComponent implements OnInit {
   }
 
   clearGrouping() {
+    this.isDataGrouped = false;
     this.angularGrid?.dataView?.setGrouping([]);
   }
 
