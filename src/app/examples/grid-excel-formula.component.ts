@@ -139,8 +139,9 @@ export class GridExcelFormulaComponent implements OnInit {
         formatter: Formatters.dollar, groupTotalsFormatter: GroupTotalFormatters.sumTotalsDollarBold,
         groupTotalsExcelExportOptions: {
           style: {
-            font: { bold: true },
+            font: { bold: true, size: 11.5 },
             format: '$0.00', // currency format
+            border: { top: { color: 'FF747474', style: 'thick' } },
           },
           valueParserCallback: this.excelGroupCellParser.bind(this),
         }
@@ -149,7 +150,10 @@ export class GridExcelFormulaComponent implements OnInit {
         id: 'qty', name: 'Quantity', field: 'qty', type: FieldType.number,
         groupTotalsFormatter: GroupTotalFormatters.sumTotalsBold,
         groupTotalsExcelExportOptions: {
-          style: { font: { bold: true } },
+          style: {
+            font: { bold: true, size: 11.5 },
+            border: { top: { color: 'FF747474', style: 'thick' } },
+          },
           valueParserCallback: this.excelGroupCellParser.bind(this),
         },
         params: { minDecimal: 0, maxDecimal: 0 },
@@ -176,8 +180,9 @@ export class GridExcelFormulaComponent implements OnInit {
         },
         groupTotalsExcelExportOptions: {
           style: {
-            font: { bold: true },
+            font: { bold: true, italic: true, size: 11.5 },
             format: '$0.00', // currency format
+            border: { top: { color: 'FF747474', style: 'thick' } },
           },
           valueParserCallback: this.excelGroupCellParser.bind(this),
         }
@@ -217,8 +222,9 @@ export class GridExcelFormulaComponent implements OnInit {
         },
         groupTotalsExcelExportOptions: {
           style: {
-            font: { bold: true },
+            font: { bold: true, italic: true, color: 'FFC65911', size: 11.5 },
             format: '$0.00', // currency format
+            border: { top: { color: 'FF747474', style: 'thick' } },
           },
           valueParserCallback: this.excelGroupCellParser.bind(this),
         }
@@ -248,8 +254,9 @@ export class GridExcelFormulaComponent implements OnInit {
         },
         groupTotalsExcelExportOptions: {
           style: {
-            font: { bold: true },
+            font: { bold: true, color: 'FF005A9E', size: 12 },
             format: '$0.00',
+            border: { top: { color: 'FF747474', style: 'thick' } },
           },
           valueParserCallback: this.excelGroupCellParser.bind(this),
         }
