@@ -4,7 +4,7 @@ describe('Example 36 - Excel Export Formula', () => {
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/excel-formula`);
-    cy.get('h2').should('contain', 'Example 36 - Excel Export Formula');
+    cy.get('h2').should('contain', 'Example 36: Excel Export Formula');
   });
 
   it('should have exact column titles on grid', () => {

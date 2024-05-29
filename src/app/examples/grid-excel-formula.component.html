@@ -1,6 +1,6 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    Example 36: Excel Export Formulas
     <span class="float-end">
       <a style="font-size: 18px"
          target="_blank"
@@ -9,7 +9,12 @@
       </a>
     </span>
   </h2>
-  <div class="subtitle" [innerHTML]="subTitle"></div>
+  <div class="subtitle">
+    Grid with Excel Formulas (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/export-to-excel#cell-value-parser" target="_blank">Wiki docs</a>).
+    Calculate Totals via Formatters in the UI, but use Excel Formula when exporting via <code>excelExportOptions.valueParserCallback</code>
+    When Grouped we will also calculate the Group Totals in the UI via Group Formatter and we again use Excel Formula to calculate the Group Totals (sum) dynamically.
+    For Grouping we need to use <code>groupTotalsExcelExportOptions.valueParserCallback</code> instead.
+  </div>
 
   <section class="row mb-2">
     <div class="mb-1">
