@@ -302,6 +302,28 @@ describe('Example 5 - OData Grid', () => {
         .should('have.length', 1);
     });
 
+    it('should perform filterQueryOverride when operator "%%" is selected', () => {
+      cy.get('.search-filter.filter-name select').find('option').last().then((element) => {
+        cy.get('.search-filter.filter-name select').select(element.val());
+      });
+
+      cy.get('.search-filter.filter-name')
+        .find('input')
+        .clear()
+        .type('Jo%yn%er');
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$count=true&$top=10&$filter=(matchesPattern(Name, '%5EJo%25yn%25er$'))`);
+        });
+
+      cy.get('.slick-row')
+        .should('have.length', 1);
+    });
+
     it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
       cy.get('[data-test=set-dynamic-filter]')
         .click();
