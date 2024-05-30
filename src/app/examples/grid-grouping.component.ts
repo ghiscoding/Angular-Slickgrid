@@ -46,7 +46,7 @@ export class GridGroupingComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'sel', name: '#', field: 'num', width: 40,
+        id: 'sel', name: '#', field: 'num', width: 40, type: FieldType.number,
         excludeFromExport: true,
         maxWidth: 70,
         resizable: true,
@@ -166,6 +166,13 @@ export class GridGroupingComponent implements OnInit {
       excelExportOptions: { sanitizeDataExport: true },
       textExportOptions: { sanitizeDataExport: true },
       externalResources: [this.excelExportService, this.textExportService],
+      showCustomFooter: true, // display some metrics in the bottom custom footer
+      customFooterOptions: {
+        // optionally display some text on the left footer container
+        hideMetrics: false,
+        hideTotalItemCount: false,
+        hideLastUpdateTimestamp: false
+      },
     };
 
     this.loadData(500);
