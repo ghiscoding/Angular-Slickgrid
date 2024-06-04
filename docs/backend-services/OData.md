@@ -242,7 +242,3 @@ backendServiceApi: {
 }
 
 ```
-
-## UI Sample of the OData demo
-
-![Slickgrid Server Side](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/screenshots/pagination.png)
