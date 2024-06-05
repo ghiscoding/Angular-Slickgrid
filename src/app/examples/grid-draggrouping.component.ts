@@ -80,7 +80,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   defineGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title',
+        id: 'title', name: 'Title', field: 'title', columnGroup: 'Common Factor',
         width: 70, minWidth: 50,
         cssClass: 'cell-title',
         filterable: true,
@@ -96,7 +96,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'duration', name: 'Duration', field: 'duration',
+        id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor',
         width: 70,
         sortable: true,
         filterable: true,
@@ -126,27 +126,8 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete',
-        minWidth: 70, width: 90,
-        formatter: Formatters.percentCompleteBar,
-        type: FieldType.number,
-        filterable: true,
-        filter: { model: Filters.compoundSlider },
-        sortable: true,
-        groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
-        grouping: {
-          getter: 'percentComplete',
-          formatter: (g) => `% Complete: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
-          aggregateCollapsed: false,
-          collapsed: false
-        },
-        params: { groupFormatterPrefix: '<i>Avg</i>: ' }
-      },
-      {
-        id: 'start', name: 'Start', field: 'start', minWidth: 60,
+        id: 'start', name: 'Start', field: 'start', columnGroup: 'Period',
+        minWidth: 60,
         sortable: true,
         filterable: true,
         filter: { model: Filters.compoundDate },
@@ -165,7 +146,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
+        id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period',
         minWidth: 60,
         sortable: true,
         filterable: true,
@@ -185,7 +166,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'cost', name: 'Cost', field: 'cost',
+        id: 'cost', name: 'Cost', field: 'cost', columnGroup: 'Analysis',
         width: 90,
         sortable: true,
         filterable: true,
@@ -204,7 +185,27 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'effortDriven', name: 'Effort-Driven', field: 'effortDriven',
+        id: 'percentComplete', name: '% Complete', field: 'percentComplete', columnGroup: 'Analysis',
+        minWidth: 70, width: 90,
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        filterable: true,
+        filter: { model: Filters.compoundSlider },
+        sortable: true,
+        groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
+        grouping: {
+          getter: 'percentComplete',
+          formatter: (g) => `% Complete: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
+          aggregators: [
+            new Aggregators.Sum('cost')
+          ],
+          aggregateCollapsed: false,
+          collapsed: false
+        },
+        params: { groupFormatterPrefix: '<i>Avg</i>: ' }
+      },
+      {
+        id: 'effortDriven', name: 'Effort-Driven', field: 'effortDriven', columnGroup: 'Analysis',
         width: 80, minWidth: 20, maxWidth: 100,
         cssClass: 'cell-effort-driven',
         sortable: true,
@@ -236,9 +237,18 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       autoCommitEdit: true,
       editable: true,
       enableCellNavigation: true,
+
+      // pre-header will include our Header Grouping (i.e. "Common Factor")
+      // Draggable Grouping could be located in either the Pre-Header OR the new Top-Header
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
-      preHeaderPanelHeight: 40,
+      preHeaderPanelHeight: 30,
+
+      // when Top-Header is created, it will be used by the Draggable Grouping (otherwise the Pre-Header will be used)
+      createTopHeaderPanel: true,
+      showTopHeaderPanel: true,
+      topHeaderPanelHeight: 35,
+
       showCustomFooter: true,
       enableFiltering: true,
       // you could debounce/throttle the input text filter if you have lots of data
@@ -258,7 +268,9 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       draggableGrouping: {
         dropPlaceHolderText: 'Drop a column header here to group by the column',
         // groupIconCssClass: 'mdi mdi-drag-vertical',
-        deleteIconCssClass: 'mdi mdi-close',
+        deleteIconCssClass: 'mdi mdi-close text-color-danger',
+        sortAscIconCssClass: 'mdi mdi-arrow-up',
+        sortDescIconCssClass: 'mdi mdi-arrow-down',
         onGroupChanged: (e, args) => this.onGroupChanged(args),
         onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
       },

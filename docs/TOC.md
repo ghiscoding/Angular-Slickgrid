@@ -66,7 +66,7 @@
 * [Export to File (csv/txt)](grid-functionalities/Export-to-Text-File.md)
 * [Grid Menu](grid-functionalities/Grid-Menu.md)
 * [Grid State & Presets](grid-functionalities/Grid-State-&-Preset.md)
-* [Grouping & Aggregators](grid-functionalities/Grouping-&-Aggregators.md)
+* [Grouping & Aggregators](grid-functionalities/grouping-and-aggregators.md)
 * [Header Menu & Header Buttons](grid-functionalities/Header-Menu-&-Header-Buttons.md)
 * [Pinning (frozen) of Columns/Rows](grid-functionalities/frozen-columns-rows.md)
 * [Providing data to the grid](grid-functionalities/providing-grid-data.md)

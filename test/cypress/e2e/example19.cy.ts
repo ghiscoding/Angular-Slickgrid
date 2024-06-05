@@ -1,5 +1,6 @@
 describe('Example 19 - Draggable Grouping & Aggregators', () => {
-  const fullTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort-Driven'];
+  const preHeaders = ['Common Factor', 'Period', 'Analysis', ''];
+  const fullTitles = ['Title', 'Duration', 'Start', 'Finish', 'Cost', '% Complete', 'Effort-Driven'];
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
@@ -7,11 +8,24 @@ describe('Example 19 - Draggable Grouping & Aggregators', () => {
     cy.get('h2').should('contain', 'Example 19: Draggable Grouping & Aggregators');
   });
 
-  it('should have exact column titles on 1st grid', () => {
+  it('should have exact column (pre-header) grouping titles in grid', () => {
     cy.get('#grid19')
-      .find('.slick-header-columns')
+      .find('.slick-preheader-panel .slick-header-columns')
+      .children()
+      .each(($child, index) => expect($child.text()).to.eq(preHeaders[index]));
+  });
+
+  it('should have exact column titles in grid', () => {
+    cy.get('#grid19')
+      .find('.slick-header:not(.slick-preheader-panel) .slick-header-columns')
       .children()
       .each(($child, index) => expect($child.text()).to.eq(fullTitles[index]));
+  });
+
+  it('should have a draggable dropzone on top of the grid in the top-header section', () => {
+    cy.get('#grid19')
+      .find('.slick-topheader-panel .slick-dropzone:visible')
+      .contains('Drop a column header here to group by the column');
   });
 
   describe('Grouping Tests', () => {
@@ -141,8 +155,8 @@ describe('Example 19 - Draggable Grouping & Aggregators', () => {
         .should('exist');
     });
 
-    it('should use the preheader Toggle All button and expect all groups to now be expanded', () => {
-      cy.get('.slick-preheader-panel .slick-group-toggle-all').click();
+    it('should use the topheader Toggle All button and expect all groups to now be expanded', () => {
+      cy.get('.slick-topheader-panel .slick-group-toggle-all').click();
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Effort-Driven: False');
@@ -153,8 +167,8 @@ describe('Example 19 - Draggable Grouping & Aggregators', () => {
         .should('have.css', 'marginLeft').and('eq', `15px`);
     });
 
-    it('should use the preheader Toggle All button again and expect all groups to now be collapsed', () => {
-      cy.get('.slick-preheader-panel .slick-group-toggle-all').click();
+    it('should use the topheader Toggle All button again and expect all groups to now be collapsed', () => {
+      cy.get('.slick-topheader-panel .slick-group-toggle-all').click();
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Effort-Driven: False');
