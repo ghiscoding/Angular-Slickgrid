@@ -64,7 +64,7 @@ taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext) =
 ```
 
 #### Filtering with Translated cell value (`translateFormatter`)
-Since the cell value is to be translated, the regular filtering might behave differently than excepted (it will filter against a translation key instead of filtering against the formatted output which is what we want). If you want to filter against the formatted output (`translateFormatter` or even a custom formatter), you need to fill in the `i18n` property in the Grid Options and set `useFormatterOuputToFilter` to True, for more info please see [Wiki - input filter with localization](../column-functionalities/filters/Input-Filter.md#filtering-with-localization-i18n)
+Since the cell value is to be translated, the regular filtering might behave differently than excepted (it will filter against a translation key instead of filtering against the formatted output which is what we want). If you want to filter against the formatted output (`translateFormatter` or even a custom formatter), you need to fill in the `i18n` property in the Grid Options and set `useFormatterOuputToFilter` to True, for more info please see [Wiki - input filter with localization](../column-functionalities/filters/input-filter.md#filtering-with-localization-i18n)
 
 #### Using Angular-Slickgrid Formatters.Translate
 Instead of defining a custom formatter over and over, you could also use the built-in Angular-Slickgrid `Formatters.translate`. However for the formatter to work, you need to provide the `ngx-translate` Service instance, to the Grid Options property `i18n`, as shown below.

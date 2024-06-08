@@ -27,6 +27,7 @@ import { GridCompositeEditorComponent } from './examples/grid-composite-editor.c
 import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
+import { GridExcelFormulaComponent } from './examples/grid-excel-formula.component';
 import { GridAngularComponent } from './examples/grid-angular.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
@@ -106,6 +107,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridCustomTooltipComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
+    GridExcelFormulaComponent,
     GridFormatterComponent,
     GridFrozenComponent,
     GridGraphqlComponent,
