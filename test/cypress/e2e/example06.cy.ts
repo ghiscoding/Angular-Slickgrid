@@ -4,6 +4,9 @@ import { removeWhitespaces } from '../plugins/utilities';
 
 const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
 const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+function removeSpaces(textS) {
+  return `${textS}`.replace(/\s+/g, '');
+}
 
 describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
   it('should display Example title', () => {
@@ -292,6 +295,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
         expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+      });
+  });
+
+  it('should perform filterQueryOverride when operator "%%" is selected', () => {
+    cy.get('.search-filter.filter-name select').find('option').last().then((element) => {
+      cy.get('.search-filter.filter-name select').select(element.val());
+    });
+
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .clear()
+      .type('Jo%yn%er');
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'finished');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query { users (first:30,offset:0,
+          orderBy:[{field:"name",direction:ASC}],
+          filterBy:[{field:"name",operator:Like,value:"Jo%yn%er"}],
+          locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`));
       });
   });
 
