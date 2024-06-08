@@ -302,6 +302,24 @@ describe('Example 5 - OData Grid', () => {
         .should('have.length', 1);
     });
 
+    it('should return 3 rows using "C*n" (starts with "C" + ends with "n")', () => {
+      cy.get('input.filter-name')
+        .clear()
+        .type('C*n');
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'finished');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$count=true&$top=10&$filter=(startswith(Name, 'C') and endswith(Name, 'n'))`);
+        });
+
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Carroll Buchanan');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Consuelo Dickson');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(1)`).should('contain', 'Christine Compton');
+    });
+
     it('should perform filterQueryOverride when operator "%%" is selected', () => {
       cy.get('.search-filter.filter-name select').find('option').last().then((element) => {
         cy.get('.search-filter.filter-name select').select(element.val());
@@ -401,6 +419,7 @@ describe('Example 5 - OData Grid', () => {
       cy.get('#items-per-page-label').select('20');
 
       cy.get('[data-test=enable-count]').click();
+      cy.get('[data-test=enable-count]').should('not.be.checked');
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
@@ -864,32 +883,13 @@ describe('Example 5 - OData Grid', () => {
       cy.get('[data-test=total-items]')
         .contains('50');
     });
-
-    it('should return 2 rows using "C*n" (starts with "C" + ends with "n")', () => {
-      cy.get('input.filter-name')
-        .clear()
-        .type('C*n');
-
-      // wait for the query to finish
-      cy.get('[data-test=status]').should('contain', 'finished');
-
-      cy.get('[data-test=odata-query-result]')
-        .should(($span) => {
-          expect($span.text()).to.eq(`$top=10&$orderby=Name desc&$filter=(Gender eq 'female' and startswith(Name, 'C') and endswith(Name, 'n'))`);
-        });
-
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Consuelo Dickson');
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Christine Compton');
-
-      // clear filter before next test
-      cy.get('input.filter-name')
-        .clear();
-    });
   });
 
   describe('Select and Expand Behaviors', () => {
     it('should enable "enableSelect" and "enableExpand" and expect the query to select/expand all fields', () => {
       cy.get('[data-test=enable-expand]').click();
+      cy.get('[data-test=enable-expand]').should('be.checked');
+      cy.wait(5);
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
@@ -900,6 +900,7 @@ describe('Example 5 - OData Grid', () => {
         });
 
       cy.get('[data-test=enable-select]').click();
+      cy.get('[data-test=enable-select]').should('be.checked');
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
