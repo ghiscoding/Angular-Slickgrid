@@ -109,7 +109,11 @@ $slick-button-border-color: #ababab !default;
   background-color: #fff;
   /* the height is 100% minus the 2 navbars */
   height: calc(100vh - 56px);
+  padding: 0 20px;
 
+  #demo-container {
+    padding-bottom: 15px;
+  }
   h3 {
     color: #333;
   }
