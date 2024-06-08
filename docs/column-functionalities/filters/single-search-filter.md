@@ -1,5 +1,6 @@
 #### Index
-- [Update Filters Dynamically](Input-Filter.md#update-filters-dynamically)
+- [Update Filters Dynamically](input-filter.md#update-filters-dynamically)
+- [Custom Filter Predicate](input-filter.md#custom-filter-predicate)
 
 ### Description
 Some users might want to have 1 main single search for filtering the grid data instead of using multiple column filters. You can see a demo of that below

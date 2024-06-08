@@ -330,42 +330,8 @@ Below is a preview of the previous customizations shown above
 
 ![image](https://user-images.githubusercontent.com/643976/208590003-b637dcda-5164-42cc-bfad-e921a22c1837.png)
 
-### Cell Value Parser
-This is not recommended but if you have no other ways, you can also provide a cell value parser function callback to override what the system detected.
-
-```ts
-this.columnDefinitions = [
-  {
-    id: 'cost', name: 'Cost', field: 'cost', width: 80,
-    type: FieldType.number,
-    formatter: Formatters.currency,
-    groupTotalsFormatter: GroupTotalFormatters.sumTotalsCurrency,
-    params: { displayNegativeNumberWithParentheses: true, currencyPrefix: '€', groupFormatterCurrencyPrefix: '€', minDecimal: 2, maxDecimal: 4, groupFormatterPrefix: '<b>Total</b>: ' },
-    excelExportOptions: {
-      valueParserCallback: (data, col, excelFormatterId, excelStylesheet) => {
-        // when returned as string, it will skip Excel style format
-        return `Total: ${data}`;
-
-        // to keep Excel style format, you can use detected "excelFormatterId" OR use "excelStylesheet.createFormat()"
-        return {
-          value: isNaN(data as number) ? data : +data,
-          metadata: { style: excelFormatterId } // the excelFormatterId was created internally from the custom format
-        };
-      }
-    },
-    groupTotalsExcelExportOptions: {
-      valueParserCallback: (totals, columnDef) => {
-        const groupType = 'sum';
-        const fieldName = columnDef.field;
-        return totals[groupType][fieldName];
-      },
-    }
-  }
-];
-```
-
 ### Cell Format Auto-Detect Disable
-##### requires `v3.2.0` or higher
+##### requires `v6.2.0` or higher
 The system will auto-detect the Excel format to use for Date and Number field types, if for some reason you wish to disable it then you provide the excel export options below
 
 ```ts
@@ -383,3 +349,109 @@ this.gridOptions = {
   excelExportOptions: { autoDetectCellFormat: false }
 };
 ```
+
+### Cell Value Parser
+This is not recommended but if you have no other ways, you can also provide a `valueParserCallback` callback function to override what the system detected. This callback function is available for both `excelExportOptions` (regular cells) and `groupTotalsExcelExportOptions` (grouping total cells)
+
+> **Note** the original implementation of both `valueParserCallback` had separate arguments but that expanded into way too many arguments than original planned and so I decided to merge them into a single `args` which includes base arguments (`columnDef`, `gridOptions`, `excelFormatId`, `stylesheet`, `dataRowIdx`, and depending on the type you will also have `dataContext` for regular cell OR `groupType` for grouping cell)
+
+```ts
+this.columnDefinitions = [
+  {
+    id: 'cost', name: 'Cost', field: 'cost', width: 80,
+    type: FieldType.number,
+    formatter: Formatters.currency,
+    groupTotalsFormatter: GroupTotalFormatters.sumTotalsCurrency,
+    params: { displayNegativeNumberWithParentheses: true, currencyPrefix: '€', groupFormatterCurrencyPrefix: '€', minDecimal: 2, maxDecimal: 4, groupFormatterPrefix: '<b>Total</b>: ' },
+    excelExportOptions: {
+      // for version <=8.1
+      // valueParserCallback: (data, col, excelFormatId, excelStylesheet) => {
+
+      // new args signature requires version >=8.1
+      valueParserCallback: (data, { columnDef, excelFormatId, stylesheet }) => {
+        // when returned as string, it will skip Excel style format
+        return `Total: ${data}`;
+
+        // to keep Excel style format, you can use detected "excelFormatId" OR use "excelStylesheet.createFormat()"
+        return {
+          value: isNaN(data as number) ? data : +data,
+          metadata: { style: excelFormatId } // the excelFormatId was created internally from the custom format
+        };
+      }
+    },
+    groupTotalsExcelExportOptions: {
+      // for version <=8.1
+      // valueParserCallback: (totals, columnDef) => {
+
+      // new args signature requires version >=8.1
+      valueParserCallback: (totals, { columnDef, groupType }) => {
+        const fieldName = columnDef.field;
+        return totals[groupType][fieldName];
+      },
+    }
+  }
+];
+```
+
+By using `valueParserCallback`, there a lot of extra customizations that you can do with it. You could even use Excel Formula to do calculation even based on other fields on your item data context, the code below is calculating Sub-Total and Total. It's a lot of code but it shows the real power customization that exist. If you want to go with even more customization, the new [Example 36](https://ghiscoding.github.io/Angular-Slickgrid/#/excel-formula) even shows you how to summarize Groups with Excel Formulas (but be warned, it does take a fair amount of code and logic to implement by yourself)
+
+```ts
+this.columnDefinitions = [
+  {
+    id: 'cost', name: 'Cost', field: 'cost', width: 80,
+    type: FieldType.number,
+
+    // use Formatters in the UI
+    formatter: Formatters.dollar,
+    groupTotalsFormatter: GroupTotalFormatters.sumTotalsDollar,
+
+    // but use the parser callback to customize our Excel export by using Excel Formulas
+    excelExportOptions: {
+      // you can also style the Excel cells (note again that HTML color "#" is escaped as "FF" prefix)
+      style: {
+        font: { bold: true, color: 'FF215073' },
+        format: '$0.00', // currency dollar format
+      },
+      width: 12,
+      valueParserCallback: (_data, { columnDef, excelFormatId, dataRowIdx, dataContext }) => {
+        // assuming that we want to calculate: (Price * Qty) => Sub-Total
+        const colOffset = !this.isDataGrouped ? 1 : 0; // col offset of 1x because we skipped 1st column OR 0 offset if we use a Group because the Group column replaces the skip
+        const rowOffset = 3; // row offset of 3x because: 1x Title, 1x Headers and Excel row starts at 1 => 3
+        const priceIdx = this.sgb.slickGrid?.getColumnIndex('price') || 0;
+        const qtyIdx = this.sgb.slickGrid?.getColumnIndex('qty') || 0;
+        const taxesIdx = this.sgb.slickGrid?.getColumnIndex('taxes') || 0;
+
+        // the code below calculates Excel column position dynamically, technically Price is at "B" and Qty is "C"
+        // Note: if you know the Excel column (A, B, C, ...) then portion of the code below could be skipped (the code below is fully dynamic)
+        const excelPriceCol = `${String.fromCharCode('A'.charCodeAt(0) + priceIdx - colOffset)}${dataRowIdx + rowOffset}`;
+        const excelQtyCol = `${String.fromCharCode('A'.charCodeAt(0) + qtyIdx - colOffset)}${dataRowIdx + rowOffset}`;
+        const excelTaxesCol = `${String.fromCharCode('A'.charCodeAt(0) + taxesIdx - colOffset)}${dataRowIdx + rowOffset}`;
+
+        // `value` is our Excel cells to calculat (e.g.: "B4*C4")
+        // metadata `type` has to be set to "formula" and the `style` is what we defined in `excelExportOptions.style` which is `excelFormatId` in the callback arg
+
+        let excelVal = '';
+        switch (columnDef.id) {
+          case 'subTotal':
+            excelVal = `${excelPriceCol}*${excelQtyCol}`; // like "C4*D4"
+            break;
+          case 'taxes':
+            excelVal = (dataContext.taxable)
+              ? `${excelPriceCol}*${excelQtyCol}*${this.taxRate / 100}`
+              : '';
+            break;
+          case 'total':
+            excelVal = `(${excelPriceCol}*${excelQtyCol})+${excelTaxesCol}`;
+            break;
+        }
+
+        // use "formula" as "metadata", the "style" is a formatter id that comes from any custom "style" defined outside of our callback
+        return { value: excelVal, metadata: { type: 'formula', style: excelFormatId } };
+      }
+    },
+  }
+];
+```
+
+#### use Excel Formulas to calculate Totals by using other dataContext props
+![image](https://github.com/ghiscoding/slickgrid-universal/assets/643976/871c2d84-33b2-41af-ac55-1f7eadb79cb8)
