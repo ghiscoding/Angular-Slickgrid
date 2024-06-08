@@ -284,12 +284,16 @@ export class GridOdataComponent implements OnInit {
               }
             }
           }
-          if (filterBy.includes('startswith')) {
+          if (filterBy.includes('startswith') && filterBy.includes('endswith')) {
+            const filterStartMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/) || [];
+            const filterEndMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/) || [];
+            const fieldName = filterStartMatch[1].trim();
+            (columnFilters as any)[fieldName] = { type: 'starts+ends', term: [filterStartMatch[2].trim(), filterEndMatch[2].trim()] };
+          } else if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
             (columnFilters as any)[fieldName] = { type: 'starts', term: filterMatch![2].trim() };
-          }
-          if (filterBy.includes('endswith')) {
+          } else if (filterBy.includes('endswith')) {
             const filterMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
             (columnFilters as any)[fieldName] = { type: 'ends', term: filterMatch![2].trim() };
@@ -347,7 +351,7 @@ export class GridOdataComponent implements OnInit {
                 const filterType = (columnFilters as any)[columnId].type;
                 const searchTerm = (columnFilters as any)[columnId].term;
                 let colId = columnId;
-                if (columnId && columnId.indexOf(' ') !== -1) {
+                if (columnId?.indexOf(' ') !== -1) {
                   const splitIds = columnId.split(' ');
                   colId = splitIds[splitIds.length - 1];
                 }
