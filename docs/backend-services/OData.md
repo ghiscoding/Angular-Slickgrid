@@ -3,6 +3,7 @@
 - [Usage](#grid-definition--call-of-backendserviceapi)
 - [Passing Extra Arguments](#passing-extra-arguments-to-the-query)
 - [OData options](#odata-options)
+- [Override the filter query](#override-the-filter-query)
 
 ### Description
 OData Backend Service (for Pagination purposes) to get data from a backend server with the help of OData.
@@ -219,6 +220,25 @@ Navigations within navigations are also supported. For example `columns: [{ id: 
 The dataset from the backend is automatically extracted and navigation fields are flattened so the grid can display them and sort/filter just work. The exact property that is used as the dataset depends on the oData version: `d.results` for v2, `results` for v3 and `value` for v4. If needed a custom extractor function can be set through `oDataOptions.datasetExtractor`.
 For example if the backend responds with `{ value: [{ id: 1, nav1: { field1: 'x' }, { nav2: { field2: 'y' } } ] }` this will be flattened to `{ value: [{ id: 1, 'nav1/field1': 'x', 'nav2/field2': 'y' } ] }`.
 
-## UI Sample of the OData demo
+### Override the filter query
 
-![Slickgrid Server Side](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/screenshots/pagination.png)
+Column filters may have a `Custom` operator, that acts as a placeholder for you to define your own logic. To do so, the easiest way is to provide the `filterQueryOverride` callback in the OdataOptions. This method will be called with `BackendServiceFilterQueryOverrideArgs` to let you decide dynamically on how the filter should be assembled.
+
+E.g. you could listen for a specific column and the active OperatorType.custom in order to switch the filter to a matchesPattern SQL LIKE search:
+
+```ts
+backendServiceApi: {
+  options: {
+    filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+      if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
+        let matchesSearch = (searchValue as string).replace(/\*/g, '.*');
+        matchesSearch = matchesSearch.slice(0, 1) + '%5E' + matchesSearch.slice(1);
+        matchesSearch = matchesSearch.slice(0, -1) + '$\'';
+
+        return `matchesPattern(${fieldName}, ${matchesSearch})`;
+      }
+    },
+  }
+}
+
+```
