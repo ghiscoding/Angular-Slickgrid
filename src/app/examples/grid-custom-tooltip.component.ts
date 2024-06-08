@@ -141,7 +141,7 @@ export class GridCustomTooltipComponent implements OnInit {
         // formatter: Formatters.dollar,
         formatter: Formatters.multiple,
         // params: { formatters: [Formatters.dollar, (row, cell, value) => `<span title="regular tooltip, cost: ${value}">${value || ''}</span>`] },
-        params: { formatters: [Formatters.dollar, (_row: number, _cell: number, value: any) => `<span title="regular tooltip (from title attribute) -\rcell value:\n\n${value || ''}">${value || ''}</span>`] },
+        params: { formatters: [Formatters.dollar, (_row: number, _cell: number, value: any) => `<span title="regular tooltip (from title attribute) -\rcell value:\n\n${value || ''}">${value || ''}</span>`] as Formatter[] },
         customTooltip: {
           useRegularTooltip: true,
           useRegularTooltipFromFormatterOnly: true,

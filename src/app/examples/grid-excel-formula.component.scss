@@ -1,0 +1,26 @@
+input[type=number].narrow {
+  height: 32px;
+  width: 50px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+}
+
+#grid36 {
+  .slick-row:not(.slick-group) >.cell-unselectable {
+    background: #ececec !important;
+    font-weight: bold;
+  }
+
+  .text-sub-total {
+    font-style: italic;
+    color: rgb(33, 80, 115) !important;
+  }
+  .text-taxes {
+    font-style: italic;
+    color: rgb(198, 89, 17);
+  }
+  .text-total {
+    font-weight: bold;
+    color: rgb(0, 90, 158);
+  }
+}
