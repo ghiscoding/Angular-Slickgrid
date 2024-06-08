@@ -299,14 +299,17 @@ describe('Example 31 - Columns Resize by Content', () => {
         .should('contain', 0);
     });
 
-    it('return some rows (not all 400) filtering Title as "%ask%" AND a Duration ">50" to test few filters still working', () => {
+    it('return all 400 rows when filtering Title as "%ask%"', () => {
+      cy.get('.search-filter.filter-duration').clear();
       cy.get('.search-filter.filter-title')
         .clear()
         .type('%ask%');
 
       cy.get('[data-test="total-items"]')
         .should('contain', 400);
+    });
 
+    it('return some rows (not all 400) when filtering Title as "%ask%" AND a Duration ">50" to test few filters still working', () => {
       cy.get('.search-filter.filter-duration')
         .clear()
         .type('>50');
