@@ -21,7 +21,7 @@
       "es2022",
       "dom"
     ],
-    "module": "es2020",
+    "module": "es2022",
     "baseUrl": "./",
     "paths": {
       "stream": [

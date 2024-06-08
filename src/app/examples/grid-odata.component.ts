@@ -73,7 +73,15 @@ export class GridOdataComponent implements OnInit {
         type: FieldType.string,
         filterable: true,
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
+          compoundOperatorList: [
+            { operator: '', desc: 'Contains' },
+            { operator: '<>', desc: 'Not Contains' },
+            { operator: '=', desc: 'Equals' },
+            { operator: '!=', desc: 'Not equal to' },
+            { operator: 'a*', desc: 'Starts With' },
+            { operator: 'Custom', desc: 'SQL Like' },
+          ],
         }
       },
       {
@@ -97,6 +105,10 @@ export class GridOdataComponent implements OnInit {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
         hideInColumnTitleRow: true
+      },
+      compoundOperatorAltTexts: {
+        // where '=' is any of the `OperatorString` type shown above
+        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -125,6 +137,16 @@ export class GridOdataComponent implements OnInit {
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "__count" (v2) or "@odata.count" (v4)
           enableSelect: this.isSelectEnabled,
           enableExpand: this.isExpandEnabled,
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+            if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
+              let matchesSearch = (searchValue as string).replace(/\*/g, '.*');
+              matchesSearch = matchesSearch.slice(0, 1) + CARET_HTML_ESCAPED + matchesSearch.slice(1);
+              matchesSearch = matchesSearch.slice(0, -1) + '$\'';
+
+              return `matchesPattern(${fieldName}, ${matchesSearch})`;
+            }
+            return;
+          },
           version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
         },
         onError: (error: Error) => {
@@ -236,6 +258,12 @@ export class GridOdataComponent implements OnInit {
         }
         if (param.includes('$filter=')) {
           const filterBy = param.substring('$filter='.length).replace('%20', ' ');
+          if (filterBy.includes('matchespattern')) {
+            const regex = new RegExp(`matchespattern\\(([a-zA-Z]+),\\s'${CARET_HTML_ESCAPED}(.*?)'\\)`, 'i');
+            const filterMatch = filterBy.match(regex) || [];
+            const fieldName = filterMatch[1].trim();
+            (columnFilters as any)[fieldName] = { type: 'matchespattern', term: '^' + filterMatch[2].trim() };
+          }
           if (filterBy.includes('contains')) {
             const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();

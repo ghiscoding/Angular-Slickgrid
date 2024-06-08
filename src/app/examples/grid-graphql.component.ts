@@ -40,7 +40,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         <li>The (*) can be used as startsWith (ex.: "abc*" => startsWith "abc") / endsWith (ex.: "*xyz" => endsWith "xyz")</li>
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>
       </ul>
-      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/grid-state-and-preset" target="_blank">Wiki - Grid Preset</a>
+      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/grid-state-and-preset" target="_blank">Wiki - Grid Preset</a></li>
+      <li>Also note that the column Name has a filter with a custom %% operator that behaves like an SQL LIKE operator supporting % wildcards.</li>
+      <li>Depending on your configuration, your GraphQL Server might already support regex querying (e.g. Hasura <a href="https://hasura.io/docs/latest/queries/postgres/filters/text-search-operators/#_regex" target="_blank">_regex</a>)
+      or you could add your own implementation (e.g. see this SO <a href="https://stackoverflow.com/a/37981802/1212166">Question</a>).</li>
     </ul>
   `;
   private subscriptions: Subscription[] = [];
@@ -77,7 +80,15 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         sortable: true,
         filterable: true,
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
+          compoundOperatorList: [
+            { operator: '', desc: 'Contains' },
+            { operator: '<>', desc: 'Not Contains' },
+            { operator: '=', desc: 'Equals' },
+            { operator: '!=', desc: 'Not equal to' },
+            { operator: 'a*', desc: 'Starts With' },
+            { operator: 'Custom', desc: 'SQL Like' },
+          ],
         }
       },
       {
@@ -129,6 +140,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     this.gridOptions = {
       gridHeight: 200,
       gridWidth: 900,
+      compoundOperatorAltTexts: {
+        // where '=' is any of the `OperatorString` type shown above
+        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
+      },
       enableFiltering: true,
       enableCellNavigation: true,
       enableTranslate: true,
@@ -195,6 +210,16 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
             field: 'userId',
             value: 123
           }],
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+            if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
+              // technically speaking GraphQL isn't a database query language like SQL, it's an application query language.
+              // What that means is that GraphQL won't let you write arbitrary queries out of the box.
+              // It will only support the types of queries defined in your GraphQL schema.
+              // see this SO: https://stackoverflow.com/a/37981802/1212166
+              return { field: fieldName, operator: 'Like', value: searchValue };
+            }
+            return;
+          },
           useCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
           // when dealing with complex objects, we want to keep our field name with double quotes
           // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
