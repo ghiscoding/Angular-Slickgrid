@@ -67,7 +67,7 @@ $row-mouse-hover-color: lightgreen;
 ### 4. Include it in your App Module (or App Config for Standalone)
 Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it.
 
-#### App Module 
+#### App Module
 Include `AngularSlickgridModule` in your App Module (`app.module.ts`)
 **Note**
 Make sure to add the `forRoot` since it will throw an error in the console when missing.
@@ -202,7 +202,7 @@ The last step is really to explore all the pages that are available in this docu
 - all the `Grid Options` you can take a look at, [Slickgrid-Universal - Grid Options](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/modules/angular-slickgrid/models/gridOption.interface.ts) interface
 - [Formatters](../column-functionalities/Formatters.md)
 - [Editors](../column-functionalities/Editors.md)
-- [Filters](../column-functionalities/filters/Select-Filter.md)
+- [Filters](../column-functionalities/filters/select-filter.md)
 - [Grid Menu](../grid-functionalities/Grid-Menu.md)
 ... and much more, just explorer the Documentation through the table of content (on your left)
 

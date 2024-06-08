@@ -1,4 +1,4 @@
-You can style any (or all) of the Filter(s) when they have value, the lib will automatically add a `filled` CSS class which you can style as your wish. There is no style by default, if you wish to add styling, you will be required to add your own.
+You can style any (or all) of the Filter(s) when they have value, the lib will automatically add a `filled` CSS class which you can style as you see fit. There is no style by default, if you wish to add styling, you will be required to add your own.
 
 ## Styled Example
 ![grid_filled_styling](https://user-images.githubusercontent.com/643976/51334569-14306d00-1a4e-11e9-816c-439796eb8a59.png)
