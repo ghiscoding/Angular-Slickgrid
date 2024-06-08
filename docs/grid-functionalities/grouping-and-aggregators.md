@@ -2,6 +2,7 @@
 - [Demo](#demo)
 - [Description](#description)
 - [Setup](#setup)
+- [Draggable Dropzone Location](#draggable-dropzone-location)
 - [Aggregators](#aggregators)
 - [SortComparers](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/sortComparers/sortComparers.index.ts)
 - [GroupTotalsFormatter](#group-totals-formatter)
@@ -59,6 +60,43 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.gridObj = angularGrid.slickGrid;
     this.dataViewObj = angularGrid.dataView;
   }
+}
+```
+
+### Draggable Dropzone Location
+
+The Draggable Grouping can be located in either the Top-Header or the Pre-Header as described below.
+
+#### Pre-Heaader
+Draggable Grouping can be located in either the Pre-Header of the Top-Header, however when it is located in the Pre-Header then the Header Grouping will not be available (because both of them would conflict with each other). Note that prior to the version 8.1 of Angular-Slickgrid, the Pre-Header was the default and only available option.
+
+```ts
+this.gridOptions = {
+  createPreHeaderPanel: true,
+  showPreHeaderPanel: true,
+  preHeaderPanelHeight: 26,
+  draggableGrouping: {
+    // ... any draggable plugin option
+  },
+}
+```
+
+#### Top-Heaader
+##### requires v8.1 and higher
+This is the preferred section since the Top-Header is on top of all headers (including pre-header) and it will always be the full grid width. Using the Top-Header also frees up the Pre-Header section for the potential use of Header Grouping.
+
+When using Draggable Grouping and Header Grouping together, you need to enable both top-header and pre-header.
+```ts
+this.gridOptions = {
+    // we'll use top-header for the Draggable Grouping
+  createTopHeaderPanel: true,
+  showTopHeaderPanel: true,
+  topHeaderPanelHeight: 35,
+
+  // pre-header will include our Header Grouping (i.e. "Common Factor")
+  createPreHeaderPanel: true,
+  showPreHeaderPanel: true,
+  preHeaderPanelHeight: 26,
 }
 ```
 
