@@ -15,6 +15,8 @@ import {
 
 const defaultPageSize = 20;
 const sampleDataRoot = 'assets/data';
+const CARET_HTML_ESCAPED = '%5E';
+const PERCENT_HTML_ESCAPED = '%25';
 
 @Component({
   templateUrl: './grid-odata.component.html'
@@ -71,7 +73,15 @@ export class GridOdataComponent implements OnInit {
         type: FieldType.string,
         filterable: true,
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
+          compoundOperatorList: [
+            { operator: '', desc: 'Contains' },
+            { operator: '<>', desc: 'Not Contains' },
+            { operator: '=', desc: 'Equals' },
+            { operator: '!=', desc: 'Not equal to' },
+            { operator: 'a*', desc: 'Starts With' },
+            { operator: 'Custom', desc: 'SQL Like' },
+          ],
         }
       },
       {
@@ -95,6 +105,10 @@ export class GridOdataComponent implements OnInit {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
         hideInColumnTitleRow: true
+      },
+      compoundOperatorAltTexts: {
+        // where '=' is any of the `OperatorString` type shown above
+        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -123,6 +137,16 @@ export class GridOdataComponent implements OnInit {
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "__count" (v2) or "@odata.count" (v4)
           enableSelect: this.isSelectEnabled,
           enableExpand: this.isExpandEnabled,
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+            if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
+              let matchesSearch = (searchValue as string).replace(/\*/g, '.*');
+              matchesSearch = matchesSearch.slice(0, 1) + CARET_HTML_ESCAPED + matchesSearch.slice(1);
+              matchesSearch = matchesSearch.slice(0, -1) + '$\'';
+
+              return `matchesPattern(${fieldName}, ${matchesSearch})`;
+            }
+            return;
+          },
           version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
         },
         onError: (error: Error) => {
@@ -234,6 +258,12 @@ export class GridOdataComponent implements OnInit {
         }
         if (param.includes('$filter=')) {
           const filterBy = param.substring('$filter='.length).replace('%20', ' ');
+          if (filterBy.includes('matchespattern')) {
+            const regex = new RegExp(`matchespattern\\(([a-zA-Z]+),\\s'${CARET_HTML_ESCAPED}(.*?)'\\)`, 'i');
+            const filterMatch = filterBy.match(regex) || [];
+            const fieldName = filterMatch[1].trim();
+            (columnFilters as any)[fieldName] = { type: 'matchespattern', term: '^' + filterMatch[2].trim() };
+          }
           if (filterBy.includes('contains')) {
             const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
@@ -254,12 +284,16 @@ export class GridOdataComponent implements OnInit {
               }
             }
           }
-          if (filterBy.includes('startswith')) {
+          if (filterBy.includes('startswith') && filterBy.includes('endswith')) {
+            const filterStartMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/) || [];
+            const filterEndMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/) || [];
+            const fieldName = filterStartMatch[1].trim();
+            (columnFilters as any)[fieldName] = { type: 'starts+ends', term: [filterStartMatch[2].trim(), filterEndMatch[2].trim()] };
+          } else if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
             (columnFilters as any)[fieldName] = { type: 'starts', term: filterMatch![2].trim() };
-          }
-          if (filterBy.includes('endswith')) {
+          } else if (filterBy.includes('endswith')) {
             const filterMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
             (columnFilters as any)[fieldName] = { type: 'ends', term: filterMatch![2].trim() };
@@ -317,7 +351,7 @@ export class GridOdataComponent implements OnInit {
                 const filterType = (columnFilters as any)[columnId].type;
                 const searchTerm = (columnFilters as any)[columnId].term;
                 let colId = columnId;
-                if (columnId && columnId.indexOf(' ') !== -1) {
+                if (columnId?.indexOf(' ') !== -1) {
                   const splitIds = columnId.split(' ');
                   colId = splitIds[splitIds.length - 1];
                 }
@@ -330,16 +364,20 @@ export class GridOdataComponent implements OnInit {
                 }
 
                 if (filterTerm) {
+                  const [term1, term2] = Array.isArray(searchTerm) ? searchTerm : [searchTerm];
+
                   switch (filterType) {
-                    case 'eq': return filterTerm.toLowerCase() === searchTerm;
-                    case 'ne': return filterTerm.toLowerCase() !== searchTerm;
-                    case 'le': return filterTerm.toLowerCase() <= searchTerm;
-                    case 'lt': return filterTerm.toLowerCase() < searchTerm;
-                    case 'gt': return filterTerm.toLowerCase() > searchTerm;
-                    case 'ge': return filterTerm.toLowerCase() >= searchTerm;
-                    case 'ends': return filterTerm.toLowerCase().endsWith(searchTerm);
-                    case 'starts': return filterTerm.toLowerCase().startsWith(searchTerm);
-                    case 'substring': return filterTerm.toLowerCase().includes(searchTerm);
+                    case 'eq': return filterTerm.toLowerCase() === term1;
+                    case 'ne': return filterTerm.toLowerCase() !== term1;
+                    case 'le': return filterTerm.toLowerCase() <= term1;
+                    case 'lt': return filterTerm.toLowerCase() < term1;
+                    case 'gt': return filterTerm.toLowerCase() > term1;
+                    case 'ge': return filterTerm.toLowerCase() >= term1;
+                    case 'ends': return filterTerm.toLowerCase().endsWith(term1);
+                    case 'starts': return filterTerm.toLowerCase().startsWith(term1);
+                    case 'starts+ends': return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
+                    case 'substring': return filterTerm.toLowerCase().includes(term1);
+                    case 'matchespattern': return new RegExp((term1 as string).replaceAll(PERCENT_HTML_ESCAPED, '.*'), 'i').test(filterTerm);
                   }
                 }
               });
