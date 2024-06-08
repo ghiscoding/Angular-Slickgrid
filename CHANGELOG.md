@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.0.0...v8.1.0) (2024-06-08)
+
+
+### Features
+
+* add `filterQueryOverride` to GraphQL Service ([7151d43](https://github.com/ghiscoding/angular-slickgrid/commit/7151d43cefe4c45b5b324411f27846ff2ca00ef2))
+* add `filterQueryOverride` to OData Service ([2ccdaf0](https://github.com/ghiscoding/angular-slickgrid/commit/2ccdaf0ede68004c11b78b92c8c7a3d612ca8e9c))
+* add local data StartsWith/EndsWith (`a*z`) filter combo ([69bc186](https://github.com/ghiscoding/angular-slickgrid/commit/69bc1869a980cbb5734cea99509120ae7e9eab8c))
+* add optional Top-Header for Draggable Grouping & Header Grouping ([99c4cf2](https://github.com/ghiscoding/angular-slickgrid/commit/99c4cf2ed63c05dec7bcdff33907e4e75f120d7a))
+* add StartsWith/EndsWith (`a*z`) to OData/GraphQL ([e2f5439](https://github.com/ghiscoding/angular-slickgrid/commit/e2f5439b2b947a06bb2a6f7e43a57875b8c87815))
+* **export:** enhanced `valueParserCallback` with dataContext & new demo ([bd057e5](https://github.com/ghiscoding/angular-slickgrid/commit/bd057e5950957d044e3d2e34b695a5153f67f96b))
+* **filters:** add a `filterPredicate` option for user customization ([2a7ebba](https://github.com/ghiscoding/angular-slickgrid/commit/2a7ebba4c9204390616b60ca57805ce06951c8b5))
+
+
+### Bug Fixes
+
+* **demo:** out of boundaries page Grid Preset should be unset ([7e4e3b8](https://github.com/ghiscoding/angular-slickgrid/commit/7e4e3b801c09129ee35e0fab69c0c7bb1f519a3e))
+* **TreeData:** addItem should keep current sorted column ([7f1bbe0](https://github.com/ghiscoding/angular-slickgrid/commit/7f1bbe0c96116e64bc53ebd32f6df3a99e9cd16c))
+
 ## [8.0.0](https://github.com/ghiscoding/angular-slickgrid/compare/v7.7.0...v8.0.0) (2024-05-23)
 
 > [!NOTE]
