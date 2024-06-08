@@ -150,20 +150,15 @@ export class GridTreeDataParentChildComponent implements OnInit {
   }
 
   /**
-   * A simple method to add a new item inside the first group that we find (it's random and is only for demo purposes).
-   * After adding the item, it will sort by parent/child recursively
+   * A simple method to add a new item inside the first group that has children which is "Task 1"
+   * After adding the item, it will resort by parent/child recursively but keep current sort column
    */
   addNewRow() {
     const newId = this.dataViewObj.getItemCount();
-    const parentPropName = 'parentId';
-    const treeLevelPropName = 'treeLevel'; // if undefined in your options, the default prop name is "__treeLevel"
-    const newTreeLevel = 1;
+    // find "Task 1" which has `id = 1`
+    const parentItemFound = this.dataViewObj.getItemById(1);
 
-    // find first parent object and add the new item as a child
-    const childItemFound = this.dataViewObj.getItems().find((item: any) => item[treeLevelPropName] === newTreeLevel);
-    const parentItemFound = this.dataViewObj.getItemByIdx(childItemFound[parentPropName]);
-
-    if (childItemFound && parentItemFound) {
+    if (parentItemFound?.__hasChildren) {
       const newItem = {
         id: newId,
         parentId: parentItemFound.id,
