@@ -1,6 +1,6 @@
 #### index
-- [Filter Complex Object](Input-Filter.md#filter-complex-object)
-- [Update Filters Dynamically](Input-Filter.md#update-filters-dynamically)
+- [Filter Complex Object](input-filter.md#filter-complex-object)
+- [Update Filters Dynamically](input-filter.md#update-filters-dynamically)
 - [Custom Filter with Angular Components](#custom-filter-with-angular-components)
 
 ### Demo

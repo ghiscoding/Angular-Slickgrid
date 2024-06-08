@@ -5,7 +5,7 @@
 - [Filter Options (`AutocompleterOption` interface)](#filter-options-autocompleteroption-interface)
 - [Using Remote API](#using-external-remote-api)
 - [Force User Input](#autocomplete---force-user-input)
-- [Update Filters Dynamically](../../column-functionalities/filters/Input-Filter.md#update-filters-dynamically)
+- [Update Filters Dynamically](../../column-functionalities/filters/input-filter.md#update-filters-dynamically)
 - [Animated Gif Demo](#animated-gif-demo)
 
 ### Demo
