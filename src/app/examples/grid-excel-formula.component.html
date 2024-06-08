@@ -1,0 +1,50 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 36: Excel Export Formulas
+    <span class="float-end">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-excel-formula.component.ts">
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle">
+    Grid with Excel Formulas (<a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/export-to-excel#cell-value-parser" target="_blank">Wiki docs</a>).
+    Calculate Totals via Formatters in the UI, but use Excel Formula when exporting via <code>excelExportOptions.valueParserCallback</code>
+    When Grouped we will also calculate the Group Totals in the UI via Group Formatter and we again use Excel Formula to calculate the Group Totals (sum) dynamically.
+    For Grouping we need to use <code>groupTotalsExcelExportOptions.valueParserCallback</code> instead.
+  </div>
+
+  <section class="row mb-2">
+    <div class="mb-1">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="exportToExcel()" data-test="export-excel-btn">
+        <span class="mdi mdi-file-excel-outline text-success"></span>
+        <span>Export to Excel</span>
+      </button>
+      <span>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="groupByTaxable()" data-test="group-by-btn">
+          <span>Group by Taxable</span>
+        </button>
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="clearGrouping()" data-test="clear-grouping-btn">
+          <span>Clear grouping</span>
+        </button>
+      </span>
+      <span class="ml-6 text-bold d-inline-flex gap-4px">
+        Tax Rate (%):
+        <input type="number" [(ngModel)]="taxRate" class="narrow input" step="0.25" data-test="taxrate" />
+        <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="updateTaxRate()" data-test="update-btn">
+          Update
+        </button>
+      </span>
+    </div>
+  </section>
+
+  <angular-slickgrid gridId="grid36"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event.detail)"
+                     (onCellChange)="invalidateAll()">
+  </angular-slickgrid>
+</div>

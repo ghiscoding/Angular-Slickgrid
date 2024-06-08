@@ -282,3 +282,36 @@ Lastly since we got rid of MomentJS and replaced Flatpickr, you can remove a few
 ### Smaller Size - Full ESM
 
 To compare size, you can take a look at BundlePhobia for the older [v1.4.0](https://bundlephobia.com/package/@slickgrid-universal/common@1.4.0) (when we required jQuery/jQueryUI) and [v5.0.0](https://bundlephobia.com/package/@slickgrid-universal/common@1.4.0) and you'll see that the gzip version went down by 17Kb (or 8.9%) and that's just for 1 dependency of the Slickgrid-Universal workspace (there's a few more installed behind the scene, like the footer component, binding, utils, ...). From that website you can also see that removing MomentJS & Flatpickr had a significant impact especially since the replacements are ESM and tree shakable.
+
+### Excel Export `valueParserCallback`
+I would be very suprised if anyone used this advanced feature BUT in case you do, I have decided to make some breaking in v5.1 and higher for the Excel cell value parser after creating the new [Example 36](https://ghiscoding.github.io/Angular-Slickgrid/#/excel-formula) and that is mostly because we now have way too many arguments provided to these value parsers. So, this mean that both `excelExportOptions.valueParserCallback` and `groupTotalsExcelExportOptions.valueParserCallback` signatures changed as shown below.
+
+```diff
+this.columnDefinitions = [
+  {
+    id: 'cost', name: 'Cost', field: 'cost', width: 80,
+    excelExportOptions: {
+-     valueParserCallback: (data, col, excelFormatId, excelStylesheet) => {
++     valueParserCallback: (data, { columnDef, excelFormatId, stylesheet }) => {
+        return `Total: ${data}`;
+
+        // to keep Excel style format, you can use detected "excelFormatId" OR use "stylesheet.createFormat()"
+        return {
+          value: isNaN(data as number) ? data : +data,
+          metadata: { style: excelFormatId } // the excelFormatId was created internally from the custom format
+        };
+      }
+    },
+    groupTotalsExcelExportOptions: {
+-     valueParserCallback: (totals, columnDef, groupType, excelFormatId) => {
++     valueParserCallback: (totals, { columnDef, excelFormatId, groupType, stylesheet }) => {
+        const fieldName = columnDef.field;
+        //return totals[groupType][fieldName];
+
+        // or with metadata
+        return { value: `totals[groupType][fieldName]`, metadata: { style: excelFormatId } };
+      },
+    }
+  }
+];
+```
