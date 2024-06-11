@@ -218,10 +218,13 @@ The best way to get started is to clone the [Angular-Slickgrid-demos](https://gi
 ##### All Live Demo Examples have links to the actual code
 Like to see the code to a particular Example? Just click on the "see code" that is available in every live examples.
 
-### 10. Missing Features? (fear not)
+### 10. CSP Compliance
+The project supports Content Security Policy (CSP) as long as you provide an optional `sanitizer` in your grid options (we recommend DOMPurify). Review the [CSP Compliance](../developer-guides/csp-compliance.md) documentation for more info.
+
+### 11. Missing Features? (fear not)
 What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Custom Events. For more info continue reading on [Docs - SlickGrid & DataView objects](../slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
 
-### 11. Build Errors/Warnings
+### 12. Build Errors/Warnings
 You might also get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` (for Angular 8 to 15) in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
 ```js
 // for Angular 8 to 15 (removed in Angular 16)
@@ -245,7 +248,7 @@ You should also add `Angular-Slickgrid` and any dependency that Angular shows a 
 }
 ```
 
-### 12. Angular 12 and higher with WebPack 5 - how to fix polyfill error
+### 13. Angular 12 and higher with WebPack 5 - how to fix polyfill error
 Since Angular 12 switched to WebPack 5, you might get some new errors and you will need to add some polyfills manually to get the Excel Builder (Excel Export) to work.
 
 #### The error you might get
