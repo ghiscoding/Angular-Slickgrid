@@ -27,14 +27,14 @@ Example:
   - `<02/28/17` => smaller than date `02/28/17`
   - `2001-01-01..2002-02-22` => between 2001-01-01 and 2002-02-22
 - String type
-  - `<>John` => does not contain the sub-string `John`
-  - `!=John` => not equal to the string `John` (note that this is not equivalent to `<>`)
+  - `<>John` => not containing the sub-string `John`
+  - `!=John` => not equal to the text `John` (note that this is **not** equivalent to `<>`)
   - `John*` => starts with the sub-string `John`
   - `*Doe` => ends with the sub-string `Doe`
   - `ab..ef` => anything included between "af" and "ef"
     - refer to the ASCII table for each character assigned index
-  - `!= ` => returns defined data while excluding `undefined`, `null` and empty string `''`
-     - notice the empty string in the search value
+  - `!= ` => get defined only data and exclude any `undefined`, `null` or empty string `''`
+     - notice the empty string in the search value `' '`
 
 Note that you could do the same functionality with a Compound Filter.
 
