@@ -1,7 +1,9 @@
 import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, } from '@slickgrid-universal/graphql';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { addDay, format as tempoFormat } from '@formkit/tempo';
 import { TranslateService } from '@ngx-translate/core';
 import { MultipleSelectOption } from 'multiple-select-vanilla';
+import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
   Column,
@@ -16,8 +18,6 @@ import {
   SortDirection,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
-import { addDay, format } from '@formkit/tempo';
-import { Subscription } from 'rxjs';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
@@ -130,12 +130,19 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: {
           model: Filters.dateRange,
+          filterShortcuts: [
+            {
+              titleKey: 'NEXT_20_DAYS',
+              iconCssClass: 'mdi mdi-calendar',
+              searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD'), tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD')],
+            },
+          ]
         }
       },
     ];
 
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.gridOptions = {
       gridHeight: 200,
@@ -338,8 +345,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   setFiltersDynamically() {
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
@@ -360,8 +367,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   resetToOriginalPresets() {
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.angularGrid.filterService.updateFilters([
       // you can use OperatorType or type them as string, e.g.: operator: 'EQ'

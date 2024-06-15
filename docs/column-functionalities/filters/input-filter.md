@@ -8,6 +8,7 @@
 - [Debounce/Throttle Text Search (wait for user to stop typing before filtering)](#debouncethrottle-text-search-wait-for-user-to-stop-typing-before-filtering)
 - [Ignore Locale Accent in Text Filter/Sorting](#ignore-locale-accent-in-text-filtersorting)
 - [Custom Filter Predicate](#custom-filter-predicate)
+- [Filter Shortcuts](#filter-shortcuts)
 
 ### Description
 Input filter is the default filter when enabling filters.
@@ -222,3 +223,38 @@ this.columnDefinitions = [
 The custom filter predicate above was to answer a Stack Overflow question and will work similarly to an SQL LIKE matcher (it's not perfect and probably requires more work but is enough to demo the usage of a custom filter predicate)
 
 ![image](https://github.com/ghiscoding/slickgrid-universal/assets/643976/3e77774e-3a9f-4ca4-bca7-50a033a4b48d)
+
+### Filter Shortcuts
+
+User can declare some Filter Shortcuts, that will be added to the Header Menu of the Column it was assigned. These shortcuts are simply a list of filter search values (e.g. Filter the Blank/Non-Blanks Values), the end user can type the same search values themselves but the shortcuts are simply meant to be quicker without having to know what to type (e.g. Filter Current Year).
+
+ The shortcuts can be declared via an array that must include at least a `title` (or `titleKey`) a `searchTerms` array and lastly an optional `operator` can also be provided. The available properties of these shortcut is a merge of Header Menu Item interface (except `command` and `action` which are reserved and assigned internally) and of course the 3 properties mentioned above. The declaration is very similar to how we use it when declaring Grid Presets as shown below
+
+```ts
+this.columnDefinitions = [
+  {
+    id: 'country', name: 'Country', field: 'country',
+    filter: {
+      model: Filters.inputText,
+      filterShortcuts: [
+        { title: 'Blank Values', searchTerms: ['A'], operator: '<', iconCssClass: 'mdi mdi-filter-minus-outline', },
+        { title: 'Non-Blank Values', searchTerms: ['A'], operator: '>', iconCssClass: 'mdi mdi-filter-plus-outline', },
+      ]
+    },
+  },
+  {
+    id: 'finish', name: 'Finish', field: 'finish',
+    filter: {
+      model: Filters.dateRange,
+      filterShortcuts: [
+        {
+          // using Locale translations & Tempo to calculate next 30 days
+          titleKey: 'NEXT_30_DAYS',
+          iconCssClass: 'mdi mdi-calendar',
+          searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD'), tempoFormat(addDay(new Date(), 30), 'YYYY-MM-DD')],
+        },
+      ]
+    },
+  },
+];
+```

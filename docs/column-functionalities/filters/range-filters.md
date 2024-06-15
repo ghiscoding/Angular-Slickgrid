@@ -6,6 +6,7 @@
 - [Using a Date Range](#using-a-date-range-filter)
 - [Update Filters Dynamically](input-filter.md#update-filters-dynamically)
 - [Custom Filter Predicate](input-filter.md#custom-filter-predicate)
+- [Filter Shortcuts](input-filter.md#filter-shortcuts)
 
 ### Introduction
 Range filters allows you to search for a value between 2 min/max values, the 2 most common use case would be to filter between 2 numbers or dates, you can do that with the Slider & Date Range Filters. The range can also be defined as inclusive (`>= 0 and <= 10`) or exclusive (`> 0 and < 10`), the default is exclusive but you can change that, see below for more info.
