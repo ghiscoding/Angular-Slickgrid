@@ -1,4 +1,4 @@
-describe('Example 24 - Footer Totals Row', () => {
+describe('Example 37 - Footer Totals Row', () => {
   const fullTitles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const GRID_ROW_HEIGHT = 33;
 
