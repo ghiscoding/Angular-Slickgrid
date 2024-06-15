@@ -91,7 +91,7 @@ Angular-Slickgrid uses `ngx-translate` library to support Locales, it is also re
 |  7              |        11.x         |
 
 ### Tested with [Jest](https://jestjs.io/) (Unit Tests) - [Cypress](https://www.cypress.io/) (E2E Tests)
-Slickgrid-Universal has **100%** Unit Test Coverage and all Slickgrid-React Examples are tested with [Cypress](https://www.cypress.io/) as E2E tests.
+Slickgrid-Universal has **100%** Unit Test Coverage and all Angular-Slickgrid Examples are tested with [Cypress](https://www.cypress.io/) as E2E tests.
 
 ## Troubleshooting Section
 
