@@ -11,6 +11,7 @@ import { GridContextMenuComponent } from './examples/grid-contextmenu.component'
 import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
+import { GridFooterTotalsComponent } from './examples/grid-footer-totals.component';
 import { GridExcelFormulaComponent } from './examples/grid-excel-formula.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
@@ -53,6 +54,7 @@ const routes: Routes = [
   { path: 'custom-tooltip', component: GridCustomTooltipComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'excel-formula', component: GridExcelFormulaComponent },
+  { path: 'footer-totals', component: GridFooterTotalsComponent },
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'frozen', component: GridFrozenComponent },
   { path: 'headerbutton', component: GridHeaderButtonComponent },
