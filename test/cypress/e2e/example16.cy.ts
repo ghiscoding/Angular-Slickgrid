@@ -1,4 +1,7 @@
+import { format } from '@formkit/tempo';
+
 describe('Example 16: Grid State & Presets using Local Storage', () => {
+  const GRID_ROW_HEIGHT = 35;
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
   const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];
 
@@ -573,5 +576,143 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
     cy.get('[style="top: 0px;"]').should('have.length', 2);
     cy.get('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 4);
     cy.get('.grid-canvas-right > [style="top: 0px;"]').children().should('have.length', 3);
+  });
+
+  describe('Filter Shortcuts', () => {
+    it('should clear locale storage & set language to French', () => {
+      cy.clearLocalStorage();
+      cy.get('[data-test=reset-button]').click();
+
+      cy.get('[data-test=language-button]')
+        .click();
+
+      cy.get('[data-test="selected-locale"]')
+        .should('contain', 'fr.json');
+    });
+
+    it('should open header menu of "Start" column and choose "Filter Shortcuts -> Past" and expect over 200 rows', () => {
+      cy.get('#grid16')
+        .find('.slick-header-column:nth-of-type(6)')
+        .trigger('mouseover')
+        .children('.slick-header-menu-button')
+        .invoke('show')
+        .click();
+
+      cy.get('[data-command=filter-shortcuts-root-menu]')
+        .should('contain', 'Raccourcis de filtre')
+        .trigger('mouseover');
+
+      cy.get('.slick-header-menu.slick-menu-level-1')
+        .find('[data-command=past]')
+        .should('contain', 'Passé')
+        .click();
+
+      cy.get('.search-filter.filter-start .input-group-prepend.operator select')
+        .contains('<');
+
+      cy.get('.search-filter.filter-start input.date-picker')
+        .invoke('val')
+        .should('equal', format(new Date(), 'YYYY-MM-DD'));
+
+      cy.get('[data-test="total-items"]')
+        .should($span => {
+          expect(Number($span.text())).to.gt(200);
+        });
+    });
+
+    it('should open header menu of "Start" column and choose "Filter Shortcuts -> Future" and expect over 100 rows', () => {
+      cy.get('#grid16')
+        .find('.slick-header-column:nth-of-type(6)')
+        .trigger('mouseover')
+        .children('.slick-header-menu-button')
+        .invoke('show')
+        .click();
+
+      cy.get('[data-command=filter-shortcuts-root-menu]')
+        .should('contain', 'Raccourcis de filtre')
+        .trigger('mouseover');
+
+      cy.get('.slick-header-menu.slick-menu-level-1')
+        .find('[data-command=future]')
+        .click();
+
+      cy.get('.search-filter.filter-start .input-group-prepend.operator select')
+        .contains('>');
+
+      cy.get('.search-filter.filter-start input.date-picker')
+        .invoke('val')
+        .should('equal', format(new Date(), 'YYYY-MM-DD'));
+
+      cy.get('[data-test="total-items"]')
+        .should($span => {
+          expect(Number($span.text())).to.gt(100);
+        });
+    });
+
+    it('should open header menu of "Description" column and choose "Filter Shortcuts -> Blank Values" and expect over 10 rows', () => {
+      cy.get('#grid16')
+        .find('.slick-header-column:nth-of-type(3)')
+        .trigger('mouseover')
+        .children('.slick-header-menu-button')
+        .invoke('show')
+        .click();
+
+      cy.get('[data-command=filter-shortcuts-root-menu]')
+        .should('contain', 'Raccourcis de filtre')
+        .trigger('mouseover');
+
+      cy.get('.slick-header-menu.slick-menu-level-1')
+        .find('[data-command=blank-values]')
+        .should('contain', 'Valeurs nulles')
+        .click();
+
+      cy.get('.search-filter.filter-description')
+        .invoke('val')
+        .should('equal', '< A');
+
+      cy.get('[data-test="total-items"]')
+        .should($span => {
+          expect(Number($span.text())).to.gt(10);
+        });
+    });
+
+    it('should switch back to English', () => {
+      cy.get('[data-test=language-button]')
+        .click();
+
+      cy.get('[data-test="selected-locale"]')
+        .should('contain', 'en.json');
+    });
+
+    it('should open header menu of "Description" column and choose "Filter Shortcuts -> Non-Blank Values" and expect over 80 rows', () => {
+      cy.get('#grid16')
+        .find('.slick-header-column:nth-of-type(3)')
+        .trigger('mouseover')
+        .children('.slick-header-menu-button')
+        .invoke('show')
+        .click();
+
+      cy.get('[data-command=filter-shortcuts-root-menu]')
+        .should('contain', 'Filter Shortcuts')
+        .trigger('mouseover');
+
+      cy.get('.slick-header-menu.slick-menu-level-1')
+        .find('[data-command=non-blank-values]')
+        .should('contain', 'Non-Blank Values')
+        .click();
+
+      cy.get('.search-filter.filter-description')
+        .invoke('val')
+        .should('equal', '> A');
+
+      cy.get('[data-test="total-items"]')
+        .should($span => {
+          expect(Number($span.text())).to.gt(80);
+        });
+
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(2)`).contains('desc');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(2)`).contains('desc');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(2)`).contains('desc');
+    });
   });
 });

@@ -9,6 +9,7 @@
 - [Update Filters Dynamically](input-filter.md#update-filters-dynamically)
 - [How to avoid filtering when only Operator dropdown is changed?](#how-to-avoid-filtering-when-only-operator-dropdown-is-changed)
 - [Custom Filter Predicate](input-filter.md#custom-filter-predicate)
+- [Filter Shortcuts](input-filter.md#filter-shortcuts)
 
 ### Description
 Compound filters are a combination of 2 elements (Operator Select + Input Filter) used as a filter on a column. This is very useful to make it obvious to the user that there are Operator available and even more useful with a date picker (`Vanilla-Calendar`).
