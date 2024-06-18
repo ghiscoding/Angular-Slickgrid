@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.1.0...v8.2.0) (2024-06-18)
+
+
+### Features
+
+* add Footer Totals Row and fix footer styling ([17e798f](https://github.com/ghiscoding/angular-slickgrid/commit/17e798f55ea72968e404607738579eee09384d12))
+* add new optional `filterShortcuts` to Column Filter ([b284785](https://github.com/ghiscoding/angular-slickgrid/commit/b28478509c33eb9fd5a31949540163c77921313e))
+* paste multiline content as single cell ([7c9fdc0](https://github.com/ghiscoding/angular-slickgrid/commit/7c9fdc06451fe7a805a7699029af853b490baa0e))
+
 ## [8.1.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.0.0...v8.1.0) (2024-06-08)
 
 
