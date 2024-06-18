@@ -17,6 +17,7 @@ import { CustomFooterComponent, GridHeaderFooterComponent } from './examples/gri
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
+import { GridAngularComponent } from './examples/grid-angular.component';
 import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBaseRowEditingComponent } from './examples/grid-base-row-editing.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
@@ -28,7 +29,7 @@ import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.compo
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridExcelFormulaComponent } from './examples/grid-excel-formula.component';
-import { GridAngularComponent } from './examples/grid-angular.component';
+import { GridFooterTotalsComponent } from './examples/grid-footer-totals.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
@@ -108,6 +109,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridDraggableGroupingComponent,
     GridEditorComponent,
     GridExcelFormulaComponent,
+    GridFooterTotalsComponent,
     GridFormatterComponent,
     GridFrozenComponent,
     GridGraphqlComponent,
