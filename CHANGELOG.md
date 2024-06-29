@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.2.0...v8.3.0) (2024-06-29)
+
+
+### Features
+
+* add onPreHeaderContextMenu for Column Picker usage ([c5be4a8](https://github.com/ghiscoding/angular-slickgrid/commit/c5be4a8f298c1badaca5b665cb76cef6b89583c9))
+
+
+### Bug Fixes
+
+* setting date picker should always work ([050deb8](https://github.com/ghiscoding/angular-slickgrid/commit/050deb8f4ff02ae37b740f085b6e766010b11977))
+
 ## [8.2.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.1.0...v8.2.0) (2024-06-18)
 
 
