@@ -211,4 +211,157 @@ describe('Example 19 - Draggable Grouping & Aggregators', () => {
       cy.get('.grouping-selects select:nth(2)').should('not.have.value');
     });
   });
+
+  describe('Column Picker tests', () => {
+    it('should open Column Picker from 2nd header column and hide Title & Duration which will hide Common Factor Group as well', () => {
+      const fullTitlesWithGroupNames = ['Common Factor - Title', 'Common Factor - Duration', 'Period - Start', 'Period - Finish', 'Analysis - Cost', 'Analysis - % Complete', 'Analysis - Effort-Driven'];
+
+      cy.get('#grid19')
+        .find('.slick-header-column:nth(1)')
+        .trigger('mouseover')
+        .trigger('contextmenu')
+        .invoke('show');
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children()
+        .each(($child, index) => {
+          if (index <= 5) {
+            expect($child.text()).to.eq(fullTitlesWithGroupNames[index]);
+          }
+        });
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children('li:nth-child(1)')
+        .children('label')
+        .should('contain', 'Title')
+        .click();
+
+      cy.get('.slick-column-picker .close')
+        .click();
+    });
+
+    it('should open Column Picker from 2nd header column name and hide Duration which will hide Common Factor Group as well', () => {
+      const fullTitlesWithGroupNames = ['Common Factor - Title', 'Common Factor - Duration', 'Period - Start', 'Period - Finish', 'Analysis - Cost', 'Analysis - % Complete', 'Analysis - Effort-Driven'];
+
+      cy.get('#grid19')
+        .find('.slick-header-column:nth(1) .slick-column-name')
+        .trigger('mouseover')
+        .trigger('contextmenu')
+        .invoke('show');
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children()
+        .each(($child, index) => {
+          if (index <= 5) {
+            expect($child.text()).to.eq(fullTitlesWithGroupNames[index]);
+          }
+        });
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children('li:nth-child(2)')
+        .children('label')
+        .should('contain', 'Duration')
+        .click();
+
+      cy.get('.slick-column-picker .close')
+        .click();
+    });
+
+    it('should expect headers to be without Title/Duration and pre-headers without Common Factor Group header titles', () => {
+      const preHeadersWithoutFactor = ['Period', 'Analysis'];
+      const titlesWithoutTitleDuration = ['Start', 'Finish', 'Cost', '% Complete', 'Effort-Driven'];
+
+      // Column Pre-Headers without Common Factor group
+      cy.get('#grid19')
+        .find('.slick-header:not(.slick-preheader-panel) .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(titlesWithoutTitleDuration[index]));
+
+      // Column Headers without Title & Duration
+      cy.get('#grid19')
+        .find('.slick-preheader-panel .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(preHeadersWithoutFactor[index]));
+    });
+
+    it('should open Column Picker from Pre-Header column and show again Title column', () => {
+      const fullTitlesWithGroupNames = ['Common Factor - Title', 'Common Factor - Duration', 'Period - Start', 'Period - Finish', 'Analysis - Cost', 'Analysis - % Complete', 'Analysis - Effort-Driven'];
+
+      cy.get('#grid19')
+        .find('.slick-preheader-panel .slick-header-column:nth(1)')
+        .trigger('mouseover')
+        .trigger('contextmenu')
+        .invoke('show');
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children()
+        .each(($child, index) => {
+          if (index <= 5) {
+            expect($child.text()).to.eq(fullTitlesWithGroupNames[index]);
+          }
+        });
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children('li:nth-child(1)')
+        .children('label')
+        .should('contain', 'Title')
+        .click();
+
+      // close picker & reopen from a pre-header column name instead
+      cy.get('.slick-column-picker .close')
+        .click();
+    });
+
+    it('should open Column Picker from Pre-Header column name and show again Duration column', () => {
+      const fullTitlesWithGroupNames = ['Common Factor - Title', 'Common Factor - Duration', 'Period - Start', 'Period - Finish', 'Analysis - Cost', 'Analysis - % Complete', 'Analysis - Effort-Driven'];
+
+      cy.get('#grid19')
+        .find('.slick-preheader-panel .slick-header-column:nth(1)')
+        .trigger('mouseover')
+        .trigger('contextmenu')
+        .invoke('show');
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children()
+        .each(($child, index) => {
+          if (index <= 5) {
+            expect($child.text()).to.eq(fullTitlesWithGroupNames[index]);
+          }
+        });
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list')
+        .children('li:nth-child(2)')
+        .children('label')
+        .should('contain', 'Duration')
+        .click();
+
+      cy.get('.slick-column-picker .close')
+        .click();
+    });
+
+    it('should expect header titles to show again Title/Duration and pre-headers with Common Factor Group header titles', () => {
+      const preHeadersWithFactor = ['Common Factor', 'Period', 'Analysis', ''];
+      const titlesWithTitleDuration = ['Title', 'Duration', 'Start', 'Finish', 'Cost', '% Complete', 'Effort-Driven'];
+
+      // Column Pre-Headers without Common Factor group
+      cy.get('#grid19')
+        .find('.slick-header:not(.slick-preheader-panel) .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(titlesWithTitleDuration[index]));
+
+      // Column Headers without Title & Duration
+      cy.get('#grid19')
+        .find('.slick-preheader-panel .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(preHeadersWithFactor[index]));
+    });
+  });
 });
