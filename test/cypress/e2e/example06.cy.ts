@@ -2,8 +2,9 @@ import { addDay, format } from '@formkit/tempo';
 
 import { removeWhitespaces } from '../plugins/utilities';
 
-const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+const currentYear = new Date().getFullYear();
+const presetLowestDay = `${currentYear}-01-01`;
+const presetHighestDay = `${currentYear}-02-15`;
 function removeSpaces(textS) {
   return `${textS}`.replace(/\s+/g, '');
 }
@@ -398,6 +399,34 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
       });
   });
 
+  it('should open Date picker and expect date range between 01-Jan to 15-Feb', () => {
+    cy.get('.search-filter.filter-finish.filled')
+      .click();
+
+    cy.get('.vanilla-calendar-column:nth(0) .vanilla-calendar-month')
+      .should('have.text', 'January');
+
+    cy.get('.vanilla-calendar-column:nth(1) .vanilla-calendar-month')
+      .should('have.text', 'February');
+
+    cy.get('.vanilla-calendar-year:nth(0)')
+      .should('have.text', currentYear);
+
+    cy.get('.vanilla-calendar:visible')
+      .find('.vanilla-calendar-day__btn_selected')
+      .should('have.length', 46);
+
+    cy.get('.vanilla-calendar:visible')
+      .find('.vanilla-calendar-day__btn_selected')
+      .first()
+      .should('have.text', '1');
+
+    cy.get('.vanilla-calendar:visible')
+      .find('.vanilla-calendar-day__btn_selected')
+      .last()
+      .should('have.text', '15');
+  });
+
   describe('Set Dynamic Sorting', () => {
     it('should use slower server wait delay to test loading widget', () => {
       cy.get('[data-test="server-delay"]')
@@ -447,6 +476,19 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
             orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
             totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
         });
+    });
+
+    it('should open Date picker and no longer expect date range selection in the picker', () => {
+      cy.get('.search-filter.filter-finish')
+        .should('not.have.class', 'filled')
+        .click();
+
+      cy.get('.vanilla-calendar-year:nth(0)')
+        .should('have.text', currentYear);
+
+      cy.get('.vanilla-calendar:visible')
+        .find('.vanilla-calendar-day__btn_selected')
+        .should('not.exist');
     });
   });
 
@@ -538,7 +580,10 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
         .click({ force: true });
     });
 
-    it('should switch locale to French', () => {
+    it('should switch locale from English to French', () => {
+      cy.get('[data-test=selected-locale]')
+        .should('contain', 'en.json');
+
       cy.get('[data-test=language-button]')
         .click();
 
