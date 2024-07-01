@@ -16,24 +16,28 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="col-sm-6">
-    <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeEditableGrid()" data-test="editable-grid-btn">
-      Make Grid Editable
-    </button>
-    <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="closeAllRowDetail()" data-test="collapse-all-btn">
-      Close All Row Details
-    </button>
-    &nbsp;&nbsp;
-
-    <span class="d-inline-flex gap-4px">
-      <label for="detailViewRowCount">Detail View Rows Shown: </label>
-      <input id="detailViewRowCount" type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount">
-      <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
-        Set
+  <div class="row">
+    <div class="col-sm-6">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeEditableGrid()" data-test="editable-grid-btn">
+        Make Grid Editable
       </button>
-    </span>
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="closeAllRowDetail()" data-test="collapse-all-btn">
+        Close All Row Details
+      </button>
+      &nbsp;&nbsp;
+
+      <span class="d-inline-flex gap-4px">
+        <label for="detailViewRowCount">Detail View Rows Shown: </label>
+        <input id="detailViewRowCount" type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount">
+        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
+          Set
+        </button>
+      </span>
+    </div>
+    <div class="alert alert-{{flashAlertType}} col-sm-6" *ngIf="message" data-test="flash-msg">
+      {{message}}
+    </div>
   </div>
-  <div class="alert alert-{{flashAlertType}} col-sm-6" *ngIf="message" data-test="flash-msg">{{message}}</div>
 
   <hr />
 

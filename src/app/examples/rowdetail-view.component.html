@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <h3>{{model?.title}}</h3>
   <div class="row">
-    <div class="col-3"><label>Assignee:</label> <input class="form-control" [(ngModel)]="model.assignee" /></div>
-    <div class="col-3"><label>Reporter:</label> <span>{{model?.reporter}}</span></div>
-    <div class="col-2"><label>Duration:</label> <span>{{model?.duration |  number : '1.2-2'}}</span></div>
-    <div class="col-2"><label>% Complete:</label> <span>{{model?.percentComplete}}</span></div>
+    <div class="col-3 detail-label"><label>Assignee:</label> <input class="form-control" [(ngModel)]="model.assignee" /></div>
+    <div class="col-3 detail-label"><label>Reporter:</label> <span>{{model?.reporter}}</span></div>
+    <div class="col-3 detail-label"><label>Duration:</label> <span>{{model?.duration |  number : '1.2-2'}}</span></div>
+    <div class="col-3 detail-label"><label>% Complete:</label> <span>{{model?.percentComplete}}</span></div>
   </div>
 
   <div class="row">
-    <div class="col-3"><label>Start:</label> <span>{{model?.start | date: 'yyyy-MM-dd'}}</span></div>
-    <div class="col-3"><label>Finish:</label> <span>{{model?.finish | date: 'yyyy-MM-dd'}}</span></div>
-    <div class="col-2"><label>Effort Driven:</label> <i [class]="model?.effortDriven ? 'mdi mdi-check' : ''"></i></div>
+    <div class="col-3 detail-label"><label>Start:</label> <span>{{model?.start | date: 'yyyy-MM-dd'}}</span></div>
+    <div class="col-3 detail-label"><label>Finish:</label> <span>{{model?.finish | date: 'yyyy-MM-dd'}}</span></div>
+    <div class="col-3 detail-label"><label>Effort Driven:</label> <i [class]="model?.effortDriven ? 'mdi mdi-check' : ''"></i></div>
   </div>
 
   <hr>
