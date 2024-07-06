@@ -44,7 +44,7 @@ For most breaking changes, a quick Search & Replace in your code editor should s
 ## Changes
 
 ### Slickgrid-Universal
-If you use any of the Slickgrid-Universal extra dependencies then make sure to upgrade them as well to the new major `4.0.0` version so that they work with Angular-Slickgrid `7.0.0`
+If you use any of the Slickgrid-Universal extra dependencies then also make sure to upgrade them as well to the new major `5.0.0` version so that they work with Angular-Slickgrid `8.0.0`
 
 ```diff
   "dependencies": {
