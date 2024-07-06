@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.0...v8.3.1) (2024-07-06)
+
+
+### Bug Fixes
+
+* Composite Editor should work with Cell Menu ([a28a62d](https://github.com/ghiscoding/angular-slickgrid/commit/a28a62d6f576f035df6b976d4e3f57b8761c7575))
+
 ## [8.3.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.2.0...v8.3.0) (2024-06-29)
 
 
