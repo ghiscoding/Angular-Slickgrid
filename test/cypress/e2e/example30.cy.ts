@@ -613,7 +613,7 @@ describe('Example 30  Composite Editor Modal', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(10)`).should('contain', '');
   });
 
-  it('should open Edit Composite Editor from Cell Menu and expect Task 3 on 6th row', () => {
+  it('should open Edit Composite Editor from Cell Menu and expect Task 4 on 6th row', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 6}px;"] > .slick-cell:nth(11)`).click();
 
     cy.get('.slick-menu-item .slick-menu-content')
@@ -622,13 +622,13 @@ describe('Example 30  Composite Editor Modal', () => {
       .click();
 
     cy.get('.slick-editor-modal-title')
-      .should('contain', 'Editing - Task 3');
+      .should('contain', 'Editing - Task 4');
 
     cy.get('.slick-editor-modal-footer .btn-cancel')
       .click();
   });
 
-  it('should open Clone Composite Editor from Cell Menu and expect Task 3 on 6th row', () => {
+  it('should open Clone Composite Editor from Cell Menu and expect Task 4 on 6th row', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 6}px;"] > .slick-cell:nth(11)`).click();
 
     cy.get('.slick-menu-item .slick-menu-content:nth(1)')
@@ -636,7 +636,7 @@ describe('Example 30  Composite Editor Modal', () => {
       .click();
 
     cy.get('.slick-editor-modal-title')
-      .should('contain', 'Clone - Task 3');
+      .should('contain', 'Clone - Task 4');
 
     cy.get('.slick-editor-modal-footer .btn-cancel')
       .click();
