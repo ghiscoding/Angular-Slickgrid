@@ -71,3 +71,64 @@ describe('Example 3 - Grid with Editors', () => {
   });
 });
 ```
+
+#### Vitest CJS instead of ESM loading
+You may experience issues when using Vite + Vitest (e.g via AnalogJS) where Vitest would load the cjs version instead of esm of slickgrid-universal. The reason for this is that nested sub-depdendencies aren't properly analyzed and left up to node's loading mechanism. (see https://github.com/vitest-dev/vitest/discussions/4233 for more details).
+
+To workaround that limitation you can remap (alias) the cjs calls to esm with the following configuration in your vite.config.mts
+
+```ts
+/// <reference types="vitest" />
+import { defineConfig } from "vite";
+import path from "path";
+
+import angular from "@analogjs/vite-plugin-angular";
+
+// helper to get the aliased path
+function getAliasedPath(alias: string) {
+  return path.resolve(
+    __dirname,
+    `../node_modules/@slickgrid-universal/${alias}/dist/esm/index.js`
+  );
+}
+
+export default defineConfig(({ mode }) => ({
+  plugins: [angular()],
+  test: {
+    globals: true,
+    setupFiles: ["./src/test-setup.ts"],
+    environment: "jsdom",
+    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    css: true,
+    alias: {  // <--- here come the remounts
+      "@slickgrid-universal/common": getAliasedPath("common"),
+      "@slickgrid-universal/row-detail-view-plugin": getAliasedPath(
+        "row-detail-view-plugin"
+      ),
+      "@slickgrid-universal/empty-warning-component": getAliasedPath(
+        "empty-warning-component"
+      ),
+      "@slickgrid-universal/custom-footer-component": getAliasedPath(
+        "custom-footer-component"
+      ),
+      "@slickgrid-universal/pagination-component": getAliasedPath(
+        "pagination-component"
+      ),
+      "@slickgrid-universal/custom-tooltip-plugin": getAliasedPath(
+        "custom-tooltip-plugin"
+      ),
+      "@slickgrid-universal/event-pub-sub": getAliasedPath("event-pub-sub"),
+      "@slickgrid-universal/excel-export": getAliasedPath("excel-export"),
+      "@slickgrid-universal/odata": getAliasedPath("odata")
+    },
+    server: {  // <--- this ones is needed as well to let vitest process the bundling
+      deps: {
+        inline: ["angular-slickgrid"]
+      }
+    }
+  },
+  define: {
+    "import.meta.vitest": mode !== "production"
+  }
+}));
+```
