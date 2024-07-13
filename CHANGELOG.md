@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.1...v8.3.2) (2024-07-13)
+
+
+### Bug Fixes
+
+* SASS warnings & other unit test fixes ([227e538](https://github.com/ghiscoding/angular-slickgrid/commit/227e53806ae260930c12e89546394c0da48132f9))
+
 ## [8.3.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.0...v8.3.1) (2024-07-06)
 
 
