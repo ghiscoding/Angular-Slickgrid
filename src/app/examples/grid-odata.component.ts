@@ -137,9 +137,9 @@ export class GridOdataComponent implements OnInit {
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "__count" (v2) or "@odata.count" (v4)
           enableSelect: this.isSelectEnabled,
           enableExpand: this.isExpandEnabled,
-          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValues }) => {
             if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
-              let matchesSearch = (searchValue as string).replace(/\*/g, '.*');
+              let matchesSearch = searchValues[0].replace(/\*/g, '.*');
               matchesSearch = matchesSearch.slice(0, 1) + CARET_HTML_ESCAPED + matchesSearch.slice(1);
               matchesSearch = matchesSearch.slice(0, -1) + '$\'';
 
