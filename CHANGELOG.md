@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.2...v8.4.0) (2024-07-20)
+
+
+### Features
+
+* add `columnPickerLabel` for custom label, also fix [#1442](https://github.com/ghiscoding/angular-slickgrid/issues/1442) ([45b0f7f](https://github.com/ghiscoding/angular-slickgrid/commit/45b0f7f77db11fc5d137f59d4e4eaf7ce0c6ddf9))
+
+
+### Bug Fixes
+
+* `filterQueryOverride` provide all search values ([0eef5c0](https://github.com/ghiscoding/angular-slickgrid/commit/0eef5c0c405fd55947c58e68cdf398361a9f94c6))
+
 ## [8.3.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.1...v8.3.2) (2024-07-13)
 
 
