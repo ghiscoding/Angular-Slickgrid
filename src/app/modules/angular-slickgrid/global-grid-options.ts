@@ -1,4 +1,4 @@
-import { Column, DelimiterType, EventNamingStyle, FileType, Filters, OperatorType, TreeDataOption } from '@slickgrid-universal/common';
+import { type Column, DelimiterType, EventNamingStyle, FileType, Filters, GridOption as GridOptionUniversal, OperatorType, type TreeDataOption } from '@slickgrid-universal/common';
 import type { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */
@@ -250,10 +250,15 @@ export const GlobalGridOptions: Partial<GridOption> = {
  * when using Column Header Grouping, we'll prefix the column group title
  * else we'll simply return the column name title
  */
-function pickerHeaderColumnValueExtractor(column: Column) {
-  const headerGroup = column && column.columnGroup || '';
-  if (headerGroup) {
-    return headerGroup + ' - ' + column.name;
+function pickerHeaderColumnValueExtractor(column: Column, gridOptions?: GridOptionUniversal) {
+  let colName = column?.columnPickerLabel ?? column?.name ?? '';
+  if (colName instanceof HTMLElement || colName instanceof DocumentFragment) {
+    colName = colName.textContent || '';
   }
-  return column && column.name || '';
+  const headerGroup = column?.columnGroup || '';
+  const columnGroupSeparator = gridOptions?.columnGroupSeparator ?? ' - ';
+  if (headerGroup) {
+    return headerGroup + columnGroupSeparator + colName;
+  }
+  return colName;
 }
