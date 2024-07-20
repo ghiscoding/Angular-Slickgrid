@@ -1,5 +1,5 @@
 describe('Example 14 - Grouping & Aggregators', () => {
-  const fullTitles = ['#', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort Driven'];
+  const fullTitles = ['Id Click me', 'Title', 'Duration', '% Complete', 'Start', 'Finish', 'Cost', 'Effort Driven'];
   const GRID_ROW_HEIGHT = 35;
 
   it('should display Example title', () => {
@@ -180,6 +180,44 @@ describe('Example 14 - Grouping & Aggregators', () => {
         .should('contain', 1);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 311');
+    });
+  });
+
+  describe('Column Header with HTML Elements', () => {
+    it('should trigger an alert when clicking on the 1st column button inside its header', () => {
+      const stub = cy.stub();
+      cy.on('window:alert', stub);
+
+      cy.get('button[data-test=col1-hello-btn]')
+        .click({ force: true })
+        .then(() => expect(stub.getCall(0)).to.be.calledWith('Hello World'));
+    });
+
+    it('should open Column Picker and have a "Custom Label" as the 1st column label', () => {
+      cy.get('#grid14')
+        .find('.slick-header-column')
+        .first()
+        .trigger('mouseover')
+        .trigger('contextmenu')
+        .invoke('show');
+
+      cy.get('.slick-column-picker')
+        .find('.slick-column-picker-list li:nth-child(1) .checkbox-label')
+        .should('have.text', 'Custom Label');
+    });
+
+    it('should open Grid Menu and have a "Custom Label" as the 1st column label', () => {
+      cy.get('#grid14')
+        .find('button.slick-grid-menu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get(`.slick-grid-menu:visible`)
+        .find('.slick-column-picker-list li:nth-child(1) .checkbox-label')
+        .should('have.text', 'Custom Label');
+
+      cy.get('[data-dismiss="slick-grid-menu"]')
+        .click();
     });
   });
 });

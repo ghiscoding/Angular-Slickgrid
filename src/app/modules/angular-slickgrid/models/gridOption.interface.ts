@@ -1,7 +1,7 @@
 import type { TranslateService } from '@ngx-translate/core';
 import type { Column, GridOption as UniversalGridOption } from '@slickgrid-universal/common';
 
-import type { RowDetailView } from './index';
+import type { RowDetailView } from './rowDetailView.interface';
 
 export interface GridOption<C extends Column = Column> extends UniversalGridOption<C> {
   /** ngx-translate i18n translation service instance */
