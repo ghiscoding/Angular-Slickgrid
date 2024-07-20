@@ -229,9 +229,9 @@ E.g. you could listen for a specific column and the active OperatorType.custom i
 ```ts
 backendServiceApi: {
   options: {
-    filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+    filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValues }) => {
       if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
-        let matchesSearch = (searchValue as string).replace(/\*/g, '.*');
+        let matchesSearch = searchValues[0].replace(/\*/g, '.*');
         matchesSearch = matchesSearch.slice(0, 1) + '%5E' + matchesSearch.slice(1);
         matchesSearch = matchesSearch.slice(0, -1) + '$\'';
 

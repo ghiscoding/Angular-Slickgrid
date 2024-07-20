@@ -147,10 +147,10 @@ E.g. you could listen for a specific column and the active `OperatorType.custom`
 ```ts
 backendServiceApi: {
   options: {
-    filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+    filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValues }) => {
       if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
         // the `operator` is a string, make sure to implement this new operator in your GraphQL Schema
-        return { field: fieldName, operator: 'Like', value: searchValue };
+        return { field: fieldName, operator: 'Like', value: searchValues[0] };
       }
     },
   }
