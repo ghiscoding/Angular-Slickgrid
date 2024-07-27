@@ -109,7 +109,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
         // false by default, clicking anywhere on the row will open the detail view
         // when set to false, only the "+" icon would open the row detail
         // if you use editor or cell navigation you would want this flag set to false (default)
-        useRowClick: false,
+        useRowClick: true,
 
         // how many grid rows do we want to use for the row detail panel (this is only set once and will be used for all row detail)
         // also note that the detail view adds an extra 1 row for padding purposes
@@ -145,12 +145,12 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
       },
 
       // You could also enable Row Selection as well, but just make sure to disable `useRowClick: false`
-      enableCheckboxSelector: true,
-      enableRowSelection: true,
-      checkboxSelector: {
-        hideInFilterHeaderRow: false,
-        hideSelectAllCheckbox: true,
-      },
+      // enableCheckboxSelector: true,
+      // enableRowSelection: true,
+      // checkboxSelector: {
+      //   hideInFilterHeaderRow: false,
+      //   hideSelectAllCheckbox: true,
+      // },
     };
 
     this.getData();
