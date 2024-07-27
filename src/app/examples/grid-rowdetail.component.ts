@@ -90,9 +90,6 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
       },
       enableFiltering: true,
       enableRowDetailView: true,
-      rowSelectionOptions: {
-        selectActiveRow: true
-      },
       darkMode: this._darkMode,
       datasetIdPropertyName: 'rowId', // optionally use a different "id"
       rowDetailView: {
@@ -112,7 +109,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
         // false by default, clicking anywhere on the row will open the detail view
         // when set to false, only the "+" icon would open the row detail
         // if you use editor or cell navigation you would want this flag set to false (default)
-        useRowClick: true,
+        useRowClick: false,
 
         // how many grid rows do we want to use for the row detail panel (this is only set once and will be used for all row detail)
         // also note that the detail view adds an extra 1 row for padding purposes
@@ -141,7 +138,19 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
           console.log('before toggling row detail', args.item);
           return true;
         },
-      }
+      },
+      rowSelectionOptions: {
+        // True (Single Selection), False (Multiple Selections)
+        selectActiveRow: true
+      },
+
+      // You could also enable Row Selection as well, but just make sure to disable `useRowClick: false`
+      enableCheckboxSelector: true,
+      enableRowSelection: true,
+      checkboxSelector: {
+        hideInFilterHeaderRow: false,
+        hideSelectAllCheckbox: true,
+      },
     };
 
     this.getData();
