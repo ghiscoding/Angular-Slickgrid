@@ -20,7 +20,7 @@
   * [new Date Picker (vanilla-calendar)](column-functionalities/editors/date-editor-vanilla-calendar.md)
   * [LongText (textarea)](column-functionalities/editors/longtext-editor-textarea.md)
   * [Select Dropdown Editor (single/multiple)](column-functionalities/editors/select-dropdown-editor.md)
-* [Filters](column-functionalities/filters/README.md)
+* [Filters](column-functionalities/filters/filter-intro.md)
   * [Autocomplete](column-functionalities/filters/autocomplete-filter-kraaden-lib.md)
   * [Input Filter (default)](column-functionalities/filters/input-filter.md)
   * [Select Filter (dropdown)](column-functionalities/filters/select-filter.md)
