@@ -1,0 +1,70 @@
+<div class="demo40">
+  <h2>
+    Example 40: Infinite Scroll from JSON data
+    <span class="float-end">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-infinite-json.component.ts">
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+  </h2>
+
+  <h6 class="title is-6 italic content">
+    <ul>
+      <li>
+        Infinite scrolling allows the grid to lazy-load rows from the server when reaching the scroll bottom (end) position.
+        In its simplest form, the more the user scrolls down, the more rows get loaded.
+      </li>
+      <li>NOTES: <code>presets.pagination</code> is not supported with Infinite Scroll and will revert to the first page,
+          simply because since we keep appending data, we always have to start from index zero (no offset).
+      </li>
+    </ul>
+  </h6>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <button class="btn btn-outline-secondary btn-sm" data-test="clear-filters-sorting"
+              (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+        <span class="mdi mdi-close"></span>
+        <span>Clear all Filter & Sorts</span>
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+        Set Filters Dynamically
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+        Set Sorting Dynamically
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="group-by-duration" (click)="groupByDuration()">
+        Group by Duration
+      </button>
+
+      <label class="ml-4">Reset Dataset <code>onSort</code>:</label>
+      <button class="btn btn-outline-secondary btn-sm" data-test="onsort-on" (click)="onSortReset(true)">
+        ON
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" data-test="onsort-off" (click)="onSortReset(false)">
+        OFF
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="metrics" class="mt-2" style="margin: 10px 0px">
+    <b>Metrics:</b>
+    <span>
+    <span>{{metrics.endTime | date: 'dd MMM, h:mm:ssa'}}</span> —
+      <span data-test="totalItemCount">{{metrics.totalItemCount}}</span>
+      items
+    </span>
+  </div>
+
+  <angular-slickgrid gridId="grid40"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onSort)="handleOnSort()"
+    (onScroll)="handleOnScroll($event.detail.args)"
+    (onRowCountChanged)="refreshMetrics($event.detail.args)">
+  </angular-slickgrid>
+</div>
