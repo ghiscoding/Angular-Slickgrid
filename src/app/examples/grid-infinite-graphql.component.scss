@@ -1,0 +1,8 @@
+.demo39 {
+  .badge {
+    display: none;
+    &.fully-loaded {
+      display: inline-flex;
+    }
+  }
+}

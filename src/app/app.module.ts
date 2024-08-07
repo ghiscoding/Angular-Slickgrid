@@ -37,6 +37,8 @@ import { GridGraphqlWithoutPaginationComponent } from './examples/grid-graphql-n
 import { GridGroupingComponent } from './examples/grid-grouping.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
+import { GridInfiniteGraphqlComponent } from './examples/grid-infinite-graphql.component';
+import { GridInfiniteOdataComponent } from './examples/grid-infinite-odata.component';
 import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
@@ -118,6 +120,8 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridHeaderButtonComponent,
     GridHeaderFooterComponent,
     GridHeaderMenuComponent,
+    GridInfiniteGraphqlComponent,
+    GridInfiniteOdataComponent,
     GridLocalizationComponent,
     GridMenuComponent,
     GridOdataComponent,

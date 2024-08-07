@@ -18,6 +18,8 @@ import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridGraphqlWithoutPaginationComponent } from './examples/grid-graphql-nopage.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
+import { GridInfiniteGraphqlComponent } from './examples/grid-infinite-graphql.component';
+import { GridInfiniteOdataComponent } from './examples/grid-infinite-odata.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderFooterComponent } from './examples/grid-header-footer.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
@@ -67,6 +69,8 @@ const routes: Routes = [
   { path: 'draggrouping', component: GridDraggableGroupingComponent },
   { path: 'grouping', component: GridGroupingComponent },
   { path: 'header-footer', component: GridHeaderFooterComponent },
+  { path: 'infinite-graphql', component: GridInfiniteGraphqlComponent },
+  { path: 'infinite-odata', component: GridInfiniteOdataComponent },
   { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
