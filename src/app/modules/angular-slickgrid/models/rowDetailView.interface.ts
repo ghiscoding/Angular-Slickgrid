@@ -1,4 +1,4 @@
-import { Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { RowDetailView as UniversalRowDetailView } from '@slickgrid-universal/common';
 
 export interface RowDetailView extends UniversalRowDetailView {

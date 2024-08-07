@@ -1,5 +1,5 @@
-import { RxJsFacade } from '@slickgrid-universal/common';
-import { EMPTY, iif, isObservable, firstValueFrom, Observable, ObservableInput, of, OperatorFunction, ObservedValueOf, Subject, switchMap, } from 'rxjs';
+import type { RxJsFacade } from '@slickgrid-universal/common';
+import { EMPTY, iif, isObservable, firstValueFrom, Observable, type ObservableInput, of, type OperatorFunction, type ObservedValueOf, Subject, switchMap, } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 export class RxJsResourceStub implements RxJsFacade {

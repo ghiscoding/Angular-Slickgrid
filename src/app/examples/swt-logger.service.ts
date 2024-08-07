@@ -4,7 +4,7 @@
  *
  * @author Saber Chebka, saber.chebka@gmail.com
  */
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { type HttpClient, HttpHeaders } from '@angular/common/http';
 
 export class Logger {
   private _clientLogLevel: LoggerLevel = LoggerLevel.INFO;
@@ -70,8 +70,8 @@ export class Logger {
       timestamp: this._timestamp()
     }, { headers })
       .subscribe({
-        next: res => null,
-        error: error => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER')
+        next: () => null,
+        error: () => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER')
       });
   }
 

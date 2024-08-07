@@ -1,14 +1,14 @@
 import {
-  Column,
-  ColumnFilter,
-  Filter,
-  FilterArguments,
-  FilterCallback,
-  GridOption,
+  type Column,
+  type ColumnFilter,
+  type Filter,
+  type FilterArguments,
+  type FilterCallback,
+  type GridOption,
   OperatorType,
-  OperatorString,
-  SearchTerm,
-  SlickGrid,
+  type OperatorString,
+  type SearchTerm,
+  type SlickGrid,
 } from './../modules/angular-slickgrid';
 
 export class CustomInputFilter implements Filter {
@@ -38,7 +38,7 @@ export class CustomInputFilter implements Filter {
     this.grid = args.grid as SlickGrid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
+    this.searchTerms = ('searchTerms' in args ? args.searchTerms : []) || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
     const searchTerm = Array.isArray(this.searchTerms) && this.searchTerms.length >= 0 ? this.searchTerms[0] : '';

@@ -257,7 +257,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
 
   private isObjectEmpty(obj: any) {
     for (const key in obj) {
-      if (obj.hasOwnProperty(key) && obj[key] !== '') {
+      if (key in obj && obj[key] !== '') {
         return false;
       }
     }

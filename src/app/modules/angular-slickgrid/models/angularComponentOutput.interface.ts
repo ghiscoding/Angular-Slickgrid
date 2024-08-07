@@ -1,4 +1,4 @@
-import { ComponentRef } from '@angular/core';
+import type { ComponentRef } from '@angular/core';
 
 export interface AngularComponentOutput {
   componentRef: ComponentRef<any>;

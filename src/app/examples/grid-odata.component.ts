@@ -230,7 +230,7 @@ export class GridOdataComponent implements OnInit {
    */
   getCustomerDataApiMock(query: string): Promise<any> {
     // the mock is returning a Promise, just like a WebAPI typically does
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const queryParams = query.toLowerCase().split('&');
       let top: number;
       let skip = 0;
@@ -265,18 +265,18 @@ export class GridOdataComponent implements OnInit {
             (columnFilters as any)[fieldName] = { type: 'matchespattern', term: '^' + filterMatch[2].trim() };
           }
           if (filterBy.includes('contains')) {
-            const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
+            const filterMatch = filterBy.match(/contains\(([a-zA-Z/]+),\s?'(.*?)'/);
             const fieldName = filterMatch![1].trim();
             (columnFilters as any)[fieldName] = { type: 'substring', term: filterMatch![2].trim() };
           }
           if (filterBy.includes('substringof')) {
-            const filterMatch = filterBy.match(/substringof\('(.*?)',\s([a-zA-Z\/]+)/);
+            const filterMatch = filterBy.match(/substringof\('(.*?)',\s([a-zA-Z/]+)/);
             const fieldName = filterMatch![2].trim();
             (columnFilters as any)[fieldName] = { type: 'substring', term: filterMatch![1].trim() };
           }
           for (const operator of ['eq', 'ne', 'le', 'lt', 'gt', 'ge']) {
             if (filterBy.includes(operator)) {
-              const re = new RegExp(`([a-zA-Z ]*) ${operator} \'(.*?)\'`);
+              const re = new RegExp(`([a-zA-Z ]*) ${operator} '(.*?)'`);
               const filterMatch = re.exec(filterBy);
               if (Array.isArray(filterMatch)) {
                 const fieldName = filterMatch[1].trim();
@@ -346,7 +346,7 @@ export class GridOdataComponent implements OnInit {
         let filteredData = data;
         if (columnFilters) {
           for (const columnId in columnFilters) {
-            if (columnFilters.hasOwnProperty(columnId)) {
+            if (columnId in columnFilters) {
               filteredData = filteredData.filter(column => {
                 const filterType = (columnFilters as any)[columnId].type;
                 const searchTerm = (columnFilters as any)[columnId].term;
@@ -431,19 +431,19 @@ export class GridOdataComponent implements OnInit {
 
   // YOU CAN CHOOSE TO PREVENT EVENT FROM BUBBLING IN THE FOLLOWING 3x EVENTS
   // note however that internally the cancelling the search is more of a rollback
-  handleOnBeforeSort(e: Event) {
+  handleOnBeforeSort(_e: Event) {
     // e.preventDefault();
     // return false;
     return true;
   }
 
-  handleOnBeforeSearchChange(e: Event) {
+  handleOnBeforeSearchChange(_e: Event) {
     // e.preventDefault();
     // return false;
     return true;
   }
 
-  handleOnBeforePaginationChange(e: Event) {
+  handleOnBeforePaginationChange(_e: Event) {
     // e.preventDefault();
     // return false;
     return true;

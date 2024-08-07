@@ -296,7 +296,7 @@ export class GridInfiniteOdataComponent implements OnInit {
         let filteredData = data;
         if (columnFilters) {
           for (const columnId in columnFilters) {
-            if (columnFilters.hasOwnProperty(columnId)) {
+            if (columnId in columnFilters) {
               filteredData = filteredData.filter(column => {
                 const filterType = columnFilters[columnId].type;
                 const searchTerm = columnFilters[columnId].term;

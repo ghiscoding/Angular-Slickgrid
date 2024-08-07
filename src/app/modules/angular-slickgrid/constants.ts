@@ -1,4 +1,4 @@
-import { Locale } from '@slickgrid-universal/common';
+import type { Locale } from '@slickgrid-universal/common';
 
 export class Constants {
   // English Locale texts when using only 1 Locale instead of I18N

@@ -356,7 +356,7 @@ describe('Example 17 - Row Move & Checkbox Selector Selector Plugins', () => {
 
         // expect all Sorting commands to be hidden
         if (commandTitle === 'Clear all Filters' || commandTitle === 'Toggle Filter Row') {
-          expect($child).not.to.be.visible;
+          expect($child).not.to.be.visible();
         }
       });
   });

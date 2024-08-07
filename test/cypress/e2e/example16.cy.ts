@@ -3,7 +3,6 @@ import { format } from '@formkit/tempo';
 describe('Example 16: Grid State & Presets using Local Storage', () => {
   const GRID_ROW_HEIGHT = 35;
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
-  const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];
 
   beforeEach(() => {
     cy.restoreLocalStorage();

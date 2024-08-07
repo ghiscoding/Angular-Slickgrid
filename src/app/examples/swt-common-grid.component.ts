@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+/* eslint-disable @angular-eslint/no-output-on-prefix */
 import { Component, OnInit, AfterViewInit, Input, EventEmitter, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FieldType } from '../modules/angular-slickgrid';
@@ -192,7 +194,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
       // set columnsData and columnDefinitions
       this.columnData = this.metaData.columns.column;
 
-      for (let index = 0; index < this.columnData.length; index++) {
+      for (const colData of this.columnData) {
 
         const type = FieldType.string;
         const editor = null;
@@ -202,18 +204,18 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         const params = null;
 
         const col: any = {
-          id: this.columnData[index].dataelement,
-          name: this.columnData[index].heading,
-          field: this.columnData[index].dataelement,
-          sortable: this.columnData[index].sort,
-          filterable: this.columnData[index].filterable,
+          id: colData.dataelement,
+          name: colData.heading,
+          field: colData.dataelement,
+          sortable: colData.sort,
+          filterable: colData.filterable,
           type,
           editor,
           formatter,
           filter,
           outputType,
           params,
-          width: this.columnData[index].width
+          width: colData.width
         };
 
         this.columnDefinitions.push(col);
@@ -237,18 +239,18 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   /**
    * CommonGrid constructor
-   * @param columnsData
-   * @param lockedColumnCount
-   * @param uniqueColumn
-   * @param baseURL
-   * @param programId
-   * @param componentId
-   * @param enableRenders
-   * @param colValidationMap
-   * @param checkHeader
-   * @param cboLinked
+   * @param _columnsData
+   * @param _lockedColumnCount
+   * @param _uniqueColumn
+   * @param _baseURL
+   * @param _programId
+   * @param _componentId
+   * @param _enableRenders
+   * @param _colValidationMap
+   * @param _checkHeader
+   * @param _cboLinked
    */
-  CommonGrid(columnsData: any, lockedColumnCount: number, uniqueColumn: string, baseURL: string, programId: string, componentId: string, enableRenders: boolean = true, colValidationMap: any = null, checkHeader: boolean = false, cboLinked: boolean = false) {
+  CommonGrid(_columnsData: any, _lockedColumnCount: number, _uniqueColumn: string, _baseURL: string, _programId: string, _componentId: string, _enableRenders = true, _colValidationMap = null, _checkHeader = false, _cboLinked = false) {
   }
 
 
@@ -257,7 +259,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     const dataProvider: any = [];
 
     for (let index = 0; rawData.row && index < rawData.row.length; index++) {
-      const row = <Object>rawData.row[index];
+      const row = rawData.row[index] as object;
       const idObj = {
         id: index
       };
@@ -265,7 +267,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
       let key: string;
       const rowData: any = [];
       for (key in row) {
-        if (row.hasOwnProperty(key)) {
+        if (key in row) {
           rowData[key] = (row as any)[key].content;
         }
       }
@@ -274,7 +276,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
     this.dataset = dataProvider;
     this.paginationComponent.processing = false;
-    this.logger.info('method [gridData] - END, all data size=' + (rawData && rawData.hasOwnProperty('size') ? rawData.size : 0));
+    this.logger.info('method [gridData] - END, all data size=' + (rawData && 'size' in rawData ? rawData.size : 0));
 
     // this.gridObj.setSortColumn('excludeType', true);
     // this.dataviewObj.reSort();
@@ -340,9 +342,9 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     }
     timer = setTimeout(() => {
       this.filteredGridColumns = '';
-      for (let idx = 0; idx < this.columnDefinitions.length; idx++) {
-        if (args.columnFilters.hasOwnProperty(this.columnDefinitions[idx].field)) {
-          this.filteredGridColumns += args.columnFilters[this.columnDefinitions[idx].field].searchTerms[0] + '|';
+      for (const column of this.columnDefinitions) {
+        if (column.field in args.columnFilters) {
+          this.filteredGridColumns += args.columnFilters[column.field].searchTerms[0] + '|';
         } else {
           this.filteredGridColumns += 'All|';
         }
@@ -364,10 +366,10 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   /**
    * PAGINATION EMIT EVENT
-   * @param event
+   * @param _event
    * @param args
    */
-  processOnPaginationChanged(event: Event | undefined, args: PaginationChangedArgs) {
+  processOnPaginationChanged(_event: Event | undefined, args: PaginationChangedArgs) {
     this.logger.info('method [onPaginationChanged] - START');
     this.currentPage = args.newPage;
     this.onPaginationChanged.emit(args);
@@ -377,10 +379,10 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
   /**
    * SORT EMIT EVENT
-   * @param event
+   * @param _event
    * @param args
    */
-  processOnSortChanged(event: Event | undefined, args: any) {
+  processOnSortChanged(_event: Event | undefined, args: any) {
     this.logger.info('method [onSortChanged] - START');
     this.sortedGridColumn = '';
     const sortDirection = '|' + args!.sortCols![0].sortAsc + '|';

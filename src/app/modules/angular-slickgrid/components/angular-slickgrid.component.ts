@@ -153,7 +153,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   treeDataService: TreeDataService;
 
   @Input() customDataView: any;
-  @Input() gridId: string = '';
+  @Input() gridId = '';
   @Input() gridOptions!: GridOption;
 
   @Input()
@@ -474,8 +474,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
         backendApi.internalPostProcess = (processResult: any) => {
           const datasetName = (backendApi && backendApiService && typeof backendApiService.getDatasetName === 'function') ? backendApiService.getDatasetName() : '';
           if (processResult?.data[datasetName]) {
-            const data = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as any).data[datasetName].nodes : (processResult as any).data[datasetName];
-            const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as any).data[datasetName].totalCount : (processResult as any).data[datasetName].length;
+            const data = 'nodes' in processResult.data[datasetName] ? (processResult as any).data[datasetName].nodes : (processResult as any).data[datasetName];
+            const totalCount = 'totalCount' in processResult.data[datasetName] ? (processResult as any).data[datasetName].totalCount : (processResult as any).data[datasetName].length;
             this.refreshGridData(data, totalCount || 0);
           }
         };
@@ -601,11 +601,11 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
-      if (this.slickGrid?.getSelectionModel() && this.gridOptions?.dataView?.hasOwnProperty('syncGridSelection')) {
+      if (this.slickGrid?.getSelectionModel() && this.gridOptions?.dataView && 'syncGridSelection' in this.gridOptions.dataView) {
         // if we are using a Backend Service, we will do an extra flag check, the reason is because it might have some unintended behaviors
         // with the BackendServiceApi because technically the data in the page changes the DataView on every page change.
         let preservedRowSelectionWithBackend = false;
-        if (this.gridOptions.backendServiceApi && this.gridOptions.dataView.hasOwnProperty('syncGridSelectionWithBackendService')) {
+        if (this.gridOptions.backendServiceApi && 'syncGridSelectionWithBackendService' in this.gridOptions.dataView) {
           preservedRowSelectionWithBackend = this.gridOptions.dataView.syncGridSelectionWithBackendService as boolean;
         }
 
@@ -977,7 +977,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     const backendApi = gridOptions.backendServiceApi;
     const backendApiService = backendApi && backendApi.service;
     const serviceOptions: BackendServiceOption = backendApiService?.options ?? {};
-    const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
+    const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && 'executeProcessCommandOnInit' in serviceOptions) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
     if (backendApiService) {
       // update backend filters (if need be) BEFORE the query runs (via the onInit command a few lines below)
@@ -1257,7 +1257,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.totalItems = Array.isArray(dataset) ? dataset.length : 0;
       if (this._paginationOptions && this.dataView?.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo();
-        if (slickPagingInfo?.hasOwnProperty('totalRows') && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
+        if ('totalRows' in slickPagingInfo && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
           this.totalItems = slickPagingInfo.totalRows || 0;
         }
       }

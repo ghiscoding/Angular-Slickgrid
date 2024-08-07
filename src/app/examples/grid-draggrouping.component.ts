@@ -377,7 +377,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     }
   }
 
-  groupByFieldName(fieldName: string, index: number) {
+  groupByFieldName(_fieldName: string, _index: number) {
     this.clearGrouping();
     if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
       // get the field names from Group By select(s) dropdown, but filter out any empty fields
@@ -411,7 +411,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     this.gridObj.setPreHeaderPanelVisibility(true);
   }
 
-  selectTrackByFn(index: number, item: any) {
+  selectTrackByFn(index: number, _item: any) {
     return index;
   }
 

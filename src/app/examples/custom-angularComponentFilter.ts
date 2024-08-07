@@ -1,17 +1,17 @@
-import { ComponentRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import type { ComponentRef } from '@angular/core';
+import type { Subscription } from 'rxjs';
 import {
   AngularUtilService,
-  Column,
-  ColumnFilter,
-  Filter,
-  FilterArguments,
-  FilterCallback,
-  GridOption,
+  type Column,
+  type ColumnFilter,
+  type Filter,
+  type FilterArguments,
+  type FilterCallback,
+  type GridOption,
   OperatorType,
-  OperatorString,
-  SearchTerm,
-  SlickGrid,
+  type OperatorString,
+  type SearchTerm,
+  type SlickGrid,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -59,7 +59,7 @@ export class CustomAngularComponentFilter implements Filter {
     this.grid = args.grid as SlickGrid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
+    this.searchTerms = ('searchTerms' in args ? args.searchTerms : []) || [];
 
     if (!this.columnFilter || !this.columnFilter.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
       throw new Error(`[Angular-Slickgrid] For Filter with Angular Component to work properly, you need to provide the "AngularUtilService" via the Filter "params" OR the Grid Options "params"
@@ -92,7 +92,7 @@ export class CustomAngularComponentFilter implements Filter {
    */
   clear(shouldTriggerQuery = true) {
     this._shouldTriggerQuery = shouldTriggerQuery;
-    if (this.componentRef?.instance?.hasOwnProperty('selectedId')) {
+    if (this.componentRef?.instance && 'selectedId' in this.componentRef.instance) {
       this.componentRef.instance.selectedId = 0;
     }
   }
@@ -109,7 +109,7 @@ export class CustomAngularComponentFilter implements Filter {
 
   /** Set value(s) on the DOM element */
   setValues(values: SearchTerm[] | SearchTerm) {
-    if (this.componentRef?.instance?.hasOwnProperty('selectedId')) {
+    if (this.componentRef?.instance && 'selectedId' in this.componentRef.instance) {
       this.componentRef.instance.selectedId = values;
     }
   }
