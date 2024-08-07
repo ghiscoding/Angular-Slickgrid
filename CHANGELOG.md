@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.4.0...v8.5.0) (2024-08-07)
+
+
+### Features
+
+* Infinite Scroll for Backend Services (OData/GraphQL) ([13e2697](https://github.com/ghiscoding/angular-slickgrid/commit/13e26979ab2b7a189f20096895bd45fd0ca1e35c))
+* Infinite Scroll for JSON data ([251a984](https://github.com/ghiscoding/angular-slickgrid/commit/251a984beb1384a49f8eaee7879d6c6fc07f5293))
+
 ## [8.4.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.3.2...v8.4.0) (2024-07-20)
 
 
