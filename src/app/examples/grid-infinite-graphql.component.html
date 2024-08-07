@@ -1,0 +1,100 @@
+<div class="demo39">
+  <h2>
+    Example 39: GraphQL Backend Service with Infinite Scroll
+    <span class="float-end">
+      <a style="font-size: 18px"
+         target="_blank"
+      href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-infinite-graphql.component.ts">
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+  </h2>
+
+  <h6 class="title is-6 italic content">
+    <ul>
+      <li>
+        Infinite scrolling allows the grid to lazy-load rows from the server when reaching the scroll bottom (end) position.
+        In its simplest form, the more the user scrolls down, the more rows get loaded.
+        If we reached the end of the dataset and there is no more data to load, then we'll assume to have the entire dataset loaded in memory.
+        This contrast with the regular Pagination approach which will hold only hold data for 1 page at a time.
+      </li>
+      <li>NOTES</li>
+      <ol>
+        <li>
+          <code>presets.pagination</code> is not supported with Infinite Scroll and will revert to the first page,
+          simply because since we keep appending data, we always have to start from index zero (no offset).
+        </li>
+        <li>
+          Pagination is not shown BUT in fact, that is what is being used behind the scene whenever reaching the scroll end (fetching next batch).
+        </li>
+        <li>
+          Also note that whenever the user changes the Sort(s)/Filter(s) it will always reset and go back to zero index (first page).
+        </li>
+      </ol>
+    </ul>
+  </h6>
+
+  <div class="row">
+    <div class="col-sm-5">
+      <div [class]="status.class" role="alert" data-test="status">
+        <strong>Status: </strong> {{status.text}}
+        <span [hidden]="!processing">
+          <i class="mdi mdi-sync mdi-spin-1s"></i>
+        </span>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-filters-sorting"
+                  (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+            <i class="mdi mdi-filter-remove-outline"></i>
+            Clear all Filter & Sorts
+          </button>
+          <label for="serverdelay" class="ml-4">Server Delay: </label>
+          <input id="serverdelay" type="number" data-test="server-delay" style="width: 55px"
+                [(ngModel)]="serverWaitDelay"
+                title="input a fake timer delay to simulate slow server response" />
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col-md-12">
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="language-button" (click)="switchLanguage()">
+            <i class="mdi mdi-translate"></i>
+            Switch Language
+          </button>
+          <strong>Locale:</strong>
+          <span style="font-style: italic" data-test="selected-locale">
+            {{selectedLanguage + '.json'}}
+          </span>
+        </div>
+      </div>
+      <br />
+      <div *ngIf="metrics" style="margin: 10px 0px">
+        <b>Metrics:</b>
+        <span>
+        <span>{{metrics.endTime | date: 'dd MMM, h:mm:ssa'}}</span> —
+          <span data-test="itemCount">{{metrics.itemCount}}</span>
+          of
+          <span data-test="totalItemCount">{{metrics.totalItemCount}}</span>
+          items
+        </span>
+        <span class="badge rounded-pill text-bg-primary" [class]="tagDataClass" data-test="data-loaded-tag">All Data Loaded!!!</span>
+      </div>
+    </div>
+
+    <div class="col-sm-7">
+      <div class="alert alert-info" data-test="alert-graphql-query">
+        <strong>GraphQL Query:</strong>
+        <div [innerHTML]="graphqlQuery" data-test="graphql-query-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <angular-slickgrid gridId="grid39"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onRowCountChanged)="refreshMetrics($event.detail.args)">
+  </angular-slickgrid>
+</div>

@@ -57,6 +57,16 @@ import { GridOption } from '../../models';
 import { MockSlickEvent, MockSlickEventHandler } from '../../../../../../test/mockSlickEvent';
 import { RxJsResourceStub } from '../../../../../../test/rxjsResourceStub';
 
+const addVanillaEventPropagation = function (event: Event) {
+  Object.defineProperty(event, 'isPropagationStopped', { writable: true, configurable: true, value: jest.fn() });
+  Object.defineProperty(event, 'isImmediatePropagationStopped', { writable: true, configurable: true, value: jest.fn() });
+  return event;
+};
+
+const viewportElm = document.createElement('div');
+viewportElm.className = 'slick-viewport';
+Object.defineProperty(viewportElm, 'offsetHeight', { writable: true, configurable: true, value: 12 });
+
 const mockSlickRowDetailView = {
   create: jest.fn(),
   init: jest.fn(),
@@ -77,6 +87,7 @@ const backendUtilityServiceStub = {
   executeBackendCallback: jest.fn(),
   onBackendError: jest.fn(),
   refreshBackendDataset: jest.fn(),
+  setInfiniteScrollBottomHit: jest.fn(),
 } as unknown as BackendUtilityService;
 
 const collectionServiceStub = {
@@ -160,6 +171,7 @@ const paginationServiceStub = {
   init: jest.fn(),
   dispose: jest.fn(),
   getFullPagination: jest.fn(),
+  goToNextPage: jest.fn(),
   updateTotalItems: jest.fn(),
 } as unknown as PaginationService;
 
@@ -236,6 +248,7 @@ const mockGrid = {
   getColumns: jest.fn(),
   getCellEditor: jest.fn(),
   getEditorLock: () => mockGetEditorLock,
+  getViewportNode: () => viewportElm,
   getUID: () => 'slickgrid_12345',
   getContainerNode: jest.fn(),
   getGridPosition: jest.fn(),
@@ -256,7 +269,7 @@ const mockGrid = {
   onColumnsReordered: new MockSlickEvent(),
   onSetOptions: new MockSlickEvent(),
   onRendered: jest.fn(),
-  onScroll: jest.fn(),
+  onScroll: new MockSlickEvent(),
   onSelectedRowsChanged: new MockSlickEvent(),
   onDataviewCreated: new MockSlickEvent(),
 } as unknown as SlickGrid;
@@ -322,6 +335,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         minWidth: 300,
         rightPadding: 0,
       },
+      backendServiceApi: null,
     } as unknown as GridOption;
     jest.spyOn(mockGrid, 'getOptions').mockReturnValue(gridOptions);
 
@@ -1109,6 +1123,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       beforeEach(() => {
         component.gridOptions = {
           backendServiceApi: {
+            disableInternalPostProcess: false,
             onInit: jest.fn(),
             service: mockGraphqlService as any,
             preProcess: jest.fn(),
@@ -1120,6 +1135,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
       afterEach(() => {
         jest.clearAllMocks();
+        mockGraphqlService.options = undefined;
       });
 
       it('should call the "createBackendApiInternalPostProcessCallback" method when Backend Service API is defined with a Graphql Service', () => {
@@ -1129,6 +1145,16 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(spy).toHaveBeenCalled();
         expect(component.gridOptions.backendServiceApi!.internalPostProcess).toEqual(expect.any(Function));
+      });
+
+      it('should NOT call the "createBackendApiInternalPostProcessCallback" method when Backend Service API is defined with a Graphql Service with "disableInternalPostProcess"', () => {
+        const spy = jest.spyOn(component, 'createBackendApiInternalPostProcessCallback');
+
+        component.gridOptions.backendServiceApi!.disableInternalPostProcess = true;
+        component.initialization(slickEventHandler);
+
+        expect(spy).not.toHaveBeenCalled();
+        expect(component.gridOptions.backendServiceApi!.internalPostProcess).toBeUndefined();
       });
 
       it('should execute the "internalPostProcess" callback method that was created by "createBackendApiInternalPostProcessCallback" with Pagination', () => {
@@ -1290,8 +1316,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           data: { users: { nodes: [] }, pageInfo: { hasNextPage: true }, totalCount: 0 },
           metrics: { startTime: now, endTime: now, executionTime: 0, totalItemCount: 0 }
         };
-        const processSpy = jest.spyOn((component.gridOptions as any).backendServiceApi as BackendServiceApi, 'process').mockReturnValue(of(processResult));
-        jest.spyOn((component.gridOptions as any).backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+        const processSpy = jest.spyOn((component.gridOptions as GridOption).backendServiceApi as BackendServiceApi, 'process').mockReturnValue(of(processResult));
+        jest.spyOn((component.gridOptions as GridOption).backendServiceApi!.service, 'buildQuery').mockReturnValue(query);
         const backendExecuteSpy = jest.spyOn(backendUtilityServiceStub, 'executeBackendProcessesCallback');
 
         component.gridOptions.externalResources = [rxjsMock];
@@ -1382,6 +1408,101 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(backendErrorSpy).toHaveBeenCalledWith(mockError, component.gridOptions.backendServiceApi);
           done();
         });
+      });
+
+      it('should call "onScrollEnd" when defined and call backend util setInfiniteScrollBottomHit(true) when we still have more pages in the dataset', (done) => {
+        const gotoSpy = jest.spyOn(component.paginationService, 'goToNextPage').mockResolvedValueOnce(true);
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        component.gridOptions.backendServiceApi?.onScrollEnd!();
+
+        expect(gotoSpy).toHaveBeenCalled();
+        expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(true);
+        component.gridOptions.backendServiceApi!.service.options.infiniteScroll = false;
+        setTimeout(() => {
+          expect(component.backendUtilityService.setInfiniteScrollBottomHit).not.toHaveBeenCalledWith(false);
+          done();
+        });
+      });
+
+      it('should execute original "postProcess" when calling the same method when Infinite Scroll is enabled', () => {
+        const orgPostProcess = component.gridOptions.backendServiceApi!.postProcess;
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        component.gridOptions.backendServiceApi?.postProcess!({ infiniteScrollBottomHit: true, query: '', value: [] });
+
+        expect(orgPostProcess).toHaveBeenCalled();
+      });
+
+      it('should call "onScrollEnd" when defined and call backend util setInfiniteScrollBottomHit(false) when we no longer have more pages', (done) => {
+        const gotoSpy = jest.spyOn(component.paginationService, 'goToNextPage').mockResolvedValueOnce(false);
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        component.gridOptions.backendServiceApi?.onScrollEnd!();
+
+        expect(gotoSpy).toHaveBeenCalled();
+        expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(true);
+        component.gridOptions.backendServiceApi!.service.options.infiniteScroll = false;
+        setTimeout(() => {
+          expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(false);
+          done();
+        });
+      });
+
+      it('should throw an error if we try to set a "presets.pagination" with Infinite Scroll', () => {
+        const consoleSpy = jest.spyOn(console, 'warn').mockReturnValue();
+        mockGraphqlService.options = { datasetName: 'users', infiniteScroll: true };
+        const backendServiceApi = {
+          service: mockGraphqlService,
+          process: jest.fn(),
+        };
+
+        gridOptions = {
+          enablePagination: true,
+          backendServiceApi,
+          presets: { pagination: { pageNumber: 2 } },
+          pagination: { pageSizes: [10, 20], pageSize: 10 }
+        } as unknown as GridOption;
+        component.initialization(slickEventHandler);
+        jest.spyOn(component.slickGrid!, 'getOptions').mockReturnValue(gridOptions);
+        component.gridOptions = gridOptions;
+        component.initialization(slickEventHandler);
+        component.refreshGridData([]);
+
+        expect(consoleSpy).toHaveBeenCalledWith('[Angular-Slickgrid] `presets.pagination` is not supported with Infinite Scroll, reverting to first page.');
+      });
+
+      it('should execute onScrollEnd callback when SlickGrid onScroll is triggered with a "mousewheel" event', () => {
+        jest.spyOn(component.paginationService, 'goToNextPage').mockResolvedValueOnce(false);
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        jest.spyOn(paginationServiceStub, 'totalItems', 'get').mockReturnValue(100);
+        const mouseEvent = addVanillaEventPropagation(new Event('scroll'));
+        mockGrid.onScroll.notify({ scrollHeight: 10, scrollTop: 10, scrollLeft: 15, grid: mockGrid, triggeredBy: 'mousewheel' }, mouseEvent, mockGrid);
+
+        expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(true);
+      });
+
+      it('should execute onScrollEnd callback when SlickGrid onScroll is triggered with a "scroll" event', () => {
+        jest.spyOn(component.paginationService, 'goToNextPage').mockResolvedValueOnce(false);
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        jest.spyOn(paginationServiceStub, 'totalItems', 'get').mockReturnValue(100);
+        const scrollEvent = addVanillaEventPropagation(new Event('scroll'));
+        mockGrid.onScroll.notify({ scrollHeight: 10, scrollTop: 10, scrollLeft: 15, grid: mockGrid, triggeredBy: 'scroll' }, scrollEvent, mockGrid);
+
+        expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(true);
+      });
+
+      it('should NOT execute onScrollEnd callback when SlickGrid onScroll is triggered with an event that is NOT "mousewheel" neither "scroll"', () => {
+        jest.spyOn(component.paginationService, 'goToNextPage').mockResolvedValueOnce(false);
+        component.gridOptions.backendServiceApi!.service.options = { infiniteScroll: true };
+        component.initialization(slickEventHandler);
+        jest.spyOn(paginationServiceStub, 'totalItems', 'get').mockReturnValue(100);
+        const clickEvent = addVanillaEventPropagation(new Event('click'));
+        mockGrid.onScroll.notify({ scrollHeight: 10, scrollTop: 10, scrollLeft: 15, grid: mockGrid, triggeredBy: 'scroll' }, clickEvent, mockGrid);
+
+        expect(component.backendUtilityService.setInfiniteScrollBottomHit).toHaveBeenCalledWith(true);
       });
     });
 

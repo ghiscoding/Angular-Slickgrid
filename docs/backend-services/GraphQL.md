@@ -6,6 +6,7 @@
   - [Pagination](graphql/GraphQL-Pagination.md)
   - [Sorting](graphql/GraphQL-Sorting.md)
   - [Filtering](graphql/GraphQL-Filtering.md)
+- [Infinite Scroll](../grid-functionalities/infinite-scroll.md#infinite-scroll-with-backend-services)
 
 ### Description
 GraphQL Backend Service (for Pagination purposes) to get data from a backend server with the help of GraphQL.
@@ -14,7 +15,7 @@ GraphQL Backend Service (for Pagination purposes) to get data from a backend ser
 [Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/gridgraphql) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-graphql.component.ts)
 
 ### Note
-You can use it when you need to support **Pagination** (though you could disable Pagination if you wish), that is when your dataset is rather large and has typically more than 5k rows, with a GraphQL endpoint. If your dataset is small (less than 5k rows), then you might be better off with [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic) with the "dataset.bind" property. SlickGrid can easily handle million of rows using a DataView object, but personally when the dataset is known to be large, I usually use a backend service (OData or GraphQL) and when it's small I go with a [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic). 
+You can use it when you need to support **Pagination** (though you could disable Pagination if you wish), that is when your dataset is rather large and has typically more than 5k rows, with a GraphQL endpoint. If your dataset is small (less than 5k rows), then you might be better off with [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic) with the "dataset.bind" property. SlickGrid can easily handle million of rows using a DataView object, but personally when the dataset is known to be large, I usually use a backend service (OData or GraphQL) and when it's small I go with a [regular grid](https://ghiscoding.github.io/Angular-Slickgrid/#/basic).
 
 ## Implementation
 To connect a backend service into `Slickgrid-Universal`, you simply need to modify your `gridOptions` and add a declaration of `backendServiceApi`. See below for the signature and an example further down below.
