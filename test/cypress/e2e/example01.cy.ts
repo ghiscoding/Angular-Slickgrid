@@ -123,7 +123,7 @@ describe('Example 1 - Basic Grids', () => {
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
         gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
-        expect(gridUid).to.not.be.null;
+        expect(gridUid).to.not.be(null);
       })
       .then(() => {
         cy.get(`.slick-grid-menu.${gridUid}`)
@@ -207,7 +207,7 @@ describe('Example 1 - Basic Grids', () => {
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
         gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
-        expect(gridUid).to.not.be.null;
+        expect(gridUid).to.not.be(null);
       })
       .then(() => {
         cy.get(`.slick-grid-menu.${gridUid}`)
@@ -255,7 +255,7 @@ describe('Example 1 - Basic Grids', () => {
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
         gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
-        expect(gridUid).to.not.be.null;
+        expect(gridUid).to.not.be(null);
       })
       .then(() => {
         cy.get(`.slick-grid-menu.${gridUid}`)
@@ -385,7 +385,7 @@ describe('Example 1 - Basic Grids', () => {
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
         gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
-        expect(gridUid).to.not.be.null;
+        expect(gridUid).to.not.be(null);
       })
       .then(() => {
         cy.get(`.slick-grid-menu.${gridUid}`)
@@ -421,7 +421,7 @@ describe('Example 1 - Basic Grids', () => {
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
         gridUid = classes.find((className: string) => /slickgrid_.*/.test(className));
-        expect(gridUid).to.not.be.null;
+        expect(gridUid).to.not.be(null);
       })
       .then(() => {
         cy.get(`.slick-grid-menu.${gridUid}`)

@@ -1257,7 +1257,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.totalItems = Array.isArray(dataset) ? dataset.length : 0;
       if (this._paginationOptions && this.dataView?.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo();
-        if ('totalRows' in slickPagingInfo && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
+        if (slickPagingInfo && 'totalRows' in slickPagingInfo && this._paginationOptions.totalItems !== slickPagingInfo.totalRows) {
           this.totalItems = slickPagingInfo.totalRows || 0;
         }
       }
