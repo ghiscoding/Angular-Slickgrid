@@ -38,6 +38,7 @@ import { GridGroupingComponent } from './examples/grid-grouping.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridInfiniteGraphqlComponent } from './examples/grid-infinite-graphql.component';
+import { GridInfiniteJsonComponent } from './examples/grid-infinite-json.component';
 import { GridInfiniteOdataComponent } from './examples/grid-infinite-odata.component';
 import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
@@ -121,6 +122,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridHeaderFooterComponent,
     GridHeaderMenuComponent,
     GridInfiniteGraphqlComponent,
+    GridInfiniteJsonComponent,
     GridInfiniteOdataComponent,
     GridLocalizationComponent,
     GridMenuComponent,
