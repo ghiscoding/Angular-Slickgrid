@@ -1,4 +1,4 @@
-import { type Column, DelimiterType, EventNamingStyle, FileType, Filters, GridOption as GridOptionUniversal, OperatorType, type TreeDataOption } from '@slickgrid-universal/common';
+import { type Column, DelimiterType, EventNamingStyle, FileType, Filters, type GridOption as GridOptionUniversal, OperatorType, type TreeDataOption } from '@slickgrid-universal/common';
 import type { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */

@@ -88,7 +88,7 @@ export class SwtCommonGridPaginationComponent implements OnInit {
     this._gridPaginationOptions = gridPaginationOptions;
 
     // The backendServiceApi is itself the SwtCommonGridComponent (This is a hack)
-    this.commonGrid = <SwtCommonGridComponent>this.gridPaginationOptions!.backendServiceApi!.service;
+    this.commonGrid = this.gridPaginationOptions!.backendServiceApi!.service as SwtCommonGridComponent;
   }
   get gridPaginationOptions(): GridOption {
     return this._gridPaginationOptions;

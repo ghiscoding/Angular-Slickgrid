@@ -1,10 +1,8 @@
-import fetchJsonp from 'fetch-jsonp';
+// import fetchJsonp from 'fetch-jsonp';
 // import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularGridInstance, Column, Formatter, GridOption, SlickEventHandler } from './../modules/angular-slickgrid';
-
-declare const Slick: any;
 
 const brandFormatter: Formatter = (_row, _cell, _value, _columnDef, dataContext) => {
   return dataContext && dataContext.brand && dataContext.brand.name || '';
@@ -109,11 +107,11 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
 
   hookAllLoaderEvents() {
     if (this._eventHandler && this._eventHandler.subscribe && this.loaderDataView && this.loaderDataView.onDataLoading && this.loaderDataView.onDataLoaded) {
-      this._eventHandler.subscribe(this.loaderDataView.onDataLoading, (e: Event, args: any) => {
+      this._eventHandler.subscribe(this.loaderDataView.onDataLoading, (_e: Event, _args: any) => {
         this.loading = true;
       });
 
-      this._eventHandler.subscribe(this.loaderDataView.onDataLoaded, (e: Event, args: any) => {
+      this._eventHandler.subscribe(this.loaderDataView.onDataLoaded, (_e: Event, args: any) => {
         if (args && this.gridObj && this.gridObj.invalidateRow && this.gridObj.updateRowCount && this.gridObj.render) {
           for (let i = args.from; i <= args.to; i++) {
             this.gridObj.invalidateRow(i);
@@ -126,7 +124,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
     }
   }
 
-  onSort(e: Event, args: any) {
+  onSort(_e: Event, args: any) {
     if (this.gridObj && this.gridObj.getViewport && this.loaderDataView && this.loaderDataView.ensureData && this.loaderDataView.setSort) {
       const vp = this.gridObj.getViewport();
       if (args && args.sortCol && args.sortCol.field) {

@@ -366,7 +366,7 @@ export class GridCustomTooltipComponent implements OnInit {
         onOptionSelected: (_e, args) => {
           // change "Completed" property with new option selected from the Cell Menu
           const dataContext = args && args.dataContext;
-          if (dataContext && dataContext.hasOwnProperty('completed')) {
+          if (dataContext && 'completed' in dataContext) {
             dataContext.completed = args.item.option;
             this.angularGrid.gridService.updateItem(dataContext);
           }

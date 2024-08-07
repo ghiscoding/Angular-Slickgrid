@@ -572,7 +572,7 @@ describe('SlickRowDetailView', () => {
 
       it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', (done) => {
         const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
-        (gridOptionsMock.rowDetailView as RowDetailView).process = (item) => of(mockItem);
+        (gridOptionsMock.rowDetailView as RowDetailView).process = () => of(mockItem);
 
         plugin.init(gridStub);
         plugin.onAsyncResponse = new SlickEvent();
@@ -586,7 +586,7 @@ describe('SlickRowDetailView', () => {
 
       it('should define "datasetIdPropertyName" with different "id" and run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', (done) => {
         const mockItem = { rowId: 2, firstName: 'John', lastName: 'Doe' };
-        (gridOptionsMock.rowDetailView as RowDetailView).process = (item) => of(mockItem);
+        (gridOptionsMock.rowDetailView as RowDetailView).process = () => of(mockItem);
         gridOptionsMock.datasetIdPropertyName = 'rowId';
 
         plugin.init(gridStub);

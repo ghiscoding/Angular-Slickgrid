@@ -9,8 +9,8 @@ export class MockSlickEvent<ArgType = any> implements SlickEvent {
     scope = scope || this;
 
     let returnValue: any;
-    for (let i = 0; i < this.handlers.length; i++) {
-      returnValue = this.handlers[i].call(scope, event as SlickEventData, args);
+    for (const handler of this.handlers) {
+      returnValue = handler.call(scope, event as SlickEventData, args);
     }
 
     return returnValue;

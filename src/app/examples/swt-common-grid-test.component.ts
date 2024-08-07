@@ -1,9 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { SwtCommonGridComponent } from './swt-common-grid.component';
@@ -71,17 +66,17 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     this.logger.info('method [ngAfterViewInit] - END');
   }
 
-  filterChanged(event: FilterChangedArgs) {
+  filterChanged(_event: FilterChangedArgs) {
     this.commonGridPag.processing = true;
     this.updateGridData();
   }
 
-  paginationChanged(event: PaginationChangedArgs) {
+  paginationChanged(_event: PaginationChangedArgs) {
     this.commonGridPag.processing = true;
     this.updateGridData();
   }
 
-  sortChanged(event: any) {
+  sortChanged(_event: any) {
     this.commonGridPag.processing = true;
     this.updateGridData();
   }

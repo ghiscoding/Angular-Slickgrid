@@ -1,5 +1,5 @@
 import { Component, ViewContainerRef } from '@angular/core';
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { AngularUtilService } from '..';
 
 const DOM_ELEMENT_ID = 'row-detail123';
@@ -18,8 +18,6 @@ class TestComponent { title = ''; }
 
 describe('AngularUtilService', () => {
   let service: AngularUtilService;
-  let fixture: ComponentFixture<TestPreloadComponent>;
-  let component: TestPreloadComponent;
 
   beforeEach(async () => {
     // define a <div> container to simulate a row detail DOM element
@@ -35,8 +33,6 @@ describe('AngularUtilService', () => {
       ],
       teardown: { destroyAfterEach: false }
     });
-    fixture = TestBed.createComponent(TestPreloadComponent);
-    component = fixture.componentInstance;
     service = TestBed.inject(AngularUtilService);
   });
 

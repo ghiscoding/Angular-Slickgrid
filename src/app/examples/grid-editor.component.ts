@@ -33,13 +33,14 @@ const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
 const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArguments) => {
+const myCustomTitleValidator: EditorValidator = (value: any, _args?: EditorArguments) => {
   // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
+  /*
   const grid = args && args.grid;
   const gridOptions = (grid?.getOptions() ?? {}) as GridOption;
   const translate = gridOptions.i18n;
   const columnEditor = args?.column?.editor;
-
+  */
   if (value === null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
@@ -51,7 +52,7 @@ const myCustomTitleValidator: EditorValidator = (value: any, args?: EditorArgume
 };
 
 // create a custom Formatter to show the Task + value
-const taskFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
+const taskFormatter: Formatter = (_row, _cell, value) => {
   if (value && Array.isArray(value)) {
     const taskValues = value.map((val) => `Task ${val}`);
     const values = taskValues.join(', ');
@@ -677,7 +678,7 @@ export class GridEditorComponent implements OnInit {
 
   undo() {
     const command = this._commandQueue.pop();
-    const item = this.angularGrid.dataView.getItem(command.row);
+    // const item = this.angularGrid.dataView.getItem(command.row);
     if (command && SlickGlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.gridObj.gotoCell(command.row, command.cell, false);

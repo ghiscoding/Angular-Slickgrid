@@ -165,12 +165,12 @@ export class GridAddItemComponent implements OnInit {
 
   addNewItem(insertPosition?: 'top' | 'bottom') {
     const newItem1 = this.createNewItem(1);
-    const newItem2 = this.createNewItem(2);
 
     // single insert
     this.angularGrid.gridService.addItem(newItem1, { position: insertPosition });
 
     // OR multiple inserts
+    // const newItem2 = this.createNewItem(2);
     // this.angularGrid.gridService.addItems([newItem1, newItem2], { position: insertPosition });
   }
 

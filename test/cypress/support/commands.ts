@@ -27,6 +27,7 @@ import 'cypress-real-events';
 import { convertPosition } from './common';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       // triggerHover: (elements: NodeListOf<HTMLElement>) => void;
@@ -39,7 +40,7 @@ declare global {
   }
 }
 
-let LOCAL_STORAGE_MEMORY: any = {};
+const LOCAL_STORAGE_MEMORY: any = {};
 
 Cypress.Commands.add('saveLocalStorage', () => {
   Object.keys(localStorage).forEach(key => {

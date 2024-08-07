@@ -1,14 +1,14 @@
-import { ComponentRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import type { ComponentRef } from '@angular/core';
+import type { Subscription } from 'rxjs';
 import {
   AngularUtilService,
-  Column,
-  ColumnEditor,
-  Editor,
-  EditorValidator,
-  EditorValidationResult,
-  GridOption,
-  SlickGrid,
+  type Column,
+  type ColumnEditor,
+  type Editor,
+  type EditorValidator,
+  type EditorValidationResult,
+  type GridOption,
+  type SlickGrid,
   unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
@@ -90,7 +90,7 @@ export class CustomAngularComponentEditor implements Editor {
 
       // when our model (item object) changes, we'll call a save of the slickgrid editor
       this._subscriptions.push(
-        this.componentRef.instance.onItemChanged.subscribe((item: any) => this.save())
+        this.componentRef.instance.onItemChanged.subscribe((_item: any) => this.save())
       );
     }
   }

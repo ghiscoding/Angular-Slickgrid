@@ -1,12 +1,12 @@
-import { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
+import type { ApplicationRef, ComponentRef, Type, ViewContainerRef } from '@angular/core';
 import type { EventSubscription, OnBeforeRowDetailToggleArgs, OnRowBackToViewportRangeArgs, RxJsFacade, SlickEventData, SlickEventHandler, SlickGrid } from '@slickgrid-universal/common';
 import { addToArrayWhenNotExists, castObservableToPromise, SlickRowSelectionModel, unsubscribeAll } from '@slickgrid-universal/common';
-import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
+import type { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { SlickRowDetailView as UniversalSlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
-import { Observable, Subject } from 'rxjs';
+import { Observable, type Subject } from 'rxjs';
 
-import { GridOption, RowDetailView } from '../models/index';
-import { AngularUtilService } from '../services/angularUtil.service';
+import type { GridOption, RowDetailView } from '../models/index';
+import type { AngularUtilService } from '../services/angularUtil.service';
 
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
 const PRELOAD_CONTAINER_PREFIX = 'container_loading';
@@ -305,13 +305,13 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // wait for the "userProcessFn", once resolved we will save it into the "collection"
       const response: any | any[] = await userProcessFn;
 
-      if (response.hasOwnProperty(this.datasetIdPropName)) {
+      if (this.datasetIdPropName in response) {
         awaitedItemDetail = response; // from Promise
       } else if (response && response instanceof Observable || response instanceof Promise) {
         awaitedItemDetail = await castObservableToPromise(this.rxjs as RxJsFacade, response); // from Angular-http-client
       }
 
-      if (!awaitedItemDetail || !awaitedItemDetail.hasOwnProperty(this.datasetIdPropName)) {
+      if (!awaitedItemDetail || !(this.datasetIdPropName in awaitedItemDetail)) {
         throw new Error(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback
           (a Promise or an HttpClient call returning an Observable) returns an item object that has an "${this.datasetIdPropName}" property`);
       }
@@ -340,7 +340,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     } else {
       // collapsing, so dispose of the View/Component
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item[this.datasetIdPropName]);
-      if (foundViewIndex >= 0 && this._views.hasOwnProperty(foundViewIndex)) {
+      if (foundViewIndex >= 0 && foundViewIndex in this._views) {
         const compRef = this._views[foundViewIndex].componentRef;
         if (compRef) {
           this.appRef.detachView(compRef.hostView);

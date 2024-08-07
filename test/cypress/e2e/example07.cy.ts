@@ -346,7 +346,6 @@ describe('Example 7 - Header Button Plugin', () => {
           cy.wrap($row).children('.slick-cell:nth(2)')
             .each($cell => {
               const numberValue = $cell.text();
-              const htmlValue = $cell.html();
               expect(+numberValue).to.be.greaterThan(0);
             });
         });
