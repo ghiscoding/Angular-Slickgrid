@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TranslateService } from '@ngx-translate/core';
-import { MultipleSelectOption } from 'multiple-select-vanilla';
 import {
   AngularGridInstance,
   Column,
@@ -12,6 +11,7 @@ import {
   GridOption,
   GridStateChange,
   Metrics,
+  type MultipleSelectOption,
   OperatorType,
   type VanillaCalendarOption,
 } from './../modules/angular-slickgrid';

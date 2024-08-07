@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import fetchJsonp from 'fetch-jsonp';
-import { MultipleSelectOption } from 'multiple-select-vanilla';
 
 import {
   AngularGridInstance,
@@ -17,6 +16,7 @@ import {
   Formatters,
   GridOption,
   LongTextEditorOption,
+  type MultipleSelectOption,
   OnEventArgs,
   OperatorType,
   SortComparers,

@@ -2,18 +2,18 @@ import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServi
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { addDay, format as tempoFormat } from '@formkit/tempo';
 import { TranslateService } from '@ngx-translate/core';
-import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { Subscription } from 'rxjs';
 import {
   AngularGridInstance,
-  Column,
-  CursorPageInfo,
+  type Column,
+  type CursorPageInfo,
   FieldType,
   Filters,
   Formatters,
-  GridOption,
-  GridStateChange,
-  Metrics,
+  type GridOption,
+  type GridStateChange,
+  type Metrics,
+  type MultipleSelectOption,
   OperatorType,
   SortDirection,
   unsubscribeAllObservables,

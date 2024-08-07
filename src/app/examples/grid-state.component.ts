@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { format as tempoFormat } from '@formkit/tempo';
 import { TranslateService } from '@ngx-translate/core';
-import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { Subscription } from 'rxjs';
 import {
-  AngularGridInstance,
-  Column,
+  type AngularGridInstance,
+  type Column,
   FieldType,
   Filters,
   Formatters,
-  GridOption,
-  GridState,
-  GridStateChange,
+  type GridOption,
+  type GridState,
+  type GridStateChange,
+  type MultipleSelectOption,
   unsubscribeAllObservables
 } from './../modules/angular-slickgrid';
 

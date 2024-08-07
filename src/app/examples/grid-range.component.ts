@@ -2,20 +2,20 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
-import { MultipleSelectOption } from 'multiple-select-vanilla';
 import { CustomInputFilter } from './custom-inputFilter';
 import {
-  AngularGridInstance,
-  Column,
+  type AngularGridInstance,
+  type Column,
   FieldType,
   Filters,
-  Formatter,
+  type Formatter,
   Formatters,
-  GridOption,
-  GridStateChange,
-  Metrics,
+  type GridOption,
+  type GridStateChange,
+  type Metrics,
+  type MultipleSelectOption,
   OperatorType,
-  SliderRangeOption,
+  type SliderRangeOption,
   unsubscribeAllObservables,
 } from '../modules/angular-slickgrid';
 import { addDay, format } from '@formkit/tempo';
