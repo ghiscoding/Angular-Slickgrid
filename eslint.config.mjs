@@ -20,7 +20,6 @@ export default tseslint.config(
       ...angular.configs.tsRecommended,
     ],
     plugins: {
-      '@typescript-eslint': tseslint.plugin,
       cypress,
       n
     },
