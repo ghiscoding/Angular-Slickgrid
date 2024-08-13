@@ -24,7 +24,6 @@ export class GridInfiniteJsonComponent implements OnInit {
   dataset: any[] = [];
   gridOptions!: GridOption;
   metrics!: Partial<Metrics>;
-  scrollEndCalled = false;
   shouldResetOnSort = false;
 
   ngOnInit(): void {
@@ -69,7 +68,6 @@ export class GridInfiniteJsonComponent implements OnInit {
     const viewportElm = args.grid.getViewportNode();
     if (
       ['mousewheel', 'scroll'].includes(args.triggeredBy || '')
-      && !this.scrollEndCalled
       && viewportElm.scrollTop > 0
       && Math.ceil(viewportElm.offsetHeight + args.scrollTop) >= args.scrollHeight
     ) {
@@ -77,7 +75,6 @@ export class GridInfiniteJsonComponent implements OnInit {
       const startIdx = this.angularGrid.dataView?.getItemCount() || 0;
       const newItems = this.loadData(startIdx, FETCH_SIZE);
       this.angularGrid.dataView?.addItems(newItems);
-      this.scrollEndCalled = false;
     }
   }
 
