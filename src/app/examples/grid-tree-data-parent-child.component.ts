@@ -116,10 +116,10 @@ export class GridTreeDataParentChildComponent implements OnInit {
 
         // you can optionally sort by a different column and/or sort direction
         // this is the recommend approach, unless you are 100% that your original array is already sorted (in most cases it's not)
-        initialSort: {
-          columnId: 'title',
-          direction: 'ASC'
-        },
+        // initialSort: {
+        //   columnId: 'title',
+        //   direction: 'ASC'
+        // },
         // we can also add a custom Formatter just for the title text portion
         titleFormatter: (_row, _cell, value, _def, dataContext) => {
           let prefix = '';
