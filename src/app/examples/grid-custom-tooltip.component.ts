@@ -76,7 +76,7 @@ export class GridCustomTooltipComponent implements OnInit {
           // you will need to provide an `asyncPost` function returning a Promise and also `asyncPostFormatter` formatter to display the result once the Promise resolves
           formatter: () => `<div><span class="mdi mdi-load mdi-spin-1s"></span> loading...</div>`,
           asyncProcess: () => new Promise(resolve => {
-            setTimeout(() => resolve({ ratio: Math.random() * 10 / 10, lifespan: Math.random() * 100 }), this.serverApiDelay);
+            window.setTimeout(() => resolve({ ratio: Math.random() * 10 / 10, lifespan: Math.random() * 100 }), this.serverApiDelay);
           }),
           asyncPostFormatter: this.tooltipTaskAsyncFormatter as Formatter,
 
@@ -180,7 +180,7 @@ export class GridCustomTooltipComponent implements OnInit {
 
           // 2- delay the opening by a simple Promise and `setTimeout`
           asyncProcess: () => new Promise(resolve => {
-            setTimeout(() => resolve({}), this.serverApiDelay); // delayed by half a second
+            window.setTimeout(() => resolve({}), this.serverApiDelay); // delayed by half a second
           }),
           asyncPostFormatter: this.tooltipFormatter.bind(this) as Formatter,
         },
@@ -235,7 +235,7 @@ export class GridCustomTooltipComponent implements OnInit {
 
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
-            setTimeout(() => {
+            window.setTimeout(() => {
               resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
             }, 500);
           }),
@@ -252,7 +252,7 @@ export class GridCustomTooltipComponent implements OnInit {
         filter: {
           // collectionAsync: fetch(URL_SAMPLE_COLLECTION_DATA),
           collectionAsync: new Promise((resolve) => {
-            setTimeout(() => {
+            window.setTimeout(() => {
               resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
             });
           }),

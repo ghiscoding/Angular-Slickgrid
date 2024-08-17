@@ -343,7 +343,7 @@ export class GridInfiniteOdataComponent implements OnInit {
         }
         const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           const backendResult: any = { query };
           backendResult['value'] = updatedData;
           backendResult['@odata.count'] = countTotalItems;

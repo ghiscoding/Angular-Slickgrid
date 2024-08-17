@@ -155,7 +155,7 @@ export class GridFormatterComponent implements OnInit {
       item.completed = !item.completed;
 
       // simulate a backend http call and refresh the grid row after delay
-      setTimeout(() => {
+      window.setTimeout(() => {
         this.angularGrid.gridService.updateItemById(item.id, item, { highlightRow: false });
       }, 250);
     }

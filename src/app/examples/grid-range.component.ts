@@ -238,8 +238,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   }
 
   refreshMetrics(_e: Event, args: any) {
-    if (args && args.current >= 0) {
-      setTimeout(() => {
+    if (args?.current >= 0) {
+      window.setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
           itemCount: args && args.current || 0,

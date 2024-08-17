@@ -101,7 +101,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
   minChangePerCycle = 0;
   maxChangePerCycle = 10;
   refreshRate = 75;
-  timer: any;
+  timer?: number;
 
   ngOnInit(): void {
     this.defineGrid();
@@ -109,7 +109,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
     // mock a dataset
     this.dataset = this.loadData(NB_ROWS);
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.startSimulation();
     }, this.refreshRate);
   }
@@ -310,11 +310,11 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       // but the cell highlight actually does that for us so we can skip it
     }
 
-    this.timer = setTimeout(this.startSimulation.bind(this), this.refreshRate || 0);
+    this.timer = window.setTimeout(this.startSimulation.bind(this), this.refreshRate || 0);
   }
 
   stopSimulation() {
-    clearTimeout(this.timer);
+    window.clearTimeout(this.timer);
   }
 
   findColumnById(columnName: string): Column {
@@ -329,7 +329,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
         this.angularGrid.slickGrid.setCellCssStyles(`highlight_${[column.id]}${row}`, hash);
 
         // remove highlight after x amount of time
-        setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);
+        window.setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);
       }
     }
   }

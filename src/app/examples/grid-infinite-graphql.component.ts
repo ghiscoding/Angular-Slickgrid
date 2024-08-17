@@ -311,7 +311,7 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
           },
         };
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           this.graphqlQuery = this.gridOptions.backendServiceApi!.service.buildQuery();
           resolve(mockedResult);
         }, this.serverWaitDelay);

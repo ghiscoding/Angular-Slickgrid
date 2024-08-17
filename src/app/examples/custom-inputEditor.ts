@@ -58,7 +58,7 @@ export class CustomInputEditor implements Editor {
       this.inputElm.addEventListener('focusout', this.save.bind(this));
     }
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.inputElm.focus();
       this.inputElm.select();
     }, 50);

@@ -75,7 +75,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
   clearGridStateFromLocalStorage() {
     this.angularGrid.gridService.resetGrid(this.columnDefinitions);
     this.angularGrid.paginationService!.changeItemPerPage(DEFAULT_PAGE_SIZE);
-    setTimeout(() => localStorage[LOCAL_STORAGE_KEY] = null);
+    window.setTimeout(() => localStorage[LOCAL_STORAGE_KEY] = null);
   }
 
   /* Define grid Options and Columns */

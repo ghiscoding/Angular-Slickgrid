@@ -393,7 +393,7 @@ export class GridOdataComponent implements OnInit {
         }
         const updatedData = filteredData.slice(firstRow, firstRow + top!);
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           const backendResult: any = { query };
           if (!this.isCountEnabled) {
             backendResult['totalRecordCount'] = countTotalItems;

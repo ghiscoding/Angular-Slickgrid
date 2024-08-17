@@ -500,7 +500,7 @@ export class GridEditorComponent implements OnInit {
     const newRows = this.mockData(1, lastRowIndex);
 
     // wrap into a timer to simulate a backend async call
-    setTimeout(() => {
+    window.setTimeout(() => {
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
       if (requisiteColumnDef) {
         const filterCollectionAsync = requisiteColumnDef.filter!.collectionAsync;
