@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.1...v8.5.2) (2024-08-17)
+
+
+### Bug Fixes
+
+* use setTimeout/setInterval from window object with correct TS type ([1050774](https://github.com/ghiscoding/angular-slickgrid/commit/1050774198e180e66753ce6726ef5ff81a8cf00f))
+
 ## [8.5.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.0...v8.5.1) (2024-08-17)
 
 
