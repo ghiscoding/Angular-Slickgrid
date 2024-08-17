@@ -307,7 +307,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     };
 
     return new Promise(resolve => {
-      setTimeout(() => {
+      window.setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService!.buildQuery();
         if (this.isWithCursor) {
           // When using cursor pagination, the pagination service needs to be updated with the PageInfo data from the latest request
@@ -388,7 +388,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       { columnId: 'name', direction: 'asc' },
       { columnId: 'company', direction: SortDirection.DESC }
     ]);
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.angularGrid.paginationService?.changeItemPerPage(20);
       this.angularGrid.paginationService?.goToPageNumber(2);
     });

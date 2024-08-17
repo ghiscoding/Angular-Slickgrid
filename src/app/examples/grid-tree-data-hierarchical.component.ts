@@ -310,7 +310,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       this.datasetHierarchical = tmpDatasetHierarchical;
 
       // scroll into the position, after insertion cycle, where the item was added
-      setTimeout(() => {
+      window.setTimeout(() => {
         const rowIndex = this.dataViewObj.getRowById(popFolderItem.id);
         this.gridObj.scrollRowIntoView(rowIndex + 3);
       }, 10);

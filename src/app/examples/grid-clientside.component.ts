@@ -271,7 +271,7 @@ export class GridClientSideComponent implements OnInit {
 
   refreshMetrics(e: Event, args: any) {
     if (args && args.current >= 0) {
-      setTimeout(() => {
+      window.setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
           endTime: new Date(),

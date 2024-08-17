@@ -220,7 +220,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
 
     // fill the template on async delay
     return new Promise((resolve) => {
-      setTimeout(() => {
+      window.setTimeout(() => {
         const itemDetail = item;
 
         // let's add some extra properties to our item for a better async simulation

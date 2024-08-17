@@ -19,7 +19,7 @@ import { SwtCommonGridPaginationComponent } from './swt-common-grid-pagination.c
  * @author Saber Chebka, saber.chebka@gmail.com
  */
 
-let timer: any;
+let timer: number | undefined;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
 @Component({
@@ -338,9 +338,9 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
     let timing = 0;
     if (event && (event.type === 'keyup' || event.type === 'keydown')) {
       timing = DEFAULT_FILTER_TYPING_DEBOUNCE;
-      clearTimeout(timer);
+      window.clearTimeout(timer);
     }
-    timer = setTimeout(() => {
+    timer = window.setTimeout(() => {
       this.filteredGridColumns = '';
       for (const column of this.columnDefinitions) {
         if (column.field in args.columnFilters) {

@@ -205,8 +205,8 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
           this.eventPubSubService?.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this)),
-          this.eventPubSubService?.subscribe('onGridMenuClearAllFilters', () => setTimeout(() => this.redrawAllViewComponents())),
-          this.eventPubSubService?.subscribe('onGridMenuClearAllSorting', () => setTimeout(() => this.redrawAllViewComponents())),
+          this.eventPubSubService?.subscribe('onGridMenuClearAllFilters', () => window.setTimeout(() => this.redrawAllViewComponents())),
+          this.eventPubSubService?.subscribe('onGridMenuClearAllSorting', () => window.setTimeout(() => this.redrawAllViewComponents())),
         );
       }
     }
