@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.0...v8.5.1) (2024-08-17)
+
+
+### Bug Fixes
+
+* Tree Data should work without initial sort ([5afdd5b](https://github.com/ghiscoding/angular-slickgrid/commit/5afdd5b65f8f05b7056d2634af25f11ef51d098a))
+
 ## [8.5.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.4.0...v8.5.0) (2024-08-07)
 
 
