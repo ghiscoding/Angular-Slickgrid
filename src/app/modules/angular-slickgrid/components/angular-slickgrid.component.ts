@@ -90,7 +90,6 @@ import { ContainerService } from '../services/container.service';
   providers: [
     // make everything transient (non-singleton)
     AngularUtilService,
-    ApplicationRef,
     TranslaterService,
   ]
 })
