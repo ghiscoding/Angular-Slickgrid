@@ -1001,11 +1001,14 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should create the Row Detail View plugin when "enableRowDetailView" is enabled', () => {
         const initSpy = jest.spyOn(mockSlickRowDetailView, 'init');
         const createSpy = jest.spyOn(mockSlickRowDetailView, 'create');
+        jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ rowDetailView: { pluginName: 'RowDetail' } } as unknown as ExtensionList<any>);
 
         component.gridOptions = { enableRowDetailView: true } as unknown as GridOption;
         component.initialization(slickEventHandler);
 
-        expect(component.registeredResources.length).toBe(4);
+        expect(extensionServiceStub.addExtensionToList).toHaveBeenCalledWith('rowDetailView', { name: 'rowDetailView', instance: mockSlickRowDetailView });
+        expect(component.registeredResources.length).toBe(3);
+        expect(component.extensionService.extensionList.rowDetailView).toBeTruthy();
         expect(createSpy).toHaveBeenCalled();
         expect(initSpy).toHaveBeenCalled();
       });

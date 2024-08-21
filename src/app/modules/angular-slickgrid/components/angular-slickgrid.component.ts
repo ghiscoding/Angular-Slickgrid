@@ -1338,7 +1338,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     return options;
   }
 
-  /** Add a register a new external resource, user could also optional dispose all previous resources before pushing any new resources to the resources array list. */
+  /** Add a register of a new external resource, user could also optional dispose all previous resources before pushing any new resources to the resources array list. */
   registerExternalResources(resources: ExternalResource[], disposePreviousResources = false) {
     if (disposePreviousResources) {
       this.disposeExternalResources();
@@ -1361,7 +1361,6 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (this.gridOptions.enableRowDetailView) {
       this.slickRowDetailView = new SlickRowDetailView(this.angularUtilService, this.appRef, this._eventPubSubService, this.elm.nativeElement, this.rxjs);
       this.slickRowDetailView.create(this.columnDefinitions, this.gridOptions);
-      this._registeredResources.push(this.slickRowDetailView);
       this.extensionService.addExtensionToList(ExtensionName.rowDetailView, { name: ExtensionName.rowDetailView, instance: this.slickRowDetailView });
     }
   }
@@ -1407,6 +1406,12 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     // bind & initialize all Components/Services that were tagged as enabled
     // register all services by executing their init method and providing them with the Grid object
     this.initializeExternalResources(this._registeredResources);
+
+    // initialize RowDetail separately since we already added it to the ExtensionList via `addExtensionToList()` but not in external resources,
+    // because we don't want to dispose the extension/resource more than once (because externalResources/extensionList are both looping through their list to dispose of them)
+    if (this.gridOptions.enableRowDetailView && this.slickRowDetailView) {
+      this.slickRowDetailView.init(this.slickGrid);
+    }
   }
 
   /** Register the RxJS Resource in all necessary services which uses */
