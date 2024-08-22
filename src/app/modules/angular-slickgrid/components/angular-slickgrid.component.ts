@@ -383,7 +383,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   destroy(shouldEmptyDomElementContainer = false) {
     // dispose of all Services
     this.serviceList.forEach((service: any) => {
-      if (service && service.dispose) {
+      if (typeof service?.dispose === 'function') {
         service.dispose();
       }
     });
@@ -464,8 +464,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    * The behavior is to refresh the Dataset & Pagination without requiring the user to create his own PostProcess every time
    */
   createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
-    const backendApi = gridOptions && gridOptions.backendServiceApi;
-    if (backendApi && backendApi.service) {
+    const backendApi = gridOptions?.backendServiceApi;
+    if (backendApi?.service) {
       const backendApiService = backendApi.service;
 
       // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is of that type
@@ -621,7 +621,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
         }
       }
 
-      const datasetLn = this.dataView.getLength() || this._dataset && this._dataset.length || 0;
+      const datasetLn = this.dataView.getLength() || this._dataset?.length || 0;
       if (datasetLn > 0) {
         if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
           this.loadRowSelectionPresetWhenExists();
@@ -718,7 +718,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
-    if (this.gridOptions && this.gridOptions.enableEmptyDataWarningMessage && Array.isArray(dataset)) {
+    if (this.gridOptions?.enableEmptyDataWarningMessage && Array.isArray(dataset)) {
       const finalTotalCount = totalCount || dataset.length;
       this.displayEmptyDataWarning(finalTotalCount < 1);
     }
@@ -892,79 +892,77 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.gridEventService.bindOnCellChange(grid);
       this.gridEventService.bindOnClick(grid);
 
-      if (dataView && grid) {
-        // bind external sorting (backend) when available or default onSort (dataView)
-        if (gridOptions.enableSorting) {
-          // bind external sorting (backend) unless specified to use the local one
-          if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
-            this.sortService.bindBackendOnSort(grid);
-          } else {
-            this.sortService.bindLocalOnSort(grid);
-          }
+      // bind external sorting (backend) when available or default onSort (dataView)
+      if (gridOptions.enableSorting) {
+        // bind external sorting (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+          this.sortService.bindBackendOnSort(grid);
+        } else {
+          this.sortService.bindLocalOnSort(grid);
         }
+      }
 
-        // bind external filter (backend) when available or default onFilter (dataView)
-        if (gridOptions.enableFiltering) {
-          this.filterService.init(grid);
+      // bind external filter (backend) when available or default onFilter (dataView)
+      if (gridOptions.enableFiltering) {
+        this.filterService.init(grid);
 
-          // bind external filter (backend) unless specified to use the local one
-          if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
-            this.filterService.bindBackendOnFilter(grid);
-          } else {
-            this.filterService.bindLocalOnFilter(grid);
-          }
+        // bind external filter (backend) unless specified to use the local one
+        if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+          this.filterService.bindBackendOnFilter(grid);
+        } else {
+          this.filterService.bindLocalOnFilter(grid);
         }
+      }
 
-        // when column are reordered, we need to update the visibleColumn array
-        this._eventHandler.subscribe(grid.onColumnsReordered, (_e, args) => {
-          this.sharedService.hasColumnsReordered = true;
-          this.sharedService.visibleColumns = args.impactedColumns;
-        });
+      // when column are reordered, we need to update the visibleColumn array
+      this._eventHandler.subscribe(grid.onColumnsReordered, (_e, args) => {
+        this.sharedService.hasColumnsReordered = true;
+        this.sharedService.visibleColumns = args.impactedColumns;
+      });
 
-        this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
-          // add/remove dark mode CSS class when enabled
-          if (args.optionsBefore.darkMode !== args.optionsAfter.darkMode && this.gridContainerElement) {
-            this.setDarkMode(args.optionsAfter.darkMode);
-          }
-        });
-
-        // load any presets if any (after dataset is initialized)
-        this.loadColumnPresetsWhenDatasetInitialized();
-        this.loadFilterPresetsWhenDatasetInitialized();
-
-        // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
-        this._eventHandler.subscribe(dataView.onRowCountChanged, () => {
-          grid.invalidate();
-          this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, dataView.getItemCount() || 0);
-        });
-        this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e, args) => {
-          this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, args.itemCount);
-
-          // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
-          if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
-            this.resizerService.resizeColumnsByCellContent(!this.gridOptions?.resizeByContentOnlyOnFirstLoad);
-          }
-        });
-
-        if (gridOptions?.enableFiltering && !gridOptions.enableRowDetailView) {
-          this._eventHandler.subscribe(dataView.onRowsChanged, (_e, args) => {
-            // filtering data with local dataset will not always show correctly unless we call this updateRow/render
-            // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
-            // see commit: https://github.com/ghiscoding/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
-            if (args?.rows && Array.isArray(args.rows)) {
-              args.rows.forEach((row: number) => grid.updateRow(row));
-              grid.render();
-            }
-          });
+      this._eventHandler.subscribe(grid.onSetOptions, (_e, args) => {
+        // add/remove dark mode CSS class when enabled
+        if (args.optionsBefore.darkMode !== args.optionsAfter.darkMode && this.gridContainerElement) {
+          this.setDarkMode(args.optionsAfter.darkMode);
         }
+      });
+
+      // load any presets if any (after dataset is initialized)
+      this.loadColumnPresetsWhenDatasetInitialized();
+      this.loadFilterPresetsWhenDatasetInitialized();
+
+      // When data changes in the DataView, we need to refresh the metrics and/or display a warning if the dataset is empty
+      this._eventHandler.subscribe(dataView.onRowCountChanged, () => {
+        grid.invalidate();
+        this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, dataView.getItemCount() || 0);
+      });
+      this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e, args) => {
+        this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, args.itemCount);
+
+        // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
+        if (args.itemCount > 0 && (this.gridOptions.autosizeColumnsByCellContentOnFirstLoad || this.gridOptions.enableAutoResizeColumnsByCellContent)) {
+          this.resizerService.resizeColumnsByCellContent(!this.gridOptions?.resizeByContentOnlyOnFirstLoad);
+        }
+      });
+
+      if (gridOptions?.enableFiltering && !gridOptions.enableRowDetailView) {
+        this._eventHandler.subscribe(dataView.onRowsChanged, (_e, args) => {
+          // filtering data with local dataset will not always show correctly unless we call this updateRow/render
+          // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
+          // see commit: https://github.com/ghiscoding/aurelia-slickgrid/commit/8c503a4d45fba11cbd8d8cc467fae8d177cc4f60
+          if (Array.isArray(args?.rows)) {
+            args.rows.forEach((row: number) => grid.updateRow(row));
+            grid.render();
+          }
+        });
       }
     }
 
     // did the user add a colspan callback? If so, hook it into the DataView getItemMetadata
-    if (gridOptions && gridOptions.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
+    if (gridOptions?.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
       dataView.getItemMetadata = (rowNumber: number) => {
         let callbackResult: ItemMetadata | null = null;
-        if (gridOptions.colspanCallback && gridOptions.colspanCallback) {
+        if (gridOptions.colspanCallback) {
           callbackResult = gridOptions.colspanCallback(dataView.getItem(rowNumber));
         }
         return callbackResult;
@@ -974,14 +972,14 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   protected bindBackendCallbackFunctions(gridOptions: GridOption) {
     const backendApi = gridOptions.backendServiceApi;
-    const backendApiService = backendApi && backendApi.service;
+    const backendApiService = backendApi?.service;
     const serviceOptions: BackendServiceOption = backendApiService?.options ?? {};
     const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && 'executeProcessCommandOnInit' in serviceOptions) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
     if (backendApiService) {
       // update backend filters (if need be) BEFORE the query runs (via the onInit command a few lines below)
       // if user entered some any "presets", we need to reflect them all in the grid
-      if (gridOptions && gridOptions.presets) {
+      if (gridOptions?.presets) {
         // Filters "presets"
         if (backendApiService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
           backendApiService.updateFilters(gridOptions.presets.filters, true);
@@ -1111,12 +1109,10 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   protected executeAfterDataviewCreated(_grid: SlickGrid, gridOptions: GridOption) {
     // if user entered some Sort "presets", we need to reflect them all in the DOM
-    if (gridOptions.enableSorting) {
-      if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters)) {
-        // when using multi-column sort, we can have multiple but on single sort then only grab the first sort provided
-        const sortColumns = this.gridOptions.multiColumnSort ? gridOptions.presets.sorters : gridOptions.presets.sorters.slice(0, 1);
-        this.sortService.loadGridSorters(sortColumns);
-      }
+    if (gridOptions.enableSorting && Array.isArray(gridOptions.presets?.sorters)) {
+      // when using multi-column sort, we can have multiple but on single sort then only grab the first sort provided
+      const sortColumns = this.gridOptions.multiColumnSort ? gridOptions.presets.sorters : gridOptions.presets.sorters.slice(0, 1);
+      this.sortService.loadGridSorters(sortColumns);
     }
   }
 
@@ -1206,9 +1202,9 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   /** Load any possible Columns Grid Presets */
   protected loadColumnPresetsWhenDatasetInitialized() {
     // if user entered some Columns "presets", we need to reflect them all in the grid
-    if (this.gridOptions.presets && Array.isArray(this.gridOptions.presets.columns) && this.gridOptions.presets.columns.length > 0) {
+    if (Array.isArray(this.gridOptions.presets?.columns) && this.gridOptions.presets.columns.length > 0) {
       const gridPresetColumns: Column[] = this.gridStateService.getAssociatedGridColumns(this.slickGrid, this.gridOptions.presets.columns);
-      if (gridPresetColumns && Array.isArray(gridPresetColumns) && gridPresetColumns.length > 0 && Array.isArray(this._columnDefinitions)) {
+      if (Array.isArray(gridPresetColumns) && gridPresetColumns.length > 0 && Array.isArray(this._columnDefinitions)) {
         // make sure that the dynamic columns are included in presets (1.Row Move, 2. Row Selection, 3. Row Detail)
         if (this.gridOptions.enableRowMoveManager) {
           const rmmColId = this.gridOptions?.rowMoveManager?.columnId ?? '_move';
@@ -1240,7 +1236,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       // if user entered some Filter "presets", we need to reflect them all in the DOM
       // also note that a presets of Tree Data Toggling will also call this method because Tree Data toggling does work with data filtering
       // (collapsing a parent will basically use Filter for hidding (aka collapsing) away the child underneat it)
-      if (this.gridOptions.presets && (Array.isArray(this.gridOptions.presets.filters) || Array.isArray(this.gridOptions.presets?.treeData?.toggledItems))) {
+      if ((Array.isArray(this.gridOptions.presets?.filters) || Array.isArray(this.gridOptions.presets?.treeData?.toggledItems))) {
         this.filterService.populateColumnFilterSearchTermPresets(this.gridOptions.presets?.filters || []);
       }
     }

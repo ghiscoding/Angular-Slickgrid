@@ -31,9 +31,8 @@ const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
  * @param {*} grid - slickgrid grid object
  * @returns {boolean} isEditable
  */
-function checkItemIsEditable(dataContext: any,
-  columnDef: Column, grid: SlickGrid) {
-  const gridOptions = grid && grid.getOptions && grid.getOptions();
+function checkItemIsEditable(dataContext: any, columnDef: Column, grid: SlickGrid) {
+  const gridOptions = grid.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;
   let isEditable = !!(isGridEditable && hasEditor);
@@ -49,7 +48,7 @@ function checkItemIsEditable(dataContext: any,
 }
 
 const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, _dataContext, grid) => {
-  const gridOptions = grid && grid.getOptions && grid.getOptions();
+  const gridOptions = grid.getOptions();
   const isEditableLine = gridOptions.editable && columnDef.editor;
   value = (value === null || value === undefined) ? '' : value;
   return isEditableLine ? { text: value, addClasses: 'editable-field', toolTip: 'Click to Edit' } : value;

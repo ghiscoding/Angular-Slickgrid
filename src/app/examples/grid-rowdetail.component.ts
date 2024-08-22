@@ -203,7 +203,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
   }
 
   closeAllRowDetail() {
-    if (this.angularGrid && this.angularGrid.extensionService) {
+    if (this.angularGrid?.extensionService) {
       this.rowDetailInstance.collapseAll();
     }
   }
