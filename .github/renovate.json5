@@ -30,7 +30,7 @@
       allowedVersions: '<6.0.0',
     },
   ],
-  schedule: ['every 2 weeks on friday'],
+  schedule: ['on friday'],
   ignoreDeps: [
     // ignore TypeScript since it has to follow Angular recommended version
     'typescript'
