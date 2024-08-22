@@ -247,7 +247,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
   }
 
   toggleGridMenu(e: MouseEvent) {
-    if (this.angularGrid && this.angularGrid.extensionService) {
+    if (this.angularGrid?.extensionService) {
       const gridMenuInstance = this.angularGrid.extensionService.getExtensionInstanceByName(ExtensionName.gridMenu);
       // open the external button Grid Menu, you can also optionally pass Grid Menu options as 2nd argument
       // for example we want to align our external button on the right without affecting the menu within the grid which will stay aligned on the left

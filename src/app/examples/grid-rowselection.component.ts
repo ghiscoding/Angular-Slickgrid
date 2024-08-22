@@ -49,12 +49,12 @@ export class GridRowSelectionComponent implements OnInit {
 
   angularGridReady1(angularGrid: AngularGridInstance) {
     this.angularGrid1 = angularGrid;
-    this.gridObj1 = angularGrid && angularGrid.slickGrid || {};
+    this.gridObj1 = angularGrid?.slickGrid || {};
   }
 
   angularGridReady2(angularGrid: AngularGridInstance) {
     this.angularGrid2 = angularGrid;
-    this.gridObj2 = angularGrid && angularGrid.slickGrid || {};
+    this.gridObj2 = angularGrid?.slickGrid || {};
   }
 
   prepareGrid() {
