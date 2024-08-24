@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.2...v8.6.0) (2024-08-24)
+
+
+### Features
+
+* migrate back to Vanilla-Calendar-Pro ([e51eb06](https://github.com/ghiscoding/angular-slickgrid/commit/e51eb067bc379ade555cab8a67e3c2d9f4a12652))
+* new Drag to Recycle Bin demo ([93750d8](https://github.com/ghiscoding/angular-slickgrid/commit/93750d82afb485367332450e4767f63b3d951b36))
+
+
+### Bug Fixes
+
+* NG0406: This instance of the `ApplicationRef` has already been destroyed ([c73fac5](https://github.com/ghiscoding/angular-slickgrid/commit/c73fac59c6cd9901c75c714e1736c54d605e1caa))
+* register RowDetail and dispose of it only once ([73485ba](https://github.com/ghiscoding/angular-slickgrid/commit/73485bab8a831de46602e822a655fe8e2807be8f))
+
 ## [8.5.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.1...v8.5.2) (2024-08-17)
 
 
