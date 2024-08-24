@@ -10,6 +10,7 @@ import { GridCompositeEditorComponent } from './examples/grid-composite-editor.c
 import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
 import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
+import { GridDragRecycleComponent } from './examples/grid-drag-recycle.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFooterTotalsComponent } from './examples/grid-footer-totals.component';
 import { GridExcelFormulaComponent } from './examples/grid-excel-formula.component';
@@ -55,6 +56,7 @@ const routes: Routes = [
   { path: 'composite-editor', component: GridCompositeEditorComponent },
   { path: 'context', component: GridContextMenuComponent },
   { path: 'custom-tooltip', component: GridCustomTooltipComponent },
+  { path: 'drag-recycle', component: GridDragRecycleComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'excel-formula', component: GridExcelFormulaComponent },
   { path: 'footer-totals', component: GridFooterTotalsComponent },

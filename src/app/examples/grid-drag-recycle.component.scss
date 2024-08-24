@@ -1,0 +1,42 @@
+.drag-message {
+  position: absolute;
+  display: inline-block;
+  padding: 4px 10px;
+  background: #e0e0e0;
+  border: 1px solid gray;
+  z-index: 99999;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px silver;
+}
+
+.grid-header {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  font-weight: bold;
+  height: 35px;
+  padding-left: 8px;
+  width: 100%;
+}
+
+.recycle-bin {
+  background: transparent;
+  cursor: default;
+  width: 120px;
+  border: 2px solid #e4e4e4;
+  background: beige;
+  padding: 4px;
+  font-size: 12pt;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  border-radius: 10px;
+
+  &.drag-dropzone {
+    border: 2px dashed pink;
+  }
+  &.drag-hover {
+    background: pink;
+    cursor: crosshair;
+  }
+}
