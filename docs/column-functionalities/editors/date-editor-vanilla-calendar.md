@@ -5,9 +5,7 @@
 - See the [Editors - Wiki](../Editors.md) for more general info about Editors (validators, event handlers, ...)
 
 ### Information
-The Date Editor is provided through an external library named [Vanilla-Calendar-Picker](https://github.com/ghiscoding/vanilla-calendar-picker) (a fork of [Vanilla-Calendar-Pro](https://vanilla-calendar.pro)) and all options from that library can be added to your `editorOptions` (see below), so in order to add things like minimum date, disabling dates, ... just review all the [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/docs/reference/additionally/settings) and then add them into `editorOptions`. We use [Tempo](https://tempo.formkit.com/) to parse and format Dates to the chosen format (when `type`, `outputType` and/or `saveType` are provided in your column definition)
-
-We use an external lib named [Vanilla-Calendar](https://vanilla-calendar.pro/), however please note that since there were some features missing, I forked the project as [vanilla-calendar-picker](https://github.com/ghiscoding/vanilla-calendar-picker) with the hope that all features will eventually be merged to the original repo (if and what that happens, it will be entirely transparent to the user).
+The Date Editor is provided through an external library named [Vanilla-Calendar-Pro](https://vanilla-calendar.pro) and all options from that library can be added to your `editorOptions` (see below), so in order to add things like minimum date, disabling dates, ... just review all the [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/docs/reference/additionally/settings) and then add them into `editorOptions`. We use [Tempo](https://tempo.formkit.com/) to parse and format Dates to the chosen format (when `type`, `outputType` and/or `saveType` are provided in your column definition)
 
 > **Note** Also just so you know, `editorOptions` is used by all other editors as well to expose external library like Autocompleter, Multiple-Select, etc...
 
