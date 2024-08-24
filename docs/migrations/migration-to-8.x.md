@@ -1,7 +1,7 @@
 ## Version 8 - Better UI and Dark Mode with Pure CSS SVG icons ✨
 This new release brings a lot of changes oriented towards better UI/UX, our SVG icons are now pure CSS and can be colorized like any other text via the native CSS `color` property (which helps a lot to improve the Dark Mode Theme).
 
-Another noticeable UI change is the migration from [Flatpickr](https://flatpickr.js.org/) to [Vanilla-Calendar-Picker](https://github.com/ghiscoding/vanilla-calendar-picker) (which is a fork of [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/) and we'll hopefully drop the fork in the near future if possible), there are multiple reasons to migrate our date picker to another library as shown below. Another change that is mostly internal but is also indirectly connected to the date picker is the migration from MomentJS to [Tempo](https://tempo.formkit.com/) which is modern and is packaged as ESM which is great for Tree Shaking.
+Another noticeable UI change is the migration from [Flatpickr](https://flatpickr.js.org/) to [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/), there are multiple reasons to migrate our date picker to another library as shown below. Another change that is mostly internal but is also indirectly connected to the date picker is the migration from MomentJS to [Tempo](https://tempo.formkit.com/) which is modern and is packaged as ESM which is great for Tree Shaking.
 
 ##### Flatpickr cons:
   - barely supported (lots of opened PR but nothing merged for the past 2 years)
@@ -199,7 +199,7 @@ prepareGrid() {
 ```
 
 ### Date Editor/Filter
-Since we migrated from Flatpicker to Vanilla-Calendar, this requires some changes on your side because the setting option names are different. Same changes will be required for both the Filter and the Editor.
+Since we migrated from Flatpicker to Vanilla-Calendar-Pro, this requires some changes on your side because the setting option names are different. Same changes will be required for both the Filter and the Editor.
 
 The biggest change that you will most probably have to update is the min/max date setting when using the `'today'` shortcut as shown below:
 
@@ -219,7 +219,7 @@ prepareGrid() {
 }
 ```
 
-> **Note** the `'today'` shortcut currently only exist in `Vanilla-Calendar-Picker` fork (a PR has also been opened on the original lib), however the rest of the settings should be the same, visit `Vanilla-Calendar-Pro` [settings](https://vanilla-calendar.pro/docs/reference/additionally/settings) website for all other options. The hope is to hopefully drop the fork whenever the original project receives all missing features.
+> **Note** visit `Vanilla-Calendar-Pro` [settings](https://vanilla-calendar.pro/docs/reference/additionally/settings) website for all other options.
 
 > **Note** to keep docs available for older as well as newer versions, I renamed the old one doc as [Date-Picker (flatpickr)](https://ghiscoding.gitbook.io/slickgrid-universal/column-functionalities/editors/date-editor-flatpickr) and created a new one named [Date-Picker (vanilla-calendar)](https://ghiscoding.gitbook.io/slickgrid-universal/column-functionalities/editors/date-editor-vanilla-calendar).
 

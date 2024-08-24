@@ -400,8 +400,10 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
   });
 
   it('should open Date picker and expect date range between 01-Jan to 15-Feb', () => {
-    cy.get('.search-filter.filter-finish.filled')
-      .click();
+    cy.get('.search-filter.filter-finish.filled input')
+      .click({ force: true });
+
+    cy.get('.vanilla-calendar:visible');
 
     cy.get('.vanilla-calendar-column:nth(0) .vanilla-calendar-month')
       .should('have.text', 'January');
