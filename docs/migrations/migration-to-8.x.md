@@ -18,8 +18,7 @@ Another noticeable UI change is the migration from [Flatpickr](https://flatpickr
     - build size is slightly larger but its UI/UX is awesome (especially when changing month/year)
     - settings are named differently and are not using flat config (complex object settings) and requires code change
       - for example Flatpickr `minDate: 'today'` is instead `range: { min: 'today' }` in VC
-    - some settings were missing, like the `'today'` shortcut which is why I forked the VC project
-      - I did open a few PRs on the main project, so the hope is to drop the fork in the future while being a totally transparent change to you when it happens.
+    - some settings were missing, like the `'today'` shortcut, so I also contributed back to that project.
 
 To summarize, the goal of this new release was mainly to improve UI/UX (mostly for Dark Mode) and also to make it fully ESM ready. Also noteworthy, the project is smaller in size (~100Kb smaller) compared to what it was in v2.x (that was when the user had to install jQuery/jQueryUI separately). So, considering that we're no longer requiring the install of jQuery/jQueryUI, and also considering that these 2 dependencies had a total of well over 200kb. We can safely assume that our project build size is in fact a lot smaller than it was 2 years ago, that is really nice to know considering that we kept adding features (like Dark Mode and other features) while still decreasing its size over the years :)
 
