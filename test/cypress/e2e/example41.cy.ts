@@ -1,10 +1,10 @@
-describe('Example 41 - Row Reordering & Drag to Recycle Bin', () => {
+describe('Example 41 - Drag & Drop', () => {
   const GRID_ROW_HEIGHT = 33;
   const titles = ['', 'Name', 'Complete'];
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}/drag-recycle`);
-    cy.get('h2').should('contain', 'Example 41: Row Reordering & Drag to Recycle Bin');
+    cy.get('h2').should('contain', 'Example 41: Drag & Drop');
   });
 
   it('should have exact Column Titles in the grid', () => {
