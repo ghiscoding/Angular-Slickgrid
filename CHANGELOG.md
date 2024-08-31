@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.0...v8.6.1) (2024-08-31)
+
+
+### Bug Fixes
+
+* unflattening tree->flat array multiple times ([7740bd4](https://github.com/ghiscoding/angular-slickgrid/commit/7740bd4e74b9016507e909897f6c52745efdc2d5))
+
 ## [8.6.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.5.2...v8.6.0) (2024-08-24)
 
 
