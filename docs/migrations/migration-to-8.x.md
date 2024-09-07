@@ -1,12 +1,12 @@
 ## Version 8 - Better UI and Dark Mode with Pure CSS SVG icons ✨
 This new release brings a lot of changes oriented towards better UI/UX, our SVG icons are now pure CSS and can be colorized like any other text via the native CSS `color` property (which helps a lot to improve the Dark Mode Theme).
 
-Another noticeable UI change is the migration from [Flatpickr](https://flatpickr.js.org/) to [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/), there are multiple reasons to migrate our date picker to another library as shown below. Another change that is mostly internal but is also indirectly connected to the date picker is the migration from MomentJS to [Tempo](https://tempo.formkit.com/) which is modern and is packaged as ESM which is great for Tree Shaking.
+Another noticeable UI change is the migration from [Flatpickr](https://flatpickr.js.org/) to [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/), there are multiple reasons to migrate our date picker to another library as described below. Another change that is mostly internal but is also indirectly connected to the date picker is the migration from MomentJS to [Tempo](https://tempo.formkit.com/) which is modern and is packaged as ESM which is great for Tree Shaking.
 
 ##### Flatpickr cons:
-  - barely supported (lots of opened PR but nothing merged for the past 2 years)
-  - not fully ESM ready (it's only partially ESM, for example it is detected as CJS in Angular-Slickgrid and requires an exception in `allowedCommonJsDependencies`)
-  - styling could be a bit more modern (the use of native select/input to change year/month/time is a bit outdated and basic)
+  - barely supported (lots of opened PRs but nothing merged for the past 2 years)
+  - not fully ESM ready (it's only partially ESM, for example it was detected as CJS in Angular-Slickgrid and required an exception in `allowedCommonJsDependencies`)
+  - styling could be a bit more modern (the use of native select/input to change year/month/time is a little outdated)
   - date range selection is not very user friendly (UX)
 
 ##### Vanilla-Calendar (VC)
@@ -15,9 +15,9 @@ Another noticeable UI change is the migration from [Flatpickr](https://flatpickr
     - modern styling and also includes Dark Mode theme
     - date range selection is a lot easier by displaying 2 months at a time in the picker
   - cons:
-    - build size is slightly larger but its UI/UX is awesome (especially when changing month/year)
-    - settings are named differently and are not using flat config (complex object settings) and requires code change
-      - for example Flatpickr `minDate: 'today'` is instead `range: { min: 'today' }` in VC
+    - build size is slightly larger but its UI/UX is just awesome (especially when changing month/year)
+    - settings are a bit different and are not using flat config (complex object settings) and requires code change
+      - for example Flatpickr `minDate: 'today'` becomes `range: { min: 'today' }` in VC
     - some settings were missing, like the `'today'` shortcut, so I also contributed back to that project.
 
 To summarize, the goal of this new release was mainly to improve UI/UX (mostly for Dark Mode) and also to make it fully ESM ready. Also noteworthy, the project is smaller in size (~100Kb smaller) compared to what it was in v2.x (that was when the user had to install jQuery/jQueryUI separately). So, considering that we're no longer requiring the install of jQuery/jQueryUI, and also considering that these 2 dependencies had a total of well over 200kb. We can safely assume that our project build size is in fact a lot smaller than it was 2 years ago, that is really nice to know considering that we kept adding features (like Dark Mode and other features) while still decreasing its size over the years :)
@@ -30,7 +30,7 @@ With this release, and after 7 years of development as a single developer (mysel
   - Node v18.0+
   - Bootstrap v5.0+ (or any other UI framework)
   - SASS v1.35+ (`dart-sass`)
-  - migrated from Flatpickr to Vanilla-Calendar (visit [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/) for demos and docs)
+  - migrated from Flatpickr to Vanilla-Calendar-Pro (visit [Vanilla-Calendar-Pro](https://vanilla-calendar.pro/) for demos and docs)
   - migrated from MomentJS to [Tempo](https://tempo.formkit.com/) (by the FormKit
 team)
 
@@ -78,7 +78,7 @@ or move the class to the parent container and have both the icon & the text `inh
 ```
 
 #### SASS variables
-A lot of SASS variables were changed, we recommend that you take a look at the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) file to compare them with your SASS overrides and fix any SASS build issues. For example a lot of the ms-select variables and all Flatpickr related variables were deleted (note that Vanilla-Calendar doesn't actually have any variables). Also a lot of the icon related variables were renamed and updated (icons now all have the suffix `-icon-svg-path` for the SVG vector path, you can easily change them with SASS).
+A lot of SASS variables got changed, we recommend that you take a look at the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) file to compare them with your SASS overrides and fix any SASS build issues. For example a lot of the ms-select variables and all Flatpickr related variables were deleted (note that Vanilla-Calendar doesn't actually have any variables). Also a lot of the icon related variables were renamed and updated (all icons now have the suffix `-icon-svg-path` for the SVG vector path, you can easily change them with SASS).
 
 > **Note** if you want to create your own SVGs icons in pure CSS, you could use the `generateSvgStyle()` SASS function from Slickgrid-Universal [`svg-utilities.scss`](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/svg-utilities.scss) (take a look at the [`slickgrid-icons.scss`](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/slickgrid-icons.scss) for some usage)
 
