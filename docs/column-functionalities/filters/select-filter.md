@@ -465,7 +465,7 @@ this.columnDefinitions = [
 ```
 
 ### Collection Async Load
-You can also load the collection asynchronously, but for that you will have to use the `collectionAsync` property, which expect a Promise to be passed (it actually accepts 3 types: `HttpClient`, `FetchClient` or regular `Promise`).
+You can also load the collection asynchronously, but for that you will have to use the `collectionAsync` property, which expect either a Promise or an Observable to be provided.
 
 #### Load the collection through an Http call
 
