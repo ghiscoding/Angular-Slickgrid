@@ -23,10 +23,6 @@
       "updateTypes": ["major"],
       "enabled": false
     },
-    {
-      packageNames: ['jest-preset-angular'],
-      allowedVersions: '14.2.2',
-    },
 
     // rimraf new major releases dropped support for Node 18, we'll have to wait our next major to upgrade them
     {
