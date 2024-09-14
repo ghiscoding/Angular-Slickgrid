@@ -253,6 +253,7 @@ const mockGrid = {
   getContainerNode: jest.fn(),
   getGridPosition: jest.fn(),
   getOptions: jest.fn(),
+  getRenderedRange: jest.fn(),
   getSelectionModel: jest.fn(),
   getScrollbarDimensions: jest.fn(),
   updateRow: jest.fn(),
@@ -1788,6 +1789,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should update each row and re-render the grid when filtering and DataView "onRowsChanged" event is triggered', () => {
         const renderSpy = jest.spyOn(mockGrid, 'render');
         const updateRowSpy = jest.spyOn(mockGrid, 'updateRow');
+        jest.spyOn(mockGrid, 'getRenderedRange').mockReturnValue({ bottom: 10, top: 0, leftPx: 0, rightPx: 890 });
 
         component.gridOptions = { enableFiltering: true };
         component.initialization(slickEventHandler);
