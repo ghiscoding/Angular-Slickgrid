@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.2...v8.7.0) (2024-09-14)
+
 ## [8.6.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.1...v8.6.2) (2024-09-14)
 
 
