@@ -315,11 +315,11 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     this.clearGrouping();
   }
 
-  clearGrouping() {
-    if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
-      this.draggableGroupingPlugin.clearDroppedGroups();
+  clearGrouping(invalidateRows = true) {
+    this.draggableGroupingPlugin?.clearDroppedGroups();
+    if (invalidateRows) {
+      this.gridObj?.invalidate(); // invalidate all rows and re-render
     }
-    this.gridObj.invalidate(); // invalidate all rows and re-render
   }
 
   clearGroupingSelects() {
@@ -349,31 +349,27 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     });
   }
 
-  groupByDuration() {
-    this.clearGrouping();
-    if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
+  groupByDurationOrderByCount(sortedByCount = false) {
+    this.durationOrderByCount = sortedByCount;
+    this.clearGrouping(false);
+
+    if (this.draggableGroupingPlugin?.setDroppedGroups) {
       this.showPreHeader();
       this.draggableGroupingPlugin.setDroppedGroups('duration');
-      this.gridObj.invalidate(); // invalidate all rows and re-render
+
+      // you need to manually add the sort icon(s) in UI
+      const sortColumns = sortedByCount ? [] : [{ columnId: 'duration', sortAsc: true }];
+      this.gridObj?.setSortColumns(sortColumns);
+      this.gridObj?.invalidate(); // invalidate all rows and re-render
     }
   }
 
-  groupByDurationOrderByCount(sortedByCount = false) {
-    this.durationOrderByCount = sortedByCount;
-    this.clearGrouping();
-    this.groupByDuration();
-
-    // you need to manually add the sort icon(s) in UI
-    const sortColumns = sortedByCount ? [] : [{ columnId: 'duration', sortAsc: true }];
-    this.angularGrid.filterService.setSortColumnIcons(sortColumns);
-  }
-
   groupByDurationEffortDriven() {
-    this.clearGrouping();
-    if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
+    this.clearGrouping(false);
+    if (this.draggableGroupingPlugin?.setDroppedGroups) {
       this.showPreHeader();
       this.draggableGroupingPlugin.setDroppedGroups(['duration', 'effortDriven']);
-      this.gridObj.invalidate(); // invalidate all rows and re-render
+      this.gridObj?.invalidate(); // invalidate all rows and re-render
     }
   }
 
