@@ -132,8 +132,10 @@
   },
   "resolutions": {
     "caniuse-lite": "1.0.30001660",
+    "express": "^4.20.0",
     "semver": "^7.6.3",
     "string-width": "4.2.3",
-    "wrap-ansi": "7.0.0"
+    "wrap-ansi": "7.0.0",
+    "ws": "^8.18.0"
   }
 }
