@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.6.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.1...v8.6.2) (2024-09-14)
+
+
+### Performance Improvements
+
+* don't invalidate grid rows more than once ([c0d4fbe](https://github.com/ghiscoding/angular-slickgrid/commit/c0d4fbe999a788faf865c1d9a4467614d32474fe))
+* upgrade Slickgrid-Universal with perf improvements ([5d60da1](https://github.com/ghiscoding/angular-slickgrid/commit/5d60da1fb603cd723af680fd19a0bb5f8e5c265a))
+
 ## [8.6.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.0...v8.6.1) (2024-08-31)
 
 
