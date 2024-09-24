@@ -13,6 +13,7 @@
    - [Custom Validator](#custom-validator)
 - [Disabling specific cell Edit](#disabling-specific-cell-edit)
 - [Editors on Mobile Phone](#editors-on-mobile-phone)
+- [Dynamically Change Column Editor](#dynamically-change-column-editor)
 
 ## Description
 `Slickgrid-Universal` ships with a few default inline editors (checkbox, dateEditor, float, integer, text, longText).
@@ -581,3 +582,23 @@ onBeforeEditCell($event) {
 
 ## Turning individual rows into edit mode
 Using the [Row Based Editing Plugin](../grid-functionalities/Row-based-edit.md) you can let the user toggle either one or multiple rows into edit mode, keep track of cell changes and either discard or save them on an individual basis using a custom `onBeforeRowUpdated` hook.
+
+## Dynamically change Column Editor
+
+You can dynamically change a column editor by taking advantage of the `onBeforeEditCell` event and change the editor just before the cell editor opens. However please note that the library keeps 2 references and you need to update both references as shown below. 
+
+With the code sample shown below, we are using an input checkbox to toggle the Editor between `Editors.longText` to `Editors.text` and vice/versa
+
+```ts
+changeToInputTextEditor(checked: boolean) {
+    this.isInputTextEditor = checked;
+}
+
+handleOnBeforeEditCell(args: CustomEvent<OnBeforeEditCellEventArgs>) {
+  const args = event?.detail?.args;
+  const { grid, column } = args;
+  column.editor.model = this.isInputTextEditor ? Editors.text : Editors.longText;
+  column.editorClass = column.editor.model;
+  return true;
+}
+```
