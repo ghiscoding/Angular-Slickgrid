@@ -224,4 +224,4 @@ The project supports Content Security Policy (CSP) as long as you provide an opt
 What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and just use the `SlickGrid` and `DataView` objects directly, which are expose from the start through Custom Events. For more info continue reading on [Docs - SlickGrid & DataView objects](../slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
 
 ### 12. Troubleshooting - Build Errors/Warnings
-Visit the [Troubleshooting](getting-started/troubleshooting.md) section for more common errors.
+Visit the [Troubleshooting](./troubleshooting.md) section for more common errors.
