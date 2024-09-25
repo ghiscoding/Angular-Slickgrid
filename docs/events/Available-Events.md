@@ -53,13 +53,13 @@ handleOnHeaderMenuCommand(e) {
 
 ---
 
-#### SlickCellExternalCopyManager (extension)
+#### CellExternalCopyManager (extension)
   - `onCopyCells`
   - `onCopyCancelled`
   - `onPasteCells`
   - `onBeforePasteCell`
 
-#### SlickContextMenu / SlickCellMenu (extension)
+#### Context Menu / Cell Menu (extension)
   - `onContextMenuClearGrouping`
   - `onContextMenuCollapseAllGroups`
   - `onContextMenuExpandAllGroups`
@@ -70,13 +70,19 @@ handleOnHeaderMenuCommand(e) {
     - `onCommand`
     - `onOptionSelected`
 
-#### SlickGridMenu (extension)
+#### Column Picker (extension)
+  - `onColumnPickerColumnsChanged`
+  - **Slick Events**
+    - `onColumnsChanged`
+
+#### Grid Menu (extension)
   - `onGridMenuMenuClose`
   - `onGridMenuBeforeMenuShow`
   - `onGridMenuAfterMenuShow`
   - `onGridMenuClearAllPinning`
   - `onGridMenuClearAllFilters`
   - `onGridMenuClearAllSorting`
+  - `onGridMenuColumnsChanged`
   - `onGridMenuCommand`
   - **Slick Events**
     - `onAfterMenuShow`
@@ -86,10 +92,10 @@ handleOnHeaderMenuCommand(e) {
     - `onMenuClose`
     - `onCommand`
 
-#### SlickHeaderButtons (extension)
+#### Header Buttons (extension)
   - `onHeaderButtonCommand`
 
-#### SlickHeaderMenu (extension)
+#### Header Menu (extension)
   - `onHeaderMenuHideColumns`
   - `onHeaderMenuCommand`
   - `onHeaderMenuColumnResizeByContent`
