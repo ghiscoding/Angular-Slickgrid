@@ -11,7 +11,7 @@ npm install --save angular-slickgrid bootstrap # the last dep is optional
 #### Important note about `ngx-translate`
 #### Now optional
 `ngx-translate` is now optional as of version `2.10.0`, see more info below at [step 5](#5-installsetup-ngx-translate-for-localization-optional)
-**NOTE** please note however that `@ngx-translate` will still be installed behind the scene to make DI (dependency injection) not complaining when using `@Optional()` but it should be removed by the build tree shaking process once you run a production build. See their version compatibility table below
+**NOTE** however, please note that `@ngx-translate` is still going to be installed behind the scene just to make DI (dependency injection) build properly because of our use of `@Optional()` but it should be removed by the build tree shaking process once you run a production build. See their version compatibility table below
 
 | Angular Version     | @ngx-translate/core |
 |---------------------|---------------------|
@@ -65,9 +65,9 @@ $row-mouse-hover-color: lightgreen;
 ```
 
 ### 4. Include it in your App Module (or App Config for Standalone)
-Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it.
+Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it. Also note that the GitHub demo is strictly built with an App Module which is considered the legacy approach. 
 
-#### App Module
+#### App Module (legacy)
 Include `AngularSlickgridModule` in your App Module (`app.module.ts`)
 **Note**
 Make sure to add the `forRoot` since it will throw an error in the console when missing.
@@ -209,74 +209,19 @@ The last step is really to explore all the pages that are available in this docu
 ### 8. How to load data with `HttpClient`?
 You might notice that all demos are made with mocked dataset that are embedded in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
-### 9. Get Started
-The best way to get started is to clone the [Angular-Slickgrid-demos](https://github.com/ghiscoding/angular-slickgrid-demos), it has multiple examples and it is also updated frequently since it is used for the GitHub Bootstrap 4 demo page. `Angular-Slickgrid` has 3 `Bootstrap` repos, you can see a demo of each ones below.
-- [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate) (using `ngx-translate`)
-  - [Bootstrap 4 - examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-locales) (single Locale, without using `ngx-translate`)
-- [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid/#/basic) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate)
+### 9. Live Demo - Clone the Examples
+The best way to get started is to clone the [Angular-Slickgrid-demos](https://github.com/ghiscoding/angular-slickgrid-demos), it has multiple examples and it is also updated frequently since it is used for the GitHub Bootstrap 5 demo page. `Angular-Slickgrid` has 3 `Bootstrap` repos, you can see a demo of each ones below.
+- [Bootstrap 5 demo](https://ghiscoding.github.io/angular-slickgrid-bs5-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate) (using `ngx-translate`)
+- [Bootstrap 5 - examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-locales) (single Locale, without using `ngx-translate`)
 
 ##### All Live Demo Examples have links to the actual code
-Like to see the code to a particular Example? Just click on the "see code" that is available in every live examples.
+If you would like to see the code to a particular Example, just click on the "see code" which is available in all live examples.
 
 ### 10. CSP Compliance
 The project supports Content Security Policy (CSP) as long as you provide an optional `sanitizer` in your grid options (we recommend DOMPurify). Review the [CSP Compliance](../developer-guides/csp-compliance.md) documentation for more info.
 
-### 11. Missing Features? (fear not)
-What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Custom Events. For more info continue reading on [Docs - SlickGrid & DataView objects](../slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
+### 11. Missing Features compared to SlickGrid?
+What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and just use the `SlickGrid` and `DataView` objects directly, which are expose from the start through Custom Events. For more info continue reading on [Docs - SlickGrid & DataView objects](../slick-grid-dataview-objects/SlickGrid-&-DataView-Objects.md)
 
-### 12. Build Errors/Warnings
-You might also get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` (for Angular 8 to 15) in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
-```js
-// for Angular 8 to 15 (removed in Angular 16)
-module.exports = {
-  packages: {
-    'angular-slickgrid': {
-      ignorableDeepImportMatchers: [
-        /slickgrid\//,
-      ]
-    },
-  }
-};
-```
-You should also add `Angular-Slickgrid` and any dependency that Angular shows a CommonJS warning, add them as allowed CommonJS dependencies to your `angular.json` file to silence these warnings.
-```json
-"options": {
-  "allowedCommonJsDependencies": [
-    "dompurify", // when you install it
-    "stream"
-  ],
-}
-```
-
-### 13. Angular 12 and higher with WebPack 5 - how to fix polyfill error
-Since Angular 12 switched to WebPack 5, you might get some new errors and you will need to add some polyfills manually to get the Excel Builder (Excel Export) to work.
-
-#### The error you might get
-
-```shell
-BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
-This is no longer the case. Verify if you need this module and configure a polyfill for it.
-```
-
-#### Steps to fix it
-1. `npm install stream-browserify`
-2. Add a path mapping in `tsconfig.app.json`:
-```
-{
-  ...
-  "compilerOptions": {
-    "paths": {
-      "stream": [ "./node_modules/stream-browserify" ]
-    },
-```
-3. Add `stream` (and any other CJS deps) to `allowedCommonJsDependencies` in `angular.json`:
-```
-"options": {
-  "allowedCommonJsDependencies": [
-    "dompurify", // when you install it
-    "stream"
-  ],
-},
-```
-
-... and that should cover it, now let's code!
+### 12. Troubleshooting - Build Errors/Warnings
+Visit the [Troubleshooting](getting-started/troubleshooting.md) section for more common errors.

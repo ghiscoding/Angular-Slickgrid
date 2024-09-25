@@ -5,6 +5,7 @@
 ## Getting Started
 
 * [Quick start](getting-started/quick-start.md)
+* [Troubleshooting](getting-started/troubleshooting.md)
 
 ## Styling
 
