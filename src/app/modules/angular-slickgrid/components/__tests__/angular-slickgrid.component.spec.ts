@@ -576,7 +576,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
     it('should expect a console warning when grid is initialized with a dataset larger than 5K items without pre-parsing enabled', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue();
-      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(5001);
+      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(10001);
       const mockColumns: Column[] = [
         { id: 'firstName', field: 'firstName' },
         { id: 'updatedDate', field: 'updatedDate', type: FieldType.dateIso },
@@ -601,8 +601,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       component.gridOptions = { enableAutoResize: true };
       component.ngAfterViewInit();
 
-      // we'll do a fake dataset assignment of 5001 items
-      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(5001);
+      // we'll do a fake dataset assignment of 10001 items
+      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(10001);
       component.dataset = [{ firstName: 'John', updatedDate: '2020-02-01' }];
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option'));
