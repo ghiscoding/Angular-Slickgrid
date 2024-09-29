@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.7.0...v8.8.1) (2024-09-29)
+
+
+### Features
+
+* option to improve Date Sorting by pre-parsing date items only once ([60539e7](https://github.com/ghiscoding/angular-slickgrid/commit/60539e76b1c155abc4289a68cce93352daaead62))
+
+
+### Bug Fixes
+
+* redraw all open row details whenever the grid is re-rendered ([fbb5383](https://github.com/ghiscoding/angular-slickgrid/commit/fbb5383d9aeed71cba428f95fb7cdf2c1457f69d))
+
 ## [8.7.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.2...v8.7.0) (2024-09-14)
 
 ## [8.6.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.6.1...v8.6.2) (2024-09-14)
