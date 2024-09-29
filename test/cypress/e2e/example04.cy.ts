@@ -56,13 +56,13 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         });
     });
 
-    it('should have some metrics shown in the grid footer well below 1500 items', () => {
+    it('should have some metrics shown in the grid footer well below 5500 items', () => {
       cy.get('#slickGridContainer-grid4')
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).not.to.eq('1500 of 1500 items');
+          expect(text).not.to.eq('5500 of 5500 items');
         });
     });
 
@@ -171,7 +171,7 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .find('.right-footer')
         .should($span => {
           const text = removeExtraSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq('1500 of 1500 items');
+          expect(text).to.eq('5500 of 5500 items');
         });
     });
 

@@ -38,6 +38,9 @@
   <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
     Set Sorting Dynamically
   </button>
+  <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="logItems()">
+    <span title="console.log all dataset items">Log Items</span>
+  </button>
 
   <angular-slickgrid gridId="grid4"
                      [columnDefinitions]="columnDefinitions"

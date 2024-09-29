@@ -20,7 +20,7 @@ import { CustomInputFilter } from './custom-inputFilter';
 function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
-const NB_ITEMS = 1500;
+const NB_ITEMS = 5500;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
@@ -196,6 +196,7 @@ export class GridClientSideComponent implements OnInit {
         ],
       },
       externalResources: [new ExcelExportService()],
+      preParseDateColumns: '__' // or true
     };
 
     // mock a dataset
@@ -204,6 +205,10 @@ export class GridClientSideComponent implements OnInit {
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
+  }
+
+  logItems() {
+    console.log(this.angularGrid.dataView?.getItems());
   }
 
   mockData(itemCount: number, startingIndex = 0): any[] {

@@ -1,5 +1,5 @@
 import { ApplicationRef, Component } from '@angular/core';
-import { Column, OnSelectedRowsChangedEventArgs, SharedService, SlickEvent, SlickEventData, SlickEventHandler, SlickGrid, SlickRowSelectionModel, } from '@slickgrid-universal/common';
+import { Column, OnSelectedRowsChangedEventArgs, SlickEvent, SlickEventData, SlickEventHandler, SlickGrid, SlickRowSelectionModel, } from '@slickgrid-universal/common';
 import { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 import { of } from 'rxjs';
 
@@ -182,7 +182,6 @@ describe('SlickRowDetailView', () => {
         gridOptionsMock.rowDetailView!.preloadComponent = TestPreloadComponent;
         gridOptionsMock.rowDetailView!.viewComponent = TestComponent;
         columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
-        jest.spyOn(SharedService.prototype, 'slickGrid', 'get').mockReturnValue(gridStub);
         jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
         jest.clearAllMocks();
         gridStub.onColumnsReordered = new SlickEvent();
