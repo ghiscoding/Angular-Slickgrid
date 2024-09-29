@@ -19,6 +19,7 @@ import {
   ExtensionList,
   ExtensionService,
   ExtensionUtility,
+  FieldType,
   Filters,
   FilterService,
   Formatter,
@@ -458,7 +459,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   });
 
   it('should keep frozen column index reference (via frozenVisibleColumnId) when grid is a frozen grid', () => {
-    const sharedFrozenIndexSpy = jest.spyOn(SharedService.prototype, 'frozenVisibleColumnId', 'set');
     component.columnDefinitions = columnDefinitions;
     component.gridOptions = gridOptions;
     component.gridOptions.frozenColumn = 0;
@@ -466,11 +466,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     component.initialization(slickEventHandler);
 
     expect(component.eventHandler).toBe(slickEventHandler);
-    expect(sharedFrozenIndexSpy).toHaveBeenCalledWith('name');
+    expect(sharedService.frozenVisibleColumnId).toBe('name');
   });
 
   it('should update "visibleColumns" in the Shared Service when "onColumnsReordered" event is triggered', () => {
-    const sharedHasColumnsReorderedSpy = jest.spyOn(SharedService.prototype, 'hasColumnsReordered', 'set');
     const sharedVisibleColumnsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
     const newVisibleColumns = [{ id: 'lastName', field: 'lastName' }, { id: 'fristName', field: 'fristName' }];
 
@@ -479,7 +478,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     mockGrid.onColumnsReordered.notify({ impactedColumns: newVisibleColumns, grid: mockGrid });
 
     expect(component.eventHandler).toEqual(slickEventHandler);
-    expect(sharedHasColumnsReorderedSpy).toHaveBeenCalledWith(true);
+    expect(sharedService.hasColumnsReordered).toBe(true);
     expect(sharedVisibleColumnsSpy).toHaveBeenCalledWith(newVisibleColumns);
   });
 
@@ -573,6 +572,40 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       component.ngAfterViewInit();
 
       expect(resizerSpy).toHaveBeenCalledWith();
+    });
+
+    it('should expect a console warning when grid is initialized with a dataset larger than 5K items without pre-parsing enabled', () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue();
+      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(5001);
+      const mockColumns: Column[] = [
+        { id: 'firstName', field: 'firstName' },
+        { id: 'updatedDate', field: 'updatedDate', type: FieldType.dateIso },
+      ];
+      jest.spyOn(mockGrid, 'getColumns').mockReturnValueOnce(mockColumns);
+
+      component.gridOptions = { enableAutoResize: true };
+      component.ngAfterViewInit();
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option'));
+    });
+
+    it('should expect a console warning when assigned dataset is larger than 5K items without pre-parsing enabled', () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue();
+      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(0);
+      const mockColumns: Column[] = [
+        { id: 'firstName', field: 'firstName' },
+        { id: 'updatedDate', field: 'updatedDate', type: FieldType.dateIso },
+      ];
+      jest.spyOn(mockGrid, 'getColumns').mockReturnValueOnce(mockColumns);
+
+      component.gridOptions = { enableAutoResize: true };
+      component.ngAfterViewInit();
+
+      // we'll do a fake dataset assignment of 5001 items
+      jest.spyOn(mockDataView, 'getItemCount').mockReturnValueOnce(5001);
+      component.dataset = [{ firstName: 'John', updatedDate: '2020-02-01' }];
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option'));
     });
 
     describe('autoAddCustomEditorFormatter grid option', () => {
@@ -818,7 +851,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     describe('use grouping', () => {
       it('should load groupItemMetaProvider to the DataView when using "draggableGrouping" feature', () => {
         const dataviewSpy = jest.spyOn(SlickDataView.prototype, 'constructor' as any);
-        const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
         jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ draggableGrouping: { pluginName: 'DraggableGrouping' } } as unknown as ExtensionList<any>);
 
         component.gridOptions = { draggableGrouping: {} };
@@ -826,14 +858,12 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(dataviewSpy).toHaveBeenCalledWith(expect.objectContaining({ inlineFilters: false, groupItemMetadataProvider: expect.anything() }), eventPubSubService);
         expect(sharedService.groupItemMetadataProvider instanceof SlickGroupItemMetadataProvider).toBeTruthy();
-        expect(sharedMetaSpy).toHaveBeenCalledWith(expect.toBeObject());
 
         component.destroy();
       });
 
       it('should load groupItemMetaProvider to the DataView when using "enableGrouping" feature', () => {
         const dataviewSpy = jest.spyOn(SlickDataView.prototype, 'constructor' as any);
-        const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
         jest.spyOn(extensionServiceStub, 'extensionList', 'get').mockReturnValue({ draggableGrouping: { pluginName: 'DraggableGrouping' } } as unknown as ExtensionList<any>);
 
         component.gridOptions = { enableGrouping: true, draggableGrouping: {} };
@@ -843,7 +873,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         // expect(Object.keys(extensions).length).toBe(1);
         expect(dataviewSpy).toHaveBeenCalledWith(expect.objectContaining({ inlineFilters: false, groupItemMetadataProvider: expect.anything() }), eventPubSubService);
         expect(sharedService.groupItemMetadataProvider instanceof SlickGroupItemMetadataProvider).toBeTruthy();
-        expect(sharedMetaSpy).toHaveBeenCalledWith(expect.toBeObject());
         expect(mockGrid.registerPlugin).toHaveBeenCalled();
 
         // component.destroy();

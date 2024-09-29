@@ -25,6 +25,7 @@ import {
   DataViewOption,
   EventSubscription,
   ExternalResource,
+  isColumnDateType,
   ItemMetadata,
   Locale,
   Metrics,
@@ -83,6 +84,8 @@ import { TranslaterService } from '../services/translater.service';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { SlickRowDetailView } from '../extensions/slickRowDetailView';
 import { ContainerService } from '../services/container.service';
+
+const WARN_NO_PREPARSE_DATE_SIZE = 5000; // data size to warn user when pre-parse isn't enabled
 
 @Component({
   selector: 'angular-slickgrid',
@@ -211,6 +214,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.slickGrid.autosizeColumns();
       this._isAutosizeColsCalled = true;
     }
+    this.suggestDateParsingWhenHelpful();
   }
 
   @Input()
@@ -302,7 +306,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     this.filterFactory = new FilterFactory(slickgridConfig, this.translaterService, this.collectionService);
     this.filterService = externalServices?.filterService ?? new FilterService(this.filterFactory as any, this._eventPubSubService, this.sharedService, this.backendUtilityService);
     this.resizerService = externalServices?.resizerService ?? new ResizerService(this._eventPubSubService);
-    this.sortService = externalServices?.sortService ?? new SortService(this.sharedService, this._eventPubSubService, this.backendUtilityService);
+    this.sortService = externalServices?.sortService ?? new SortService(this.collectionService, this.sharedService, this._eventPubSubService, this.backendUtilityService);
     this.treeDataService = externalServices?.treeDataService ?? new TreeDataService(this._eventPubSubService, this.sharedService, this.sortService);
     this.paginationService = externalServices?.paginationService ?? new PaginationService(this._eventPubSubService, this.sharedService, this.backendUtilityService);
 
@@ -372,6 +376,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (this.gridOptions.darkMode) {
       this.setDarkMode(true);
     }
+
+    this.suggestDateParsingWhenHelpful();
   }
 
   ngOnDestroy(): void {
@@ -937,6 +943,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
         this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, dataView.getItemCount() || 0);
       });
       this._eventHandler.subscribe(dataView.onSetItemsCalled, (_e, args) => {
+        this.sharedService.isItemsDateParsed = false;
         this.handleOnItemCountChanged(dataView.getFilteredItemCount() || 0, args.itemCount);
 
         // when user has resize by content enabled, we'll force a full width calculation since we change our entire dataset
@@ -1485,6 +1492,15 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       }
       return { ...column, editorClass: column.editor?.model };
     });
+  }
+
+  protected suggestDateParsingWhenHelpful() {
+    if (this.dataView?.getItemCount() > WARN_NO_PREPARSE_DATE_SIZE && !this.gridOptions.preParseDateColumns && this.slickGrid.getColumns().some(c => isColumnDateType(c.type))) {
+      console.warn(
+        '[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option, ' +
+        'for more info visit:: https://ghiscoding.gitbook.io/slickgrid-universal/column-functionalities/sorting#pre-parse-date-columns-for-better-perf'
+      );
+    }
   }
 
   /**
