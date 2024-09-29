@@ -25,6 +25,7 @@
     "cypress:open": "cypress open --config-file test/cypress.config.ts",
     "cypress:ci": "cypress run --config-file test/cypress.config.ts",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "jest:ci": "jest --runInBand --coverage=true --ci --config ./test/jest.config.ts",
     "jest:clear": "jest --clearCache",
     "jest:watch": "jest --config test/jest.config.ts --watch",

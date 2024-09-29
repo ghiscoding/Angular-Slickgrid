@@ -53,6 +53,9 @@ jobs:
       - name: Run yarn install dependencies
         run: yarn --frozen-lockfile
 
+      - name: Lint
+        run: yarn lint
+
       - name: Run Project Build
         run: yarn build
 
