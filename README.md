@@ -34,6 +34,15 @@ A good starting point is the **[Docs - Quick Start](https://ghiscoding.gitbook.i
 npm install angular-slickgrid
 ```
 
+### Styling Themes
+
+Multiple styling themes are available
+- Bootstrap (see all Angular-Slickgrid [live demos](https://ghiscoding.github.io/Angular-Slickgrid/))
+- Material (see [Slickgrid-Universal](https://ghiscoding.github.io/slickgrid-universal/#/example07))
+- Salesforce (see [Slickgrid-Universal](https://ghiscoding.github.io/slickgrid-universal/#/example16))
+
+Also note that all of these themes also have **Dark Theme** equivalent and even though Bootstrap if often used as the default, it also works well with any other UI framework like Bulma, Material, ...
+
 ### Demo page
 `Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. It also works well with any other frameworks like Material or Bulma and there are also couple of extra styling themes based on Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons)
 
