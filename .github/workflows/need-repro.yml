@@ -7,7 +7,7 @@ on:
   issue_comment:
     types: [created]
   schedule:
-    # Schedule every day at 00:05
+    # Schedule every day to run once at 03:05am
     - cron: '5 3 * * *'
 
 jobs:
