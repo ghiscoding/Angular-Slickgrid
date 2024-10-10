@@ -878,7 +878,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
           if (gridOptions.enableTranslate) {
             this.extensionService.translateAllExtensions(lang);
             if ((gridOptions.createPreHeaderPanel && gridOptions.createTopHeaderPanel) || (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping)) {
-              this.headerGroupingService.translateGroupingAndColSpan();
+              this.headerGroupingService.translateHeaderGrouping();
             }
           }
         })

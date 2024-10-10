@@ -119,7 +119,7 @@ const mockExtensionUtility = {
 const headerGroupingServiceStub = {
   init: jest.fn(),
   dispose: jest.fn(),
-  translateGroupingAndColSpan: jest.fn(),
+  translateHeaderGrouping: jest.fn(),
 } as unknown as HeaderGroupingService;
 
 const mockGraphqlService = {
@@ -1550,7 +1550,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
       it('should call multiple translate methods when locale changes', (done) => {
         const transAllExtSpy = jest.spyOn(extensionServiceStub, 'translateAllExtensions');
-        const transGroupingColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateGroupingAndColSpan');
+        const transGroupingColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateHeaderGrouping');
         const setHeaderRowSpy = jest.spyOn(mockGrid, 'setHeaderRowVisibility');
 
         component.gridOptions = { enableTranslate: true, createPreHeaderPanel: false, enableDraggableGrouping: false, showCustomFooter: true } as unknown as GridOption;
@@ -1566,10 +1566,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         });
       });
 
-      it('should call "setHeaderRowVisibility", "translateGroupingAndColSpan" and other methods when locale changes', (done) => {
+      it('should call "setHeaderRowVisibility", "translateHeaderGrouping" and other methods when locale changes', (done) => {
         component.columnDefinitions = [{ id: 'firstName', field: 'firstName', filterable: true }];
         const transAllExtSpy = jest.spyOn(extensionServiceStub, 'translateAllExtensions');
-        const transGroupingColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateGroupingAndColSpan');
+        const transGroupingColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateHeaderGrouping');
 
         component.gridOptions = { enableTranslate: true, createPreHeaderPanel: true, enableDraggableGrouping: false } as unknown as GridOption;
         component.initialization(slickEventHandler);
@@ -1583,8 +1583,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         });
       });
 
-      it('should call "translateGroupingAndColSpan" translate methods when locale changes and Column Grouping PreHeader are enabled', (done) => {
-        const groupColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateGroupingAndColSpan');
+      it('should call "translateHeaderGrouping" translate methods when locale changes and Column Grouping PreHeader are enabled', (done) => {
+        const groupColSpanSpy = jest.spyOn(headerGroupingServiceStub, 'translateHeaderGrouping');
 
         component.gridOptions = { enableTranslate: true, createPreHeaderPanel: true, enableDraggableGrouping: false } as unknown as GridOption;
         component.initialization(slickEventHandler);
