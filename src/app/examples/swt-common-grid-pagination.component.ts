@@ -2,7 +2,7 @@ import { Component, OnInit, Input, } from '@angular/core';
 import { SwtCommonGridComponent } from './swt-common-grid.component';
 import { Logger } from './swt-logger.service';
 import { HttpClient } from '@angular/common/http';
-import { GridOption } from '../modules/angular-slickgrid';
+import { type GridOption } from '../modules/angular-slickgrid';
 /**
  * Custom pagination component: It allows editing the page number manually
  *  << < Page [1] of 5 > >>

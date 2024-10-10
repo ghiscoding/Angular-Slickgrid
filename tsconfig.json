@@ -13,6 +13,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "isolatedModules": true,
     "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
@@ -28,8 +29,7 @@
         "./node_modules/stream-browserify"
       ]
     },
-    "strict": true,
-    "useDefineForClassFields": false
+    "strict": true
   },
   "angularCompilerOptions": {
     "compilationMode": "partial",
