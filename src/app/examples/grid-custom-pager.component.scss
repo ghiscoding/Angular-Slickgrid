@@ -1,0 +1,57 @@
+@use 'sass:color';
+
+.custom-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px;
+  font-size: 13px;
+
+  .custom-pagination-settings {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 30px;
+  }
+
+  .custom-pagination-nav {
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+
+    .page-item {
+      display: flex;
+      width: 26px;
+      justify-content: center;
+      margin: 0;
+      &.disabled .pagination-link {
+        color: rgb(180, 179, 179);
+        background-color: rgb(180, 179, 179);
+      }
+    }
+
+    .page-number {
+      padding: 0 5px;
+      .page-number {
+        display: inline-flex;
+        justify-content: center;
+        width: 20px;
+      }
+    }
+
+    nav {
+      ul.custom-pagination-ul  {
+        display: flex;
+        list-style-type: none;
+        margin: 0;
+        padding: 0 5px;
+        color: #0d6efd;
+
+        .pagination-link {
+          color: #0d6efd;
+          &:hover {
+            color: color.adjust(#0d6efd, $lightness: 10%);
+          }
+        }
+      }
+    }
+  }
+}
