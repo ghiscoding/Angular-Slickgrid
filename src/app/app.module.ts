@@ -25,6 +25,7 @@ import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
 import { GridCompositeEditorComponent } from './examples/grid-composite-editor.component';
+import { GridCustomPaginationComponent } from './examples/grid-custom-pagination.component';
 import { GridCustomTooltipComponent } from './examples/grid-custom-tooltip.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridDragRecycleComponent } from './examples/grid-drag-recycle.component';
@@ -56,6 +57,7 @@ import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { HomeComponent } from './examples/home.component';
+import { CustomPagerComponent } from './examples/grid-custom-pager.component';
 import { RowDetailPreloadComponent } from './examples/rowdetail-preload.component';
 import { RowDetailViewComponent } from './examples/rowdetail-view.component';
 
@@ -97,6 +99,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     AppComponent,
     CustomButtonFormatterComponent,
     CustomFooterComponent,
+    CustomPagerComponent,
     CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,
@@ -109,6 +112,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridColspanComponent,
     GridCompositeEditorComponent,
     GridContextMenuComponent,
+    GridCustomPaginationComponent,
     GridCustomTooltipComponent,
     GridDraggableGroupingComponent,
     GridDragRecycleComponent,

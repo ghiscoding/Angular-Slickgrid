@@ -1,0 +1,35 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 42: Custom Pagination
+    <span class="float-end">
+      <a style="font-size: 18px"
+         target="_blank"
+         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-custom-pagination.component.ts">
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+  </h2>
+  <div class="subtitle">
+    You can create a Custom Pagination by passing an Angular Custom Component and it must <code>implements BasePaginationComponent</code>.
+    Any of the pagination controls could be moved anywhere on the page (for example we purposely moved the page size away from the rest of the pagination elements).
+  </div>
+
+  <div>
+    <button class="btn btn-outline-secondary btn-icon" (click)="togglePaginationPosition()" data-text="toggle-pagination-btn">
+      <span class="mdi mdi-swap-vertical"></span>
+      <span>Toggle Pagination Position</span>
+    </button>
+
+    <span class="margin-15px">
+      Page Size
+      <input type="text" class="input is-small is-narrow" data-test="page-size-input" [(ngModel)]="pageSize" (ngModelChange)="setPaginationSize($event)" style="width: 55px">
+    </span>
+  </div>
+
+  <angular-slickgrid gridId="grid42"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  </angular-slickgrid>
+</div>

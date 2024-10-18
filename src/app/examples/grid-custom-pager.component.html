@@ -1,0 +1,47 @@
+<div class="custom-pagination">
+  <span class="custom-pagination-settings">
+    <span class="custom-pagination-count">
+      <span class="page-info-from-to">
+        <span class="item-from" aria-label="Page Item From" data-test="item-from">
+        {{currentPagination?.dataFrom}}
+        </span>-
+        <span class="item-to" aria-label="Page Item To" data-test="item-to">
+        {{currentPagination?.dataTo}}
+        </span>
+      of
+      </span>
+      <span class="page-info-total-items">
+        <span class="total-items" aria-label="Total Items" data-test="total-items">{{currentPagination?.totalItems}}</span>
+        <span class="text-items"> items</span>
+      </span>
+    </span>
+  </span>
+<div class="custom-pagination-nav">
+<nav aria-label="Page navigation">
+  <ul class="custom-pagination-ul">
+    <li class="li page-item seek-first" [class]="{ 'disabled' : isLeftPaginationDisabled() }">
+      <a class="pagination-link mdi mdi-page-first icon-seek-first mdi-22px" aria-label="First Page" role="button" (click)="onFirstPageClicked($event)"></a>
+    </li>
+    <li class="li page-item seek-prev" [class]="{ 'disabled' : isLeftPaginationDisabled() }">
+      <a class="pagination-link icon-seek-prev mdi mdi-chevron-down mdi-22px mdi-rotate-90" aria-label="Previous Page" role="button" (click)="onPreviousPageClicked($event)"></a>
+    </li>
+  </ul>
+</nav>
+<div class="page-number">
+  <span class="text-page">Page</span>
+  <span class="page-number" aria-label="Page Number" data-test="page-number-label">{{currentPagination?.pageNumber}}</span>
+  of
+  <span class="page-count" data-test="page-count">{{currentPagination?.pageCount}}</span>
+</div>
+<nav aria-label="Page navigation">
+  <ul class="custom-pagination-ul">
+    <li class="li page-item seek-next" [class]="{ 'disabled' : isRightPaginationDisabled() }" (click)="onNextPageClicked($event)">
+      <a class="pagination-link icon-seek-next mdi mdi-chevron-down mdi-22px mdi-rotate-270" aria-label="Next Page" role="button" ></a>
+    </li>
+    <li class="li page-item seek-end"  [class]="{ 'disabled' : isRightPaginationDisabled() }">
+      <a class="pagination-link icon-seek-end mdi mdi-page-last mdi-22px" aria-label="Last Page" role="button" (click)="onLastPageClicked($event)"></a>
+    </li>
+  </ul>
+</nav>
+</div>
+</div>
