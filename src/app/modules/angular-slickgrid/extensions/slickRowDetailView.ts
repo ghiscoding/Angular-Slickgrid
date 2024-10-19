@@ -202,11 +202,10 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // on sort, all row detail are collapsed so we can dispose of all the Views as well
         this.eventHandler.subscribe(this._grid.onSort, this.disposeAllViewComponents.bind(this));
 
-        // on filter changed, we need to re-render all Views
+        // redraw all Views whenever certain events are triggered
         this._subscriptions.push(
-          this.eventPubSubService?.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this)),
-          this.eventPubSubService?.subscribe('onGridMenuClearAllFilters', () => window.setTimeout(() => this.redrawAllViewComponents())),
-          this.eventPubSubService?.subscribe('onGridMenuClearAllSorting', () => window.setTimeout(() => this.redrawAllViewComponents())),
+          this.eventPubSubService?.subscribe(['onFilterChanged', 'onGridMenuColumnsChanged', 'onColumnPickerColumnsChanged'], this.redrawAllViewComponents.bind(this)),
+          this.eventPubSubService?.subscribe(['onGridMenuClearAllFilters', 'onGridMenuClearAllSorting'], () => window.setTimeout(() => this.redrawAllViewComponents())),
         );
       }
     }
