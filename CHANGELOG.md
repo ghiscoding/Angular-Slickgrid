@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.8.1...v8.9.0) (2024-10-19)
+
+
+### Features
+
+* allow providing a Custom Pagination Component ([b677009](https://github.com/ghiscoding/angular-slickgrid/commit/b6770090a80483cbe594ceeb37ba55a51a5c354a))
+
+
+### Bug Fixes
+
+* Row Detail redraw all Views when GridMenu/ColPicker columns changes ([039260c](https://github.com/ghiscoding/angular-slickgrid/commit/039260ca9f48900a24450a59b8679e9801769b0c))
+
 ## [8.8.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.7.0...v8.8.1) (2024-09-29)
 
 
