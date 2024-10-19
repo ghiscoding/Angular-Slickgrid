@@ -1,5 +1,6 @@
 import type {
   BackendService,
+  BasePaginationComponent,
   ExtensionList,
   ExtensionService,
   FilterService,
@@ -60,6 +61,9 @@ export interface AngularGridInstance {
 
   /** Grouping (and colspan) Service */
   headerGroupingService: HeaderGroupingService;
+
+  /** Pagination Component */
+  paginationComponent?: BasePaginationComponent;
 
   /** Pagination Service (allows you to programmatically go to first/last page, etc...) */
   paginationService?: PaginationService;

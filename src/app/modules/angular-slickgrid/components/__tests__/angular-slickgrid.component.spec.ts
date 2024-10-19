@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { ApplicationRef, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
@@ -7,6 +7,7 @@ import {
   BackendService,
   BackendServiceApi,
   BackendUtilityService,
+  type BasePaginationComponent,
   CollectionService,
   Column,
   ColumnFilters,
@@ -33,9 +34,9 @@ import {
   OnRowsChangedEventArgs,
   OnSetItemsCalledEventArgs,
   Pagination,
+  PaginationMetadata,
   PaginationService,
   ResizerService,
-  ServicePagination,
   SharedService,
   SlickDataView,
   SlickEventHandler,
@@ -294,6 +295,13 @@ jest.mock('@slickgrid-universal/common', () => ({
   SlickDataView: jest.fn().mockImplementation(() => mockDataView),
 }));
 
+@Component({ template: `<h1>Some Title</h1>` })
+class TestPaginationComponent implements BasePaginationComponent {
+  init = jest.fn();
+  dispose = jest.fn();
+  renderPagination = jest.fn();
+}
+
 describe('Angular-Slickgrid Custom Component instantiated via Constructor', () => {
   let component: AngularSlickgridComponent;
   let columnDefinitions: Column[] = [];
@@ -422,7 +430,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         gridEventService: gridEventServiceStub,
         gridService: gridServiceStub,
         gridStateService: gridStateServiceStub,
-        HeaderGroupingService: headerGroupingServiceStub,
+        headerGroupingService: headerGroupingServiceStub,
         resizerService: resizerServiceStub,
         paginationService: paginationServiceStub,
         sharedService,
@@ -1146,6 +1154,38 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.paginationOptions!.pageSize).toBe(10);
           expect(component.paginationOptions!.pageNumber).toBe(expectedPageNumber);
           expect(component.paginationOptions!.totalItems).toBe(expectedTotalItems);
+          expect(refreshSpy).toHaveBeenCalledWith(mockData);
+          done();
+        });
+      });
+
+      it('should be able to provide a Custom Pagination Component', (done) => {
+        const expectedPageNumber = 3;
+        const expectedTotalItems = 15;
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+        const getPagingSpy = jest.spyOn(mockDataView, 'getPagingInfo').mockReturnValue({ pageNum: 1, totalRows: expectedTotalItems } as any);
+        const pagerInstance = new TestPaginationComponent();
+        jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValueOnce({ componentRef: { instance: pagerInstance } as any, domElement: document.createElement('div') });
+
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        component.gridOptions = {
+          enablePagination: true,
+          enableFiltering: true,
+          customPaginationComponent: TestPaginationComponent,
+          presets: { pagination: { pageSize: 10, pageNumber: expectedPageNumber } }
+        };
+        component.paginationOptions = { pageSize: 10, pageNumber: 2, pageSizes: [10, 25, 50], totalItems: 100 };
+
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+
+        setTimeout(() => {
+          expect(getPagingSpy).toHaveBeenCalled();
+          expect(component.paginationOptions!.pageSize).toBe(10);
+          expect(component.paginationOptions!.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions!.totalItems).toBe(expectedTotalItems);
+          expect(pagerInstance.init).toHaveBeenCalled();
+          expect(pagerInstance.renderPagination).toHaveBeenCalled();
           expect(refreshSpy).toHaveBeenCalledWith(mockData);
           done();
         });
@@ -1882,19 +1922,19 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       it('should call trigger a gridStage change event when "onPaginationChanged" from the Pagination Service is triggered', () => {
         const pubSubSpy = jest.spyOn(eventPubSubService, 'publish');
         const mockPagination = { pageNumber: 2, pageSize: 20 } as CurrentPagination;
-        const mockServicePagination = {
+        const mockPaginationMetadata = {
           ...mockPagination,
           dataFrom: 5,
           dataTo: 10,
           pageCount: 1,
           pageSizes: [5, 10, 15, 20],
-        } as ServicePagination;
+        } as PaginationMetadata;
         jest.spyOn(gridStateServiceStub, 'getCurrentGridState').mockReturnValue({ columns: [], pagination: mockPagination } as GridState);
 
         component.gridOptions.enablePagination = true;
         component.initialization(slickEventHandler);
         component.refreshGridData([{ firstName: 'John', lastName: 'Doe' }]);
-        eventPubSubService.publish('onPaginationChanged', mockServicePagination);
+        eventPubSubService.publish('onPaginationChanged', mockPaginationMetadata);
 
         expect(pubSubSpy).toHaveBeenCalledWith('onGridStateChanged', {
           change: { newValues: mockPagination, type: GridStateType.pagination },

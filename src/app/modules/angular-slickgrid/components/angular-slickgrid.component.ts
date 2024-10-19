@@ -13,14 +13,12 @@ import {
   Output,
   TemplateRef,
 } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-
 import {
   AutocompleterEditor,
   BackendService,
   BackendServiceApi,
   BackendServiceOption,
+  BasePaginationComponent,
   Column,
   DataViewOption,
   EventSubscription,
@@ -30,14 +28,13 @@ import {
   Locale,
   Metrics,
   Pagination,
+  PaginationMetadata,
   RxJsFacade,
   SelectEditor,
-  ServicePagination,
   SlickDataView,
   SlickEventHandler,
   SlickGrid,
 } from '@slickgrid-universal/common';
-
 import {
   ExtensionName,
   ExtensionUtility,
@@ -73,7 +70,9 @@ import { SlickFooterComponent } from '@slickgrid-universal/custom-footer-compone
 import { SlickPaginationComponent } from '@slickgrid-universal/pagination-component';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
 import { extend } from '@slickgrid-universal/utils';
+import { TranslateService } from '@ngx-translate/core';
 import { dequal } from 'dequal/lite';
+import { Observable } from 'rxjs';
 
 import { Constants } from '../constants';
 import type { AngularGridInstance, ExternalTestingDependencies, GridOption } from './../models/index';
@@ -133,7 +132,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   // components / plugins
   slickEmptyWarning?: SlickEmptyWarningComponent;
   slickFooter?: SlickFooterComponent;
-  slickPagination?: SlickPaginationComponent;
+  slickPagination?: BasePaginationComponent;
+  paginationComponent: BasePaginationComponent | undefined;
   slickRowDetailView?: SlickRowDetailView;
 
   // services
@@ -323,7 +323,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     this.gridStateService = externalServices?.gridStateService ?? new GridStateService(this.extensionService, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.treeDataService);
     this.gridService = externalServices?.gridService ?? new GridService(this.gridStateService, this.filterService, this._eventPubSubService, this.paginationService, this.sharedService, this.sortService, this.treeDataService);
-    this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility, this._eventPubSubService);
+    this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility);
 
     this.serviceList = [
       this.containerService,
@@ -688,6 +688,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       groupingService: this.headerGroupingService,
       headerGroupingService: this.headerGroupingService,
       extensionService: this.extensionService,
+      paginationComponent: this.slickPagination,
       paginationService: this.paginationService,
       resizerService: this.resizerService,
       sortService: this.sortService,
@@ -702,7 +703,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
    * Also if we use Row Selection or the Checkbox Selector with a Backend Service (Odata, GraphQL), we need to reset any selection
    */
-  paginationChanged(pagination: ServicePagination) {
+  paginationChanged(pagination: PaginationMetadata) {
     const isSyncGridSelectionEnabled = this.gridStateService?.needToPreserveRowSelection() ?? false;
     if (this.slickGrid && !isSyncGridSelectionEnabled && this.gridOptions?.backendServiceApi && (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector)) {
       this.slickGrid.setSelectedRows([]);
@@ -1156,7 +1157,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.paginationService.totalItems = this.totalItems;
       this.paginationService.init(this.slickGrid, paginationOptions, this.backendServiceApi);
       this.subscriptions.push(
-        this._eventPubSubService.subscribe('onPaginationChanged', (paginationChanges: ServicePagination) => {
+        this._eventPubSubService.subscribe('onPaginationChanged', (paginationChanges: PaginationMetadata) => {
           this.paginationChanged(paginationChanges);
         }),
         this._eventPubSubService.subscribe('onPaginationVisibilityChanged', (visibility: { visible: boolean; }) => {
@@ -1439,10 +1440,19 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    * @param {Boolean} shouldDisposePaginationService - when disposing the Pagination, do we also want to dispose of the Pagination Service? (defaults to True)
    */
   protected renderPagination(showPagination = true) {
-    if (this.gridOptions?.enablePagination && !this._isPaginationInitialized && showPagination) {
-      this.slickPagination = new SlickPaginationComponent(this.paginationService, this._eventPubSubService, this.sharedService, this.translaterService);
-      this.slickPagination.renderPagination(this.gridContainerElement as HTMLElement);
-      this._isPaginationInitialized = true;
+    if (this.slickGrid && this.gridOptions?.enablePagination && !this._isPaginationInitialized && showPagination) {
+      if (this.gridOptions.customPaginationComponent) {
+        const paginationComp = this.angularUtilService.createAngularComponent(this.gridOptions.customPaginationComponent!);
+        this.slickPagination = paginationComp.componentRef.instance;
+      } else {
+        this.slickPagination = new SlickPaginationComponent();
+      }
+
+      if (this.slickPagination) {
+        this.slickPagination.init(this.slickGrid, this.paginationService, this._eventPubSubService, this.translaterService);
+        this.slickPagination.renderPagination(this.gridContainerElement as HTMLElement);
+        this._isPaginationInitialized = true;
+      }
     } else if (!showPagination) {
       this.slickPagination?.dispose();
       this._isPaginationInitialized = false;
@@ -1496,7 +1506,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   }
 
   protected suggestDateParsingWhenHelpful() {
-    if (/* !this.gridOptions.silenceWarnings && */ this.dataView?.getItemCount() > WARN_NO_PREPARSE_DATE_SIZE && !this.gridOptions.preParseDateColumns && this.slickGrid.getColumns().some(c => isColumnDateType(c.type))) {
+    if (this.dataView?.getItemCount() > WARN_NO_PREPARSE_DATE_SIZE && !this.gridOptions.silenceWarnings && !this.gridOptions.preParseDateColumns && this.slickGrid.getColumns().some(c => isColumnDateType(c.type))) {
       console.warn(
         '[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option, ' +
         'for more info visit => https://ghiscoding.gitbook.io/angular-slickgrid/column-functionalities/sorting#pre-parse-date-columns-for-better-perf'
