@@ -33,9 +33,9 @@ import {
   OnRowsChangedEventArgs,
   OnSetItemsCalledEventArgs,
   Pagination,
+  PaginationMetadata,
   PaginationService,
   ResizerService,
-  ServicePagination,
   SharedService,
   SlickDataView,
   SlickEventHandler,
@@ -422,7 +422,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         gridEventService: gridEventServiceStub,
         gridService: gridServiceStub,
         gridStateService: gridStateServiceStub,
-        HeaderGroupingService: headerGroupingServiceStub,
+        headerGroupingService: headerGroupingServiceStub,
         resizerService: resizerServiceStub,
         paginationService: paginationServiceStub,
         sharedService,
@@ -1888,7 +1888,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           dataTo: 10,
           pageCount: 1,
           pageSizes: [5, 10, 15, 20],
-        } as ServicePagination;
+        } as PaginationMetadata;
         jest.spyOn(gridStateServiceStub, 'getCurrentGridState').mockReturnValue({ columns: [], pagination: mockPagination } as GridState);
 
         component.gridOptions.enablePagination = true;

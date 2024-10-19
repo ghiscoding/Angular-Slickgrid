@@ -1507,7 +1507,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   }
 
   protected suggestDateParsingWhenHelpful() {
-    if (!this.gridOptions.silenceWarnings && this.dataView?.getItemCount() > WARN_NO_PREPARSE_DATE_SIZE && !this.gridOptions.preParseDateColumns && this.slickGrid.getColumns().some(c => isColumnDateType(c.type))) {
+    if (this.dataView?.getItemCount() > WARN_NO_PREPARSE_DATE_SIZE && !this.gridOptions.silenceWarnings && !this.gridOptions.preParseDateColumns && this.slickGrid.getColumns().some(c => isColumnDateType(c.type))) {
       console.warn(
         '[Slickgrid-Universal] For getting better perf, we suggest you enable the `preParseDateColumns` grid option, ' +
         'for more info visit => https://ghiscoding.gitbook.io/angular-slickgrid/column-functionalities/sorting#pre-parse-date-columns-for-better-perf'
