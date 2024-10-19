@@ -191,8 +191,8 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // --
         // hook some events needed by the Plugin itself
 
-        // redraw anytime the grid is re-rendered
-        this.eventHandler.subscribe(this._grid.onRendered, this.redrawAllViewComponents.bind(this));
+        // we need to redraw the open detail views if we change column position (column reorder)
+        this.eventHandler.subscribe(this._grid.onColumnsReordered, this.redrawAllViewComponents.bind(this));
 
         // on row selection changed, we also need to redraw
         if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
@@ -202,9 +202,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // on sort, all row detail are collapsed so we can dispose of all the Views as well
         this.eventHandler.subscribe(this._grid.onSort, this.disposeAllViewComponents.bind(this));
 
-        // on filter changed, we need to re-render all Views
+        // redraw all Views whenever certain events are triggered
         this._subscriptions.push(
-          this.eventPubSubService?.subscribe('onFilterChanged', this.redrawAllViewComponents.bind(this)),
+          this.eventPubSubService?.subscribe(['onFilterChanged', 'onGridMenuColumnsChanged', 'onColumnPickerColumnsChanged'], this.redrawAllViewComponents.bind(this)),
           this.eventPubSubService?.subscribe(['onGridMenuClearAllFilters', 'onGridMenuClearAllSorting'], () => window.setTimeout(() => this.redrawAllViewComponents())),
         );
       }

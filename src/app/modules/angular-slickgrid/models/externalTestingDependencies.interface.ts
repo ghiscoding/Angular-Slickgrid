@@ -7,7 +7,7 @@ import type {
   GridEventService,
   GridService,
   GridStateService,
-  GroupingAndColspanService,
+  HeaderGroupingService,
   PaginationService,
   ResizerService,
   RxJsFacade,
@@ -27,7 +27,7 @@ export interface ExternalTestingDependencies {
   gridEventService?: GridEventService;
   gridService?: GridService;
   gridStateService?: GridStateService;
-  groupingAndColspanService?: GroupingAndColspanService;
+  headerGroupingService?: HeaderGroupingService;
   paginationService?: PaginationService;
   resizerService?: ResizerService;
   rxjs?: RxJsFacade;

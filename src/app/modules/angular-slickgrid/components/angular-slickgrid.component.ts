@@ -50,7 +50,7 @@ import {
   GridEventService,
   GridService,
   GridStateService,
-  GroupingAndColspanService,
+  HeaderGroupingService,
   PaginationService,
   ResizerService,
   SharedService,
@@ -146,7 +146,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   gridEventService: GridEventService;
   gridService: GridService;
   gridStateService: GridStateService;
-  groupingService: GroupingAndColspanService;
+  headerGroupingService: HeaderGroupingService;
   paginationService: PaginationService;
   resizerService!: ResizerService;
   rxjs?: RxJsFacade;
@@ -323,7 +323,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     this.gridStateService = externalServices?.gridStateService ?? new GridStateService(this.extensionService, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.treeDataService);
     this.gridService = externalServices?.gridService ?? new GridService(this.gridStateService, this.filterService, this._eventPubSubService, this.paginationService, this.sharedService, this.sortService, this.treeDataService);
-    this.groupingService = externalServices?.groupingAndColspanService ?? new GroupingAndColspanService(this.extensionUtility, this._eventPubSubService);
+    this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility, this._eventPubSubService);
 
     this.serviceList = [
       this.containerService,
@@ -332,7 +332,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       this.gridEventService,
       this.gridService,
       this.gridStateService,
-      this.groupingService,
+      this.headerGroupingService,
       this.paginationService,
       this.resizerService,
       this.sortService,
@@ -347,7 +347,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     this.containerService.registerInstance('GridEventService', this.gridEventService);
     this.containerService.registerInstance('GridService', this.gridService);
     this.containerService.registerInstance('GridStateService', this.gridStateService);
-    this.containerService.registerInstance('GroupingAndColspanService', this.groupingService);
+    this.containerService.registerInstance('HeaderGroupingService', this.headerGroupingService);
     this.containerService.registerInstance('PaginationService', this.paginationService);
     this.containerService.registerInstance('ResizerService', this.resizerService);
     this.containerService.registerInstance('SharedService', this.sharedService);
@@ -685,7 +685,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       gridEventService: this.gridEventService,
       gridStateService: this.gridStateService,
       gridService: this.gridService,
-      groupingService: this.groupingService,
+      groupingService: this.headerGroupingService,
+      headerGroupingService: this.headerGroupingService,
       extensionService: this.extensionService,
       paginationComponent: this.slickPagination,
       paginationService: this.paginationService,
@@ -878,7 +879,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
           if (gridOptions.enableTranslate) {
             this.extensionService.translateAllExtensions(lang);
             if ((gridOptions.createPreHeaderPanel && gridOptions.createTopHeaderPanel) || (gridOptions.createPreHeaderPanel && !gridOptions.enableDraggableGrouping)) {
-              this.groupingService.translateGroupingAndColSpan();
+              this.headerGroupingService.translateHeaderGrouping();
             }
           }
         })
@@ -1393,7 +1394,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     // when using Grouping/DraggableGrouping/Colspan register its Service
     if ((this.gridOptions.createPreHeaderPanel && this.gridOptions.createTopHeaderPanel) || (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping)) {
-      this._registeredResources.push(this.groupingService);
+      this._registeredResources.push(this.headerGroupingService);
     }
 
     // when using Tree Data View, register its Service

@@ -76,7 +76,7 @@ const gridStub = {
   getSelectionModel: jest.fn(),
   setSelectionModel: jest.fn(),
   sanitizeHtmlString: (s: string) => s,
-  onRendered: new SlickEvent(),
+  onColumnsReordered: new SlickEvent(),
   onSelectedRowsChanged: new SlickEvent(),
   onSort: new SlickEvent(),
 } as unknown as SlickGrid;
@@ -184,7 +184,7 @@ describe('SlickRowDetailView', () => {
         columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
         jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
         jest.clearAllMocks();
-        gridStub.onRendered = new SlickEvent();
+        gridStub.onColumnsReordered = new SlickEvent();
         gridStub.onSort = new SlickEvent();
       });
 
@@ -379,7 +379,7 @@ describe('SlickRowDetailView', () => {
         expect(onRowBackViewSpy).toHaveBeenCalledWith(expect.anything(), { item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0] as any], rowIdsOutOfViewport: [], grid: gridStub });
       });
 
-      it('should call Angular Util "createAngularComponentAppendToDom" when grid "onRendered" is triggered', (done) => {
+      it('should call Angular Util "createAngularComponentAppendToDom" when grid "onColumnsReordered" is triggered', (done) => {
         const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
         const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
         const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn() } } as any);
@@ -388,7 +388,7 @@ describe('SlickRowDetailView', () => {
         plugin.onBeforeRowDetailToggle = new SlickEvent();
         plugin.register();
         plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
-          gridStub.onRendered.notify({ impactedColumns: [mockColumn] } as any, new SlickEventData(), gridStub);
+          gridStub.onColumnsReordered.notify({ impactedColumns: [mockColumn] } as any, new SlickEventData(), gridStub);
           expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
             model: mockColumn,
             addon: expect.anything(),
@@ -430,32 +430,34 @@ describe('SlickRowDetailView', () => {
         expect(redrawSpy).toHaveBeenCalledTimes(2);
       });
 
-      it('should call "redrawAllViewComponents" when event "filterChanged" is triggered', () => {
-        const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
-        const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
-        const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+      for (const eventName of ['onFilterChanged', 'onGridMenuColumnsChanged', 'onColumnPickerColumnsChanged']) {
+        it(`should call "redrawAllViewComponents" when event ${eventName} is triggered`, () => {
+          const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
+          const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
+          const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
 
-        plugin.init(gridStub);
-        const redrawSpy = jest.spyOn(plugin, 'redrawAllViewComponents');
-        plugin.onBeforeRowDetailToggle = new SlickEvent();
-        plugin.register();
+          plugin.init(gridStub);
+          const redrawSpy = jest.spyOn(plugin, 'redrawAllViewComponents');
+          plugin.onBeforeRowDetailToggle = new SlickEvent();
+          plugin.register();
 
-        plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
-          eventPubSubService.publish('onFilterChanged', { columnId: 'field1', operator: '=', searchTerms: [] });
-          expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-            model: mockColumn,
-            addon: expect.anything(),
-            grid: gridStub,
-            dataView: undefined,
-            parent: undefined,
+          plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
+            eventPubSubService.publish(eventName, { columnId: 'field1', operator: '=', searchTerms: [] });
+            expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
+              model: mockColumn,
+              addon: expect.anything(),
+              grid: gridStub,
+              dataView: undefined,
+              parent: undefined,
+            });
           });
-        });
-        plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
-        plugin.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new SlickEventData(), gridStub);
+          plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
+          plugin.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new SlickEventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalled();
-        expect(redrawSpy).toHaveBeenCalledTimes(2);
-      });
+          expect(handlerSpy).toHaveBeenCalled();
+          expect(redrawSpy).toHaveBeenCalledTimes(2);
+        });
+      }
 
       it('should call "redrawAllViewComponents" when event "onGridMenuClearAllFilters" is triggered', (done) => {
         const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
