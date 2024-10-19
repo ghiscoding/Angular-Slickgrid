@@ -1443,8 +1443,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (this.slickGrid && this.gridOptions?.enablePagination && !this._isPaginationInitialized && showPagination) {
       if (this.gridOptions.customPaginationComponent) {
         const paginationComp = this.angularUtilService.createAngularComponent(this.gridOptions.customPaginationComponent!);
-        const instance = paginationComp.componentRef.instance
-        this.slickPagination = instance;
+        this.slickPagination = paginationComp.componentRef.instance;
       } else {
         this.slickPagination = new SlickPaginationComponent();
       }
