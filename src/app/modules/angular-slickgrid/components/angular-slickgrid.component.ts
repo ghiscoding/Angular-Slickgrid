@@ -323,7 +323,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
     this.gridStateService = externalServices?.gridStateService ?? new GridStateService(this.extensionService, this.filterService, this._eventPubSubService, this.sharedService, this.sortService, this.treeDataService);
     this.gridService = externalServices?.gridService ?? new GridService(this.gridStateService, this.filterService, this._eventPubSubService, this.paginationService, this.sharedService, this.sortService, this.treeDataService);
-    this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility, this._eventPubSubService);
+    this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility);
 
     this.serviceList = [
       this.containerService,
