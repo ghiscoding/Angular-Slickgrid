@@ -1,5 +1,6 @@
-$slick-button-border-color: #ababab !default;
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+// @use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+//   $slick-button-border-color: #ababab
+// );
 
 // --
 // Custom Tooltips CSS Variables (or SASS equivalent)
