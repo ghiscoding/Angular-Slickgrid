@@ -1,13 +1,24 @@
 @use 'sass:color';
-@import '@slickgrid-universal/common/dist/styles/sass/variables';
+
+// -- 1. load with modern `@use`
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+// @use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+//   $slick-primary-color: red,
+//   $slick-link-color: red
+// );
+
+// -- 2. load with legacy `@import`
+// $slick-primary-color: red;
+// $slick-link-color: red;
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
 
 // :root {
 //   --slick-button-style-bg-color: #fff;
 //   --slick-button-border-color: #c7c7c7;
 // }
 
-/* You can add global styles to this file, and also import other style files */
-$slick-button-border-color: #ababab !default;
+$button-border-color: #ababab;
+$button-style-bg-color: #fff;
 
 .btn-group-xs > .btn, .btn-xs {
   padding  : 1px 5px;
@@ -96,13 +107,13 @@ $slick-button-border-color: #ababab !default;
 }
 .button-style {
   cursor: pointer;
-  background-color: var(--slick-button-style-bg-color, $slick-button-style-bg-color);
-  border: 1px solid #{var(--slick-button-border-color, $slick-button-border-color)};
+  background-color: var(--slick-button-style-bg-color, $button-style-bg-color);
+  border: 1px solid #{var(--slick-button-border-color, $button-border-color)};
   border-radius: 2px;
   justify-content: center;
   text-align: center;
   &:hover {
-    border-color: color.adjust($slick-button-border-color, $lightness: 10%);
+    border-color: color.adjust($button-border-color, $lightness: 10%);
   }
 }
 

@@ -1,8 +1,7 @@
-$slick-preheader-font-size: 18px;
-$slick-preheader-border-right: 1px solid lightgrey;
-
-/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+// @use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+//   $slick-preheader-font-size: 18px,
+//   $slick-preheader-border-right: 1px solid lightgrey,
+// );
 
 .alert {
   padding: 8px;

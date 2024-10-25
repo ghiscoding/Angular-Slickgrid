@@ -1,11 +1,10 @@
-$slick-header-menu-button-border-width:  0px 1px;
-$slick-header-menu-button-icon-svg-path: "M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M7,10L12,15L17,10H7Z";
-$slick-header-menu-button-icon-size:     16px;
-$slick-header-menu-button-padding:       10px 0 0 3px;
-$slick-sort-indicator-hint-opacity:      0;
-
-/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+  $slick-header-menu-button-border-width:  0px 1px,
+  $slick-header-menu-button-icon-svg-path: "M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M7,10L12,15L17,10H7Z",
+  $slick-header-menu-button-icon-size:     16px,
+  $slick-header-menu-button-padding:       10px 0 0 3px,
+  $slick-sort-indicator-hint-opacity:      0,
+);
 
 .blue {
   color: rgb(73, 73, 255);

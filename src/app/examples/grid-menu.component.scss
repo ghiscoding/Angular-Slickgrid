@@ -1,11 +1,9 @@
-$slick-column-picker-icon-checked-svg-path:    "M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9";
-$slick-column-picker-icon-unchecked-svg-path:  "M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z";
-$slickcolumn-picker-checkbox-opacity:          0.2;
-$slickcolumn-picker-checkbox-opacity-hover:    0.35;
-$slick-column-picker-icon-font-size:           16px;
-
-/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+  $slick-column-picker-icon-checked-svg-path:    "M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9",
+  $slick-column-picker-icon-unchecked-svg-path:  "M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z",
+  $slick-column-picker-icon-font-size:           16px,
+  $slick-checkbox-opacity-hover:                 0.35,
+);
 
 .blue {
   color: rgb(73, 73, 255);

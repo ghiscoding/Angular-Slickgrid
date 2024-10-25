@@ -57,15 +57,14 @@ You could also compile the SASS files with your own customization, for that simp
 
 ```scss
 /* for example, let's change the mouse hover color */
-$cell-odd-background-color: lightyellow;
-$row-mouse-hover-color: lightgreen;
-
-/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+  $cell-odd-background-color: lightyellow,
+  $row-mouse-hover-color: lightgreen
+);
 ```
 
 ### 4. Include it in your App Module (or App Config for Standalone)
-Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it. Also note that the GitHub demo is strictly built with an App Module which is considered the legacy approach. 
+Below are 2 different setups (with App Module (legacy) or Standalone) but in both cases the `AngularSlickgridModule.forRoot()` is **required**, so make sure to include it. Also note that the GitHub demo is strictly built with an App Module which is considered the legacy approach.
 
 #### App Module (legacy)
 Include `AngularSlickgridModule` in your App Module (`app.module.ts`)
