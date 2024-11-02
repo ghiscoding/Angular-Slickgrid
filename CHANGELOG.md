@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [Conven
 
 ### Features
 
-* switch to SASS `[@use](https://github.com/use)` and remove any `[@import](https://github.com/import)` to fix deprecations ([7669196](https://github.com/ghiscoding/angular-slickgrid/commit/7669196168174102bb75c91465ba232c9828a87c))
+* switch to SASS `@use` and remove any `@import` to fix deprecations ([7669196](https://github.com/ghiscoding/angular-slickgrid/commit/7669196168174102bb75c91465ba232c9828a87c))
 
 ### Bug Fixes
 
