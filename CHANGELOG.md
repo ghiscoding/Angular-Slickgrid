@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.9.0...v8.10.0) (2024-11-02)
+
+### Features
+
+* switch to SASS `[@use](https://github.com/use)` and remove any `[@import](https://github.com/import)` to fix deprecations ([7669196](https://github.com/ghiscoding/angular-slickgrid/commit/7669196168174102bb75c91465ba232c9828a87c))
+
+### Bug Fixes
+
+* more styling fixes after switching to [@use](https://github.com/use) instead of [@imports](https://github.com/imports) ([099f132](https://github.com/ghiscoding/angular-slickgrid/commit/099f13257587d1ecbee65d8408f36049314f9bef))
+
 ## [8.9.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.8.1...v8.9.0) (2024-10-19)
 
 
