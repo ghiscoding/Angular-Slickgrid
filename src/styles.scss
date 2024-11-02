@@ -1,21 +1,28 @@
 @use 'sass:color';
 
+$primary-color: #0d6efd;
+
+@use 'bootstrap' with (
+  $primary: $primary-color
+);
+
 // -- 1. load with modern `@use`
-@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
-// @use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
-//   $slick-primary-color: red,
-//   $slick-link-color: red
-// );
+// @use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+  $slick-primary-color: $primary-color,
+  // $slick-input-focus-box-shadow: 0 0 0 0.25rem rgba($primary-color, 0.25),
+);
 
 // -- 2. load with legacy `@import`
 // $slick-primary-color: red;
 // $slick-link-color: red;
 // @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss';
 
-// :root {
+:root {
+  --ms-choice-border: var(--bs-border-width) solid var(--bs-border-color);
 //   --slick-button-style-bg-color: #fff;
 //   --slick-button-border-color: #c7c7c7;
-// }
+}
 
 $button-border-color: #ababab;
 $button-style-bg-color: #fff;
