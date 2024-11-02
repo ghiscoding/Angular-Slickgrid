@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. See [Conven
 
 ### Bug Fixes
 
-* more styling fixes after switching to [@use](https://github.com/use) instead of [@imports](https://github.com/imports) ([099f132](https://github.com/ghiscoding/angular-slickgrid/commit/099f13257587d1ecbee65d8408f36049314f9bef))
+* more styling fixes after switching to `@use` instead of `@imports` ([099f132](https://github.com/ghiscoding/angular-slickgrid/commit/099f13257587d1ecbee65d8408f36049314f9bef))
 
 ## [8.9.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.8.1...v8.9.0) (2024-10-19)
 
