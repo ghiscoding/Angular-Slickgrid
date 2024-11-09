@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.10.0...v8.10.1) (2024-11-09)
+
+### Bug Fixes
+
+* few more Styling Theme fixes & Grid Service fixes ([20b2e70](https://github.com/ghiscoding/angular-slickgrid/commit/20b2e7044db4f35bbf5f43926a18d5e65f9dd021))
+
 ## [8.10.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.9.0...v8.10.0) (2024-11-02)
 
 ### Features
