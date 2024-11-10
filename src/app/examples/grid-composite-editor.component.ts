@@ -583,11 +583,13 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
       // this.compositeEditorInstance.changeFormInputValue('cost', 9999.99, true);
     }
 
-    // you can also change some editor options (not all Editors supports this functionality, so far only these Editors AutoComplete, Date MultipleSelect & SingleSelect)
+    // you can also change some editor options
+    // not all Editors supports this functionality, so far only these Editors are supported are: Date, Single/Multiple Select, Slider
     /*
     if (columnDef.id === 'completed') {
-      this.compositeEditorInstance.changeFormEditorOption('percentComplete', 'filter', formValues.completed);
-      this.compositeEditorInstance.changeFormEditorOption('product', 'minLength', 3);
+      this.compositeEditorInstance.changeFormEditorOption('complexity', 'filter', true); // multiple-select dropdown editor
+      this.compositeEditorInstance.changeFormEditorOption('percentComplete', 'hideSliderNumber', formValues['completed']); // slider editor
+      this.compositeEditorInstance.changeFormEditorOption('finish', 'range', { min: 'today' }); // calendar picker, change minDate to today
     }
     */
   }
