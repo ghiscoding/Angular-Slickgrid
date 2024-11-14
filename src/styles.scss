@@ -2,8 +2,8 @@
 
 $primary-color: #0d6efd;
 
-@use 'bootstrap' with (
-  $primary: $primary-color
+@use 'bootstrap/scss/bootstrap' with (
+    $primary: $primary-color
 );
 
 // -- 1. load with modern `@use`
