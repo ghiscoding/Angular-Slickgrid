@@ -6,7 +6,6 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
-  DelimiterType,
   Editors,
   FieldType,
   FileType,
@@ -341,14 +340,6 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     });
   }
 
-  exportToCsv(type = 'csv') {
-    this.textExportService.exportToFile({
-      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-      filename: 'myExport',
-      format: (type === 'csv') ? FileType.csv : FileType.txt
-    });
-  }
-
   groupByDurationOrderByCount(sortedByCount = false) {
     this.durationOrderByCount = sortedByCount;
     this.clearGrouping(false);
@@ -428,7 +419,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
 
   toggleDraggableGroupingRow() {
     this.clearGrouping();
-    this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
+    this.gridObj.setTopHeaderPanelVisibility(!this.gridObj.getOptions().showTopHeaderPanel);
   }
 
   toggleDarkMode() {

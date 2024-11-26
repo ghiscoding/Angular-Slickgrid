@@ -6,7 +6,6 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
-  DelimiterType,
   FieldType,
   FileType,
   Filters,
@@ -246,14 +245,6 @@ export class GridGroupingComponent implements OnInit {
     this.excelExportService.exportToExcel({
       filename: 'Export',
       format: FileType.xlsx
-    });
-  }
-
-  exportToFile(type = 'csv') {
-    this.textExportService.exportToFile({
-      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
-      filename: 'myExport',
-      format: (type === 'csv') ? FileType.csv : FileType.txt
     });
   }
 

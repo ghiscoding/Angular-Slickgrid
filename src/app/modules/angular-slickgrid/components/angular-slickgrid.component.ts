@@ -173,6 +173,9 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   }
 
   @Input()
+  get columnDefinitions(): Column[] {
+    return this._columnDefinitions;
+  }
   set columnDefinitions(columnDefinitions: Column[]) {
     this._columnDefinitions = columnDefinitions;
     if (this._isGridInitialized) {
@@ -181,9 +184,6 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (columnDefinitions.length > 0) {
       this.copyColumnWidthsReference(columnDefinitions);
     }
-  }
-  get columnDefinitions(): Column[] {
-    return this._columnDefinitions;
   }
 
   // make the columnDefinitions a 2-way binding so that plugin adding cols
