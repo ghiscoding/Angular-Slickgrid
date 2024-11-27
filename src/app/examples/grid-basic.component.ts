@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Column, GridOption, Formatters, AngularGridInstance } from './../modules/angular-slickgrid';
+import { zeroPadding } from './utilities';
 
 const NB_ITEMS = 995;
 
@@ -93,8 +94,8 @@ export class GridBasicComponent implements OnDestroy, OnInit {
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
         percentComplete: randomPercent,
-        start: new Date(randomYear, randomMonth + 1, randomDay),
-        finish: new Date(randomYear + 1, randomMonth + 1, randomDay),
+        start: `${zeroPadding(randomYear)}-${zeroPadding(randomMonth + 1)}-${zeroPadding(randomDay)}`,
+        finish: `${zeroPadding(randomYear + 1)}-${zeroPadding(randomMonth + 1)}-${zeroPadding(randomDay)}`,
         effortDriven: (i % 5 === 0)
       };
     }
