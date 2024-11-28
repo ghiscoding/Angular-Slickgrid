@@ -62,7 +62,7 @@
     "rxjs": "^7.8.1"
   },
   "peerDependencies": {
-    "@angular/core": "^18.0.0"
+    "@angular/core": ">=18.0.0"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.5",
