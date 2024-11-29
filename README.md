@@ -33,6 +33,11 @@ A good starting point is the **[Docs - Quick Start](https://ghiscoding.gitbook.i
 npm install angular-slickgrid
 ```
 
+### Troubleshooting
+
+> [!WARNING]
+> This project **does not** work well with `strictTemplates` because of its use of native Custom Event, so please make sure to either `strictTemplates` or cast your event as `any` (see this [discussion](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815) for more info)
+
 ### Styling Themes
 
 Multiple styling themes are available
