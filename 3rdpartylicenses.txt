@@ -285,7 +285,12 @@ SEE LICENSE IN LICENSE
 
 @slickgrid-universal/binding
 MIT
-Copyright (c) 2020-present, Slickgrid-Universal - Ghislain B.
+Copyright (c) 2020-present, Ghislain B. 
+https://github.com/ghiscoding/slickgrid-universal
+
+and the original author of SlickGrid 
+Michael Leibman, michael{dot}leibman{at}gmail{dot}com
+http://github.com/mleibman/slickgrid
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -305,6 +310,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 @slickgrid-universal/common
 MIT
@@ -453,7 +459,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 @slickgrid-universal/event-pub-sub
 MIT
-Copyright (c) 2020-present, Slickgrid-Universal - Ghislain B.
+Copyright (c) 2020-present, Ghislain B. 
+https://github.com/ghiscoding/slickgrid-universal
+
+and the original author of SlickGrid 
+Michael Leibman, michael{dot}leibman{at}gmail{dot}com
+http://github.com/mleibman/slickgrid
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -473,6 +484,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 @slickgrid-universal/excel-export
 MIT
@@ -679,7 +691,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 @slickgrid-universal/utils
 MIT
-Copyright (c) 2020-present, Slickgrid-Universal - Ghislain B.
+Copyright (c) 2020-present, Ghislain B. 
+https://github.com/ghiscoding/slickgrid-universal
+
+and the original author of SlickGrid 
+Michael Leibman, michael{dot}leibman{at}gmail{dot}com
+http://github.com/mleibman/slickgrid
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -699,6 +716,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 autocompleter
 MIT
