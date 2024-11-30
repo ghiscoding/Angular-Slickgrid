@@ -95,7 +95,6 @@
                      [columnDefinitions]="columnDefinitions"
                      [gridOptions]="gridOptions"
                      [dataset]="dataset"
-                     (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
                      (onAngularGridCreated)="angularGridReady($event.detail)"
                      (onBeforeFilterChange)="showSpinner()"
                      (onFilterChanged)="hideSpinner()"

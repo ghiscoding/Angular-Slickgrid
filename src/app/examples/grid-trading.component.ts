@@ -89,7 +89,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
       <li>optionally change random numbers, between 0 and 10 symbols, per cycle (higher numbers means more changes)</li>
       <li>optionally change the simulation changes refresh rate in ms (lower number means more changes).</li>
       <li>you can Group by 1 of these columns: Currency, Market or Type</li>
-      <li>to show SlickGrid HUGE PERF., do the following: (1) lower Changes Rate (2) increase both Changes per Cycle and (3) lower Highlight Duration
+      <li>to show SlickGrid HUGE PERF., do the following: (1) lower Changes Rate (2) increase both Changes per Cycle and (3) lower Highlight Duration</li>
     </ul>`;
   angularGrid!: AngularGridInstance;
   gridOptions!: GridOption;

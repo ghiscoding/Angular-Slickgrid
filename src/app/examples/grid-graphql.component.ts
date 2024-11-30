@@ -35,7 +35,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     <ul class="small">
       <li><span class="red">(*) NO DATA SHOWING</span> - just change Filters &amp; Pages and look at the "GraphQL Query" changing :)</li>
       <li>This example also demos the Grid State feature, open the console log to see the changes</li>
-      <li>String column also support operator (>, >=, <, <=, <>, !=, =, ==, *)
+      <li>String column also support operator (>, >=, <, <=, <>, !=, =, ==, *)</li>
       <ul>
         <li>The (*) can be used as startsWith (ex.: "abc*" => startsWith "abc") / endsWith (ex.: "*xyz" => endsWith "xyz")</li>
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>

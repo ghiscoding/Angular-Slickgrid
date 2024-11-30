@@ -16,7 +16,7 @@
       <label for="columnSelect">Single Search:</label>
     </div>
     <div class="col">
-      <select class="form-select" class="form-select" data-test="search-column-list" name="selectedColumn"
+      <select class="form-select" data-test="search-column-list" name="selectedColumn"
               [(ngModel)]="selectedColumn"
               (ngModelChange)="updateFilter()">
         <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>

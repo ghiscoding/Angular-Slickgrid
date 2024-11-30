@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
+import { Column, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -31,7 +31,6 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
   `;
 
   private subscriptions: Subscription[] = [];
-  angularGrid!: AngularGridInstance;
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
@@ -186,10 +185,6 @@ export class GridHeaderMenuComponent implements OnInit, OnDestroy {
       };
     }
     this.dataset = mockDataset;
-  }
-
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
   }
 
   switchLanguage() {

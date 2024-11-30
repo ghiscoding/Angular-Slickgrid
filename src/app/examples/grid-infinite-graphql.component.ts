@@ -30,7 +30,6 @@ function unescapeAndLowerCase(val: string) {
   templateUrl: './grid-infinite-graphql.component.html'
 })
 export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
-  private _darkMode = false;
   private subscriptions: Subscription[] = [];
   angularGrid!: AngularGridInstance;
   backendService!: GraphqlService;
@@ -337,21 +336,5 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
     );
     // we could also force a query since we provide a Locale and it changed
     this.getCustomerApiCall(this.backendService.buildQuery() || '');
-  }
-
-  toggleDarkMode() {
-    this._darkMode = !this._darkMode;
-    this.toggleBodyBackground();
-    this.angularGrid.slickGrid?.setOptions({ darkMode: this._darkMode });
-  }
-
-  toggleBodyBackground() {
-    if (this._darkMode) {
-      document.querySelector<HTMLDivElement>('.panel-wm-content')!.classList.add('dark-mode');
-      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'dark';
-    } else {
-      document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
-      document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
-    }
   }
 }

@@ -37,7 +37,6 @@ export class GridTreeDataParentChildComponent implements OnInit {
   gridOptions!: GridOption;
   columnDefinitions!: Column[];
   dataset!: any[];
-  datasetHierarchical: any[] = [];
   loadingClass = '';
   isLargeDataset = false;
   hasNoExpandCollapseChanged = true;
