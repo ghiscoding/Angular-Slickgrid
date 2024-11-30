@@ -2,6 +2,18 @@ import { Component } from '@angular/core';
 import { SlickDataView, SlickGrid } from '../modules/angular-slickgrid';
 import { GridRowDetailComponent } from './grid-rowdetail.component';
 
+interface Item {
+  assignee: string;
+  duration: Date;
+  percentComplete: number;
+  reporter: string;
+  start: Date;
+  finish: Date;
+  effortDriven: boolean;
+  title: string;
+  rowId: number;
+}
+
 @Component({
   styles: [
     '.detail-label { display: inline-flex; align-items: center; gap: 4px; padding: 4px; }',
@@ -10,16 +22,7 @@ import { GridRowDetailComponent } from './grid-rowdetail.component';
   templateUrl: './rowdetail-view.component.html'
 })
 export class RowDetailViewComponent {
-  model!: {
-    duration: Date;
-    percentComplete: number;
-    reporter: string;
-    start: Date;
-    finish: Date;
-    effortDriven: boolean;
-    assignee: string;
-    title: string;
-  };
+  model!: Item;
 
   // you also have access to the following objects (it must match the exact property names shown below)
   addon: any; // row detail addon instance
