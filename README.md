@@ -114,3 +114,27 @@ Slickgrid-Universal has **100%** Unit Test Coverage and all Angular-Slickgrid Ex
 - [Angular 12 with WebPack 5 - how to fix polyfill error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#angular-12-with-webpack-5---how-to-fix-polyfill-error)
 - [`ngcc` Build Warnings (Angular >=8.0 && <16.0)](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#ngcc-build-warnings-angular-80--160)
 - [`strictTemplates` error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#stricttemplates-error)
+
+## Sponsors
+
+<div>
+  <span>
+    <a href="https://github.com/wundergraph" class="Link" title="Wundergraph" target="_blank"><img src="https://avatars.githubusercontent.com/u/64281914" width="50" height="50" valign="middle" /></a>
+  </span>
+  &nbsp;
+  <span>
+    <a href="https://github.com/johnsoncodehk" class="Link" title="johnsoncodehk (Volar)" target="_blank"><img src="https://avatars.githubusercontent.com/u/16279759" width="50" height="50" valign="middle" /></a>
+  </span>
+   &nbsp;
+  <span>
+    <a href="https://github.com/kevinburkett" class="Link" title="kevinburkett" target="_blank"><img class="circle avatar-user" src="https://avatars.githubusercontent.com/u/48218815?s=52&amp;v=4" width="45" height="45" valign="middle" /></a>
+  </span>
+  &nbsp;
+  <span>
+    <a href="https://github.com/anton-gustafsson" class="Link" title="anton-gustafsson" target="_blank"><img src="https://avatars.githubusercontent.com/u/22906905?s=52&v=4" width="50" height="50" valign="middle" /></a>
+  </span>
+  &nbsp;
+  <span>
+    <a href="https://github.com/gibson552" class="Link" title="gibson552" target="_blank"><img src="https://avatars.githubusercontent.com/u/84058359?s=52&v=4" width="50" height="50" valign="middle" /></a>
+  </span>
+</div>
