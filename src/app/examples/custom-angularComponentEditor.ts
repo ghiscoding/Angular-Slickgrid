@@ -32,7 +32,7 @@ export class CustomAngularComponentEditor implements Editor {
   grid: SlickGrid;
 
   constructor(private args: any) {
-    this.grid = args && args.grid;
+    this.grid = args?.grid;
     this.init();
   }
 
@@ -154,9 +154,9 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   loadValue(item: any) {
-    const itemObject = item && item[this.columnDef.field];
-    this.componentRef.instance.selectedId = itemObject && itemObject.id || '';
-    this.componentRef.instance.selectedItem = itemObject && itemObject;
+    const itemObject = item?.[this.columnDef.field];
+    this.componentRef.instance.selectedId = itemObject?.id || '';
+    this.componentRef.instance.selectedItem = itemObject;
   }
 
   serializeValue(): any {
