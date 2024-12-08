@@ -133,7 +133,7 @@ The new updated version of `ng-packagr` use strict metadata and you might get er
 ### 5. Install/Setup `ngx-translate` for Localization (optional)
 #### If you don't want to use any Translate Service and use only 1 Locale then take a look at this [demo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-locales)
 To provide locales other than English (default locale), you have 2 options that you can go with. If you only use English, there is nothing to do (you can still change some of the texts in the grid via option 1.)
-1. Using [Custom Locale](../localization/Localization-with-Custom-Locales.md), that is when you use **only 1** locale (other thank English)... this is a new feature starting from version `2.10.0` and up.
+1. Using [Custom Locale](../localization/Localization-with-Custom-Locales.md), that is when you use **only 1** locale (other than English)... this is a new feature starting from version `2.10.0` and up.
 2. Using [Localization with I18N](../localization/Localization-with-ngx-translate.md), that is when you want to use multiple locales dynamically.
 3. **NOTE** you still need to install `@ngx-translate` (since it is a peer dependency) but it should be removed after doing a production build since it's optional.
 
