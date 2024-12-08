@@ -36,10 +36,10 @@ export class GridAngularComponent implements OnInit {
   <ul>
     <li>Support of Angular Component as Custom Editor (click on any "Assignee" name cell)</li>
     <ul>
-      <li>That column uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor as an Angular Component
+      <li>That column uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor as an Angular Component</li>
       <li>Increased Grid Options "rowHeight" &amp; "headerRowHeight" to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select css styling to change it's max height</li>
     </ul>
-    <li>Support of Angular Component as Custom Filter ("Assignee" columns), which also uses "ng-select"
+    <li>Support of Angular Component as Custom Filter ("Assignee" columns), which also uses "ng-select"</li>
     <li>The 2nd "Assignee" column (showing in bold text) uses "asyncPostRender" with an Angular Component</li>
     <ul>
       <li>Why can't we use Angular Component as Customer Formatter and why do I see a slight delay in loading the data?</li>
