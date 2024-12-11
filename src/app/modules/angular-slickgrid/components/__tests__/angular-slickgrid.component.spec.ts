@@ -456,7 +456,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
   it('should throw an error when [columnDefinitions] is undefined', (done) => {
     try {
-      component.columnDefinitions = undefined as any;
+      component.columnDefinitions = '' as any;
       component.gridOptions = gridOptions;
       component.ngAfterViewInit();
       component.dataset = [];
