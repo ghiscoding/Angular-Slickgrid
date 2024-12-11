@@ -454,9 +454,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     expect(component.gridOptions.enableMouseWheelScrollHandler).toBeTrue();
   });
 
-  it('should throw an error when [gridOptions] and/or [columnDefinitions] is undefined', (done) => {
+  it('should throw an error when [columnDefinitions] is undefined', (done) => {
     try {
-      component.gridOptions = undefined as any;
+      component.columnDefinitions = undefined as any;
       component.ngAfterViewInit();
       component.dataset = [];
     } catch (e: any) {
