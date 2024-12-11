@@ -69,8 +69,8 @@ export class GridFormatterComponent implements OnInit {
       {
         id: 'completed', name: 'Completed', field: 'completed', type: FieldType.number, sortable: true, minWidth: 100,
         formatter: customEnableButtonFormatter,
-        onCellClick: (e, args) => {
-          this.toggleCompletedProperty(args && args.dataContext);
+        onCellClick: (_e, args) => {
+          this.toggleCompletedProperty(args?.dataContext);
         }
       }
     ];
