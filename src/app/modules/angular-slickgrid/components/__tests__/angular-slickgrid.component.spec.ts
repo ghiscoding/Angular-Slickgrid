@@ -460,7 +460,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       component.ngAfterViewInit();
       component.dataset = [];
     } catch (e: any) {
-      expect(e.toString()).toContain('Using `<angular-slickgrid>` requires [gridOptions] and [columnDefinitions]');
+      expect(e.toString()).toContain('Using `<angular-slickgrid>` requires [columnDefinitions]');
       component.destroy();
       done();
     }

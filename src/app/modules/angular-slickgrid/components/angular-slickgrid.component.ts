@@ -156,7 +156,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
 
   @Input() customDataView: any;
   @Input() gridId = '';
-  @Input() gridOptions!: GridOption;
+  @Input() gridOptions: GridOption = {};
 
   @Input()
   get paginationOptions(): Pagination | undefined {
@@ -359,8 +359,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   }
 
   ngAfterViewInit() {
-    if (!this.gridOptions || !this.columnDefinitions) {
-      throw new Error('Using `<angular-slickgrid>` requires [gridOptions] and [columnDefinitions], it seems that you might have forgot to provide them since at least of them is undefined.');
+    if (!this.columnDefinitions) {
+      throw new Error('Using `<angular-slickgrid>` requires [columnDefinitions], it seems that you might have forgot to provide the missing bindable input.');
     }
 
     this.initialization(this._eventHandler);
@@ -459,7 +459,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
   }
 
   emptyGridContainerElm() {
-    const gridContainerId = this.gridOptions?.gridContainerId ?? 'grid1';
+    const gridContainerId = this.gridOptions?.gridContainerId || 'grid1';
     const gridContainerElm = document.querySelector(`#${gridContainerId}`);
     emptyElement(gridContainerElm);
   }
@@ -502,7 +502,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     this._eventPubSubService.publish('onBeforeGridCreate', true);
 
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
-    this._dataset = this._dataset || [];
+    this._dataset ||= [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this._paginationOptions = this.gridOptions?.pagination;
     this.locales = this.gridOptions?.locales ?? Constants.locales;
