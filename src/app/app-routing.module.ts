@@ -40,6 +40,7 @@ import { GridTabsComponent } from './examples/grid-tabs.component';
 import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
+import { Grid43Component } from './examples/grid43.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 
 import { NgModule } from '@angular/core';
@@ -58,6 +59,7 @@ const routes: Routes = [
   { path: 'context', component: GridContextMenuComponent },
   { path: 'custom-pagination', component: GridCustomPaginationComponent },
   { path: 'custom-tooltip', component: GridCustomTooltipComponent },
+  { path: 'csv-grid', component: Grid43Component },
   { path: 'drag-recycle', component: GridDragRecycleComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'excel-formula', component: GridExcelFormulaComponent },
