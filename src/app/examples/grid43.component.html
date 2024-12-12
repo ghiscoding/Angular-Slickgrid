@@ -1,0 +1,55 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 43: Dynamically Create Grid from CSV / Excel import
+    <span class="float-end">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid43.component.ts">
+        <span class="mdi mdi-link mdi-v-align-sub"></span> code
+      </a>
+    </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="toggleSubTitle()"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
+  </h2>
+
+  <div class="subtitle">
+    Allow creating a grid dynamically by importing an external CSV or Excel file. This script demo will read the CSV file and will
+    consider the first row as the column header and create the column definitions accordingly, while the next few rows will be
+    considered the dataset. Note that this example is demoing a CSV file import but in your application you could easily implemnt
+    an Excel file uploading.
+  </div>
+
+  <div>A default CSV file can be download <a id="template-dl" [href]="templateUrl">here</a>.</div>
+
+  <div class="d-flex mt-5 align-items-end">
+    <div class="file-upload">
+      <label for="formFile" class="form-label">Choose a CSV file…</label>
+      <input class="form-control" type="file" data-test="file-upload-input" [(ngModel)]="uploadFileRef" (input)="handleFileImport($event)" />
+    </div>
+    <span class="mx-3">or</span>
+    <div>
+      <button id="uploadBtn" data-test="static-data-btn" class="btn btn-outline-secondary" (click)="handleDefaultCsv()">
+        Use default CSV data
+      </button>
+      <button class="btn btn-outline-secondary" (click)="destroyGrid()">Destroy Grid</button>
+    </div>
+  </div>
+
+  <hr />
+
+  <angular-slickgrid
+    *ngIf="gridCreated"
+    gridId="grid43"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+  >
+  </angular-slickgrid>
+</div>
