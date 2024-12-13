@@ -1,4 +1,4 @@
-## Troubleshooting 
+## Troubleshooting
 
 ### `ngcc` Build Warnings (Angular >=8.0 && <16.0)
 You might get warnings about SlickGrid while doing a production build, most of them are fine and the best way to fix them, is to simply remove/ignore the warnings, all you have to do is to add a file named `ngcc.config.js` in your project root (same location as the `angular.json` file) with the following content (you can also see this [commit](https://github.com/ghiscoding/angular-slickgrid-demos/commit/1fe8092bcd2e99ede5ab048f4a7ebe6254e4bee0) which fixes the Angular-Slickgrid-Demos prod build):
@@ -44,7 +44,6 @@ This is no longer the case. Verify if you need this module and configure a polyf
 ```ts
 "options": {
   "allowedCommonJsDependencies": [
-    "fetch-jsonp",
     "stream"
   ],
 },
