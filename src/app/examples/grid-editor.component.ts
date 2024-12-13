@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import fetchJsonp from 'fetch-jsonp';
-
 import {
   AngularGridInstance,
   AutocompleterOption,
@@ -26,6 +24,8 @@ import {
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Subject } from 'rxjs';
+
+import fetchJsonp from './jsonp.js';
 
 const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
@@ -338,11 +338,26 @@ export class GridEditorComponent implements OnInit {
               /** with Angular Http, note this demo won't work because of CORS */
               // this.http.get(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`).subscribe(data => updateCallback(data));
 
-              /** with JSONP AJAX will work locally but not on the GitHub demo because of CORS */
-              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
-                .then((response) => response.json())
-                .then((json) => updateCallback(json))
-                .catch((ex) => console.log('invalid JSONP response', ex));
+              const clearFunction = (functionName: string) => {
+                delete (window as any)[functionName];
+              }
+              const processJSONPResponse = (data: any) => {
+                updateCallback(data);
+                clearFunction('processJSONPResponse');
+              }
+
+              (window as any).processJSONPResponse = processJSONPResponse;
+              const script = document.createElement('script');
+              script.src = `http://gd.geobytes.com/AutoCompleteCity?q=${searchText}&callback=processJSONPResponse`
+              document.getElementsByTagName('head')[0].appendChild(script);
+
+              // fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`, { crossorigin: true })
+              //   .then((response) => {
+
+              //     return response.json()
+              //   })
+              //   .then((json) => updateCallback(json))
+              //   .catch((ex) => console.log('invalid JSONP response', ex));
             },
           } as AutocompleterOption,
         },
@@ -358,7 +373,7 @@ export class GridEditorComponent implements OnInit {
           filterOptions: {
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
-              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+              fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`, { crossorigin: true })
                 .then((response) => response.json())
                 .then((json) => updateCallback(json))
                 .catch((ex) => console.log('invalid JSONP response', ex));
