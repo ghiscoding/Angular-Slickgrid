@@ -351,7 +351,7 @@ export class GridEditorComponent implements OnInit {
               script.src = `http://gd.geobytes.com/AutoCompleteCity?q=${searchText}&callback=processJSONPResponse`
               document.getElementsByTagName('head')[0].appendChild(script);
 
-              // fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`, { crossorigin: true })
+              // fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
               //   .then((response) => {
 
               //     return response.json()
@@ -373,7 +373,7 @@ export class GridEditorComponent implements OnInit {
           filterOptions: {
             minLength: 3,
             fetch: (searchText: string, updateCallback: (items: false | any[]) => void) => {
-              fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`, { crossorigin: true })
+              fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
                 .then((response) => response.json())
                 .then((json) => updateCallback(json))
                 .catch((ex) => console.log('invalid JSONP response', ex));
