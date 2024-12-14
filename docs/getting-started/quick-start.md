@@ -197,13 +197,14 @@ define Angular-Slickgrid in your View
 ```
 
 ### 7. Explore the Documentation
-The last step is really to explore all the pages that are available in this documentation website, all the documentation will be place in here and so you should visit it often. For example a good starter is to look at the following
-- all the `Grid Options` you can take a look at, [Slickgrid-Universal - Grid Options](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/modules/angular-slickgrid/models/gridOption.interface.ts) interface
+The last step is really to explore all the pages that are available in the documentation, everything you need to use the library should be available in here and so you should visit it often. For example a good starter is to look at the following
+
+- for all the `Grid Options`, take a look at all the [Grid Options](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/interfaces/gridOption.interface.ts) interface.
 - [Formatters](../column-functionalities/Formatters.md)
 - [Editors](../column-functionalities/Editors.md)
 - [Filters](../column-functionalities/filters/select-filter.md)
 - [Grid Menu](../grid-functionalities/Grid-Menu.md)
-... and much more, just explorer the Documentation through the table of content (on your left)
+... and much more, just explore the Documentation through all the available pages.
 
 ### 8. How to load data with `HttpClient`?
 You might notice that all demos are made with mocked dataset that are embedded in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
