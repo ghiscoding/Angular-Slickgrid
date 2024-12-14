@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.10.2...v8.11.0) (2024-12-14)
+
+### Features
+
+* allow using AngularSlickgrid component w/o grid options ([d4e60ac](https://github.com/ghiscoding/angular-slickgrid/commit/d4e60ac503d4d2c20e8a3b0cb4b5a5228f81add0))
+* dynamically create grid from imported CSV data ([4a9c2eb](https://github.com/ghiscoding/angular-slickgrid/commit/4a9c2ebc5c61664a68a3b4ba26248c0f91d82774))
+
 ## [8.10.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.10.1...v8.10.2) (2024-11-30)
 
 ### Bug Fixes
