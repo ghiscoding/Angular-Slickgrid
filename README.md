@@ -39,20 +39,21 @@ npm install angular-slickgrid
 import { type Column, type GridOption } from 'angular-slickgrid';
 
 export class GridComponent implements OnInit {
-  columnDefinitions: Column<DataItem>[] = [];
+  columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
   dataset!: any[];
 
-onInit() {
-  this.columnDefinitions = [
-    { id: 'username', name: 'Username', field: 'username'},
-    { id: 'age', name: 'Age', field: 'age' }
-  ];
-  this.gridOptions = { /*...*/ };
-  this.dataset = [
-    { id: 1, username: 'John', age: 20 },
-    { id: 2, username: 'Jane', age: 21 }
-  ];
+  onInit() {
+    this.columnDefinitions = [
+      { id: 'username', name: 'Username', field: 'username'},
+      { id: 'age', name: 'Age', field: 'age' }
+    ];
+    this.gridOptions = { /*...*/ };
+    this.dataset = [
+      { id: 1, username: 'John', age: 20 },
+      { id: 2, username: 'Jane', age: 21 }
+    ];
+  }
 }
 ```
 
