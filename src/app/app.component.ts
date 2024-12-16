@@ -8,8 +8,6 @@ import { debounceTime, filter } from 'rxjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Angular-SlickGrid';
-
   constructor(private router: Router) { }
 
   ngOnInit() {
