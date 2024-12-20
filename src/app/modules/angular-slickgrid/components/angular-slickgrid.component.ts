@@ -511,10 +511,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is of that type
       if (typeof backendApiService.getDatasetName === 'function') {
         backendApi.internalPostProcess = (processResult: any) => {
-          const datasetName =
-            backendApi && backendApiService && typeof backendApiService.getDatasetName === 'function'
-              ? backendApiService.getDatasetName()
-              : '';
+          // prettier-ignore
+          const datasetName = backendApi && backendApiService && typeof backendApiService.getDatasetName === 'function' ? backendApiService.getDatasetName() : '';
           if (processResult?.data[datasetName]) {
             const data =
               'nodes' in processResult.data[datasetName]
