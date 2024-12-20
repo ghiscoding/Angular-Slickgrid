@@ -1,15 +1,16 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
-    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()"
-        data-test="toggle-dark-mode">
-    <span class="mdi mdi-theme-light-dark"></span>
-    <span>Toggle Dark Mode</span>
+    {{ title }}
+    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
+      <span class="mdi mdi-theme-light-dark"></span>
+      <span>Toggle Dark Mode</span>
     </button>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowdetail.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowdetail.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -28,23 +29,25 @@
 
       <span class="d-inline-flex gap-4px">
         <label for="detailViewRowCount">Detail View Rows Shown: </label>
-        <input id="detailViewRowCount" type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount">
+        <input id="detailViewRowCount" type="number" style="height: 22px; width: 40px" [(ngModel)]="detailViewRowCount" />
         <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
           Set
         </button>
       </span>
     </div>
-    <div class="alert alert-{{flashAlertType}} col-sm-6" *ngIf="message" data-test="flash-msg">
-      {{message}}
+    <div class="alert alert-{{ flashAlertType }} col-sm-6" *ngIf="message" data-test="flash-msg">
+      {{ message }}
     </div>
   </div>
 
   <hr />
 
-  <angular-slickgrid gridId="grid21"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  <angular-slickgrid
+    gridId="grid21"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-localization.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-localization.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -19,7 +21,7 @@
         <i class="mdi mdi-translate"></i>
         Switch Language
       </button>
-      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{ selectedLanguage + '.json' }}</span>
 
       <span style="margin-left: 20px">
         <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="exportToFile('csv')">
@@ -43,12 +45,14 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid12"
-                       [dataset]="dataset"
-                       [gridOptions]="gridOptions"
-                       [columnDefinitions]="columnDefinitions"
-                       (onAngularGridCreated)="angularGridReady($event.detail)"
-                       (onGridStateChanged)="gridStateChanged($event.detail)">
+    <angular-slickgrid
+      gridId="grid12"
+      [dataset]="dataset"
+      [gridOptions]="gridOptions"
+      [columnDefinitions]="columnDefinitions"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+      (onGridStateChanged)="gridStateChanged($event.detail)"
+    >
     </angular-slickgrid>
   </div>
 </div>

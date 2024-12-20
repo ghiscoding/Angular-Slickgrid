@@ -1,18 +1,19 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-menu.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-menu.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="external-gridmenu"
-          (click)="toggleGridMenu($event)">
+  <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="external-gridmenu" (click)="toggleGridMenu($event)">
     <i class="mdi mdi-menu"></i>
     Grid Menu
   </button>
@@ -22,16 +23,16 @@
   </button>
 
   <strong>Locale:</strong>
-  <span style="font-style: italic"
-        data-test="selected-locale">{{selectedLanguage + '.json'}}
-  </span>
+  <span style="font-style: italic" data-test="selected-locale">{{ selectedLanguage + '.json' }} </span>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid9"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)">
+    <angular-slickgrid
+      gridId="grid9"
+      [columnDefinitions]="columnDefinitions"
+      [gridOptions]="gridOptions"
+      [dataset]="dataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+    >
     </angular-slickgrid>
   </div>
 </div>

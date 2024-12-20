@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-frozen.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-frozen.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -14,29 +16,28 @@
   <div class="row gx-2 mb-2 align-items-end">
     <div class="col-2">
       <label for="pinned-rows">Pinned Rows: </label>
-      <input id="pinned-rows" class="form-control" type="number" [(ngModel)]="frozenRowCount">
+      <input id="pinned-rows" class="form-control" type="number" [(ngModel)]="frozenRowCount" />
     </div>
     <div class="col-auto gr-2">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenRowCount()">
-        Set
-      </button>
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenRowCount()">Set</button>
     </div>
     <div class="col-1"></div>
     <div class="col-2">
       <label for="pinned-columns">Pinned Columns: </label>
-      <input id="pinned-columns" class="form-control" type="number" [(ngModel)]="frozenColumnCount">
+      <input id="pinned-columns" class="form-control" type="number" [(ngModel)]="frozenColumnCount" />
     </div>
     <div class="col-auto">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenColumnCount()">
-        Set
-      </button>
+      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="changeFrozenColumnCount()">Set</button>
     </div>
   </div>
 
   <div class="row">
     <div class="col-12">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns(-1)"
-              data-test="remove-frozen-column-button">
+      <button
+        class="btn btn-outline-secondary btn-sm btn-icon"
+        (click)="setFrozenColumns(-1)"
+        data-test="remove-frozen-column-button"
+      >
         <i class="mdi mdi-close"></i> Remove Frozen Columns
       </button>
       <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns(2)" data-test="set-3frozen-columns">
@@ -47,19 +48,21 @@
         <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="toggleFrozenBottomRows()">
           <i class="mdi mdi-flip-vertical"></i> Toggle Pinned Rows
         </button>
-        <span style="font-weight: bold;">: {{ isFrozenBottom ? 'Bottom' : 'Top' }}</span>
+        <span style="font-weight: bold">: {{ isFrozenBottom ? 'Bottom' : 'Top' }}</span>
       </span>
     </div>
   </div>
   <div class="row mt-2 mb-2">
-    <hr>
+    <hr />
   </div>
-  <angular-slickgrid gridId="grid20"
-                     gridWidth="875"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  <angular-slickgrid
+    gridId="grid20"
+    gridWidth="875"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

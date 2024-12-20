@@ -5,7 +5,8 @@
       <a
         style="font-size: 18px"
         target="_blank"
-        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid43.component.ts">
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid43.component.ts"
+      >
         <span class="mdi mdi-link mdi-v-align-sub"></span> code
       </a>
     </span>
@@ -31,7 +32,13 @@
   <div class="d-flex mt-5 align-items-end">
     <div class="file-upload">
       <label for="formFile" class="form-label">Choose a CSV file…</label>
-      <input class="form-control" type="file" data-test="file-upload-input" [(ngModel)]="uploadFileRef" (input)="handleFileImport($event)" />
+      <input
+        class="form-control"
+        type="file"
+        data-test="file-upload-input"
+        [(ngModel)]="uploadFileRef"
+        (input)="handleFileImport($event)"
+      />
     </div>
     <span class="mx-3">or</span>
     <div>

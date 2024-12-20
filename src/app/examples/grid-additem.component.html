@@ -1,16 +1,17 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-additem.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-additem.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
-  <div class="subtitle"
-       [innerHTML]="subTitle"></div>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="col-sm-12">
     <span>
@@ -23,26 +24,41 @@
           <i class="mdi mdi-arrow-down"></i>
         </button>
       </div>
-      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="add-new-item-top-btn"
-              (click)="addNewItem()">Add New Mocked Item</button>
-      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="add-new-item-bottom-btn"
-              (click)="addNewItem('bottom')">Add New Mocked Item (bottom)</button>
-      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="update-second-item-btn"
-              (click)="updateSecondItem()">Update 2nd Row Item with Random Duration</button>
-      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="highlight-row5-btn"
-              (click)="highlighFifthRow()">Highlight 5th Row</button>
-      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="highlight-duration40-btn"
-              (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over 40</button>
+      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="add-new-item-top-btn" (click)="addNewItem()">
+        Add New Mocked Item
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary btn-icon"
+        data-test="add-new-item-bottom-btn"
+        (click)="addNewItem('bottom')"
+      >
+        Add New Mocked Item (bottom)
+      </button>
+      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="update-second-item-btn" (click)="updateSecondItem()">
+        Update 2nd Row Item with Random Duration
+      </button>
+      <button class="btn btn-sm btn-outline-secondary btn-icon" data-test="highlight-row5-btn" (click)="highlighFifthRow()">
+        Highlight 5th Row
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary btn-icon"
+        data-test="highlight-duration40-btn"
+        (click)="changeDurationBackgroundColor()"
+      >
+        Highlight Rows with Duration over 40
+      </button>
     </span>
     <hr />
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid11"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)">
+    <angular-slickgrid
+      gridId="grid11"
+      [columnDefinitions]="columnDefinitions"
+      [gridOptions]="gridOptions"
+      [dataset]="dataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+    >
     </angular-slickgrid>
   </div>
 </div>

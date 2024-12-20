@@ -2,16 +2,18 @@
   <h2>
     <span [innerHTML]="title"></span>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-parent-child.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-parent-child.component.ts"
+      >
         <span class="mdi mdi-link mdi-v-align-sub"></span> code
       </a>
     </span>
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div class="row" style="margin-bottom: 4px;">
+  <div class="row" style="margin-bottom: 4px">
     <div class="col-md-12">
       <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="add-500-rows-btn" (click)="loadData(500)">
         500 rows
@@ -19,34 +21,52 @@
       <button class="btn btn-outline-secondary btn-xs btn-icon" data-test="add-50k-rows-btn" (click)="loadData(25000)">
         25k rows
       </button>
-      <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-xs btn-icon"
-              data-test="change-filter-dynamically">
+      <button
+        (click)="dynamicallyChangeFilter()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        data-test="change-filter-dynamically"
+      >
         <span class="mdi mdi-filter-outline"></span>
         <span>Dynamically Change Filter (% complete &lt; 40)</span>
       </button>
-      <button (click)="collapseAllWithoutEvent()" data-test="collapse-all-noevent-btn"
-              class="btn btn-outline-secondary btn-xs btn-icon">
+      <button
+        (click)="collapseAllWithoutEvent()"
+        data-test="collapse-all-noevent-btn"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+      >
         <span class="icon mdi mdi-arrow-collapse"></span>
         <span>Collapse All (without triggering event)</span>
       </button>
-      <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
-              class="btn btn-outline-secondary btn-xs btn-icon"
-              [disabled]="hasNoExpandCollapseChanged">
+      <button
+        (click)="reapplyToggledItems()"
+        data-test="reapply-toggled-items-btn"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        [disabled]="hasNoExpandCollapseChanged"
+      >
         <span class="icon mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
       </button>
-      <button (click)="collapseAllWithoutEvent()" class="btn btn-outline-secondary btn-xs btn-icon"
-              data-test="collapse-all-noevent-btn">
+      <button
+        (click)="collapseAllWithoutEvent()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        data-test="collapse-all-noevent-btn"
+      >
         <span class="mdi mdi-arrow-collapse"></span>
         <span>Collapse All (without triggering event)</span>
       </button>
-      <button (click)="dynamicallyToggledFirstParent()" class="btn btn-outline-secondary btn-xs btn-icon"
-              data-test="dynamically-toggle-first-parent-btn">
+      <button
+        (click)="dynamicallyToggledFirstParent()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        data-test="dynamically-toggle-first-parent-btn"
+      >
         <span>Dynamically Toggle First Parent</span>
       </button>
-      <button (click)="reapplyToggledItems()" data-test="reapply-toggled-items-btn"
-              class="btn btn-outline-secondary btn-xs btn-icon"
-              [disabled]="hasNoExpandCollapseChanged">
+      <button
+        (click)="reapplyToggledItems()"
+        data-test="reapply-toggled-items-btn"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        [disabled]="hasNoExpandCollapseChanged"
+      >
         <span class="mdi mdi-history"></span>
         <span>Reapply Previous Toggled Items</span>
       </button>
@@ -75,12 +95,18 @@
       <button (click)="logTreeDataToggledItems()" class="btn btn-outline-secondary btn-xs btn-icon">
         <span>Log Tree Toggled Items</span>
       </button>
-      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-xs btn-icon"
-              title="console.log of the Flat dataset">
+      <button
+        (click)="logFlatStructure()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        title="console.log of the Flat dataset"
+      >
         <span>Log Flat Structure</span>
       </button>
-      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-xs btn-icon"
-              title="console.log of the Hierarchical Tree dataset">
+      <button
+        (click)="logHierarchicalStructure()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        title="console.log of the Hierarchical Tree dataset"
+      >
         <span>Log Hierarchical Structure</span>
       </button>
       <button (click)="dynamicallyChangeFilter()" class="btn btn-outline-secondary btn-xs btn-icon">
@@ -91,22 +117,24 @@
 
   <br />
 
-  <angular-slickgrid gridId="grid28"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
-                     (onAngularGridCreated)="angularGridReady($event.detail)"
-                     (onBeforeFilterChange)="showSpinner()"
-                     (onFilterChanged)="hideSpinner()"
-                     (onBeforeFilterClear)="showSpinner()"
-                     (onFilterCleared)="hideSpinner()"
-                     (onBeforeSortChange)="showSpinner()"
-                     (onSortChanged)="hideSpinner()"
-                     (onBeforeToggleTreeCollapse)="showSpinner()"
-                     (onToggle-tree-collapsed)="hideSpinner()"
-                     (onTree-full-toggle-start)="showSpinner()"
-                     (onTree-full-toggle-end)="handleOnTreeFullToggleEnd($event.detail)"
-                     (onTree-item-toggled)="handleOnTreeItemToggled($event.detail)">
+  <angular-slickgrid
+    gridId="grid28"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onGridStateChanged)="handleOnGridStateChanged($event.detail)"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onBeforeFilterChange)="showSpinner()"
+    (onFilterChanged)="hideSpinner()"
+    (onBeforeFilterClear)="showSpinner()"
+    (onFilterCleared)="hideSpinner()"
+    (onBeforeSortChange)="showSpinner()"
+    (onSortChanged)="hideSpinner()"
+    (onBeforeToggleTreeCollapse)="showSpinner()"
+    (onToggle-tree-collapsed)="hideSpinner()"
+    (onTree-full-toggle-start)="showSpinner()"
+    (onTree-full-toggle-end)="handleOnTreeFullToggleEnd($event.detail)"
+    (onTree-item-toggled)="handleOnTreeItemToggled($event.detail)"
+  >
   </angular-slickgrid>
 </div>

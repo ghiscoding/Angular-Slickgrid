@@ -1,15 +1,16 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
-    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()"
-          data-test="toggle-dark-mode">
+    {{ title }}
+    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
       <span class="mdi mdi-theme-light-dark"></span>
       <span>Toggle Dark Mode</span>
     </button>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-trading.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-trading.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -21,43 +22,49 @@
       <div class="col-sm-12 d-flex align-items-center">
         <div class="range">
           <label for="refreshRateRange" class="form-label me-1">Changes Rate(ms)</label>
-          <input type="range" class="form-range" id="refreshRateRange" min="0" max="250" [(ngModel)]="refreshRate">
+          <input type="range" class="form-range" id="refreshRateRange" min="0" max="250" [(ngModel)]="refreshRate" />
           <span class="refresh-rate">
-            <input type="number" [(ngModel)]="refreshRate">
+            <input type="number" [(ngModel)]="refreshRate" />
           </span>
         </div>
         <span class="ms-3 me-1">
           <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="start-btn" (click)="startSimulation()">
-            <li class="mdi mdi-play-circle-outline"></li> Start Simulation
+            <li class="mdi mdi-play-circle-outline"></li>
+            Start Simulation
           </button>
         </span>
         <span class="me-3">
           <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="stop-btn" (click)="stopSimulation()">
-            <li class="mdi mdi-stop-circle-outline"></li> Stop Simulation
+            <li class="mdi mdi-stop-circle-outline"></li>
+            Stop Simulation
           </button>
         </span>
         <span class="mx-1">
           <label for="change-per-cycle-input">Changes p/Cycle</label>
-          <input type="number" id="change-per-cycle-input" [(ngModel)]="minChangePerCycle" [max]="maxChangePerCycle">
+          <input type="number" id="change-per-cycle-input" [(ngModel)]="minChangePerCycle" [max]="maxChangePerCycle" />
           to
-          <input type="number" [(ngModel)]="maxChangePerCycle" [min]="minChangePerCycle">
+          <input type="number" [(ngModel)]="maxChangePerCycle" [min]="minChangePerCycle" />
         </span>
         <span class="ms-2">
           <label for="highlight-input">Highlight Duration(ms)</label>
-          <input type="number" id="highlight-input" data-test="highlight-input" [(ngModel)]="highlightDuration">
+          <input type="number" id="highlight-input" data-test="highlight-input" [(ngModel)]="highlightDuration" />
         </span>
         <div class="ms-auto">
           <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="toggleFullScreen()">
-            <li [class]="isFullScreen ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'"></li> Toggle Full-Screen
+            <li [class]="isFullScreen ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'"></li>
+            Toggle Full-Screen
           </button>
         </div>
       </div>
     </div>
 
-    <angular-slickgrid gridId="grid33"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)">
+    <angular-slickgrid
+      gridId="grid33"
+      [columnDefinitions]="columnDefinitions"
+      [gridOptions]="gridOptions"
+      [dataset]="dataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+    >
     </angular-slickgrid>
   </div>
+</div>

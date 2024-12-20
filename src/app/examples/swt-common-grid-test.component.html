@@ -2,9 +2,11 @@
   <h2>
     <span [innerHTML]="title"></span>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/swt-common-grid-test.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/swt-common-grid-test.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -22,9 +24,11 @@
       <swt-common-grid-pagination #commonGridPag1></swt-common-grid-pagination>
     </div>
   </div>
-  <swt-common-grid #commonGrid1
-                   (onFilterChanged)="filterChanged($event.detail)"
-                   (onPaginationChanged)="paginationChanged($event.detail)"
-                   (onSortChanged)="sortChanged($event.detail)">
+  <swt-common-grid
+    #commonGrid1
+    (onFilterChanged)="filterChanged($event.detail)"
+    (onPaginationChanged)="paginationChanged($event.detail)"
+    (onSortChanged)="sortChanged($event.detail)"
+  >
   </swt-common-grid>
 </div>

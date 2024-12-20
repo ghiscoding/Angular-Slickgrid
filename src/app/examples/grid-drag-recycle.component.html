@@ -2,9 +2,11 @@
   <h2>
     Example 41: Drag & Drop
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-drag-recycle.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-drag-recycle.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -21,29 +23,28 @@
   <div class="row">
     <div class="col">
       <div class="grid41">
-        <angular-slickgrid gridId="grid41"
-                      [columnDefinitions]="columnDefinitions"
-                      [gridOptions]="gridOptions"
-                      [dataset]="dataset"
-                      (onAngularGridCreated)="angularGridReady($event.detail)"
-                      (onDragInit)="handleOnDragInit($event.detail.eventData)"
-                      (onDragStart)="handleOnDragStart($event.detail.eventData)"
-                      (onDrag)="handleOnDrag($event.detail.eventData, $event.detail.args)"
-                      (onDragEnd)="handleOnDragEnd($event.detail.eventData, $event.detail.args)"
-          >
-            <ng-template #slickgridHeader>
-              <div class="grid-header">
-                <label>Santa's TODO list:</label>
-              </div>
-            </ng-template>
+        <angular-slickgrid
+          gridId="grid41"
+          [columnDefinitions]="columnDefinitions"
+          [gridOptions]="gridOptions"
+          [dataset]="dataset"
+          (onAngularGridCreated)="angularGridReady($event.detail)"
+          (onDragInit)="handleOnDragInit($event.detail.eventData)"
+          (onDragStart)="handleOnDragStart($event.detail.eventData)"
+          (onDrag)="handleOnDrag($event.detail.eventData, $event.detail.args)"
+          (onDragEnd)="handleOnDragEnd($event.detail.eventData, $event.detail.args)"
+        >
+          <ng-template #slickgridHeader>
+            <div class="grid-header">
+              <label>Santa's TODO list:</label>
+            </div>
+          </ng-template>
         </angular-slickgrid>
       </div>
     </div>
 
     <div class="col">
-      <div id="dropzone" class="recycle-bin mt-4">
-        Recycle Bin
-      </div>
+      <div id="dropzone" class="recycle-bin mt-4">Recycle Bin</div>
     </div>
   </div>
 </div>

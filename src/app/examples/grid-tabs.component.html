@@ -1,10 +1,12 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tabs.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tabs.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -15,19 +17,23 @@
     <tabset>
       <tab heading="Javascript" id="javascript" data-test="javascript-tab">
         <h4>Grid 1 - Load Local Data</h4>
-        <angular-slickgrid gridId="grid1"
-                           [columnDefinitions]="columnDefinitions1"
-                           [gridOptions]="gridOptions1"
-                           [dataset]="dataset1">
+        <angular-slickgrid
+          gridId="grid1"
+          [columnDefinitions]="columnDefinitions1"
+          [gridOptions]="gridOptions1"
+          [dataset]="dataset1"
+        >
         </angular-slickgrid>
       </tab>
       <tab heading="Http-Client" data-test="http-tab" (selectTab)="resizeGrid2()">
         <h4>Grid 2 - Load a JSON dataset through Http-Client</h4>
-        <angular-slickgrid gridId="grid2"
-                           [columnDefinitions]="columnDefinitions2"
-                           [gridOptions]="gridOptions2"
-                           [dataset]="dataset2"
-                           (onAngularGridCreated)="angularGrid2Ready($event.detail)">
+        <angular-slickgrid
+          gridId="grid2"
+          [columnDefinitions]="columnDefinitions2"
+          [gridOptions]="gridOptions2"
+          [dataset]="dataset2"
+          (onAngularGridCreated)="angularGrid2Ready($event.detail)"
+        >
         </angular-slickgrid>
       </tab>
     </tabset>
