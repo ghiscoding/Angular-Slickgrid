@@ -36,7 +36,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
 };
 
 @Component({
-  templateUrl: './grid-range.component.html'
+  templateUrl: './grid-range.component.html',
 })
 export class GridRangeComponent implements OnInit, OnDestroy {
   title = 'Example 25: Filtering from Range of Search Values';
@@ -68,9 +68,9 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   filterList = [
     { value: '', label: '' },
     { value: 'currentYearTasks', label: 'Current Year Completed Tasks' },
-    { value: 'nextYearTasks', label: 'Next Year Active Tasks' }
+    { value: 'nextYearTasks', label: 'Next Year Active Tasks' },
   ];
-  selectedPredefinedFilter!: { value: string; label: string; };
+  selectedPredefinedFilter!: { value: string; label: string };
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -87,22 +87,35 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'id', nameKey: 'TITLE', minWidth: 100,
+        id: 'title',
+        name: 'Title',
+        field: 'id',
+        nameKey: 'TITLE',
+        minWidth: 100,
         formatter: taskTranslateFormatter,
         sortable: true,
         filterable: true,
-        params: { useFormatterOuputToFilter: true }
+        params: { useFormatterOuputToFilter: true },
       },
       {
-        id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
+        id: 'description',
+        name: 'Description',
+        field: 'description',
+        filterable: true,
+        sortable: true,
+        minWidth: 80,
         type: FieldType.string,
         filter: {
           model: CustomInputFilter, // create a new instance to make each Filter independent from each other
-          enableTrimWhiteSpace: true // or use global "enableFilterTrimWhiteSpace" to trim on all Filters
-        }
+          enableTrimWhiteSpace: true, // or use global "enableFilterTrimWhiteSpace" to trim on all Filters
+        },
       },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', minWidth: 120,
+        id: 'percentComplete',
+        name: '% Complete',
+        field: 'percentComplete',
+        nameKey: 'PERCENT_COMPLETE',
+        minWidth: 120,
         sortable: true,
         customTooltip: { position: 'center' },
         formatter: Formatters.progressBar,
@@ -114,42 +127,74 @@ export class GridRangeComponent implements OnInit, OnDestroy {
           operator: OperatorType.rangeInclusive, // defaults to inclusive
           filterOptions: {
             hideSliderNumbers: false, // you can hide/show the slider numbers on both side
-            min: 0, step: 5
-          } as SliderRangeOption
-        }
+            min: 0,
+            step: 5,
+          } as SliderRangeOption,
+        },
       },
       {
-        id: 'start', name: 'Start', field: 'start', nameKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, width: 100, exportWithFormatter: true,
-        type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        nameKey: 'START',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 75,
+        width: 100,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH', formatter: Formatters.dateIso, sortable: true, minWidth: 75, width: 120, exportWithFormatter: true,
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        nameKey: 'FINISH',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 75,
+        width: 120,
+        exportWithFormatter: true,
         type: FieldType.date,
         filterable: true,
         filter: {
           model: Filters.dateRange,
-        }
+        },
       },
       {
-        id: 'duration', field: 'duration', nameKey: 'DURATION', maxWidth: 90,
+        id: 'duration',
+        field: 'duration',
+        nameKey: 'DURATION',
+        maxWidth: 90,
         type: FieldType.number,
         sortable: true,
-        filterable: true, filter: {
+        filterable: true,
+        filter: {
           model: Filters.input,
-          operator: OperatorType.rangeExclusive // defaults to inclusive
-        }
+          operator: OperatorType.rangeExclusive, // defaults to inclusive
+        },
       },
       {
-        id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 90,
+        id: 'completed',
+        name: 'Completed',
+        field: 'completed',
+        nameKey: 'COMPLETED',
+        minWidth: 85,
+        maxWidth: 90,
         formatter: Formatters.checkmarkMaterial,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
           model: Filters.singleSelect,
-          filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption
-        }
-      }
+          filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption,
+        },
+      },
     ];
 
     const today = new Date();
@@ -159,7 +204,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableExcelCopyBuffer: true,
       enableFiltering: true,
@@ -199,7 +244,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   mockData(itemCount: number, startingIndex = 0): any[] {
     // mock a dataset
     const tempDataset = [];
-    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
+    for (let i = startingIndex; i < startingIndex + itemCount; i++) {
       const randomDuration = randomBetween(0, 365);
       const randomYear = randomBetween(new Date().getFullYear(), new Date().getFullYear() + 1);
       const randomMonth = randomBetween(0, 12);
@@ -209,13 +254,13 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        description: (i % 5) ? 'desc ' + i : null, // also add some random to test NULL field
+        description: i % 5 ? 'desc ' + i : null, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: (i % 4) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
+        start: i % 4 ? null : new Date(randomYear, randomMonth, randomDay), // provide a Date format
         finish: new Date(randomYear, randomMonth, randomDay),
-        completed: (randomPercent === 100) ? true : false,
+        completed: randomPercent === 100 ? true : false,
       });
     }
 
@@ -242,8 +287,8 @@ export class GridRangeComponent implements OnInit, OnDestroy {
       window.setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
-          itemCount: args && args.current || 0,
-          totalItemCount: this.dataset.length || 0
+          itemCount: (args && args.current) || 0,
+          totalItemCount: this.dataset.length || 0,
         };
       });
     }
@@ -276,7 +321,11 @@ export class GridRangeComponent implements OnInit, OnDestroy {
     switch (filterValue) {
       case 'currentYearTasks':
         filters = [
-          { columnId: 'finish', operator: OperatorType.rangeInclusive, searchTerms: [`${currentYear}-01-01`, `${currentYear}-12-31`] },
+          {
+            columnId: 'finish',
+            operator: OperatorType.rangeInclusive,
+            searchTerms: [`${currentYear}-01-01`, `${currentYear}-12-31`],
+          },
           { columnId: 'completed', operator: OperatorType.equal, searchTerms: [true] },
         ];
         break;
@@ -288,7 +337,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   }
 
   switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     this.subscriptions.push(
       this.translate.use(nextLanguage).subscribe(() => {
         this.selectedLanguage = nextLanguage;

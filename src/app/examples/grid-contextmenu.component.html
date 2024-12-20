@@ -1,14 +1,15 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
-    <button class="btn btn-outline-secondary btn-sm ms-3" (click)="toggleDarkMode()"
-          data-test="toggle-dark-mode">
+    {{ title }}
+    <button class="btn btn-outline-secondary btn-sm ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
       <span>Toggle Dark Mode</span>
     </button>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-contextmenu.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-contextmenu.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -19,24 +20,36 @@
     <div class="col-12">
       <span class="context-menu">
         <strong>Context Menu:</strong>
-        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showContextCommandsAndOptions(false)"
-                data-test="context-menu-priority-only-button">
+        <button
+          class="btn btn-outline-secondary btn-xs btn-icon"
+          (click)="showContextCommandsAndOptions(false)"
+          data-test="context-menu-priority-only-button"
+        >
           Show Priority Options Only
         </button>
-        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showContextCommandsAndOptions(true)"
-                data-test="context-menu-commands-and-priority-button">
+        <button
+          class="btn btn-outline-secondary btn-xs btn-icon"
+          (click)="showContextCommandsAndOptions(true)"
+          data-test="context-menu-commands-and-priority-button"
+        >
           Show Commands & Priority Options
         </button>
       </span>
 
       <span class="cell-menu">
         <strong>Cell Menu:</strong>
-        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showCellMenuCommandsAndOptions(false)"
-                data-test="cell-menu-commands-and-options-false-button">
+        <button
+          class="btn btn-outline-secondary btn-xs btn-icon"
+          (click)="showCellMenuCommandsAndOptions(false)"
+          data-test="cell-menu-commands-and-options-false-button"
+        >
           Show Action Commands Only
         </button>
-        <button class="btn btn-outline-secondary btn-xs btn-icon" (click)="showCellMenuCommandsAndOptions(true)"
-                data-test="cell-menu-commands-and-options-true-button">
+        <button
+          class="btn btn-outline-secondary btn-xs btn-icon"
+          (click)="showCellMenuCommandsAndOptions(true)"
+          data-test="cell-menu-commands-and-options-true-button"
+        >
           Show Actions Commands & Completed Options
         </button>
       </span>
@@ -50,17 +63,19 @@
       </button>
       <b>Locale:</b>
       <span style="font-style: italic" data-test="selected-locale">
-        {{selectedLanguage + '.json'}}
+        {{ selectedLanguage + '.json' }}
       </span>
     </div>
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid26"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)">
+    <angular-slickgrid
+      gridId="grid26"
+      [columnDefinitions]="columnDefinitions"
+      [gridOptions]="gridOptions"
+      [dataset]="dataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+    >
     </angular-slickgrid>
   </div>
 </div>

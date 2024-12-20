@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-graphql.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-graphql.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -14,7 +16,7 @@
   <div class="row">
     <div class="col-sm-5">
       <div [class]="status.class" role="alert" data-test="status">
-        <strong>Status: </strong> {{status.text}}
+        <strong>Status: </strong> {{ status.text }}
         <span [hidden]="!processing">
           <i class="mdi mdi-sync mdi-spin-1s"></i>
         </span>
@@ -22,27 +24,41 @@
 
       <div class="row">
         <div class="col-md-12">
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-filters-sorting"
-                  (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+          <button
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            data-test="clear-filters-sorting"
+            (click)="clearAllFiltersAndSorts()"
+            title="Clear all Filters & Sorts"
+          >
             <i class="mdi mdi-filter-remove-outline"></i>
             Clear all Filter & Sorts
           </button>
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter"
-                  (click)="setFiltersDynamically()">
+          <button
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            data-test="set-dynamic-filter"
+            (click)="setFiltersDynamically()"
+          >
             Set Filters Dynamically
           </button>
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting"
-                  (click)="setSortingDynamically()">
+          <button
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            data-test="set-dynamic-sorting"
+            (click)="setSortingDynamically()"
+          >
             Set Sorting Dynamically
           </button>
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="reset-presets"
-                  (click)="resetToOriginalPresets()">
+          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="reset-presets" (click)="resetToOriginalPresets()">
             Reset Original Presets
           </button>
           <label for="serverdelay" class="ml-4">Server Delay: </label>
-          <input id="serverdelay" type="number" data-test="server-delay" style="width: 55px"
-                [(ngModel)]="serverWaitDelay"
-                title="input a fake timer delay to simulate slow server response" />
+          <input
+            id="serverdelay"
+            type="number"
+            data-test="server-delay"
+            style="width: 55px"
+            [(ngModel)]="serverWaitDelay"
+            title="input a fake timer delay to simulate slow server response"
+          />
         </div>
       </div>
       <div class="row mt-1">
@@ -53,25 +69,40 @@
           </button>
           <strong>Locale:</strong>
           <span style="font-style: italic" data-test="selected-locale">
-            {{selectedLanguage + '.json'}}
+            {{ selectedLanguage + '.json' }}
           </span>
         </div>
 
         <span style="margin-left: 10px">
           <label class="radio-inline control-label" for="radioOffset">
-            <input type="radio" name="inlineRadioOptions" data-test="offset" id="radioOffset" checked [value]="false"
-            (change)="setIsWithCursor(false)"> Offset
+            <input
+              type="radio"
+              name="inlineRadioOptions"
+              data-test="offset"
+              id="radioOffset"
+              checked
+              [value]="false"
+              (change)="setIsWithCursor(false)"
+            />
+            Offset
           </label>
           <label class="radio-inline control-label" for="radioCursor">
-            <input type="radio" name="inlineRadioOptions" data-test="cursor" id="radioCursor" [value]="true"
-            (change)="setIsWithCursor(true)"> Cursor
+            <input
+              type="radio"
+              name="inlineRadioOptions"
+              data-test="cursor"
+              id="radioCursor"
+              [value]="true"
+              (change)="setIsWithCursor(true)"
+            />
+            Cursor
           </label>
         </span>
       </div>
       <br />
       <div *ngIf="metrics" style="margin: 10px 0px">
-        <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
-        | {{metrics.totalItemCount}} items
+        <b>Metrics:</b> {{ metrics.endTime | date: "yyyy-MM-dd hh:mm aaaaa'm'" }} | {{ metrics.executionTime }}ms |
+        {{ metrics.totalItemCount }} items
       </div>
       <div class="row mb-2">
         <div class="col-md-12">
@@ -97,12 +128,14 @@
   </div>
 
   <hr />
-  <angular-slickgrid gridId="grid6"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)"
-                     (onGridStateChanged)="gridStateChanged($event.detail)"
-                     (onBeforeGridDestroy)="saveCurrentGridState()">
+  <angular-slickgrid
+    gridId="grid6"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onGridStateChanged)="gridStateChanged($event.detail)"
+    (onBeforeGridDestroy)="saveCurrentGridState()"
+  >
   </angular-slickgrid>
 </div>

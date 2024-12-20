@@ -81,7 +81,10 @@ export class CustomAngularComponentEditor implements Editor {
       OR this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomEditor, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
     if (this.columnEditor?.params.component) {
-      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(
+        this.columnEditor.params.component,
+        this.args.container
+      );
       this.componentRef = componentOutput?.componentRef;
 
       // here we override the collection object of the Angular Component
@@ -89,9 +92,7 @@ export class CustomAngularComponentEditor implements Editor {
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
       // when our model (item object) changes, we'll call a save of the slickgrid editor
-      this._subscriptions.push(
-        this.componentRef.instance.onItemChanged.subscribe((_item: any) => this.save())
-      );
+      this._subscriptions.push(this.componentRef.instance.onItemChanged.subscribe((_item: any) => this.save()));
     }
   }
 
@@ -164,7 +165,10 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   isValueChanged() {
-    return (!(this.componentRef.instance.selectedId === '' && (this.defaultId === null || this.defaultId === undefined))) && (this.componentRef.instance.selectedId !== this.defaultId);
+    return (
+      !(this.componentRef.instance.selectedId === '' && (this.defaultId === null || this.defaultId === undefined)) &&
+      this.componentRef.instance.selectedId !== this.defaultId
+    );
   }
 
   validate(): EditorValidationResult {
@@ -177,7 +181,7 @@ export class CustomAngularComponentEditor implements Editor {
     // if user want it to be required, he would have to provide his own validator
     return {
       valid: true,
-      msg: null
+      msg: null,
     };
   }
 }

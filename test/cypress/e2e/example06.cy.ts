@@ -16,37 +16,33 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
   });
 
   it('should have a grid of size 900 by 200px', () => {
-    cy.get('#slickGridContainer-grid6')
-      .should('have.css', 'width', '900px');
+    cy.get('#slickGridContainer-grid6').should('have.css', 'width', '900px');
 
-    cy.get('#slickGridContainer-grid6 > .slickgrid-container')
-      .should($el => expect(parseInt(`${$el.height()}`, 10)).to.eq(200));
+    cy.get('#slickGridContainer-grid6 > .slickgrid-container').should(($el) =>
+      expect(parseInt(`${$el.height()}`, 10)).to.eq(200)
+    );
   });
 
   it('should have English Text inside some of the Filters', () => {
-    cy.get('.search-filter.filter-gender .ms-choice > span')
-      .contains('Male');
+    cy.get('.search-filter.filter-gender .ms-choice > span').contains('Male');
   });
 
   it('should have GraphQL query with defined Grid Presets', () => {
-    cy.get('.search-filter.filter-name select')
-      .should('not.have.value');
+    cy.get('.search-filter.filter-name select').should('not.have.value');
 
     cy.get('.search-filter.filter-name')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq('Joh*oe'));
+      .then((text) => expect(text).to.eq('Joh*oe'));
 
-    cy.get('.search-filter.filter-gender .ms-choice > span')
-      .contains('Male');
+    cy.get('.search-filter.filter-gender .ms-choice > span').contains('Male');
 
-    cy.get('.search-filter.filter-company .ms-choice > span')
-      .contains('Company XYZ');
+    cy.get('.search-filter.filter-company .ms-choice > span').contains('Company XYZ');
 
     cy.get('.search-filter.filter-finish')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
+      .then((text) => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
     cy.get('[data-test=alert-graphql-query]').should('exist');
     cy.get('[data-test=alert-graphql-query]').should('contain', 'GraphQL Query');
@@ -54,24 +50,23 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:20,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:20,offset:20,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
             {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
           ],locale:"en",userId:123){
-            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should use fake smaller server wait delay for faster E2E tests', () => {
-    cy.get('[data-test="server-delay"]')
-      .clear()
-      .type('20');
+    cy.get('[data-test="server-delay"]').clear().type('20');
   });
 
   it('should change Pagination to next page', () => {
@@ -80,17 +75,18 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:40,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:20,offset:40,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
             {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should change Pagination to last page', () => {
@@ -99,30 +95,30 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:80,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:20,offset:80,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
             {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should change Pagination to first page using the external button', () => {
-    cy.get('[data-test=goto-first-page')
-      .click();
+    cy.get('[data-test=goto-first-page').click();
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query { users (first:20,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query { users (first:20,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
@@ -130,28 +126,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
             {field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},
             {field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`));
-      });
+          ],locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`)
+      );
+    });
   });
 
   it('should change Pagination to last page using the external button', () => {
-    cy.get('[data-test=goto-last-page')
-      .click();
+    cy.get('[data-test=goto-last-page').click();
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:20,offset:80,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:20,offset:80,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
             {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should change Pagination to first page with 30 items', () => {
@@ -162,17 +159,18 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},
             {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should clear a single filter, that is not empty, by the header menu and expect query change', () => {
@@ -194,22 +192,21 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should try clearing same filter, which is now empty, by the header menu and expect same query without loading spinner', () => {
-    cy.get('[data-test="server-delay"]')
-      .clear()
-      .type('250');
+    cy.get('[data-test="server-delay"]').clear().type('250');
 
     cy.get('#grid6')
       .find('.slick-header-left .slick-header-column:nth(0)')
@@ -228,16 +225,17 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should clear the date range filter expect the query to have the 2 "finish" (GE, LE) filters removed', () => {
@@ -259,14 +257,15 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"}],
-          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should Clear all Filters & Sorts', () => {
@@ -275,17 +274,18 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(
+          `query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`
+        )
+      );
+    });
   });
 
   it('should click on "Name" column to sort it Ascending', () => {
-    cy.get('.slick-header-columns')
-      .children('.slick-header-left .slick-header-column:nth(0)')
-      .click();
+    cy.get('.slick-header-columns').children('.slick-header-left .slick-header-column:nth(0)').click();
 
     cy.get('.slick-header-columns')
       .children('.slick-header-left .slick-header-column:nth(0)')
@@ -295,165 +295,140 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
-          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should perform filterQueryOverride when operator "%%" is selected', () => {
-    cy.get('.search-filter.filter-name select').find('option').last().then((element) => {
-      cy.get('.search-filter.filter-name select').select(element.val());
-    });
+    cy.get('.search-filter.filter-name select')
+      .find('option')
+      .last()
+      .then((element) => {
+        cy.get('.search-filter.filter-name select').select(element.val());
+      });
 
-    cy.get('.search-filter.filter-name')
-      .find('input')
-      .clear()
-      .type('Jo%yn%er');
+    cy.get('.search-filter.filter-name').find('input').clear().type('Jo%yn%er');
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query { users (first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeSpaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeSpaces(`query { users (first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           filterBy:[{field:"name",operator:Like,value:"Jo%yn%er"}],
-          locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`));
-      });
+          locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`)
+      );
+    });
   });
 
   it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
-    cy.get('[data-test=set-dynamic-filter]')
-      .click();
+    cy.get('[data-test=set-dynamic-filter]').click();
 
-    cy.get('.search-filter.filter-name select')
-      .should('have.value', 'a*');
+    cy.get('.search-filter.filter-name select').should('have.value', 'a*');
 
     cy.get('.search-filter.filter-name')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq('Jane'));
+      .then((text) => expect(text).to.eq('Jane'));
 
-    cy.get('.search-filter.filter-gender .ms-choice > span')
-      .contains('Female');
+    cy.get('.search-filter.filter-gender .ms-choice > span').contains('Female');
 
-    cy.get('.search-filter.filter-company .ms-choice > span')
-      .contains('Acme');
+    cy.get('.search-filter.filter-company .ms-choice > span').contains('Acme');
 
-    cy.get('.search-filter.filter-billingAddressZip select')
-      .should('have.value', '>=');
+    cy.get('.search-filter.filter-billingAddressZip select').should('have.value', '>=');
 
     cy.get('.search-filter.filter-billingAddressZip')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq('11'));
+      .then((text) => expect(text).to.eq('11'));
 
     cy.get('.search-filter.filter-finish')
       .find('input')
       .invoke('val')
-      .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
+      .then((text) => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
           {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
           {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"en",userId:123)
-          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should use a range filter when searching with ".."', () => {
-    cy.get('.slick-header-columns')
-      .children('.slick-header-left .slick-header-column:nth(0)')
-      .contains('Name')
-      .click();
+    cy.get('.slick-header-columns').children('.slick-header-left .slick-header-column:nth(0)').contains('Name').click();
 
-    cy.get('.search-filter.filter-name')
-      .find('input')
-      .clear()
-      .type('Anthony Joyner..Ayers Hood');
+    cy.get('.search-filter.filter-name').find('input').clear().type('Anthony Joyner..Ayers Hood');
 
     // wait for the query to finish
     cy.get('[data-test=status]').should('contain', 'finished');
 
-    cy.get('[data-test=graphql-query-result]')
-      .should(($span) => {
-        const text = removeWhitespaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeWhitespaces(`query { users (first:30,offset:0,
+    cy.get('[data-test=graphql-query-result]').should(($span) => {
+      const text = removeWhitespaces($span.text()); // remove all white spaces
+      expect(text).to.eq(
+        removeWhitespaces(`query { users (first:30,offset:0,
           orderBy:[{field:"name",direction:DESC}],
           filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:GE,value:"Anthony Joyner"},{field:"name",operator:LE,value:"Ayers Hood"},
           {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
           {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"en",userId:123)
-          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-      });
+          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+      );
+    });
   });
 
   it('should open Date picker and expect date range between 01-Jan to 15-Feb', () => {
-    cy.get('.search-filter.filter-finish.filled input')
-      .click({ force: true });
+    cy.get('.search-filter.filter-finish.filled input').click({ force: true });
 
     cy.get('.vanilla-calendar:visible');
 
-    cy.get('.vanilla-calendar-column:nth(0) .vanilla-calendar-month')
-      .should('have.text', 'January');
+    cy.get('.vanilla-calendar-column:nth(0) .vanilla-calendar-month').should('have.text', 'January');
 
-    cy.get('.vanilla-calendar-column:nth(1) .vanilla-calendar-month')
-      .should('have.text', 'February');
+    cy.get('.vanilla-calendar-column:nth(1) .vanilla-calendar-month').should('have.text', 'February');
 
-    cy.get('.vanilla-calendar-year:nth(0)')
-      .should('have.text', currentYear);
+    cy.get('.vanilla-calendar-year:nth(0)').should('have.text', currentYear);
 
-    cy.get('.vanilla-calendar:visible')
-      .find('.vanilla-calendar-day__btn_selected')
-      .should('have.length', 46);
+    cy.get('.vanilla-calendar:visible').find('.vanilla-calendar-day__btn_selected').should('have.length', 46);
 
-    cy.get('.vanilla-calendar:visible')
-      .find('.vanilla-calendar-day__btn_selected')
-      .first()
-      .should('have.text', '1');
+    cy.get('.vanilla-calendar:visible').find('.vanilla-calendar-day__btn_selected').first().should('have.text', '1');
 
-    cy.get('.vanilla-calendar:visible')
-      .find('.vanilla-calendar-day__btn_selected')
-      .last()
-      .should('have.text', '15');
+    cy.get('.vanilla-calendar:visible').find('.vanilla-calendar-day__btn_selected').last().should('have.text', '15');
   });
 
   describe('Set Dynamic Sorting', () => {
     it('should use slower server wait delay to test loading widget', () => {
-      cy.get('[data-test="server-delay"]')
-        .clear()
-        .type('250');
+      cy.get('[data-test="server-delay"]').clear().type('250');
     });
 
     it('should click on "Clear all Filters & Sorting" then "Set Dynamic Sorting" buttons', () => {
-      cy.get('[data-test=clear-filters-sorting]')
-        .click();
+      cy.get('[data-test=clear-filters-sorting]').click();
 
       cy.get('[data-test=status]').should('contain', 'processing');
       cy.get('[data-test=status]').should('contain', 'finished');
 
-      cy.get('[data-test=set-dynamic-sorting]')
-        .click();
+      cy.get('[data-test=set-dynamic-sorting]').click();
 
       cy.get('[data-test=status]').should('contain', 'processing');
       cy.get('[data-test=status]').should('contain', 'finished');
     });
 
     it('should use smaller server wait delay for faster E2E tests', () => {
-      cy.get('[data-test="server-delay"]')
-        .clear()
-        .type('20');
+      cy.get('[data-test="server-delay"]').clear().type('20');
     });
 
     it('should expect the grid to be sorted by "Zip" descending then by "Company" ascending', () => {
@@ -471,26 +446,22 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
         .siblings('.slick-sort-indicator-numbered')
         .contains('1');
 
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeWhitespaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeWhitespaces(`query{users(first:30,offset:0,
             orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
-            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-        });
+            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+        );
+      });
     });
 
     it('should open Date picker and no longer expect date range selection in the picker', () => {
-      cy.get('.search-filter.filter-finish')
-        .should('not.have.class', 'filled')
-        .click();
+      cy.get('.search-filter.filter-finish').should('not.have.class', 'filled').click();
 
-      cy.get('.vanilla-calendar-year:nth(0)')
-        .should('have.text', currentYear);
+      cy.get('.vanilla-calendar-year:nth(0)').should('have.text', currentYear);
 
-      cy.get('.vanilla-calendar:visible')
-        .find('.vanilla-calendar-day__btn_selected')
-        .should('not.exist');
+      cy.get('.vanilla-calendar:visible').find('.vanilla-calendar-day__btn_selected').should('not.exist');
     });
   });
 
@@ -556,41 +527,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     });
 
     it('should open the Grid Menu and expect all commands be displayed in English', () => {
-      cy.get('#grid6')
-        .find('button.slick-grid-menu-button')
-        .trigger('click');
+      cy.get('#grid6').find('button.slick-grid-menu-button').trigger('click');
 
-      cy.get('.slick-grid-menu .slick-menu-title:nth(0)')
-        .contains('Commands');
+      cy.get('.slick-grid-menu .slick-menu-title:nth(0)').contains('Commands');
 
-      cy.get('.slick-grid-menu .slick-menu-item:nth(0) > span')
-        .contains('Clear all Filters');
+      cy.get('.slick-grid-menu .slick-menu-item:nth(0) > span').contains('Clear all Filters');
 
-      cy.get('.slick-grid-menu .slick-menu-item:nth(1) > span')
-        .contains('Clear all Sorting');
+      cy.get('.slick-grid-menu .slick-menu-item:nth(1) > span').contains('Clear all Sorting');
 
-      cy.get('.slick-grid-menu .slick-menu-title:nth(1)')
-        .contains('Columns');
+      cy.get('.slick-grid-menu .slick-menu-title:nth(1)').contains('Columns');
 
-      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(0)')
-        .contains('Customer Information - Name');
+      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(0)').contains('Customer Information - Name');
 
-      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(1)')
-        .contains('Customer Information - Gender');
+      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(1)').contains('Customer Information - Gender');
 
-      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close')
-        .click({ force: true });
+      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close').click({ force: true });
     });
 
     it('should switch locale from English to French', () => {
-      cy.get('[data-test=selected-locale]')
-        .should('contain', 'en.json');
+      cy.get('[data-test=selected-locale]').should('contain', 'en.json');
 
-      cy.get('[data-test=language-button]')
-        .click();
+      cy.get('[data-test=language-button]').click();
 
-      cy.get('[data-test=selected-locale]')
-        .should('contain', 'fr.json');
+      cy.get('[data-test=selected-locale]').should('contain', 'fr.json');
     });
 
     it('should have French Column Titles in the grid after switching locale', () => {
@@ -611,23 +570,17 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     });
 
     it('should display Pagination in French', () => {
-      cy.get('.slick-pagination-settings > span')
-        .contains('éléments par page');
+      cy.get('.slick-pagination-settings > span').contains('éléments par page');
 
-      cy.get('.page-info-from-to')
-        .contains('de');
+      cy.get('.page-info-from-to').contains('de');
 
-      cy.get('[data-test=item-from]')
-        .contains('1');
+      cy.get('[data-test=item-from]').contains('1');
 
-      cy.get('[data-test=item-to]')
-        .contains('30');
+      cy.get('[data-test=item-to]').contains('30');
 
-      cy.get('[data-test=total-items]')
-        .contains('100');
+      cy.get('[data-test=total-items]').contains('100');
 
-      cy.get('.page-info-total-items')
-        .contains('éléments');
+      cy.get('.page-info-total-items').contains('éléments');
     });
 
     it('should hover over the "Title" column header menu and expect all commands be displayed in French', () => {
@@ -667,95 +620,78 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
     });
 
     it('should open the Grid Menu and expect all commands be displayed in French', () => {
-      cy.get('#grid6')
-        .find('button.slick-grid-menu-button')
-        .trigger('click');
+      cy.get('#grid6').find('button.slick-grid-menu-button').trigger('click');
 
-      cy.get('.slick-grid-menu .slick-menu-title:nth(0)')
-        .contains('Commandes');
+      cy.get('.slick-grid-menu .slick-menu-title:nth(0)').contains('Commandes');
 
-      cy.get('.slick-grid-menu .slick-menu-item:nth(0) > span')
-        .contains('Supprimer tous les filtres');
+      cy.get('.slick-grid-menu .slick-menu-item:nth(0) > span').contains('Supprimer tous les filtres');
 
-      cy.get('.slick-grid-menu .slick-menu-item:nth(1) > span')
-        .contains('Supprimer tous les tris');
+      cy.get('.slick-grid-menu .slick-menu-item:nth(1) > span').contains('Supprimer tous les tris');
 
-      cy.get('.slick-grid-menu .slick-menu-title:nth(1)')
-        .contains('Colonnes');
+      cy.get('.slick-grid-menu .slick-menu-title:nth(1)').contains('Colonnes');
 
-      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(0)')
-        .contains('Information Client - Nom');
+      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(0)').contains('Information Client - Nom');
 
-      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(1)')
-        .contains('Information Client - Sexe');
+      cy.get('.slick-grid-menu .slick-column-picker-list li:nth(1)').contains('Information Client - Sexe');
 
-      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close')
-        .click({ force: true });
+      cy.get('.slick-grid-menu [data-dismiss=slick-grid-menu].close').click({ force: true });
     });
 
     it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
-      cy.get('[data-test=set-dynamic-filter]')
-        .click();
+      cy.get('[data-test=set-dynamic-filter]').click();
 
-      cy.get('.search-filter.filter-name select')
-        .should('have.value', 'a*');
+      cy.get('.search-filter.filter-name select').should('have.value', 'a*');
 
       cy.get('.search-filter.filter-name')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq('Jane'));
+        .then((text) => expect(text).to.eq('Jane'));
 
-      cy.get('.search-filter.filter-gender .ms-choice > span')
-        .contains('Féminin');
+      cy.get('.search-filter.filter-gender .ms-choice > span').contains('Féminin');
 
-      cy.get('.search-filter.filter-company .ms-choice > span')
-        .contains('Acme');
+      cy.get('.search-filter.filter-company .ms-choice > span').contains('Acme');
 
-      cy.get('.search-filter.filter-billingAddressZip select')
-        .should('have.value', '>=');
+      cy.get('.search-filter.filter-billingAddressZip select').should('have.value', '>=');
 
       cy.get('.search-filter.filter-billingAddressZip')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq('11'));
+        .then((text) => expect(text).to.eq('11'));
 
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
+        .then((text) => expect(text).to.eq(`${presetLowestDay} — ${presetHighestDay}`));
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
 
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeWhitespaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeWhitespaces(`query{users(first:30,offset:0,
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeWhitespaces(`query{users(first:30,offset:0,
             filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
             {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"fr",userId:123)
-            {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
-        });
+            {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`)
+        );
+      });
     });
 
     it('should have French Text inside some of the Filters', () => {
-      cy.get('div.ms-filter.filter-gender')
-        .trigger('click');
+      cy.get('div.ms-filter.filter-gender').trigger('click');
 
       cy.get('.ms-drop')
         .contains('Masculin') // use regexp to avoid finding first Task 3 which is in fact Task 399
         .click();
 
-      cy.get('.search-filter.filter-gender .ms-choice > span')
-        .contains('Masculin');
+      cy.get('.search-filter.filter-gender .ms-choice > span').contains('Masculin');
     });
 
     it('should switch locale to English', () => {
-      cy.get('[data-test=language-button]')
-        .click();
+      cy.get('[data-test=language-button]').click();
 
-      cy.get('[data-test=selected-locale]')
-        .should('contain', 'en.json');
+      cy.get('[data-test=selected-locale]').should('contain', 'en.json');
     });
   });
 
@@ -777,17 +713,18 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeWhitespaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeWhitespaces(`query{users(last:20,
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeWhitespaces(`query{users(last:20,
             orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
             filterBy:[
               {field:"gender",operator:EQ,value:"male"},
               {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
               {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-            ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`));
-        });
+            ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`)
+        );
+      });
     });
 
     it('should change Pagination to the first page', () => {
@@ -798,17 +735,18 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeWhitespaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeWhitespaces(`query{users(first:20,
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeWhitespaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeWhitespaces(`query{users(first:20,
             orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
             filterBy:[
               {field:"gender",operator:EQ,value:"male"},
               {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
               {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-            ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`));
-        });
+            ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`)
+        );
+      });
     });
 
     it('should change Pagination to next page and all the way to the last', () => {
@@ -819,26 +757,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
       // on page 1, click 4 times to get to page 5 (the last page)
       cy.wrap([0, 1, 2, 3]).each((el, i) => {
         cy.wait(25); // Avoid clicking too fast and hitting race conditions because of the setTimeout in the example page (this timeout should be greater than in the page)
-        cy.get('.icon-seek-next').click().then(() => {
-          // wait for the query to finish
-          cy.get('[data-test=status]').should('contain', 'finished');
-          cy.get('[data-test=graphql-query-result]')
-            .should(($span) => {
+        cy.get('.icon-seek-next')
+          .click()
+          .then(() => {
+            // wait for the query to finish
+            cy.get('[data-test=status]').should('contain', 'finished');
+            cy.get('[data-test=graphql-query-result]').should(($span) => {
               // First page is A-B
               // first click is to get page after A-B
               // => get first 20 after 'B'
               const afterCursor = String.fromCharCode('B'.charCodeAt(0) + i);
 
               const text = removeWhitespaces($span.text()); // remove all white spaces
-              expect(text).to.eq(removeWhitespaces(`query{users(first:20,after:"${afterCursor}",
+              expect(text).to.eq(
+                removeWhitespaces(`query{users(first:20,after:"${afterCursor}",
                 orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
                 filterBy:[
                   {field:"gender",operator:EQ,value:"male"},
                   {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
                   {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-                ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`));
+                ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`)
+              );
             });
-        });
+          });
       });
     });
 
@@ -849,26 +790,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
       // on page 5 (last page), click 4 times to go to page 1
       cy.wrap([0, 1, 2, 3]).each((el, i) => {
         cy.wait(25); // Avoid clicking too fast and hitting race conditions because of the setTimeout in the example page (this timeout should be greater than in the page)
-        cy.get('.icon-seek-prev').click().then(() => {
-          // wait for the query to finish
-          cy.get('[data-test=status]').should('contain', 'finished');
-          cy.get('[data-test=graphql-query-result]')
-            .should(($span) => {
+        cy.get('.icon-seek-prev')
+          .click()
+          .then(() => {
+            // wait for the query to finish
+            cy.get('[data-test=status]').should('contain', 'finished');
+            cy.get('[data-test=graphql-query-result]').should(($span) => {
               // Last page is E-F
               // first click is to get page before E-F
               // => get last 20 before 'E'
               const beforeCursor = String.fromCharCode('E'.charCodeAt(0) - i);
 
               const text = removeWhitespaces($span.text()); // remove all white spaces
-              expect(text).to.eq(removeWhitespaces(`query{users(last:20,before:"${beforeCursor}",
+              expect(text).to.eq(
+                removeWhitespaces(`query{users(last:20,before:"${beforeCursor}",
                 orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
                 filterBy:[
                   {field:"gender",operator:EQ,value:"male"},
                   {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
                   {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-                ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`));
+                ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish},pageInfo{hasNextPage,hasPreviousPage,endCursor,startCursor},edges{cursor}}}`)
+              );
             });
-        });
+          });
       });
     });
   });
@@ -887,39 +831,35 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').trigger('mouseover');
 
       cy.get('.slick-header-menu.slick-menu-level-1')
         .find('[data-command=next-20-days]')
         .should('contain', 'Next 20 days')
         .click();
 
-      cy.get('.search-filter.filter-finish input.date-picker')
-        .invoke('val')
-        .should('equal', `${today} — ${next20Day}`);
+      cy.get('.search-filter.filter-finish input.date-picker').invoke('val').should('equal', `${today} — ${next20Day}`);
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
 
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeSpaces(`query { users (first:20,offset:0,orderBy:[{field:"name",direction:ASC},
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeSpaces(`query { users (first:20,offset:0,orderBy:[{field:"name",direction:ASC},
                 {field:"company",direction:DESC}],filterBy:[{field:"gender",operator:EQ,value:"male"},
                 {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
                 {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${today}"},
                 {field:"finish",operator:LE,value:"${next20Day}"}],locale:"en",userId:123) {
-                totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish}}}`));
-        });
+                totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish}}}`)
+        );
+      });
     });
 
     it('should switch locale to French', () => {
-      cy.get('[data-test=language-button]')
-        .click();
+      cy.get('[data-test=language-button]').click();
 
-      cy.get('[data-test=selected-locale]')
-        .should('contain', 'fr.json');
+      cy.get('[data-test=selected-locale]').should('contain', 'fr.json');
     });
 
     it('should open header menu of "Finish" again now expect French translations "Filter Shortcuts -> In the Future" and expect date range of the next 20 days', () => {
@@ -930,32 +870,29 @@ describe('Example 6 - GraphQL Grid', { retries: 0 }, () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .should('contain', 'Raccourcis de filtre')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').should('contain', 'Raccourcis de filtre').trigger('mouseover');
 
       cy.get('.slick-header-menu.slick-menu-level-1')
         .find('[data-command=next-20-days]')
         .should('contain', '20 prochain jours')
         .click();
 
-      cy.get('.search-filter.filter-finish input.date-picker')
-        .invoke('val')
-        .should('equal', `${today} — ${next20Day}`);
+      cy.get('.search-filter.filter-finish input.date-picker').invoke('val').should('equal', `${today} — ${next20Day}`);
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'finished');
 
-      cy.get('[data-test=graphql-query-result]')
-        .should(($span) => {
-          const text = removeSpaces($span.text()); // remove all white spaces
-          expect(text).to.eq(removeSpaces(`query { users (first:20,offset:0,orderBy:[{field:"name",direction:ASC},
+      cy.get('[data-test=graphql-query-result]').should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(
+          removeSpaces(`query { users (first:20,offset:0,orderBy:[{field:"name",direction:ASC},
                   {field:"company",direction:DESC}],filterBy:[{field:"gender",operator:EQ,value:"male"},
                   {field:"name",operator:StartsWith,value:"Joh"},{field:"name",operator:EndsWith,value:"oe"},
                   {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${today}"},
                   {field:"finish",operator:LE,value:"${next20Day}"}],locale:"fr",userId:123) {
-                  totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish}}}`));
-        });
+                  totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish}}}`)
+        );
+      });
     });
   });
 });

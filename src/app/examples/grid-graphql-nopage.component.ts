@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { GraphqlService, GraphqlResult, GraphqlServiceApi, } from '@slickgrid-universal/graphql';
+import { GraphqlService, GraphqlResult, GraphqlServiceApi } from '@slickgrid-universal/graphql';
 
 import {
   AngularGridInstance,
@@ -28,7 +28,7 @@ export interface Country {
   languageCode: string;
   languageName: string;
   languageNative: string;
-};
+}
 
 @Component({
   templateUrl: './grid-graphql-nopage.component.html',
@@ -61,19 +61,47 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
   status = { text: 'processing...', class: 'alert alert-danger' };
   isDataLoaded = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'countryCode', field: 'code', name: 'Code', maxWidth: 90, sortable: true, filterable: true, columnGroup: 'Country' },
       { id: 'countryName', field: 'name', name: 'Name', width: 60, sortable: true, filterable: true, columnGroup: 'Country' },
-      { id: 'countryNative', field: 'native', name: 'Native', width: 60, sortable: true, filterable: true, columnGroup: 'Country' },
-      { id: 'countryPhone', field: 'phone', name: 'Phone Area Code', maxWidth: 110, sortable: true, filterable: true, columnGroup: 'Country' },
-      { id: 'countryCurrency', field: 'currency', name: 'Currency', maxWidth: 90, sortable: true, filterable: true, columnGroup: 'Country' },
+      {
+        id: 'countryNative',
+        field: 'native',
+        name: 'Native',
+        width: 60,
+        sortable: true,
+        filterable: true,
+        columnGroup: 'Country',
+      },
+      {
+        id: 'countryPhone',
+        field: 'phone',
+        name: 'Phone Area Code',
+        maxWidth: 110,
+        sortable: true,
+        filterable: true,
+        columnGroup: 'Country',
+      },
+      {
+        id: 'countryCurrency',
+        field: 'currency',
+        name: 'Currency',
+        maxWidth: 90,
+        sortable: true,
+        filterable: true,
+        columnGroup: 'Country',
+      },
       { id: 'countryEmoji', field: 'emoji', name: 'Emoji', maxWidth: 90, sortable: true, columnGroup: 'Country' },
       {
-        id: 'languageName', field: 'languages.name', name: 'Names', width: 60,
-        formatter: Formatters.arrayObjectToCsv, columnGroup: 'Language',
+        id: 'languageName',
+        field: 'languages.name',
+        name: 'Names',
+        width: 60,
+        formatter: Formatters.arrayObjectToCsv,
+        columnGroup: 'Language',
         params: { propertyNames: ['name'], useFormatterOuputToFilter: true },
         filterable: true,
         // this Filter is a bit more tricky than others since the values are an array of objects
@@ -86,7 +114,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
           collectionOptions: {
             addBlankEntry: true,
             // the data is not at the root of the array, so we must tell the Select Filter where to pull the data
-            collectionInsideObjectProperty: 'data.languages'
+            collectionInsideObjectProperty: 'data.languages',
           },
           collectionFilterBy: [
             // filter out any empty values
@@ -94,20 +122,25 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
             { property: 'name', value: null, operator: 'NE' },
           ],
           collectionSortBy: {
-            property: 'name'
+            property: 'name',
           },
           customStructure: {
             value: 'name',
             label: 'name',
           },
           filterOptions: {
-            filter: true
-          } as MultipleSelectOption
+            filter: true,
+          } as MultipleSelectOption,
         },
       },
       {
-        id: 'languageNative', field: 'languages.native', name: 'Native', width: 60,
-        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['native'], useFormatterOuputToFilter: true }, columnGroup: 'Language',
+        id: 'languageNative',
+        field: 'languages.native',
+        name: 'Native',
+        width: 60,
+        formatter: Formatters.arrayObjectToCsv,
+        params: { propertyNames: ['native'], useFormatterOuputToFilter: true },
+        columnGroup: 'Language',
         filterable: true,
         filter: {
           model: Filters.multipleSelect,
@@ -116,7 +149,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
           collectionOptions: {
             addBlankEntry: true,
             // the data is not at the root of the array, so we must tell the Select Filter where to pull the data
-            collectionInsideObjectProperty: 'data.languages'
+            collectionInsideObjectProperty: 'data.languages',
           },
           collectionFilterBy: [
             // filter out any empty values
@@ -124,28 +157,42 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
             { property: 'native', value: null, operator: 'NE' },
           ],
           collectionSortBy: {
-            property: 'native'
+            property: 'native',
           },
           customStructure: {
             value: 'native',
             label: 'native',
           },
           filterOptions: {
-            filter: true
-          } as MultipleSelectOption
+            filter: true,
+          } as MultipleSelectOption,
         },
       },
       {
-        id: 'languageCode', field: 'languages.code', name: 'Codes', maxWidth: 100,
-        formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['code'], useFormatterOuputToFilter: true }, columnGroup: 'Language',
+        id: 'languageCode',
+        field: 'languages.code',
+        name: 'Codes',
+        maxWidth: 100,
+        formatter: Formatters.arrayObjectToCsv,
+        params: { propertyNames: ['code'], useFormatterOuputToFilter: true },
+        columnGroup: 'Language',
         filterable: true,
       },
       {
-        id: 'continentName', field: 'continent.name', name: 'Name', width: 60, sortable: true,
-        filterable: true, formatter: Formatters.complexObject, columnGroup: 'Continent'
+        id: 'continentName',
+        field: 'continent.name',
+        name: 'Name',
+        width: 60,
+        sortable: true,
+        filterable: true,
+        formatter: Formatters.complexObject,
+        columnGroup: 'Continent',
       },
       {
-        id: 'continentCode', field: 'continent.code', name: 'Code', maxWidth: 90,
+        id: 'continentCode',
+        field: 'continent.code',
+        name: 'Code',
+        maxWidth: 90,
         sortable: true,
         filterable: true,
         filter: {
@@ -161,16 +208,17 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
             value: 'code',
             label: 'code',
             labelSuffix: 'name',
-          }
+          },
         },
-        formatter: Formatters.complexObject, columnGroup: 'Continent',
+        formatter: Formatters.complexObject,
+        columnGroup: 'Continent',
       },
     ];
 
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableFiltering: true,
       enableCellNavigation: true,
@@ -191,20 +239,20 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
           datasetName: 'countries', // the only REQUIRED property
         },
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
-        preProcess: () => !this.isDataLoaded ? this.displaySpinner(true) : '',
+        preProcess: () => (!this.isDataLoaded ? this.displaySpinner(true) : ''),
         process: (query: string) => this.getCountries(query),
         postProcess: (result: GraphqlResult<Country>) => {
           this.metrics = result.metrics as Metrics;
           this.displaySpinner(false);
           this.isDataLoaded = true;
-        }
-      } as GraphqlServiceApi
+        },
+      } as GraphqlServiceApi,
     };
   }
 
   displaySpinner(isProcessing: boolean) {
     this.processing = isProcessing;
-    this.status = (isProcessing)
+    this.status = isProcessing
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'finished', class: 'alert alert-success' };
   }
@@ -225,9 +273,9 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    * So we will have to write, by hand, the query to get the continents code & name
    * We also need to resolve the data in a flat array (singleSelect/multipleSelect Filters only accept data at the root of the array)
    */
-  getContinents(): Observable<GraphqlResult<{ code: string; name: string; }>> {
+  getContinents(): Observable<GraphqlResult<{ code: string; name: string }>> {
     const continentQuery = `query { continents { code, name  }}`;
-    return this.http.post<GraphqlResult<{ code: string; name: string; }>>(COUNTRIES_API, { query: continentQuery });
+    return this.http.post<GraphqlResult<{ code: string; name: string }>>(COUNTRIES_API, { query: continentQuery });
   }
 
   /**
@@ -235,8 +283,8 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
    * So we will have to write, by hand, the query to get the languages code & name
    * We also need to resolve the data in a flat array (singleSelect/multipleSelect Filters only accept data at the root of the array)
    */
-  getLanguages(): Observable<GraphqlResult<{ code: string; name: string; native: string; }>> {
+  getLanguages(): Observable<GraphqlResult<{ code: string; name: string; native: string }>> {
     const languageQuery = `query { languages { code, name, native  }}`;
-    return this.http.post<GraphqlResult<{ code: string; name: string; native: string; }>>(COUNTRIES_API, { query: languageQuery });
+    return this.http.post<GraphqlResult<{ code: string; name: string; native: string }>>(COUNTRIES_API, { query: languageQuery });
   }
 }

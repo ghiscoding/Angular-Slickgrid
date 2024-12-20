@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-headerbutton.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-headerbutton.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -12,20 +14,23 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <h5>Grid 1</h5>
-  <angular-slickgrid gridId="grid7-1"
-                     [columnDefinitions]="columnDefinitions1"
-                     [gridOptions]="gridOptions1"
-                     [dataset]="dataset1"
-                     (onAngularGridCreated)="angularGrid1Ready($event.detail)">
+  <angular-slickgrid
+    gridId="grid7-1"
+    [columnDefinitions]="columnDefinitions1"
+    [gridOptions]="gridOptions1"
+    [dataset]="dataset1"
+    (onAngularGridCreated)="angularGrid1Ready($event.detail)"
+  >
   </angular-slickgrid>
 
   <br />
   <h5>Grid 2 - <span class="subtitle">with both Header Buttons & Menus</span></h5>
-  <angular-slickgrid gridId="grid7-2"
-                     [columnDefinitions]="columnDefinitions2"
-                     [gridOptions]="gridOptions2"
-                     [dataset]="dataset2"
-                     (onAngularGridCreated)="angularGrid2Ready($event.detail)">
+  <angular-slickgrid
+    gridId="grid7-2"
+    [columnDefinitions]="columnDefinitions2"
+    [gridOptions]="gridOptions2"
+    [dataset]="dataset2"
+    (onAngularGridCreated)="angularGrid2Ready($event.detail)"
+  >
   </angular-slickgrid>
-
 </div>

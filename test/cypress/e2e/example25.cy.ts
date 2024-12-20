@@ -92,18 +92,15 @@ describe('Example 25 - Range Filters', () => {
     const allowedBuffer = 0.5;
 
     // first input is the lowest range
-    cy.get('.slider-filter-input:nth(0)')
-      .as('range').invoke('val', 10).trigger('change', { force: true });
+    cy.get('.slider-filter-input:nth(0)').as('range').invoke('val', 10).trigger('change', { force: true });
 
-    cy.get('.lowest-range-percentComplete')
-      .then(($lowest) => {
-        newLowest = parseInt($lowest.text(), 10);
-      });
+    cy.get('.lowest-range-percentComplete').then(($lowest) => {
+      newLowest = parseInt($lowest.text(), 10);
+    });
 
-    cy.get('.highest-range-percentComplete')
-      .then(($highest) => {
-        newHighest = parseInt($highest.text(), 10);
-      });
+    cy.get('.highest-range-percentComplete').then(($highest) => {
+      newHighest = parseInt($highest.text(), 10);
+    });
 
     cy.wait(5);
 
@@ -115,37 +112,30 @@ describe('Example 25 - Range Filters', () => {
           .each(($cell) => {
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value) && $cell.text() !== '') {
-              expect(value >= (newLowest - allowedBuffer)).to.eq(true);
-              expect(value <= (newHighest + allowedBuffer)).to.eq(true);
+              expect(value >= newLowest - allowedBuffer).to.eq(true);
+              expect(value <= newHighest + allowedBuffer).to.eq(true);
             }
           });
       });
   });
 
   it('should change the "Finish" date in the picker and expect all rows to be within new dates range', () => {
-    cy.get('.date-picker.search-filter.filter-finish')
-      .click();
+    cy.get('.date-picker.search-filter.filter-finish').click();
 
-    cy.get('.vanilla-calendar-day_selected-first')
-      .should('exist');
+    cy.get('.vanilla-calendar-day_selected-first').should('exist');
 
-    cy.get('.vanilla-calendar-day_selected-intermediate')
-      .should('have.length.gte', 2);
+    cy.get('.vanilla-calendar-day_selected-intermediate').should('have.length.gte', 2);
 
-    cy.get('.vanilla-calendar-day_selected-last')
-      .should('exist');
+    cy.get('.vanilla-calendar-day_selected-last').should('exist');
   });
 
   it('should change the "Duration" input filter and expect all rows to be within new range', () => {
     const newMin = 10;
     const newMax = 40;
 
-    cy.contains('Clear Filters')
-      .click({ force: true });
+    cy.contains('Clear Filters').click({ force: true });
 
-    cy.get('.search-filter.filter-duration')
-      .focus()
-      .type(`${newMin}..${newMax}`);
+    cy.get('.search-filter.filter-duration').focus().type(`${newMin}..${newMax}`);
 
     cy.get('#grid25')
       .find('.slick-row')
@@ -175,8 +165,7 @@ describe('Example 25 - Range Filters', () => {
     const dynamicHighestDay = format(addDay(new Date(), 25), 'YYYY-MM-DD');
 
     it('should click on Set Dynamic Filters', () => {
-      cy.get('[data-test=set-dynamic-filter]')
-        .click();
+      cy.get('[data-test=set-dynamic-filter]').click();
     });
 
     it('should have "% Complete" fields within the exclusive range of the filters presets', () => {
@@ -215,7 +204,7 @@ describe('Example 25 - Range Filters', () => {
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${dynamicLowestDay} — ${dynamicHighestDay}`));
+        .then((text) => expect(text).to.eq(`${dynamicLowestDay} — ${dynamicHighestDay}`));
 
       cy.get('#grid25')
         .find('.slick-row')
@@ -230,26 +219,22 @@ describe('Example 25 - Range Filters', () => {
     });
 
     it('should change dynamic filters from the select and choose "Current Year Completed Tasks" and expect 2 filters set', () => {
-      cy.get('[data-test=select-dynamic-filter]')
-        .select('1: currentYearTasks');
+      cy.get('[data-test=select-dynamic-filter]').select('1: currentYearTasks');
 
       cy.get('.search-filter.filter-finish')
         .find('input')
         .invoke('val')
-        .then(text => expect(text).to.eq(`${currentYear}-01-01 — ${currentYear}-12-31`));
+        .then((text) => expect(text).to.eq(`${currentYear}-01-01 — ${currentYear}-12-31`));
 
-      cy.get('.ms-parent.search-filter.filter-completed > button > span')
-        .should('contain', 'True');
+      cy.get('.ms-parent.search-filter.filter-completed > button > span').should('contain', 'True');
     });
   });
 
   describe('Set Dynamic Sorting', () => {
     it('should click on "Clear Filters" then "Set Dynamic Sorting" buttons', () => {
-      cy.get('[data-test=clear-filters]')
-        .click();
+      cy.get('[data-test=clear-filters]').click();
 
-      cy.get('[data-test=set-dynamic-sorting]')
-        .click();
+      cy.get('[data-test=set-dynamic-sorting]').click();
     });
 
     it('should expect the grid to be sorted by "Duration" ascending and "Start" descending', () => {

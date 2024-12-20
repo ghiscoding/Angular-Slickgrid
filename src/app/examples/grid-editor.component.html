@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-editor.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-editor.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -16,12 +18,19 @@
       <label>autoEdit setting: </label>
       <span id="radioAutoEdit">
         <label class="radio-inline control-label" for="radioTrue">
-          <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit"
-                 (change)="setAutoEdit(true)"> ON (single-click)
+          <input
+            type="radio"
+            name="inlineRadioOptions"
+            id="radioTrue"
+            checked
+            [value]="isAutoEdit"
+            (change)="setAutoEdit(true)"
+          />
+          ON (single-click)
         </label>
         <label class="radio-inline control-label" for="radioFalse">
-          <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit"
-                 (change)="setAutoEdit(false)"> OFF (double-click)
+          <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit" (change)="setAutoEdit(false)" /> OFF
+          (double-click)
         </label>
       </span>
       <div class="row col-sm-12">
@@ -31,8 +40,13 @@
             Undo last edit(s)
           </button>
           <label class="checkbox-inline control-label" for="autoCommitEdit">
-            <input type="checkbox" id="autoCommitEdit" data-test="auto-commit" [checked]="gridOptions.autoCommitEdit"
-                   (click)="changeAutoCommit()">
+            <input
+              type="checkbox"
+              id="autoCommitEdit"
+              data-test="auto-commit"
+              [checked]="gridOptions.autoCommitEdit"
+              (click)="changeAutoCommit()"
+            />
             Auto Commit Edit
           </label>
         </span>
@@ -45,20 +59,27 @@
           <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="angularGrid.sortService.clearSorting()">
             Clear Sorting
           </button>
-          <button class="btn btn-sm btn-outline-primary" (click)="addItem()"
-                  title="Clear Filters &amp; Sorting to see it better">Add item</button>
+          <button class="btn btn-sm btn-outline-primary" (click)="addItem()" title="Clear Filters &amp; Sorting to see it better">
+            Add item
+          </button>
           <button class="btn btn-sm btn-outline-danger" (click)="deleteItem()">Delete item</button>
         </div>
       </div>
       <div class="row" style="margin-top: 5px">
         <div class="col-sm-12">
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="add-title-column"
-                  (click)="dynamicallyAddTitleHeader()">
+          <button
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            data-test="add-title-column"
+            (click)="dynamicallyAddTitleHeader()"
+          >
             <i class="mdi mdi-shape-square-plus"></i>
             Dynamically Duplicate Title Column
           </button>
-          <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="remove-title-column"
-                  (click)="dynamicallyRemoveLastColumn()">
+          <button
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            data-test="remove-title-column"
+            (click)="dynamicallyRemoveLastColumn()"
+          >
             <i class="mdi mdi-minus"></i>
             Dynamically Remove Last Column
           </button>
@@ -67,24 +88,22 @@
     </div>
 
     <div class="col-sm-6">
-      <div class="alert alert-info" *ngIf="updatedObject">
-        <strong>Updated Item:</strong> {{updatedObject | json}}
-      </div>
-      <div class="alert alert-warning" *ngIf="alertWarning">
-        <strong>Updated Item:</strong> {{alertWarning}}
-      </div>
+      <div class="alert alert-info" *ngIf="updatedObject"><strong>Updated Item:</strong> {{ updatedObject | json }}</div>
+      <div class="alert alert-warning" *ngIf="alertWarning"><strong>Updated Item:</strong> {{ alertWarning }}</div>
     </div>
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid3"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset"
-                       (onAngularGridCreated)="angularGridReady($event.detail)"
-                       (onCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
-                       (onClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
-                       (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)">
+    <angular-slickgrid
+      gridId="grid3"
+      [columnDefinitions]="columnDefinitions"
+      [gridOptions]="gridOptions"
+      [dataset]="dataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+      (onCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
+      (onClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
+      (onValidationError)="onValidationError($event.detail.eventData, $event.detail.args)"
+    >
     </angular-slickgrid>
   </div>
 </div>

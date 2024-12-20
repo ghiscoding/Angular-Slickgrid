@@ -14,19 +14,17 @@ describe('Example 34 - Custom header & footer', () => {
   });
 
   it('should have a custom header', () => {
-    cy.get('#slickGridContainer-grid1')
-      .find('h3')
-      .should('contain', 'Grid with header and footer slot');
+    cy.get('#slickGridContainer-grid1').find('h3').should('contain', 'Grid with header and footer slot');
   });
 
   it('should have a custom footer with a clickable button', () => {
     cy.get('#slickGridContainer-grid1')
       .find('custom-footer')
       .find('button')
-      .should('contain', 'I\'m a button from an Angular component (click me)')
+      .should('contain', "I'm a button from an Angular component (click me)")
       .click()
       .click()
       .siblings('div')
-      .should('contain', 'You\'ve clicked me 2 time(s)')
+      .should('contain', "You've clicked me 2 time(s)");
   });
 });

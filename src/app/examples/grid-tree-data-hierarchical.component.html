@@ -2,9 +2,11 @@
   <h2>
     <span [innerHTML]="title"></span>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-hierarchical.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-tree-data-hierarchical.component.ts"
+      >
         <span class="mdi mdi-link mdi-v-align-sub"></span> code
       </a>
     </span>
@@ -17,7 +19,12 @@
         <span class="icon mdi mdi-plus color-white"></span>
         <span>Add New Pop Song</span>
       </button>
-      <button (click)="deleteFile()" data-test="remove-item-btn" class="btn btn-outline-secondary btn-xs btn-icon" [disabled]="isRemoveLastInsertedPopSongDisabled">
+      <button
+        (click)="deleteFile()"
+        data-test="remove-item-btn"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        [disabled]="isRemoveLastInsertedPopSongDisabled"
+      >
         <span class="mdi mdi-minus"></span>
         <span>Remove Last Inserted Pop Song</span>
       </button>
@@ -33,22 +40,38 @@
         <span class="mdi mdi-close"></span>
         <span>Clear Filters</span>
       </button>
-      <button (click)="logFlatStructure()" class="btn btn-outline-secondary btn-xs btn-icon"
-              title="console.log of the Flat dataset">
+      <button
+        (click)="logFlatStructure()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        title="console.log of the Flat dataset"
+      >
         <span>Log Flat Structure</span>
       </button>
-      <button (click)="logHierarchicalStructure()" class="btn btn-outline-secondary btn-xs btn-icon"
-              title="console.log of the Hierarchical Tree dataset">
+      <button
+        (click)="logHierarchicalStructure()"
+        class="btn btn-outline-secondary btn-xs btn-icon"
+        title="console.log of the Hierarchical Tree dataset"
+      >
         <span>Log Hierarchical Structure</span>
       </button>
     </div>
 
     <div class="col-md-5">
       <div class="input-group">
-        <input type="text" class="form-control search-string" data-test="search-string"
-               placeholder="search value" autocomplete="off" [(ngModel)]="searchString"
-               (ngModelChange)="searchStringChanged()">
-        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center" data-test="clear-search-string" (click)="clearSearch()">
+        <input
+          type="text"
+          class="form-control search-string"
+          data-test="search-string"
+          placeholder="search value"
+          autocomplete="off"
+          [(ngModel)]="searchString"
+          (ngModelChange)="searchStringChanged()"
+        />
+        <button
+          class="btn btn-sm btn-outline-secondary d-flex align-items-center"
+          data-test="clear-search-string"
+          (click)="clearSearch()"
+        >
           <span class="icon mdi mdi-close-thick"></span>
         </button>
       </div>
@@ -57,40 +80,57 @@
 
   <div>
     <label class="checkbox-inline control-label" for="excludeChildWhenFiltering" style="margin-left: 20px">
-      <input type="checkbox" id="excludeChildWhenFiltering" data-test="exclude-child-when-filtering"
-             [checked]="isExcludingChildWhenFiltering"
-             (click)="changeExcludeChildWhenFiltering()">
+      <input
+        type="checkbox"
+        id="excludeChildWhenFiltering"
+        data-test="exclude-child-when-filtering"
+        [checked]="isExcludingChildWhenFiltering"
+        (click)="changeExcludeChildWhenFiltering()"
+      />
       <span
-            title="for example if we filter the word 'pop' and we exclude children, then only the folder 'pop' will show up without any content unless we uncheck this flag">
+        title="for example if we filter the word 'pop' and we exclude children, then only the folder 'pop' will show up without any content unless we uncheck this flag"
+      >
         Exclude Children when Filtering Tree
       </span>
     </label>
     <label class="checkbox-inline control-label" for="autoApproveParentItem" style="margin-left: 20px">
-      <input type="checkbox" id="autoApproveParentItem" data-test="auto-approve-parent-item"
-             [checked]="isAutoApproveParentItemWhenTreeColumnIsValid"
-             (click)="changeAutoApproveParentItem()">
+      <input
+        type="checkbox"
+        id="autoApproveParentItem"
+        data-test="auto-approve-parent-item"
+        [checked]="isAutoApproveParentItemWhenTreeColumnIsValid"
+        (click)="changeAutoApproveParentItem()"
+      />
       <span
-            title="for example in this demo if we filter with 'music' and size '> 70' nothing will show up unless we have this flag enabled
+        title="for example in this demo if we filter with 'music' and size '> 70' nothing will show up unless we have this flag enabled
             because none of the files have both criteria at the same time, however the column with the tree 'file' does pass the filter criteria 'music'
-            and with this flag we tell the lib to skip any other filter(s) as soon as the with the tree (file in this demo) passes its own filter criteria">
+            and with this flag we tell the lib to skip any other filter(s) as soon as the with the tree (file in this demo) passes its own filter criteria"
+      >
         Skip Other Filter Criteria when Parent with Tree is valid
       </span>
     </label>
     <label class="checkbox-inline control-label" for="autoRecalcTotalsOnFilterChange" style="margin-left: 20px">
-      <input type="checkbox" id="autoRecalcTotalsOnFilterChange" data-test="auto-recalc-totals"
-             [checked]="isAutoRecalcTotalsOnFilterChange"
-             (click)="changeAutoRecalcTotalsOnFilterChange()">
+      <input
+        type="checkbox"
+        id="autoRecalcTotalsOnFilterChange"
+        data-test="auto-recalc-totals"
+        [checked]="isAutoRecalcTotalsOnFilterChange"
+        (click)="changeAutoRecalcTotalsOnFilterChange()"
+      />
       <span
-            title="Should we recalculate Tree Data Totals (when Aggregators are defined) while filtering? This feature is disabled by default.">
+        title="Should we recalculate Tree Data Totals (when Aggregators are defined) while filtering? This feature is disabled by default."
+      >
         auto-recalc Tree Data totals on filter changed
       </span>
     </label>
   </div>
 
-  <angular-slickgrid gridId="grid29"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [datasetHierarchical]="datasetHierarchical"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  <angular-slickgrid
+    gridId="grid29"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [datasetHierarchical]="datasetHierarchical"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

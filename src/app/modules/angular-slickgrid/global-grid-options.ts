@@ -1,4 +1,13 @@
-import { type Column, DelimiterType, EventNamingStyle, FileType, Filters, type GridOption as GridOptionUniversal, OperatorType, type TreeDataOption } from '@slickgrid-universal/common';
+import {
+  type Column,
+  DelimiterType,
+  EventNamingStyle,
+  FileType,
+  Filters,
+  type GridOption as GridOptionUniversal,
+  OperatorType,
+  type TreeDataOption,
+} from '@slickgrid-universal/common';
 import type { GridOption, RowDetailView } from './models/index';
 
 /** Global Grid Options Defaults */
@@ -13,16 +22,16 @@ export const GlobalGridOptions: Partial<GridOption> = {
     bottomPadding: 20,
     minHeight: 180,
     minWidth: 300,
-    rightPadding: 0
+    rightPadding: 0,
   },
   cellHighlightCssClass: 'slick-cell-modified',
   checkboxSelector: {
-    cssClass: 'slick-cell-checkboxsel'
+    cssClass: 'slick-cell-checkboxsel',
   },
   columnPicker: {
     hideForceFitButton: false,
     hideSyncResizeButton: true,
-    headerColumnValueExtractor: pickerHeaderColumnValueExtractor
+    headerColumnValueExtractor: pickerHeaderColumnValueExtractor,
   },
   cellMenu: {
     autoAdjustDrop: true,
@@ -71,13 +80,13 @@ export const GlobalGridOptions: Partial<GridOption> = {
       itemsSelectedKey: 'ITEMS_SELECTED',
       of: 'of',
       ofKey: 'OF',
-    }
+    },
   },
   dataView: {
     // when enabled, this will preserve the row selection even after filtering/sorting/grouping
     syncGridSelection: {
       preserveHidden: false,
-      preserveHiddenOnSelectionChange: true
+      preserveHiddenOnSelectionChange: true,
     },
     syncGridSelectionWithBackendService: false, // but disable it when using backend services
   },
@@ -136,7 +145,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     groupingColumnHeaderTitle: 'Group By',
     groupingAggregatorRowText: '',
     sanitizeDataExport: false,
-    useUtf8WithBom: true
+    useUtf8WithBom: true,
   },
   filterTypingDebounce: 0,
   forceFitColumns: false,
@@ -181,7 +190,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     menuWidth: 16,
     resizeOnShowHeaderRow: true,
     subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
-    headerColumnValueExtractor: pickerHeaderColumnValueExtractor
+    headerColumnValueExtractor: pickerHeaderColumnValueExtractor,
   },
   headerMenu: {
     autoAlign: true,
@@ -211,7 +220,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   pagination: {
     pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
     pageSize: 25,
-    totalItems: 0
+    totalItems: 0,
   },
   // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
   rowDetailView: {
@@ -242,7 +251,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
   treeDataOptions: {
     exportIndentMarginLeft: 5,
     exportIndentationLeadingChar: '͏͏͏͏͏͏͏͏͏·',
-  } as unknown as TreeDataOption
+  } as unknown as TreeDataOption,
 };
 
 /**

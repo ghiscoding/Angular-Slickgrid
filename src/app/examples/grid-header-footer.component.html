@@ -13,12 +13,7 @@
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <angular-slickgrid
-    gridId="grid1"
-    [columnDefinitions]="columnDefinitions"
-    [gridOptions]="gridOptions"
-    [dataset]="dataset"
-  >
+  <angular-slickgrid gridId="grid1" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
     <ng-template #slickgridHeader>
       <h3>Grid with header and footer slot</h3>
     </ng-template>

@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-colspan.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-colspan.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -12,28 +14,30 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <h3>Grid 1 <small>(with Header Grouping &amp; Colspan)</small></h3>
-  <angular-slickgrid gridId="grid1"
-                     [columnDefinitions]="columnDefinitions1"
-                     [gridOptions]="gridOptions1"
-                     [dataset]="dataset1">
+  <angular-slickgrid gridId="grid1" [columnDefinitions]="columnDefinitions1" [gridOptions]="gridOptions1" [dataset]="dataset1">
   </angular-slickgrid>
 
   <hr />
 
   <h3>Grid 2 <small>(with Header Grouping &amp; Frozen/Pinned Columns)</small></h3>
   <div class="col-sm 12">
-    <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns2(-1)"
-            data-test="remove-frozen-column-button">
+    <button
+      class="btn btn-outline-secondary btn-sm btn-icon"
+      (click)="setFrozenColumns2(-1)"
+      data-test="remove-frozen-column-button"
+    >
       <i class="mdi mdi-close"></i> Remove Frozen Columns
     </button>
     <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="setFrozenColumns2(2)" data-test="set-3frozen-columns">
       <i class="mdi mdi-pin-outline"></i> Set 3 Frozen Columns
     </button>
   </div>
-  <angular-slickgrid gridId="grid2"
-                     [columnDefinitions]="columnDefinitions2"
-                     [gridOptions]="gridOptions2"
-                     [dataset]="dataset2"
-                     (onAngularGridCreated)="angularGridReady2($event.detail)">
+  <angular-slickgrid
+    gridId="grid2"
+    [columnDefinitions]="columnDefinitions2"
+    [gridOptions]="gridOptions2"
+    [dataset]="dataset2"
+    (onAngularGridCreated)="angularGridReady2($event.detail)"
+  >
   </angular-slickgrid>
 </div>

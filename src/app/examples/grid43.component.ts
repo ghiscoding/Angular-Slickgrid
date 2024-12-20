@@ -7,7 +7,7 @@ const sampleDataRoot = 'assets/data';
 @Component({
   styles: ['.file-upload { max-width: 300px; }'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid43.component.html'
+  templateUrl: './grid43.component.html',
 })
 export class Grid43Component {
   columnDefinitions: Column[] = [];
@@ -18,7 +18,7 @@ export class Grid43Component {
   uploadFileRef = '';
   templateUrl = `${sampleDataRoot}/users.csv`;
 
-  constructor(private readonly cd: ChangeDetectorRef) { }
+  constructor(private readonly cd: ChangeDetectorRef) {}
 
   handleFileImport(event: any) {
     const file = event.target.files[0];

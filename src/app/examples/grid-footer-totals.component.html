@@ -1,28 +1,30 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
-    <button class="btn btn-outline-secondary btn-sm ms-3" (click)="toggleDarkMode()"
-          data-test="toggle-dark-mode">
+    {{ title }}
+    <button class="btn btn-outline-secondary btn-sm ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
       <span class="mdi mdi-theme-light-dark"></span>
       <span>Toggle Dark Mode</span>
     </button>
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-footer-totals.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-footer-totals.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
-  <div class="subtitle"
-       [innerHTML]="subTitle"></div>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <angular-slickgrid gridId="grid37"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)"
-                     (onCellChange)="handleOnCellChange($event.detail.eventData, $event.detail.args)"
-                     (onColumnsReordered)="handleOnColumnsReordered()">
+  <angular-slickgrid
+    gridId="grid37"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onCellChange)="handleOnCellChange($event.detail.eventData, $event.detail.args)"
+    (onColumnsReordered)="handleOnColumnsReordered()"
+  >
   </angular-slickgrid>
 </div>

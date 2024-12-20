@@ -20,7 +20,7 @@ import {
 } from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-draggrouping.component.html'
+  templateUrl: './grid-draggrouping.component.html',
 })
 export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   private _darkMode = false;
@@ -79,23 +79,28 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   defineGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', columnGroup: 'Common Factor',
-        width: 70, minWidth: 50,
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        columnGroup: 'Common Factor',
+        width: 70,
+        minWidth: 50,
         cssClass: 'cell-title',
         filterable: true,
         sortable: true,
         grouping: {
           getter: 'title',
           formatter: (g) => `Title: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor',
+        id: 'duration',
+        name: 'Duration',
+        field: 'duration',
+        columnGroup: 'Common Factor',
         width: 70,
         sortable: true,
         filterable: true,
@@ -114,18 +119,20 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
           getter: 'duration',
           formatter: (g) => `Duration: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
           comparer: (a, b) => {
-            return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
+            return this.durationOrderByCount
+              ? a.count - b.count
+              : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
-          aggregators: [
-            new Aggregators.Sum('duration'),
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'start', name: 'Start', field: 'start', columnGroup: 'Period',
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        columnGroup: 'Period',
         minWidth: 60,
         sortable: true,
         filterable: true,
@@ -137,15 +144,16 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         grouping: {
           getter: 'start',
           formatter: (g) => `Start: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period',
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        columnGroup: 'Period',
         minWidth: 60,
         sortable: true,
         filterable: true,
@@ -157,15 +165,16 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         grouping: {
           getter: 'finish',
           formatter: (g) => `Finish: ${g.value} <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'cost', name: 'Cost', field: 'cost', columnGroup: 'Analysis',
+        id: 'cost',
+        name: 'Cost',
+        field: 'cost',
+        columnGroup: 'Analysis',
         width: 90,
         sortable: true,
         filterable: true,
@@ -176,16 +185,18 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         grouping: {
           getter: 'cost',
           formatter: (g) => `Cost: ${g.value} <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: true,
-          collapsed: true
-        }
+          collapsed: true,
+        },
       },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', columnGroup: 'Analysis',
-        minWidth: 70, width: 90,
+        id: 'percentComplete',
+        name: '% Complete',
+        field: 'percentComplete',
+        columnGroup: 'Analysis',
+        minWidth: 70,
+        width: 90,
         formatter: Formatters.percentCompleteBar,
         type: FieldType.number,
         filterable: true,
@@ -195,41 +206,45 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         grouping: {
           getter: 'percentComplete',
           formatter: (g) => `% Complete: ${g.value}  <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
+          collapsed: false,
         },
-        params: { groupFormatterPrefix: '<i>Avg</i>: ' }
+        params: { groupFormatterPrefix: '<i>Avg</i>: ' },
       },
       {
-        id: 'effortDriven', name: 'Effort-Driven', field: 'effortDriven', columnGroup: 'Analysis',
-        width: 80, minWidth: 20, maxWidth: 100,
+        id: 'effortDriven',
+        name: 'Effort-Driven',
+        field: 'effortDriven',
+        columnGroup: 'Analysis',
+        width: 80,
+        minWidth: 20,
+        maxWidth: 100,
         cssClass: 'cell-effort-driven',
         sortable: true,
         filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          model: Filters.singleSelect
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
+          model: Filters.singleSelect,
         },
         formatter: Formatters.checkmarkMaterial,
         grouping: {
           getter: 'effortDriven',
           formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span class="text-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('duration'),
-            new Aggregators.Sum('cost')
-          ],
-          collapsed: false
-        }
-      }
+          aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
+          collapsed: false,
+        },
+      },
     ];
 
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableDraggableGrouping: true,
       autoEdit: true, // true single click (false for double-click)
@@ -254,7 +269,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       // filterTypingDebounce: 250,
       enableSorting: true,
       textExportOptions: {
-        sanitizeDataExport: true
+        sanitizeDataExport: true,
       },
       gridMenu: {
         onCommand: (e, args) => {
@@ -271,7 +286,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         sortAscIconCssClass: 'mdi mdi-arrow-up',
         sortDescIconCssClass: 'mdi mdi-arrow-down',
         onGroupChanged: (e, args) => this.onGroupChanged(args),
-        onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
+        onExtensionRegistered: (extension) => (this.draggableGroupingPlugin = extension),
       },
       darkMode: this._darkMode,
       enableTextExport: true,
@@ -289,7 +304,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     for (let i = 0; i < rowCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
       const randomCost = Math.round(Math.random() * 10000) / 100;
 
@@ -301,9 +316,9 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        cost: (i % 33 === 0) ? -randomCost : randomCost,
-        effortDriven: (i % 5 === 0)
+        finish: new Date(randomYear, randomMonth + 1, randomDay),
+        cost: i % 33 === 0 ? -randomCost : randomCost,
+        effortDriven: i % 5 === 0,
       };
     }
     this.dataset = tmpData;
@@ -322,7 +337,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   }
 
   clearGroupingSelects() {
-    this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = '');
+    this.selectedGroupingFields.forEach((g, i) => (this.selectedGroupingFields[i] = ''));
   }
 
   collapseAllGroups() {
@@ -336,7 +351,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   exportToExcel() {
     this.excelExportService.exportToExcel({
       filename: 'Export',
-      format: FileType.xlsx
+      format: FileType.xlsx,
     });
   }
 
@@ -376,14 +391,14 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onGroupChanged(change: { caller?: string; groupColumns: Grouping[]; }) {
+  onGroupChanged(change: { caller?: string; groupColumns: Grouping[] }) {
     // the "caller" property might not be in the SlickGrid core lib yet, reference PR https://github.com/6pac/SlickGrid/pull/303
-    const caller = change && change.caller || [];
-    const groups = change && change.groupColumns || [];
+    const caller = (change && change.caller) || [];
+    const groups = (change && change.groupColumns) || [];
 
     if (Array.isArray(this.selectedGroupingFields) && Array.isArray(groups) && groups.length > 0) {
       // update all Group By select dropdown
-      this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = groups[i] && groups[i].getter || '');
+      this.selectedGroupingFields.forEach((g, i) => (this.selectedGroupingFields[i] = (groups[i] && groups[i].getter) || ''));
     } else if (groups.length === 0 && caller === 'remove-group') {
       this.clearGroupingSelects();
     }

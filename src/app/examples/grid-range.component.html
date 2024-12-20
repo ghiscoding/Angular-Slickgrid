@@ -1,10 +1,12 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-range.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-range.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -14,8 +16,8 @@
   <br />
 
   <span *ngIf="metrics" style="margin-right: 10px">
-    <b>Metrics:</b> {{metrics.startTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.itemCount}} of
-    {{metrics.totalItemCount}} items
+    <b>Metrics:</b> {{ metrics.startTime | date: "yyyy-MM-dd hh:mm aaaaa'm'" }} | {{ metrics.itemCount }} of
+    {{ metrics.totalItemCount }} items
   </span>
 
   <form class="row row-cols-lg-auto g-1 align-items-center">
@@ -25,8 +27,11 @@
       </button>
     </div>
     <div class="col">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="clear-sorting"
-              (click)="angularGrid.sortService.clearSorting()">
+      <button
+        class="btn btn-outline-secondary btn-sm btn-icon"
+        data-test="clear-sorting"
+        (click)="angularGrid.sortService.clearSorting()"
+      >
         Clear Sorting
       </button>
     </div>
@@ -36,8 +41,7 @@
       </button>
     </div>
     <div class="col">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting"
-              (click)="setSortingDynamically()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
         Set Sorting Dynamically
       </button>
     </div>
@@ -45,9 +49,14 @@
       <label for="selectedFilter" style="margin-left: 10px">Predefined Filters</label>
     </div>
     <div class="col">
-      <select name="selectedFilter" class="form-select" [(ngModel)]="selectedPredefinedFilter"
-              data-test="select-dynamic-filter" (ngModelChange)="usePredefinedFilter($event)">
-        <option [ngValue]="filter.value" *ngFor="let filter of filterList">{{filter.label}}</option>
+      <select
+        name="selectedFilter"
+        class="form-select"
+        [(ngModel)]="selectedPredefinedFilter"
+        data-test="select-dynamic-filter"
+        (ngModelChange)="usePredefinedFilter($event)"
+      >
+        <option [ngValue]="filter.value" *ngFor="let filter of filterList">{{ filter.label }}</option>
       </select>
     </div>
   </form>
@@ -58,17 +67,19 @@
         <i class="mdi mdi-translate"></i>
         Switch Language
       </button>
-      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+      <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{ selectedLanguage + '.json' }}</span>
     </div>
   </div>
 
-  <angular-slickgrid gridId="grid25"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)"
-                     (onGridStateChanged)="gridStateChanged($event.detail)"
-                     (onBeforeGridDestroy)="saveCurrentGridState()"
-                     (onRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
+  <angular-slickgrid
+    gridId="grid25"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onGridStateChanged)="gridStateChanged($event.detail)"
+    (onBeforeGridDestroy)="saveCurrentGridState()"
+    (onRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)"
+  >
   </angular-slickgrid>
 </div>

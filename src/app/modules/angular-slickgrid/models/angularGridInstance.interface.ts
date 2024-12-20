@@ -13,7 +13,7 @@ import type {
   SlickDataView,
   SlickGrid,
   SortService,
-  TreeDataService
+  TreeDataService,
 } from '@slickgrid-universal/common';
 import type { EventPubSubService } from '@slickgrid-universal/event-pub-sub';
 

@@ -3,7 +3,6 @@ import type { EmbeddedViewRef, EnvironmentInjector, Injector, NgModuleRef, Type 
 
 import type { AngularComponentOutput } from '../models/angularComponentOutput.interface';
 
-
 interface CreateComponentOption {
   index?: number;
   injector?: Injector;
@@ -14,10 +13,14 @@ interface CreateComponentOption {
 
 @Injectable()
 export class AngularUtilService {
+  constructor(private vcr: ViewContainerRef) {}
 
-  constructor(private vcr: ViewContainerRef) { }
-
-  createInteractiveAngularComponent<C>(component: Type<C>, targetElement: Element, data?: any, createCompOptions?: CreateComponentOption): AngularComponentOutput {
+  createInteractiveAngularComponent<C>(
+    component: Type<C>,
+    targetElement: Element,
+    data?: any,
+    createCompOptions?: CreateComponentOption
+  ): AngularComponentOutput {
     // Create a component reference from the component
     const componentRef = this.vcr.createComponent(component, createCompOptions);
 
@@ -28,7 +31,7 @@ export class AngularUtilService {
 
     // Get DOM element from component
     let domElem: HTMLElement | null = null;
-    const viewRef = (componentRef.hostView as EmbeddedViewRef<any>);
+    const viewRef = componentRef.hostView as EmbeddedViewRef<any>;
 
     if (viewRef && Array.isArray(viewRef.rootNodes) && viewRef.rootNodes[0]) {
       domElem = viewRef.rootNodes[0] as HTMLElement;
@@ -50,7 +53,12 @@ export class AngularUtilService {
    * @param {CreateComponentOption} [createCompOptions]
    * @returns
    */
-  createAngularComponent<C>(component: Type<C>, targetElement?: Element, data?: any, createCompOptions?: CreateComponentOption): AngularComponentOutput {
+  createAngularComponent<C>(
+    component: Type<C>,
+    targetElement?: Element,
+    data?: any,
+    createCompOptions?: CreateComponentOption
+  ): AngularComponentOutput {
     // Create a component reference from the component
     const componentRef = this.vcr.createComponent(component, createCompOptions);
 
@@ -66,7 +74,7 @@ export class AngularUtilService {
 
     // Get DOM element from component
     let domElem: HTMLElement | null = null;
-    const viewRef = (componentRef.hostView as EmbeddedViewRef<any>);
+    const viewRef = componentRef.hostView as EmbeddedViewRef<any>;
 
     // get DOM element from the new dynamic Component, make sure this is read after any data and detectChanges()
     if (viewRef && Array.isArray(viewRef.rootNodes) && viewRef.rootNodes[0]) {
@@ -90,7 +98,12 @@ export class AngularUtilService {
    * @param {CreateComponentOption} [createCompOptions]
    * @returns
    */
-  createAngularComponentAppendToDom<C>(component: Type<C>, targetElement?: Element, data?: any, createCompOptions?: CreateComponentOption): AngularComponentOutput {
+  createAngularComponentAppendToDom<C>(
+    component: Type<C>,
+    targetElement?: Element,
+    data?: any,
+    createCompOptions?: CreateComponentOption
+  ): AngularComponentOutput {
     const componentOutput = this.createAngularComponent(component, targetElement, data, createCompOptions);
 
     // Append DOM element to the HTML element specified

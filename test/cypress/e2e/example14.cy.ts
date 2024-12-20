@@ -20,7 +20,10 @@ describe('Example 14 - Grouping & Aggregators', () => {
       cy.get('[data-test="group-duration-sort-value-btn"]').click();
       cy.get('[data-test="collapse-all-btn"]').click();
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should('have.length', 1);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.collapsed`).should(
+        'have.length',
+        1
+      );
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 0');
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 1');
@@ -34,7 +37,10 @@ describe('Example 14 - Grouping & Aggregators', () => {
       cy.get('[data-test="group-duration-sort-value-btn"]').click();
       cy.get('[data-test="expand-all-btn"]').click();
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-toggle.expanded`).should(
+        'have.length',
+        1
+      );
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 0');
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task');
@@ -44,33 +50,70 @@ describe('Example 14 - Grouping & Aggregators', () => {
     it('should "Group by Duration then Effort-Driven" and expect 1st row to be expanded, 2nd row to be collapsed and 3rd row to have group totals', () => {
       cy.get('[data-test="group-duration-effort-btn"]').click();
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 0');
+      cy.get(
+        `[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-toggle.expanded`
+      ).should('have.length', 1);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-title`).should(
+        'contain',
+        'Duration: 0'
+      );
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-toggle.collapsed`).should('have.length', 1);
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-title`).should('contain', 'Effort-Driven: False');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-toggle.collapsed`).should(
+        'have.length',
+        1
+      );
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-title`).should(
+        'contain',
+        'Effort-Driven: False'
+      );
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-1 .slick-group-toggle.collapsed`).should('have.length', 1);
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-1 .slick-group-title`).should('contain', 'Effort-Driven: True');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-1 .slick-group-toggle.collapsed`).should(
+        'have.length',
+        1
+      );
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-1 .slick-group-title`).should(
+        'contain',
+        'Effort-Driven: True'
+      );
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"].slick-group-totals.slick-group-level-0 .slick-cell:nth(2)`).should('contain', 'Total: 0');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"].slick-group-totals.slick-group-level-0 .slick-cell:nth(2)`).should(
+        'contain',
+        'Total: 0'
+      );
     });
 
     it('should "Group by Duration then Effort-Driven then Percent" and expect fist 2 rows to be expanded, 3rd row to be collapsed then 4th row to have group total', () => {
       cy.get('[data-test="group-duration-effort-percent-btn"]').click();
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-toggle.expanded`).should('have.length', 1);
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-title`).should('contain', 'Duration: 0');
+      cy.get(
+        `[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-toggle.expanded`
+      ).should('have.length', 1);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"].slick-group-level-0 > .slick-cell:nth(0) .slick-group-title`).should(
+        'contain',
+        'Duration: 0'
+      );
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-toggle.expanded`).should('have.length', 1);
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-title`).should('contain', 'Effort-Driven: False');
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-toggle.expanded`).should(
+        'have.length',
+        1
+      );
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"].slick-group-level-1 .slick-group-title`).should(
+        'contain',
+        'Effort-Driven: False'
+      );
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-2 .slick-group-toggle.collapsed`).should('have.length', 1);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-2 .slick-group-toggle.collapsed`).should(
+        'have.length',
+        1
+      );
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"].slick-group-level-2 .slick-group-title`).contains(/^% Complete: [0-9]/);
 
-      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"].slick-group-totals.slick-group-level-2 .slick-cell:nth(3)`).contains(/^Avg: [0-9]%$/);
+      cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"].slick-group-totals.slick-group-level-2 .slick-cell:nth(3)`).contains(
+        /^Avg: [0-9]%$/
+      );
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"].slick-group-totals.slick-group-level-2`)
-        .find('.slick-cell:nth(3)').contains('Avg: ');
+        .find('.slick-cell:nth(3)')
+        .contains('Avg: ');
     });
   });
 
@@ -80,19 +123,13 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 500 rows using "Ta*33" (starts with "Ta" + ends with 33)', () => {
-      cy.get('.search-filter.filter-title')
-        .clear()
-        .type('Ta*3');
+      cy.get('.search-filter.filter-title').clear().type('Ta*3');
 
-      cy.get('.item-count')
-        .should('contain', 5000);
+      cy.get('.item-count').should('contain', 5000);
 
-      cy.get('.search-filter.filter-title')
-        .clear()
-        .type('Ta*33');
+      cy.get('.search-filter.filter-title').clear().type('Ta*33');
 
-      cy.get('.item-count')
-        .should('contain', 500);
+      cy.get('.item-count').should('contain', 500);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 33');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 133');
@@ -101,12 +138,9 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 40000 rows using "Ta*" (starts with "Ta")', () => {
-      cy.get('.search-filter.filter-title')
-        .clear()
-        .type('Ta*');
+      cy.get('.search-filter.filter-title').clear().type('Ta*');
 
-      cy.get('.item-count')
-        .should('contain', 50000);
+      cy.get('.item-count').should('contain', 50000);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 0');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 1');
@@ -115,12 +149,9 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 500 rows using "*11" (ends with "11")', () => {
-      cy.get('.search-filter.filter-title')
-        .clear()
-        .type('*11');
+      cy.get('.search-filter.filter-title').clear().type('*11');
 
-      cy.get('.item-count')
-        .should('contain', 500);
+      cy.get('.item-count').should('contain', 500);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 1');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 11');
@@ -129,12 +160,9 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 497 rows using ">222" (greater than 222)', () => {
-      cy.get('.search-filter.filter-sel')
-        .clear()
-        .type('>222');
+      cy.get('.search-filter.filter-sel').clear().type('>222');
 
-      cy.get('.item-count')
-        .should('contain', 497);
+      cy.get('.item-count').should('contain', 497);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 311');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 411');
@@ -143,19 +171,13 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 499 rows using "<>311" (not equal to 311)', () => {
-      cy.get('.search-filter.filter-sel')
-        .clear()
-        .type('<>311');
+      cy.get('.search-filter.filter-sel').clear().type('<>311');
 
-      cy.get('.item-count')
-        .should('contain', 499);
+      cy.get('.item-count').should('contain', 499);
 
-      cy.get('.search-filter.filter-sel')
-        .clear()
-        .type('!=311');
+      cy.get('.search-filter.filter-sel').clear().type('!=311');
 
-      cy.get('.item-count')
-        .should('contain', 499);
+      cy.get('.item-count').should('contain', 499);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 11');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 111');
@@ -165,19 +187,13 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should return 1 rows using "=311" or "==311" (equal to 311)', () => {
-      cy.get('.search-filter.filter-sel')
-        .clear()
-        .type('=311');
+      cy.get('.search-filter.filter-sel').clear().type('=311');
 
-      cy.get('.item-count')
-        .should('contain', 1);
+      cy.get('.item-count').should('contain', 1);
 
-      cy.get('.search-filter.filter-sel')
-        .clear()
-        .type('==311');
+      cy.get('.search-filter.filter-sel').clear().type('==311');
 
-      cy.get('.item-count')
-        .should('contain', 1);
+      cy.get('.item-count').should('contain', 1);
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Task 311');
     });
@@ -194,12 +210,7 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should open Column Picker and have a "Custom Label" as the 1st column label', () => {
-      cy.get('#grid14')
-        .find('.slick-header-column')
-        .first()
-        .trigger('mouseover')
-        .trigger('contextmenu')
-        .invoke('show');
+      cy.get('#grid14').find('.slick-header-column').first().trigger('mouseover').trigger('contextmenu').invoke('show');
 
       cy.get('.slick-column-picker')
         .find('.slick-column-picker-list li:nth-child(1) .checkbox-label')
@@ -207,17 +218,13 @@ describe('Example 14 - Grouping & Aggregators', () => {
     });
 
     it('should open Grid Menu and have a "Custom Label" as the 1st column label', () => {
-      cy.get('#grid14')
-        .find('button.slick-grid-menu-button')
-        .trigger('click')
-        .click({ force: true });
+      cy.get('#grid14').find('button.slick-grid-menu-button').trigger('click').click({ force: true });
 
       cy.get(`.slick-grid-menu:visible`)
         .find('.slick-column-picker-list li:nth-child(1) .checkbox-label')
         .should('have.text', 'Custom Label');
 
-      cy.get('[data-dismiss="slick-grid-menu"]')
-        .click();
+      cy.get('[data-dismiss="slick-grid-menu"]').click();
     });
   });
 });

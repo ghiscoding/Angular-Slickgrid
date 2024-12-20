@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
-import { AngularGridInstance, Column, GridOption, } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, GridOption } from './../modules/angular-slickgrid';
 
 // create a custom Formatter to highlight negative values in red
 let columns1WithHighlightingById: any = {};
@@ -9,7 +9,7 @@ let columns2WithHighlightingById: any = {};
 @Component({
   styleUrls: ['./grid-headerbutton.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid-headerbutton.component.html'
+  templateUrl: './grid-headerbutton.component.html',
 })
 export class GridHeaderButtonComponent implements OnInit {
   title = 'Example 7: Header Button Plugin';
@@ -67,7 +67,7 @@ export class GridHeaderButtonComponent implements OnInit {
       enableHeaderMenu: false,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableFiltering: false,
       enableExcelCopyBuffer: true,
@@ -80,8 +80,8 @@ export class GridHeaderButtonComponent implements OnInit {
       gridHeight: 275,
       headerButton: {
         // you can use the "onCommand" (in Grid Options) and/or the "action" callback (in Column Definition)
-        onCommand: (_e, args) => this.handleOnCommand(_e, args, 1)
-      }
+        onCommand: (_e, args) => this.handleOnCommand(_e, args, 1),
+      },
     };
 
     // grid 2 options, same as grid 1 + extras
@@ -93,8 +93,8 @@ export class GridHeaderButtonComponent implements OnInit {
       // frozenRow: 2,
       headerButton: {
         // when floating to left, you might want to inverse the icon orders
-        onCommand: (_e, args) => this.handleOnCommand(_e, args, 2)
-      }
+        onCommand: (_e, args) => this.handleOnCommand(_e, args, 2),
+      },
     };
   }
 
@@ -161,10 +161,10 @@ export class GridHeaderButtonComponent implements OnInit {
                 // you can use the "action" callback and/or subscribe to the "onCallback" event, they both have the same arguments
                 // do something
                 console.log(`execute a callback action to "${args.command}" on ${args.column.name}`);
-              }
-            }
-          ]
-        }
+              },
+            },
+          ],
+        },
       });
     }
 
@@ -176,27 +176,27 @@ export class GridHeaderButtonComponent implements OnInit {
           cssClass: 'mdi mdi-message-text',
           handler: () => {
             alert('Tag');
-          }
+          },
         },
         {
           cssClass: 'mdi mdi-forum-outline',
           handler: () => {
             alert('Comment');
-          }
+          },
         },
         {
           cssClass: 'mdi mdi-information',
           handler: () => {
             alert('Info');
-          }
+          },
         },
         {
           cssClass: 'mdi mdi-help-circle',
           handler: () => {
             alert('Help');
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
 
     // when floating to left, you might want to inverse the icon orders
@@ -214,9 +214,9 @@ export class GridHeaderButtonComponent implements OnInit {
           tooltip: 'This button only appears on hover.',
           handler: () => {
             alert('Help');
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
 
     // mock a dataset

@@ -1,10 +1,4 @@
-import type {
-  Column,
-  ColumnEditor,
-  Editor,
-  EditorValidator,
-  EditorValidationResult,
-} from './../modules/angular-slickgrid';
+import type { Column, ColumnEditor, Editor, EditorValidator, EditorValidationResult } from './../modules/angular-slickgrid';
 
 /*
  * An example of a 'detached' editor.
@@ -110,7 +104,7 @@ export class CustomInputEditor implements Editor {
     if (this.columnEditor?.alwaysSaveOnEnterKey && lastKeyEvent === 'Enter') {
       return true;
     }
-    return (!(this.inputElm.value === '' && this.defaultValue === null) && this.inputElm.value !== this.defaultValue);
+    return !(this.inputElm.value === '' && this.defaultValue === null) && this.inputElm.value !== this.defaultValue;
   }
 
   save() {

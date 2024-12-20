@@ -16,11 +16,18 @@ export class Logger {
   private options: LoggerConfig = {
     level: this._clientLogLevel,
     serverLogLevel: this._serverLogLevel,
-    serverLoggingUrl: '/remotelog.do'
+    serverLoggingUrl: '/remotelog.do',
   };
 
-  constructor(private _class: string, private http?: HttpClient) {
-    this._isIE = !!(navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.match(/Trident\//) || navigator.userAgent.match(/Edge\//));
+  constructor(
+    private _class: string,
+    private http?: HttpClient
+  ) {
+    this._isIE = !!(
+      navigator.userAgent.indexOf('MSIE') !== -1 ||
+      navigator.userAgent.match(/Trident\//) ||
+      navigator.userAgent.match(/Edge\//)
+    );
   }
 
   trace(message: string, ...additional: any[]) {
@@ -63,16 +70,19 @@ export class Logger {
 
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-    this.http!.post(this.options.serverLoggingUrl, {
-      level: Levels[level],
-      message,
-      additional,
-      timestamp: this._timestamp()
-    }, { headers })
-      .subscribe({
-        next: () => null,
-        error: () => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER')
-      });
+    this.http!.post(
+      this.options.serverLoggingUrl,
+      {
+        level: Levels[level],
+        message,
+        additional,
+        timestamp: this._timestamp(),
+      },
+      { headers }
+    ).subscribe({
+      next: () => null,
+      error: () => this._log(LoggerLevel.ERROR, false, 'FAILED TO LOG ON SERVER'),
+    });
   }
 
   private _logIE(level: LoggerLevel, message: string, additional: any[]) {
@@ -151,15 +161,13 @@ export class LoggerConfig {
 }
 
 export enum LoggerLevel {
-  TRACE = 0, DEBUG, INFO, LOG, WARN, ERROR, OFF
+  TRACE = 0,
+  DEBUG,
+  INFO,
+  LOG,
+  WARN,
+  ERROR,
+  OFF,
 }
 
-const Levels = [
-  'TRACE',
-  'DEBUG',
-  'INFO',
-  'LOG',
-  'WARN',
-  'ERROR',
-  'OFF'
-];
+const Levels = ['TRACE', 'DEBUG', 'INFO', 'LOG', 'WARN', 'ERROR', 'OFF'];

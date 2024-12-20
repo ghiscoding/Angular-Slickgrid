@@ -12,7 +12,7 @@ import {
   type GridState,
   type GridStateChange,
   type MultipleSelectOption,
-  unsubscribeAllObservables
+  unsubscribeAllObservables,
 } from './../modules/angular-slickgrid';
 
 function randomBetween(min: number, max: number) {
@@ -23,7 +23,7 @@ const LOCAL_STORAGE_KEY = 'gridState';
 const NB_ITEMS = 500;
 
 @Component({
-  templateUrl: './grid-state.component.html'
+  templateUrl: './grid-state.component.html',
 })
 export class GridStateComponent implements OnInit, OnDestroy {
   title = 'Example 16: Grid State & Presets using Local Storage';
@@ -75,7 +75,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
   clearGridStateFromLocalStorage() {
     this.angularGrid.gridService.resetGrid(this.columnDefinitions);
     this.angularGrid.paginationService!.changeItemPerPage(DEFAULT_PAGE_SIZE);
-    window.setTimeout(() => localStorage[LOCAL_STORAGE_KEY] = null);
+    window.setTimeout(() => (localStorage[LOCAL_STORAGE_KEY] = null));
   }
 
   /* Define grid Options and Columns */
@@ -95,25 +95,38 @@ export class GridStateComponent implements OnInit, OnDestroy {
         filterable: true,
         sortable: true,
         type: FieldType.string,
-        minWidth: 45, width: 100,
+        minWidth: 45,
+        width: 100,
         filter: {
-          model: Filters.compoundInput
-        }
+          model: Filters.compoundInput,
+        },
       },
       {
-        id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80, width: 100,
+        id: 'description',
+        name: 'Description',
+        field: 'description',
+        filterable: true,
+        sortable: true,
+        minWidth: 80,
+        width: 100,
         type: FieldType.string,
         filter: {
           model: Filters.input,
           filterShortcuts: [
-            { titleKey: 'BLANK_VALUES', searchTerms: ['< A'], iconCssClass: 'mdi mdi-filter-minus-outline', },
-            { titleKey: 'NON_BLANK_VALUES', searchTerms: ['> A'], iconCssClass: 'mdi mdi-filter-plus-outline', },
-          ]
-        }
+            { titleKey: 'BLANK_VALUES', searchTerms: ['< A'], iconCssClass: 'mdi mdi-filter-minus-outline' },
+            { titleKey: 'NON_BLANK_VALUES', searchTerms: ['> A'], iconCssClass: 'mdi mdi-filter-plus-outline' },
+          ],
+        },
       },
       {
-        id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
-        minWidth: 55, width: 100,
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
+        sortable: true,
+        type: FieldType.number,
+        exportCsvForceToKeepAsString: true,
+        minWidth: 55,
+        width: 100,
         nameKey: 'DURATION',
         filterable: true,
         filter: {
@@ -122,51 +135,89 @@ export class GridStateComponent implements OnInit, OnDestroy {
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
             maxHeight: 250,
-            width: 175
-          } as MultipleSelectOption
-        }
+            width: 175,
+          } as MultipleSelectOption,
+        },
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
-        formatter: Formatters.percentCompleteBar, filterable: true, filter: { model: Filters.slider, operator: '>' }
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        nameKey: 'PERCENT_COMPLETE',
+        minWidth: 70,
+        type: FieldType.number,
+        sortable: true,
+        width: 100,
+        formatter: Formatters.percentCompleteBar,
+        filterable: true,
+        filter: { model: Filters.slider, operator: '>' },
       },
       {
-        id: 'start', name: 'Start', field: 'start', nameKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true, width: 100,
-        type: FieldType.date, filterable: true,
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        nameKey: 'START',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 75,
+        exportWithFormatter: true,
+        width: 100,
+        type: FieldType.date,
+        filterable: true,
         filter: {
           model: Filters.compoundDate,
           filterShortcuts: [
-            { titleKey: 'PAST', searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')], operator: '<', iconCssClass: 'mdi mdi-calendar', },
-            { titleKey: 'FUTURE', searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')], operator: '>', iconCssClass: 'mdi mdi-calendar-clock', },
-          ]
-        }
+            {
+              titleKey: 'PAST',
+              searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')],
+              operator: '<',
+              iconCssClass: 'mdi mdi-calendar',
+            },
+            {
+              titleKey: 'FUTURE',
+              searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')],
+              operator: '>',
+              iconCssClass: 'mdi mdi-calendar-clock',
+            },
+          ],
+        },
       },
       {
-        id: 'completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmarkMaterial, width: 100,
+        id: 'completed',
+        field: 'completed',
+        nameKey: 'COMPLETED',
+        minWidth: 85,
+        maxWidth: 85,
+        formatter: Formatters.checkmarkMaterial,
+        width: 100,
         type: FieldType.boolean,
         sortable: true,
         filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption,
-        }
-      }
+        },
+      },
     ];
 
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableCheckboxSelector: true,
       enableFiltering: true,
       enableTranslate: true,
       i18n: this.translate,
       columnPicker: {
-        hideForceFitButton: true
+        hideForceFitButton: true,
       },
       gridMenu: {
         hideForceFitButton: true,
@@ -178,7 +229,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
       enablePagination: true,
       pagination: {
         pageSizes: [5, 10, 15, 20, 25, 30, 40, 50, 75, 100],
-        pageSize: DEFAULT_PAGE_SIZE
+        pageSize: DEFAULT_PAGE_SIZE,
       },
     };
 
@@ -199,7 +250,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
       const randomYear = randomBetween(currentYear - 15, currentYear + 8);
       const randomYearShort = randomBetween(10, 25);
       const randomMonth = randomBetween(1, 12);
-      const randomMonthStr = (randomMonth < 10) ? `0${randomMonth}` : randomMonth;
+      const randomMonthStr = randomMonth < 10 ? `0${randomMonth}` : randomMonth;
       const randomDay = randomBetween(10, 28);
       const randomPercent = randomBetween(0, 100);
       const randomHour = randomBetween(10, 23);
@@ -209,14 +260,14 @@ export class GridStateComponent implements OnInit, OnDestroy {
         id: i,
         title: 'Task ' + i,
         etc: 'Something hidden ' + i,
-        description: (i % 5) ? 'desc ' + i : null, // also add some random to test NULL field
+        description: i % 5 ? 'desc ' + i : null, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: new Date(randomYear, randomMonth, randomDay),          // provide a Date format
+        start: new Date(randomYear, randomMonth, randomDay), // provide a Date format
         usDateShort: `${randomMonth}/${randomDay}/${randomYearShort}`, // provide a date US Short in the dataset
         utcDate: `${randomYear}-${randomMonthStr}-${randomDay}T${randomHour}:${randomTime}:${randomTime}Z`,
-        completed: (i % 3 === 0)
+        completed: i % 3 === 0,
       };
     }
     return tmpData;
@@ -236,7 +287,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
   }
 
   switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     this.subscriptions.push(
       this.translate.use(nextLanguage).subscribe(() => {
         this.selectedLanguage = nextLanguage;
@@ -265,7 +316,7 @@ export class GridStateComponent implements OnInit, OnDestroy {
       ],
       sorters: [
         { columnId: 'duration', direction: 'DESC' },
-        { columnId: 'complete', direction: 'ASC' }
+        { columnId: 'complete', direction: 'ASC' },
       ],
     } as GridState;
   }

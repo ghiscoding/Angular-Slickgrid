@@ -11,10 +11,12 @@ const viewContainerRefStub = {
 } as unknown as ViewContainerRef;
 
 @Component({ template: `<h4>Loading...</h4>` })
-class TestPreloadComponent { }
+class TestPreloadComponent {}
 
 @Component({ template: `<h1>{{ title }}</h1>` })
-class TestComponent { title = ''; }
+class TestComponent {
+  title = '';
+}
 
 describe('AngularUtilService', () => {
   let service: AngularUtilService;
@@ -27,11 +29,8 @@ describe('AngularUtilService', () => {
 
     await TestBed.configureTestingModule({
       declarations: [TestPreloadComponent],
-      providers: [
-        AngularUtilService,
-        { provide: ViewContainerRef, useValue: viewContainerRefStub },
-      ],
-      teardown: { destroyAfterEach: false }
+      providers: [AngularUtilService, { provide: ViewContainerRef, useValue: viewContainerRefStub }],
+      teardown: { destroyAfterEach: false },
     });
     service = TestBed.inject(AngularUtilService);
   });
@@ -86,7 +85,7 @@ describe('AngularUtilService', () => {
       h1Mock.textContent = titleMock;
       mockComponentFactory.hostView.rootNodes[0] = h1Mock;
       mockComponentFactory.location = {
-        nativeElement: h1Mock
+        nativeElement: h1Mock,
       };
 
       // @ts-ignore

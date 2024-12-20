@@ -1,23 +1,24 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-graphql-nopage.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-graphql-nopage.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
   <div class="subtitle row">
-    <div class="col-12" [innerHTML]="subTitle">
-    </div>
+    <div class="col-12" [innerHTML]="subTitle"></div>
   </div>
 
   <div class="row">
     <div class="col-xs-6 col-sm-3">
       <div [class]="status.class" role="alert" data-test="status">
-        <strong>Status: </strong> {{status.text}}
+        <strong>Status: </strong> {{ status.text }}
         <span [hidden]="!processing">
           <i class="mdi mdi-sync mdi-spin-1s"></i>
         </span>
@@ -25,9 +26,6 @@
     </div>
   </div>
 
-  <angular-slickgrid gridId="grid27"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset">
+  <angular-slickgrid gridId="grid27" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
   </angular-slickgrid>
 </div>

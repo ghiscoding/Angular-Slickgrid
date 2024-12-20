@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { GraphqlService, type GraphqlPaginatedResult, type GraphqlServiceApi, } from '@slickgrid-universal/graphql';
+import { GraphqlService, type GraphqlPaginatedResult, type GraphqlServiceApi } from '@slickgrid-universal/graphql';
 import { Subscription } from 'rxjs';
 
 import {
@@ -27,7 +27,7 @@ function unescapeAndLowerCase(val: string) {
 @Component({
   styleUrls: ['./grid-infinite-graphql.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid-infinite-graphql.component.html'
+  templateUrl: './grid-infinite-graphql.component.html',
 })
 export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
@@ -44,7 +44,11 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   status = { text: 'processing...', class: 'alert alert-danger' };
   serverWaitDelay = FAKE_SERVER_DELAY; // server simulation with default of 250ms but 50ms for Cypress tests
 
-  constructor(private readonly cd: ChangeDetectorRef, private http: HttpClient, private translate: TranslateService) {
+  constructor(
+    private readonly cd: ChangeDetectorRef,
+    private http: HttpClient,
+    private translate: TranslateService
+  ) {
     this.backendService = new GraphqlService();
     // always start with English for Cypress E2E tests to be consistent
     const defaultLang = 'en';
@@ -68,40 +72,55 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'name', field: 'name', nameKey: 'NAME', width: 60,
+        id: 'name',
+        field: 'name',
+        nameKey: 'NAME',
+        width: 60,
         type: FieldType.string,
         sortable: true,
         filterable: true,
         filter: {
           model: Filters.compoundInput,
-        }
+        },
       },
       {
-        id: 'gender', field: 'gender', nameKey: 'GENDER', filterable: true, sortable: true, width: 60,
+        id: 'gender',
+        field: 'gender',
+        nameKey: 'GENDER',
+        filterable: true,
+        sortable: true,
+        width: 60,
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', labelKey: 'MALE', }, { value: 'female', labelKey: 'FEMALE', }]
-        }
+          collection: [
+            { value: '', label: '' },
+            { value: 'male', labelKey: 'MALE' },
+            { value: 'female', labelKey: 'FEMALE' },
+          ],
+        },
       },
       {
-        id: 'company', field: 'company', nameKey: 'COMPANY', width: 60,
+        id: 'company',
+        field: 'company',
+        nameKey: 'COMPANY',
+        width: 60,
         sortable: true,
         filterable: true,
         filter: {
           model: Filters.multipleSelect,
           customStructure: {
             label: 'company',
-            value: 'company'
+            value: 'company',
           },
           collectionSortBy: {
             property: 'company',
-            sortDesc: false
+            sortDesc: false,
           },
           collectionAsync: this.http.get(`${sampleDataRoot}/customers_100.json`),
           filterOptions: {
-            filter: true // adds a filter on top of the multi-select dropdown
-          } as MultipleSelectOption
-        }
+            filter: true, // adds a filter on top of the multi-select dropdown
+          } as MultipleSelectOption,
+        },
       },
     ];
 
@@ -109,11 +128,11 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
       enableAutoResize: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableAutoTooltip: true,
       autoTooltipOptions: {
-        enableForHeaderCells: true
+        enableForHeaderCells: true,
       },
       enableTranslate: true,
       i18n: this.translate,
@@ -129,11 +148,14 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
         service: this.backendService,
         options: {
           datasetName: GRAPHQL_QUERY_DATASET_NAME, // the only REQUIRED property
-          addLocaleIntoQuery: true,   // optionally add current locale into the query
-          extraQueryArguments: [{     // optionally add some extra query arguments as input query arguments
-            field: 'userId',
-            value: 123
-          }],
+          addLocaleIntoQuery: true, // optionally add current locale into the query
+          extraQueryArguments: [
+            {
+              // optionally add some extra query arguments as input query arguments
+              field: 'userId',
+              value: 123,
+            },
+          ],
           // enable infinite via Boolean OR via { fetchSize: number }
           infiniteScroll: { fetchSize: 30 }, // or use true, in that case it would use default size of 25
         },
@@ -145,12 +167,12 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
           this.metrics = {
             endTime: new Date(),
             totalItemCount: result.data[GRAPHQL_QUERY_DATASET_NAME].totalCount || 0,
-          }
+          };
           this.displaySpinner(false);
           this.getCustomerCallback(result);
           this.cd.detectChanges();
-        }
-      } as GraphqlServiceApi
+        },
+      } as GraphqlServiceApi,
     };
   }
 
@@ -162,7 +184,7 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
 
   displaySpinner(isProcessing: boolean) {
     this.processing = isProcessing;
-    this.status = (isProcessing)
+    this.status = isProcessing
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'finished', class: 'alert alert-success' };
   }
@@ -206,13 +228,19 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   }
 
   getCustomerDataApiMock(query: string): Promise<any> {
-    return new Promise<GraphqlPaginatedResult>(resolve => {
+    return new Promise<GraphqlPaginatedResult>((resolve) => {
       let firstCount = 0;
       let offset = 0;
       let orderByField = '';
       let orderByDir = '';
       this.http.get(`${sampleDataRoot}/customers_100.json`).subscribe((response: any) => {
-        let filteredData: Array<{ id: number; name: string; gender: string; company: string; category: { id: number; name: string; }; }> = response;
+        let filteredData: Array<{
+          id: number;
+          name: string;
+          gender: string;
+          company: string;
+          category: { id: number; name: string };
+        }> = response;
         if (query.includes('first:')) {
           const topMatch = query.match(/first:([0-9]+),/) || [];
           firstCount = +topMatch[1];
@@ -251,17 +279,28 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
                 term2 = unescapeAndLowerCase(term2 || '');
 
                 switch (operator) {
-                  case 'EQ': return dcVal.toLowerCase() === term1;
-                  case 'NE': return dcVal.toLowerCase() !== term1;
-                  case 'LE': return dcVal.toLowerCase() <= term1;
-                  case 'LT': return dcVal.toLowerCase() < term1;
-                  case 'GT': return dcVal.toLowerCase() > term1;
-                  case 'GE': return dcVal.toLowerCase() >= term1;
-                  case 'EndsWith': return dcVal.toLowerCase().endsWith(term1);
-                  case 'StartsWith': return dcVal.toLowerCase().startsWith(term1);
-                  case 'Starts+Ends': return dcVal.toLowerCase().startsWith(term1) && dcVal.toLowerCase().endsWith(term2);
-                  case 'Contains': return dcVal.toLowerCase().includes(term1);
-                  case 'Not_Contains': return !dcVal.toLowerCase().includes(term1);
+                  case 'EQ':
+                    return dcVal.toLowerCase() === term1;
+                  case 'NE':
+                    return dcVal.toLowerCase() !== term1;
+                  case 'LE':
+                    return dcVal.toLowerCase() <= term1;
+                  case 'LT':
+                    return dcVal.toLowerCase() < term1;
+                  case 'GT':
+                    return dcVal.toLowerCase() > term1;
+                  case 'GE':
+                    return dcVal.toLowerCase() >= term1;
+                  case 'EndsWith':
+                    return dcVal.toLowerCase().endsWith(term1);
+                  case 'StartsWith':
+                    return dcVal.toLowerCase().startsWith(term1);
+                  case 'Starts+Ends':
+                    return dcVal.toLowerCase().startsWith(term1) && dcVal.toLowerCase().endsWith(term2);
+                  case 'Contains':
+                    return dcVal.toLowerCase().includes(term1);
+                  case 'Not_Contains':
+                    return !dcVal.toLowerCase().includes(term1);
                   case 'IN':
                     const terms = value.toLocaleLowerCase().split(',');
                     for (const term of terms) {
@@ -284,7 +323,7 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
         }
 
         // sorting when defined
-        const selector = (obj: any) => orderByField ? obj[orderByField] : obj;
+        const selector = (obj: any) => (orderByField ? obj[orderByField] : obj);
         switch (orderByDir.toUpperCase()) {
           case 'ASC':
             filteredData = filteredData.sort((a, b) => selector(a).localeCompare(selector(b)));
@@ -321,14 +360,12 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   refreshMetrics(args: OnRowCountChangedEventArgs) {
     if (args?.current >= 0) {
       this.metrics.itemCount = this.angularGrid.dataView?.getFilteredItemCount() || 0;
-      this.tagDataClass = this.metrics.itemCount === this.metrics.totalItemCount
-        ? 'fully-loaded'
-        : 'partial-load';
+      this.tagDataClass = this.metrics.itemCount === this.metrics.totalItemCount ? 'fully-loaded' : 'partial-load';
     }
   }
 
   switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     this.subscriptions.push(
       this.translate.use(nextLanguage).subscribe(() => {
         this.selectedLanguage = nextLanguage;

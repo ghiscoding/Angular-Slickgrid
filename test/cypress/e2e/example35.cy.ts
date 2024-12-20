@@ -55,7 +55,9 @@ describe('Example 35 - Row Based Editing', () => {
 
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] .action-btns--edit`).click({ force: true });
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l0.r0`).click().type('abc{enter}');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l0.r0`)
+      .click()
+      .type('abc{enter}');
     cy.get('.slick-cell').first().should('have.class', 'slick-rbe-unsaved-cell');
     cy.get('[data-id="title"]').click();
     cy.get('.slick-cell').first().should('not.have.class', 'slick-rbe-unsaved-cell');
@@ -68,8 +70,12 @@ describe('Example 35 - Row Based Editing', () => {
 
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] .action-btns--edit`).click({ force: true });
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`).click().type('50{enter}');
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l2.r2`).click().type('50');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`)
+      .click()
+      .type('50{enter}');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l2.r2`)
+      .click()
+      .type('50');
 
     cy.get('.action-btns--update').first().click();
     cy.on('window:confirm', () => true);
@@ -85,13 +91,14 @@ describe('Example 35 - Row Based Editing', () => {
 
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] .action-btns--edit`).click({ force: true });
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`).click().type('30{enter}');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`)
+      .click()
+      .type('30{enter}');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l2.r2`).type('30');
 
     cy.get('.action-btns--update').first().click({ force: true });
 
-    cy.get('[data-test="fetch-result"]')
-      .should('contain', 'success');
+    cy.get('[data-test="fetch-result"]').should('contain', 'success');
 
     cy.get('.slick-cell.l1.r1').first().should('contain', '30');
     cy.get('.slick-cell.l2.r2').first().should('contain', '30');
@@ -108,7 +115,9 @@ describe('Example 35 - Row Based Editing', () => {
   it('should revert changes on cancel click', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] .action-btns--edit`).click({ force: true });
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`).click().type('50{enter}');
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l1.r1`)
+      .click()
+      .type('50{enter}');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell.l2.r2`).type('50{enter}');
 
     cy.get('.action-btns--cancel').first().click({ force: true });

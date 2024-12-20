@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-headermenu.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-headermenu.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -17,14 +19,11 @@
   </button>
   <strong>Locale:</strong>
   <span style="font-style: italic" data-test="selected-locale">
-    {{selectedLanguage + '.json'}}
+    {{ selectedLanguage + '.json' }}
   </span>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid8"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset">
+    <angular-slickgrid gridId="grid8" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
     </angular-slickgrid>
   </div>
 </div>

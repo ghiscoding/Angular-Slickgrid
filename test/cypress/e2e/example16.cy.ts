@@ -38,32 +38,21 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
     cy.get('@grid16')
       .find('[data-test=page-number-input]')
       .invoke('val')
-      .then(pageNumber => expect(pageNumber).to.eq('1'));
+      .then((pageNumber) => expect(pageNumber).to.eq('1'));
 
-    cy.get('@grid16')
-      .find('[data-test=page-count]')
-      .contains('20');
+    cy.get('@grid16').find('[data-test=page-count]').contains('20');
 
-    cy.get('@grid16')
-      .find('[data-test=item-from]')
-      .contains('1');
+    cy.get('@grid16').find('[data-test=item-from]').contains('1');
 
-    cy.get('@grid16')
-      .find('[data-test=item-to]')
-      .contains('25');
+    cy.get('@grid16').find('[data-test=item-to]').contains('25');
 
-    cy.get('@grid16')
-      .find('[data-test=total-items]')
-      .contains('500');
+    cy.get('@grid16').find('[data-test=total-items]').contains('500');
   });
 
   it('should drag "Title" column to 3rd position in the grid', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete', 'Start', 'Completed'];
 
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(1)')
-      .contains('Title')
-      .drag('.slick-header-column:nth(3)');
+    cy.get('.slick-header-columns').children('.slick-header-column:nth(1)').contains('Title').drag('.slick-header-column:nth(3)');
 
     cy.get('.slick-header-column:nth(3)').contains('Title');
 
@@ -98,12 +87,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should hide the "Start" column from the Column Picker', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete', 'Start', 'Completed'];
 
-    cy.get('#grid16')
-      .find('.slick-header-column')
-      .first()
-      .trigger('mouseover')
-      .trigger('contextmenu')
-      .invoke('show');
+    cy.get('#grid16').find('.slick-header-column').first().trigger('mouseover').trigger('contextmenu').invoke('show');
 
     cy.get('.slick-column-picker')
       .find('.slick-column-picker-list')
@@ -125,27 +109,19 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .should('contain', 'Start')
       .click();
 
-    cy.get('.slick-column-picker:visible')
-      .find('.close')
-      .trigger('click')
-      .click();
+    cy.get('.slick-column-picker:visible').find('.close').trigger('click').click();
   });
 
   it('should filter certain tasks', () => {
-    cy.get('.grid-canvas')
-      .find('.slick-row')
-      .should('be.visible');
+    cy.get('.grid-canvas').find('.slick-row').should('be.visible');
 
-    cy.get('.filter-title input')
-      .type('Task 1');
+    cy.get('.filter-title input').type('Task 1');
   });
 
   it('should click on "Title" column to sort it Ascending', () => {
     const expectedTasks = ['Task 1', 'Task 10', 'Task 100', 'Task 101'];
 
-    cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(3)')
-      .click();
+    cy.get('.slick-header-columns').children('.slick-header-column:nth(3)').click();
 
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(3)')
@@ -158,8 +134,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         if (index > expectedTasks.length - 1) {
           return;
         }
-        cy.wrap($row).children('.slick-cell:nth(3)')
-          .should('contain', expectedTasks[index]);
+        cy.wrap($row).children('.slick-cell:nth(3)').should('contain', expectedTasks[index]);
       });
   });
 
@@ -211,8 +186,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
 
     cy.get('#slickGridContainer-grid16').as('grid16');
 
-    cy.get('@grid16')
-      .find('#items-per-page-label').select('20');
+    cy.get('@grid16').find('#items-per-page-label').select('20');
 
     cy.get('@grid16');
     cy.get('.icon-seek-next').click().click();
@@ -222,23 +196,15 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
     cy.get('@grid16')
       .find('[data-test=page-number-input]')
       .invoke('val')
-      .then(pageNumber => expect(pageNumber).to.eq('3'));
+      .then((pageNumber) => expect(pageNumber).to.eq('3'));
 
-    cy.get('@grid16')
-      .find('[data-test=page-count]')
-      .contains('6');
+    cy.get('@grid16').find('[data-test=page-count]').contains('6');
 
-    cy.get('@grid16')
-      .find('[data-test=item-from]')
-      .contains('41');
+    cy.get('@grid16').find('[data-test=item-from]').contains('41');
 
-    cy.get('@grid16')
-      .find('[data-test=item-to]')
-      .contains('60');
+    cy.get('@grid16').find('[data-test=item-to]').contains('60');
 
-    cy.get('@grid16')
-      .find('[data-test=total-items]')
-      .contains('111');
+    cy.get('@grid16').find('[data-test=total-items]').contains('111');
 
     cy.get('@grid16')
       .find('.slick-row')
@@ -246,8 +212,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         if (index > expectedTasks.length - 1) {
           return;
         }
-        cy.wrap($row).children('.slick-cell:nth(3)')
-          .should('contain', expectedTasks[index]);
+        cy.wrap($row).children('.slick-cell:nth(3)').should('contain', expectedTasks[index]);
       });
   });
 
@@ -267,10 +232,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should expect the same Grid State to persist after the page got reloaded', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete', 'Completed'];
 
-    cy.get('#grid16')
-      .find('.grid-canvas')
-      .find('.slick-row')
-      .should('be.visible');
+    cy.get('#grid16').find('.grid-canvas').find('.slick-row').should('be.visible');
 
     cy.get('#grid16')
       .find('.slick-header-columns')
@@ -286,23 +248,15 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
     cy.get('@grid16')
       .find('[data-test=page-number-input]')
       .invoke('val')
-      .then(pageNumber => expect(pageNumber).to.eq('3'));
+      .then((pageNumber) => expect(pageNumber).to.eq('3'));
 
-    cy.get('@grid16')
-      .find('[data-test=page-count]')
-      .contains('6');
+    cy.get('@grid16').find('[data-test=page-count]').contains('6');
 
-    cy.get('@grid16')
-      .find('[data-test=item-from]')
-      .contains('41');
+    cy.get('@grid16').find('[data-test=item-from]').contains('41');
 
-    cy.get('@grid16')
-      .find('[data-test=item-to]')
-      .contains('60');
+    cy.get('@grid16').find('[data-test=item-to]').contains('60');
 
-    cy.get('@grid16')
-      .find('[data-test=total-items]')
-      .contains('111');
+    cy.get('@grid16').find('[data-test=total-items]').contains('111');
 
     cy.get('@grid16')
       .find('.slick-row')
@@ -310,8 +264,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         if (index > expectedTasks.length - 1) {
           return;
         }
-        cy.wrap($row).children('.slick-cell:nth(3)')
-          .should('contain', expectedTasks[index]);
+        cy.wrap($row).children('.slick-cell:nth(3)').should('contain', expectedTasks[index]);
       });
   });
 
@@ -320,7 +273,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .contains('Task 144')
       .parent()
       .children()
-      .each($child => {
+      .each(($child) => {
         console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
@@ -329,18 +282,11 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should have French titles in Column Picker after switching to Language', () => {
     const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée', 'Début', 'Terminé'];
 
-    cy.get('[data-test=language-button]')
-      .click();
+    cy.get('[data-test=language-button]').click();
 
-    cy.get('[data-test=selected-locale]')
-      .should('contain', 'fr.json');
+    cy.get('[data-test=selected-locale]').should('contain', 'fr.json');
 
-    cy.get('#grid16')
-      .find('.slick-header-column')
-      .first()
-      .trigger('mouseover')
-      .trigger('contextmenu')
-      .invoke('show');
+    cy.get('#grid16').find('.slick-header-column').first().trigger('mouseover').trigger('contextmenu').invoke('show');
 
     cy.get('.slick-column-picker')
       .find('.slick-column-picker-list')
@@ -355,18 +301,13 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         expect($child.text()).to.eq(expectedTitles[index]);
       });
 
-    cy.get('.slick-column-picker:visible')
-      .find('.close')
-      .trigger('click')
-      .click();
+    cy.get('.slick-column-picker:visible').find('.close').trigger('click').click();
   });
 
   it('should have French titles in Grid Menu after switching to Language', () => {
     const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée', 'Début', 'Terminé'];
 
-    cy.get('#grid16')
-      .find('button.slick-grid-menu-button')
-      .click({ force: true });
+    cy.get('#grid16').find('button.slick-grid-menu-button').click({ force: true });
 
     cy.get('.slick-grid-menu')
       .find('.slick-column-picker-list')
@@ -381,10 +322,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         expect($child.text()).to.eq(expectedTitles[index]);
       });
 
-    cy.get('.slick-grid-menu:visible')
-      .find('.close')
-      .trigger('click')
-      .click();
+    cy.get('.slick-grid-menu:visible').find('.close').trigger('click').click();
   });
 
   it('should hover over the "Terminé" column and click on "Cacher la colonne" remove the column from grid', () => {
@@ -435,10 +373,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should expect the same Grid State to persist after the page got reloaded, however we always load in English', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete'];
 
-    cy.get('#grid16')
-      .find('.grid-canvas')
-      .find('.slick-row')
-      .should('be.visible');
+    cy.get('#grid16').find('.grid-canvas').find('.slick-row').should('be.visible');
 
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(2)')
@@ -468,7 +403,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .contains('Task 144')
       .parent()
       .children()
-      .each($child => {
+      .each(($child) => {
         console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
@@ -477,16 +412,13 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should go back to first page and expect row selection (Task 105) to be persisted', () => {
     cy.get('#slickGridContainer-grid16').as('grid16');
 
-    cy.get('@grid16')
-      .find('.icon-seek-first')
-      .click()
-      .wait(10);
+    cy.get('@grid16').find('.icon-seek-first').click().wait(10);
 
     cy.get('#grid16')
       .contains('Task 105')
       .parent()
       .children()
-      .each($child => {
+      .each(($child) => {
         console.log($child);
         expect($child.attr('class')).to.contain('selected');
       });
@@ -501,8 +433,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   it('should click on the reset button and have exact Column Titles position as in beginning', () => {
     cy.get('#slickGridContainer-grid16').as('grid16');
 
-    cy.get('[data-test="reset-button"]')
-      .click();
+    cy.get('[data-test="reset-button"]').click();
 
     cy.get('@grid16')
       .find('.slick-header-columns')
@@ -582,11 +513,9 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       cy.clearLocalStorage();
       cy.get('[data-test=reset-button]').click();
 
-      cy.get('[data-test=language-button]')
-        .click();
+      cy.get('[data-test=language-button]').click();
 
-      cy.get('[data-test="selected-locale"]')
-        .should('contain', 'fr.json');
+      cy.get('[data-test="selected-locale"]').should('contain', 'fr.json');
     });
 
     it('should open header menu of "Start" column and choose "Filter Shortcuts -> Past" and expect over 200 rows', () => {
@@ -597,26 +526,17 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .should('contain', 'Raccourcis de filtre')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').should('contain', 'Raccourcis de filtre').trigger('mouseover');
 
-      cy.get('.slick-header-menu.slick-menu-level-1')
-        .find('[data-command=past]')
-        .should('contain', 'Passé')
-        .click();
+      cy.get('.slick-header-menu.slick-menu-level-1').find('[data-command=past]').should('contain', 'Passé').click();
 
-      cy.get('.search-filter.filter-start .input-group-prepend.operator select')
-        .contains('<');
+      cy.get('.search-filter.filter-start .input-group-prepend.operator select').contains('<');
 
-      cy.get('.search-filter.filter-start input.date-picker')
-        .invoke('val')
-        .should('equal', format(new Date(), 'YYYY-MM-DD'));
+      cy.get('.search-filter.filter-start input.date-picker').invoke('val').should('equal', format(new Date(), 'YYYY-MM-DD'));
 
-      cy.get('[data-test="total-items"]')
-        .should($span => {
-          expect(Number($span.text())).to.gt(200);
-        });
+      cy.get('[data-test="total-items"]').should(($span) => {
+        expect(Number($span.text())).to.gt(200);
+      });
     });
 
     it('should open header menu of "Start" column and choose "Filter Shortcuts -> Future" and expect over 100 rows', () => {
@@ -627,25 +547,17 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .should('contain', 'Raccourcis de filtre')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').should('contain', 'Raccourcis de filtre').trigger('mouseover');
 
-      cy.get('.slick-header-menu.slick-menu-level-1')
-        .find('[data-command=future]')
-        .click();
+      cy.get('.slick-header-menu.slick-menu-level-1').find('[data-command=future]').click();
 
-      cy.get('.search-filter.filter-start .input-group-prepend.operator select')
-        .contains('>');
+      cy.get('.search-filter.filter-start .input-group-prepend.operator select').contains('>');
 
-      cy.get('.search-filter.filter-start input.date-picker')
-        .invoke('val')
-        .should('equal', format(new Date(), 'YYYY-MM-DD'));
+      cy.get('.search-filter.filter-start input.date-picker').invoke('val').should('equal', format(new Date(), 'YYYY-MM-DD'));
 
-      cy.get('[data-test="total-items"]')
-        .should($span => {
-          expect(Number($span.text())).to.gt(100);
-        });
+      cy.get('[data-test="total-items"]').should(($span) => {
+        expect(Number($span.text())).to.gt(100);
+      });
     });
 
     it('should open header menu of "Description" column and choose "Filter Shortcuts -> Blank Values" and expect over 10 rows', () => {
@@ -656,31 +568,24 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .should('contain', 'Raccourcis de filtre')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').should('contain', 'Raccourcis de filtre').trigger('mouseover');
 
       cy.get('.slick-header-menu.slick-menu-level-1')
         .find('[data-command=blank-values]')
         .should('contain', 'Valeurs nulles')
         .click();
 
-      cy.get('.search-filter.filter-description')
-        .invoke('val')
-        .should('equal', '< A');
+      cy.get('.search-filter.filter-description').invoke('val').should('equal', '< A');
 
-      cy.get('[data-test="total-items"]')
-        .should($span => {
-          expect(Number($span.text())).to.gt(10);
-        });
+      cy.get('[data-test="total-items"]').should(($span) => {
+        expect(Number($span.text())).to.gt(10);
+      });
     });
 
     it('should switch back to English', () => {
-      cy.get('[data-test=language-button]')
-        .click();
+      cy.get('[data-test=language-button]').click();
 
-      cy.get('[data-test="selected-locale"]')
-        .should('contain', 'en.json');
+      cy.get('[data-test="selected-locale"]').should('contain', 'en.json');
     });
 
     it('should open header menu of "Description" column and choose "Filter Shortcuts -> Non-Blank Values" and expect over 80 rows', () => {
@@ -691,23 +596,18 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         .invoke('show')
         .click();
 
-      cy.get('[data-command=filter-shortcuts-root-menu]')
-        .should('contain', 'Filter Shortcuts')
-        .trigger('mouseover');
+      cy.get('[data-command=filter-shortcuts-root-menu]').should('contain', 'Filter Shortcuts').trigger('mouseover');
 
       cy.get('.slick-header-menu.slick-menu-level-1')
         .find('[data-command=non-blank-values]')
         .should('contain', 'Non-Blank Values')
         .click();
 
-      cy.get('.search-filter.filter-description')
-        .invoke('val')
-        .should('equal', '> A');
+      cy.get('.search-filter.filter-description').invoke('val').should('equal', '> A');
 
-      cy.get('[data-test="total-items"]')
-        .should($span => {
-          expect(Number($span.text())).to.gt(80);
-        });
+      cy.get('[data-test="total-items"]').should(($span) => {
+        expect(Number($span.text())).to.gt(80);
+      });
 
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(2)`).contains('desc');
       cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(2)`).contains('desc');

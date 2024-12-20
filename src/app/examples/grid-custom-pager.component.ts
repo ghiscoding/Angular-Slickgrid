@@ -1,5 +1,12 @@
 import { Component, ElementRef } from '@angular/core';
-import type { BasePaginationComponent, PaginationMetadata, PaginationService, PubSubService, SlickGrid, Subscription } from '@slickgrid-universal/common';
+import type {
+  BasePaginationComponent,
+  PaginationMetadata,
+  PaginationService,
+  PubSubService,
+  SlickGrid,
+  Subscription,
+} from '@slickgrid-universal/common';
 
 /** Custom Pagination Componnet, please note that you MUST `implements BasePaginationComponent` with required functions */
 @Component({
@@ -15,7 +22,7 @@ export class CustomPagerComponent implements BasePaginationComponent {
   protected _pubSubService!: PubSubService;
   currentPagination = {} as PaginationMetadata;
 
-  constructor(protected readonly elm: ElementRef) { }
+  constructor(protected readonly elm: ElementRef) {}
 
   init(grid: SlickGrid, paginationService: PaginationService, pubSubService: PubSubService) {
     this._grid = grid;
@@ -26,7 +33,7 @@ export class CustomPagerComponent implements BasePaginationComponent {
     // Anytime the pagination is initialized or has changes,
     // we'll copy the data into a local object so that we can add binding to this local object
     this._subscriptions.push(
-      this._pubSubService.subscribe<PaginationMetadata>('onPaginationRefreshed', paginationChanges => {
+      this._pubSubService.subscribe<PaginationMetadata>('onPaginationRefreshed', (paginationChanges) => {
         this.currentPagination.dataFrom = paginationChanges.dataFrom;
         this.currentPagination.dataTo = paginationChanges.dataTo;
         this.currentPagination.pageCount = paginationChanges.pageCount;

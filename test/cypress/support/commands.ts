@@ -31,9 +31,19 @@ declare global {
   namespace Cypress {
     interface Chainable {
       // triggerHover: (elements: NodeListOf<HTMLElement>) => void;
-      convertPosition(viewport: string): Chainable<HTMLElement | JQuery<HTMLElement> | { x: string; y: string; }>;
-      getCell(row: number, col: number, viewport?: string, options?: { parentSelector?: string, rowHeight?: number; }): Chainable<HTMLElement | JQuery<HTMLElement>>;
-      getNthCell(row: number, nthCol: number, viewport?: string, options?: { parentSelector?: string, rowHeight?: number; }): Chainable<HTMLElement | JQuery<HTMLElement>>;
+      convertPosition(viewport: string): Chainable<HTMLElement | JQuery<HTMLElement> | { x: string; y: string }>;
+      getCell(
+        row: number,
+        col: number,
+        viewport?: string,
+        options?: { parentSelector?: string; rowHeight?: number }
+      ): Chainable<HTMLElement | JQuery<HTMLElement>>;
+      getNthCell(
+        row: number,
+        nthCol: number,
+        viewport?: string,
+        options?: { parentSelector?: string; rowHeight?: number }
+      ): Chainable<HTMLElement | JQuery<HTMLElement>>;
       saveLocalStorage: () => void;
       restoreLocalStorage: () => void;
     }
@@ -43,13 +53,13 @@ declare global {
 const LOCAL_STORAGE_MEMORY: any = {};
 
 Cypress.Commands.add('saveLocalStorage', () => {
-  Object.keys(localStorage).forEach(key => {
+  Object.keys(localStorage).forEach((key) => {
     LOCAL_STORAGE_MEMORY[key] = localStorage[key];
   });
 });
 
 Cypress.Commands.add('restoreLocalStorage', () => {
-  Object.keys(LOCAL_STORAGE_MEMORY).forEach(key => {
+  Object.keys(LOCAL_STORAGE_MEMORY).forEach((key) => {
     localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
   });
 });
@@ -62,7 +72,9 @@ Cypress.Commands.add('getCell', (row, col, viewport = 'topLeft', { parentSelecto
   const canvasSelectorX = position.x ? `.grid-canvas-${position.x}` : '';
   const canvasSelectorY = position.y ? `.grid-canvas-${position.y}` : '';
 
-  return cy.get(`${parentSelector} ${canvasSelectorX}${canvasSelectorY} [style="top: ${row * rowHeight}px;"] > .slick-cell.l${col}.r${col}`);
+  return cy.get(
+    `${parentSelector} ${canvasSelectorX}${canvasSelectorY} [style="top: ${row * rowHeight}px;"] > .slick-cell.l${col}.r${col}`
+  );
 });
 
 Cypress.Commands.add('getNthCell', (row, nthCol, viewport = 'topLeft', { parentSelector = '', rowHeight = 35 } = {}) => {
@@ -70,5 +82,7 @@ Cypress.Commands.add('getNthCell', (row, nthCol, viewport = 'topLeft', { parentS
   const canvasSelectorX = position.x ? `.grid-canvas-${position.x}` : '';
   const canvasSelectorY = position.y ? `.grid-canvas-${position.y}` : '';
 
-  return cy.get(`${parentSelector} ${canvasSelectorX}${canvasSelectorY} [style="top: ${row * rowHeight}px;"] > .slick-cell:nth(${nthCol})`);
+  return cy.get(
+    `${parentSelector} ${canvasSelectorX}${canvasSelectorY} [style="top: ${row * rowHeight}px;"] > .slick-cell:nth(${nthCol})`
+  );
 });

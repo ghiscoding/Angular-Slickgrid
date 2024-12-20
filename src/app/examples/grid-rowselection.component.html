@@ -1,10 +1,12 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowselection.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-rowselection.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -12,12 +14,11 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="row">
-    <div class="col-sm-4" style="max-width: 205px;">
+    <div class="col-sm-4" style="max-width: 205px">
       Pagination
       <div class="btn-group" role="group">
-        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page"
-                (click)="goToGrid1FirstPage()">
-                <i class="mdi mdi-page-first"></i>
+        <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToGrid1FirstPage()">
+          <i class="mdi mdi-page-first"></i>
         </button>
         <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid1LastPage()">
           <i class="mdi mdi-page-last"></i>
@@ -33,25 +34,36 @@
   </div>
 
   <div class="overflow-hidden">
-    <angular-slickgrid gridId="grid1"
-                       [columnDefinitions]="columnDefinitions1"
-                       [gridOptions]="gridOptions1"
-                       [dataset]="dataset1"
-                       (onAngularGridCreated)="angularGridReady1($event.detail)"
-                       (onGridStateChanged)="grid1StateChanged($event.detail)"
-                       (onSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
+    <angular-slickgrid
+      gridId="grid1"
+      [columnDefinitions]="columnDefinitions1"
+      [gridOptions]="gridOptions1"
+      [dataset]="dataset1"
+      (onAngularGridCreated)="angularGridReady1($event.detail)"
+      (onGridStateChanged)="grid1StateChanged($event.detail)"
+      (onSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)"
+    >
     </angular-slickgrid>
   </div>
 
-  <hr class="col-md-6 offset-md-1">
+  <hr class="col-md-6 offset-md-1" />
 
   <div class="row">
-    <div class="col-sm-3 col-md-4" style="max-width: 215px;">
-      Pagination: <input type="checkbox" (change)="togglePaginationGrid2()" [checked]="isGrid2WithPagination"
-             data-test="toggle-pagination-grid2" />
+    <div class="col-sm-3 col-md-4" style="max-width: 215px">
+      Pagination:
+      <input
+        type="checkbox"
+        (change)="togglePaginationGrid2()"
+        [checked]="isGrid2WithPagination"
+        data-test="toggle-pagination-grid2"
+      />
       <span style="margin-left: 5px" *ngIf="isGrid2WithPagination">
         <div class="btn-group" role="group">
-          <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-first-page" (click)="goToGrid2FirstPage()">
+          <button
+            class="btn btn-outline-secondary btn-xs btn-icon px-2"
+            data-test="goto-first-page"
+            (click)="goToGrid2FirstPage()"
+          >
             <i class="mdi mdi-page-first"></i>
           </button>
           <button class="btn btn-outline-secondary btn-xs btn-icon px-2" data-test="goto-last-page" (click)="goToGrid2LastPage()">
@@ -69,12 +81,14 @@
   </div>
 
   <div class="overflow-hidden">
-    <angular-slickgrid gridId="grid2"
-                       [columnDefinitions]="columnDefinitions2"
-                       [gridOptions]="gridOptions2"
-                       [dataset]="dataset2"
-                       (onAngularGridCreated)="angularGridReady2($event.detail)"
-                       (onGridStateChanged)="grid2StateChanged($event.detail)">
+    <angular-slickgrid
+      gridId="grid2"
+      [columnDefinitions]="columnDefinitions2"
+      [gridOptions]="gridOptions2"
+      [dataset]="dataset2"
+      (onAngularGridCreated)="angularGridReady2($event.detail)"
+      (onGridStateChanged)="grid2StateChanged($event.detail)"
+    >
     </angular-slickgrid>
   </div>
 </div>

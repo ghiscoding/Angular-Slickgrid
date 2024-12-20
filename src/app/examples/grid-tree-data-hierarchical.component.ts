@@ -20,10 +20,11 @@ import {
 @Component({
   templateUrl: './grid-tree-data-hierarchical.component.html',
   styleUrls: ['grid-tree-data-hierarchical.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class GridTreeDataHierarchicalComponent implements OnInit {
-  title = 'Example 29: Tree Data with Aggregators <small><span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset - <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/tree-data-grid" target="_blank">Wiki</a>)</small>';
+  title =
+    'Example 29: Tree Data with Aggregators <small><span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset - <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/tree-data-grid" target="_blank">Wiki</a>)</small>';
   subTitle = `<ul>
     <li><b>NOTE #1:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a "sortByFieldId" in your column "treeData" option if you wish to sort on a different column</li>
     <li><b>NOTE #2:</b> Tree Totals are only calculated once and are <b>NOT</b> recalculated while filtering data, if you do want that feature then you will need to enable <code>autoRecalcTotalsOnFilterChange</code> <i>(see checkbox below)</i></li>
@@ -53,24 +54,45 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   defineGrid() {
     this.columnDefinitions = [
       {
-        id: 'file', name: 'Files', field: 'file',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter,
-        filterable: true, sortable: true,
+        id: 'file',
+        name: 'Files',
+        field: 'file',
+        type: FieldType.string,
+        width: 150,
+        formatter: this.treeFormatter,
+        filterable: true,
+        sortable: true,
       },
       {
-        id: 'dateModified', name: 'Date Modified', field: 'dateModified',
-        formatter: Formatters.dateIso, type: FieldType.dateUtc, outputType: FieldType.dateIso, minWidth: 90,
-        exportWithFormatter: true, filterable: true, filter: { model: Filters.compoundDate }
+        id: 'dateModified',
+        name: 'Date Modified',
+        field: 'dateModified',
+        formatter: Formatters.dateIso,
+        type: FieldType.dateUtc,
+        outputType: FieldType.dateIso,
+        minWidth: 90,
+        exportWithFormatter: true,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'description', name: 'Description', field: 'description', minWidth: 90,
-        filterable: true, sortable: true,
+        id: 'description',
+        name: 'Description',
+        field: 'description',
+        minWidth: 90,
+        filterable: true,
+        sortable: true,
       },
       {
-        id: 'size', name: 'Size', field: 'size', minWidth: 90,
-        type: FieldType.number, exportWithFormatter: true,
+        id: 'size',
+        name: 'Size',
+        field: 'size',
+        minWidth: 90,
+        type: FieldType.number,
+        exportWithFormatter: true,
         excelExportOptions: { autoDetectCellFormat: false },
-        filterable: true, filter: { model: Filters.compoundInputNumber },
+        filterable: true,
+        filter: { model: Filters.compoundInputNumber },
 
         // Formatter option #1 (treeParseTotalFormatters)
         // if you wish to use any of the GroupTotalFormatters (or even regular Formatters), we can do so with the code below
@@ -98,10 +120,14 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
             if (avgVal !== undefined && sumVal !== undefined) {
               // when found Avg & Sum, we'll display both
-              return isNaN(sumVal) ? '' : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+              return isNaN(sumVal)
+                ? ''
+                : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             } else if (sumVal !== undefined) {
               // or when only Sum is aggregated, then just show Sum
-              return isNaN(sumVal) ? '' : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+              return isNaN(sumVal)
+                ? ''
+                : `<span class="text-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             }
           }
           // reaching this line means it's a regular dataContext without totals, so regular formatter output will be used
@@ -113,14 +139,14 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       enableExcelExport: true,
       excelExportOptions: {
         exportWithFormatter: true,
-        sanitizeDataExport: true
+        sanitizeDataExport: true,
       },
       externalResources: [new ExcelExportService()],
       enableFiltering: true,
@@ -146,7 +172,10 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         // Note: only 5 are currently supported: Avg, Sum, Min, Max and Count
         // Note 2: also note that Avg Aggregator will automatically give you the "avg", "count" and "sum" so if you need these 3 then simply calling Avg will give you better perf
         // aggregators: [new Aggregators.Sum('size')]
-        aggregators: [new Aggregators.Avg('size'), new Aggregators.Sum('size') /* , new Aggregators.Min('size'), new Aggregators.Max('size') */],
+        aggregators: [
+          new Aggregators.Avg('size'),
+          new Aggregators.Sum('size') /* , new Aggregators.Min('size'), new Aggregators.Max('size') */,
+        ],
 
         // should we auto-recalc Tree Totals (when using Aggregators) anytime a filter changes
         // it is disabled by default for perf reason, by default it will only calculate totals on first load
@@ -191,7 +220,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
         iconSortAscCommand: 'mdi mdi-sort-ascending',
         iconSortDescCommand: 'mdi mdi-flip-v mdi-sort-descending',
         iconColumnHideCommand: 'mdi mdi-close',
-      }
+      },
     };
   }
 
@@ -203,7 +232,8 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
   changeAutoApproveParentItem() {
     this.isAutoApproveParentItemWhenTreeColumnIsValid = !this.isAutoApproveParentItemWhenTreeColumnIsValid;
-    this.gridOptions.treeDataOptions!.autoApproveParentItemWhenTreeColumnIsValid = this.isAutoApproveParentItemWhenTreeColumnIsValid;
+    this.gridOptions.treeDataOptions!.autoApproveParentItemWhenTreeColumnIsValid =
+      this.isAutoApproveParentItemWhenTreeColumnIsValid;
     this.angularGrid.slickGrid.setOptions(this.gridOptions);
     this.angularGrid.filterService.refreshTreeDataFilters();
     return true;
@@ -243,7 +273,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
   treeFormatter: Formatter = (_row, _cell, value, _columnDef, dataContext, grid) => {
     const gridOptions = grid.getOptions();
-    const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
+    const treeLevelPropName = (gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName) || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
@@ -256,7 +286,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
     const exportIndentationLeadingChar = '.';
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const spacer = `<span style="display:inline-block; width:${(15 * treeLevel)}px;"></span>`;
+    const spacer = `<span style="display:inline-block; width:${15 * treeLevel}px;"></span>`;
     const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
@@ -294,7 +324,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
     // find first parent object and add the new item as a child
     const tmpDatasetHierarchical = [...this.datasetHierarchical];
-    const popFolderItem = findItemInTreeStructure(tmpDatasetHierarchical, x => x.file === 'pop', 'files');
+    const popFolderItem = findItemInTreeStructure(tmpDatasetHierarchical, (x) => x.file === 'pop', 'files');
 
     if (popFolderItem && Array.isArray(popFolderItem.files)) {
       popFolderItem.files.push({
@@ -319,8 +349,8 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
 
   deleteFile() {
     const tmpDatasetHierarchical = [...this.datasetHierarchical];
-    const popFolderItem = findItemInTreeStructure(this.datasetHierarchical, x => x.file === 'pop', 'files');
-    const songItemFound = findItemInTreeStructure(this.datasetHierarchical, x => x.id === this.lastInsertedPopSongId, 'files');
+    const popFolderItem = findItemInTreeStructure(this.datasetHierarchical, (x) => x.file === 'pop', 'files');
+    const songItemFound = findItemInTreeStructure(this.datasetHierarchical, (x) => x.id === this.lastInsertedPopSongId, 'files');
 
     if (popFolderItem && songItemFound) {
       const songIdx = popFolderItem.files.findIndex((f: any) => f.id === songItemFound.id);
@@ -360,43 +390,97 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
       { id: 24, file: 'bucket-list.txt', dateModified: '2012-03-05T12:44:00.123Z', size: 0.5 },
       { id: 18, file: 'something.txt', dateModified: '2015-03-03T03:50:00.123Z', size: 90 },
       {
-        id: 21, file: 'documents', files: [
-          { id: 2, file: 'txt', files: [{ id: 3, file: 'todo.txt', description: 'things to do someday maybe', dateModified: '2015-05-12T14:50:00.123Z', size: 0.7, }] },
+        id: 21,
+        file: 'documents',
+        files: [
           {
-            id: 4, file: 'pdf', files: [
-              { id: 22, file: 'map2.pdf', dateModified: '2015-07-21T08:22:00.123Z', size: 2.9, },
-              { id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1, },
-              { id: 6, file: 'internet-bill.pdf', dateModified: '2015-05-12T14:50:00.123Z', size: 1.3, },
-              { id: 23, file: 'phone-bill.pdf', dateModified: '2015-05-01T07:50:00.123Z', size: 1.5, },
-            ]
+            id: 2,
+            file: 'txt',
+            files: [
+              {
+                id: 3,
+                file: 'todo.txt',
+                description: 'things to do someday maybe',
+                dateModified: '2015-05-12T14:50:00.123Z',
+                size: 0.7,
+              },
+            ],
           },
-          { id: 9, file: 'misc', files: [{ id: 10, file: 'warranties.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4, }] },
-          { id: 7, file: 'xls', files: [{ id: 8, file: 'compilation.xls', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3, }] },
-          { id: 55, file: 'unclassified.csv', dateModified: '2015-04-08T03:44:12.333Z', size: 0.25, },
-          { id: 56, file: 'unresolved.csv', dateModified: '2015-04-03T03:21:12.000Z', size: 0.79, },
-          { id: 57, file: 'zebra.dll', dateModified: '2016-12-08T13:22:12.432', size: 1.22, },
-        ]
+          {
+            id: 4,
+            file: 'pdf',
+            files: [
+              { id: 22, file: 'map2.pdf', dateModified: '2015-07-21T08:22:00.123Z', size: 2.9 },
+              { id: 5, file: 'map.pdf', dateModified: '2015-05-21T10:22:00.123Z', size: 3.1 },
+              { id: 6, file: 'internet-bill.pdf', dateModified: '2015-05-12T14:50:00.123Z', size: 1.3 },
+              { id: 23, file: 'phone-bill.pdf', dateModified: '2015-05-01T07:50:00.123Z', size: 1.5 },
+            ],
+          },
+          {
+            id: 9,
+            file: 'misc',
+            files: [{ id: 10, file: 'warranties.txt', dateModified: '2015-02-26T16:50:00.123Z', size: 0.4 }],
+          },
+          {
+            id: 7,
+            file: 'xls',
+            files: [{ id: 8, file: 'compilation.xls', dateModified: '2014-10-02T14:50:00.123Z', size: 2.3 }],
+          },
+          { id: 55, file: 'unclassified.csv', dateModified: '2015-04-08T03:44:12.333Z', size: 0.25 },
+          { id: 56, file: 'unresolved.csv', dateModified: '2015-04-03T03:21:12.000Z', size: 0.79 },
+          { id: 57, file: 'zebra.dll', dateModified: '2016-12-08T13:22:12.432', size: 1.22 },
+        ],
       },
       {
-        id: 11, file: 'music', files: [{
-          id: 12, file: 'mp3', files: [
-            { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13T13:50:00Z', size: 98, }] },
-            {
-              id: 14, file: 'pop', files: [
-                { id: 15, file: 'theme.mp3', description: 'Movie Theme Song', dateModified: '2015-03-01T17:05:00Z', size: 47, },
-                { id: 25, file: 'song.mp3', description: 'it is a song...', dateModified: '2016-10-04T06:33:44Z', size: 6.3, }
-              ],
-            },
-            { id: 33, file: 'other', files: [] }
-          ]
-        }]
+        id: 11,
+        file: 'music',
+        files: [
+          {
+            id: 12,
+            file: 'mp3',
+            files: [
+              { id: 16, file: 'rock', files: [{ id: 17, file: 'soft.mp3', dateModified: '2015-05-13T13:50:00Z', size: 98 }] },
+              {
+                id: 14,
+                file: 'pop',
+                files: [
+                  { id: 15, file: 'theme.mp3', description: 'Movie Theme Song', dateModified: '2015-03-01T17:05:00Z', size: 47 },
+                  { id: 25, file: 'song.mp3', description: 'it is a song...', dateModified: '2016-10-04T06:33:44Z', size: 6.3 },
+                ],
+              },
+              { id: 33, file: 'other', files: [] },
+            ],
+          },
+        ],
       },
       {
-        id: 26, file: 'recipes', description: 'Cake Recipes', dateModified: '2012-03-05T12:44:00.123Z', files: [
-          { id: 29, file: 'cheesecake', description: 'strawberry cheesecake', dateModified: '2012-04-04T13:52:00.123Z', size: 0.2 },
-          { id: 30, file: 'chocolate-cake', description: 'tasty sweet chocolate cake', dateModified: '2012-05-05T09:22:00.123Z', size: 0.2 },
-          { id: 31, file: 'coffee-cake', description: 'chocolate coffee cake', dateModified: '2012-01-01T08:08:48.123Z', size: 0.2 },
-        ]
+        id: 26,
+        file: 'recipes',
+        description: 'Cake Recipes',
+        dateModified: '2012-03-05T12:44:00.123Z',
+        files: [
+          {
+            id: 29,
+            file: 'cheesecake',
+            description: 'strawberry cheesecake',
+            dateModified: '2012-04-04T13:52:00.123Z',
+            size: 0.2,
+          },
+          {
+            id: 30,
+            file: 'chocolate-cake',
+            description: 'tasty sweet chocolate cake',
+            dateModified: '2012-05-05T09:22:00.123Z',
+            size: 0.2,
+          },
+          {
+            id: 31,
+            file: 'coffee-cake',
+            description: 'chocolate coffee cake',
+            dateModified: '2012-01-01T08:08:48.123Z',
+            size: 0.2,
+          },
+        ],
       },
     ];
   }

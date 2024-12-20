@@ -1,10 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, GridOption, OnCellChangeEventArgs, } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  Editors,
+  FieldType,
+  GridOption,
+  OnCellChangeEventArgs,
+} from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 100;
 
 @Component({
-  templateUrl: './grid-footer-totals.component.html'
+  templateUrl: './grid-footer-totals.component.html',
 })
 export class GridFooterTotalsComponent implements OnDestroy, OnInit {
   private _darkMode = false;
@@ -43,7 +50,7 @@ export class GridFooterTotalsComponent implements OnDestroy, OnInit {
         field: String(i),
         type: FieldType.number,
         width: 58,
-        editor: { model: Editors.integer }
+        editor: { model: Editors.integer },
       });
     }
     this.columnDefinitions = columnDefs;
@@ -115,7 +122,7 @@ export class GridFooterTotalsComponent implements OnDestroy, OnInit {
     let total = 0;
     let i = this.dataset.length;
     while (i--) {
-      total += (parseInt(this.dataset[i][columnId], 10) || 0);
+      total += parseInt(this.dataset[i][columnId], 10) || 0;
     }
     const columnElement = this.angularGrid.slickGrid?.getFooterRowColumn(columnId);
     if (columnElement) {

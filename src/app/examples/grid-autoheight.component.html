@@ -1,10 +1,12 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-autoheight.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-autoheight.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -16,25 +18,45 @@
       <label for="columnSelect">Single Search:</label>
     </div>
     <div class="col">
-      <select class="form-select" data-test="search-column-list" name="selectedColumn"
-              [(ngModel)]="selectedColumn"
-              (ngModelChange)="updateFilter()">
-        <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{field.name}}</option>
+      <select
+        class="form-select"
+        data-test="search-column-list"
+        name="selectedColumn"
+        [(ngModel)]="selectedColumn"
+        (ngModelChange)="updateFilter()"
+      >
+        <option [ngValue]="field" *ngFor="let field of columnDefinitions">{{ field.name }}</option>
       </select>
     </div>
     <div class="col">
-      <select class="form-select" data-test="search-operator-list" name="selectedOperator"
-              [(ngModel)]="selectedOperator" (ngModelChange)="updateFilter()">
-        <option [ngValue]="operator" *ngFor="let operator of operatorList">{{operator}}</option>
+      <select
+        class="form-select"
+        data-test="search-operator-list"
+        name="selectedOperator"
+        [(ngModel)]="selectedOperator"
+        (ngModelChange)="updateFilter()"
+      >
+        <option [ngValue]="operator" *ngFor="let operator of operatorList">{{ operator }}</option>
       </select>
     </div>
 
     <div class="col">
       <div class="input-group">
-        <input type="text" class="form-control" data-test="search-value-input" name="searchValue"
-               placeholder="search value" autocomplete="off" (input)="updateFilter()" [(ngModel)]="searchValue">
-        <button class="btn btn-outline-secondary d-flex align-items-center pl-2 pr-2" data-test="clear-search-value"
-                (click)="clearGridSearchInput()">
+        <input
+          type="text"
+          class="form-control"
+          data-test="search-value-input"
+          name="searchValue"
+          placeholder="search value"
+          autocomplete="off"
+          (input)="updateFilter()"
+          [(ngModel)]="searchValue"
+        />
+        <button
+          class="btn btn-outline-secondary d-flex align-items-center pl-2 pr-2"
+          data-test="clear-search-value"
+          (click)="clearGridSearchInput()"
+        >
           <span class="mdi mdi-close"></span>
         </button>
       </div>
@@ -43,10 +65,12 @@
 
   <hr />
 
-  <angular-slickgrid gridId="grid23"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  <angular-slickgrid
+    gridId="grid23"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

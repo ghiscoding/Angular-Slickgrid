@@ -1,7 +1,7 @@
 import 'jest-extended';
 import { of, Subscription } from 'rxjs';
 
-import { unsubscribeAllObservables, } from '../utilities';
+import { unsubscribeAllObservables } from '../utilities';
 
 describe('Service/Utilies', () => {
   describe('unsubscribeAllObservables method', () => {

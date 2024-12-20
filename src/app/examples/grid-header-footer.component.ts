@@ -5,7 +5,7 @@ const NB_ITEMS = 995;
 
 @Component({
   template: `<button (click)="clickMe()">I'm a button from an Angular component (click me)</button>
-  <div *ngIf="clickedTimes">You've clicked me {{clickedTimes}} time(s)</div>`,
+    <div *ngIf="clickedTimes">You've clicked me {{ clickedTimes }} time(s)</div>`,
   selector: 'custom-footer',
 })
 export class CustomFooterComponent {
@@ -39,7 +39,7 @@ export class GridHeaderFooterComponent implements OnInit {
       { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso },
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', sortable: true }
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', sortable: true },
     ];
     this.gridOptions = {
       enableAutoResize: false,
@@ -57,7 +57,7 @@ export class GridHeaderFooterComponent implements OnInit {
     for (let i = 0; i < count; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
 
       mockDataset[i] = {
@@ -67,7 +67,7 @@ export class GridHeaderFooterComponent implements OnInit {
         percentComplete: randomPercent,
         start: new Date(randomYear, randomMonth + 1, randomDay),
         finish: new Date(randomYear + 1, randomMonth + 1, randomDay),
-        effortDriven: (i % 5 === 0)
+        effortDriven: i % 5 === 0,
       };
     }
 

@@ -11,7 +11,7 @@ describe('Translater Service', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()],
-      teardown: { destroyAfterEach: false }
+      teardown: { destroyAfterEach: false },
     });
     translate = TestBed.inject(TranslateService);
     service = new TranslaterService(translate);

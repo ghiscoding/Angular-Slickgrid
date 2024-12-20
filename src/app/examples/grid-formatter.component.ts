@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, Formatter, Formatters, GridOption, } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 interface DataItem {
   id: number;
@@ -17,7 +17,9 @@ interface DataItem {
 // create my custom Formatter with the Formatter type
 const myCustomCheckmarkFormatter: Formatter<DataItem> = (_row, _cell, value) => {
   // you can return a string of a object (of type FormatterResultObject), the 2 types are shown below
-  return value ? `<i class="mdi mdi-fire red" aria-hidden="true"></i>` : { text: '<i class="mdi mdi-snowflake" aria-hidden="true"></i>', addClasses: 'lightblue', toolTip: 'Freezing' };
+  return value
+    ? `<i class="mdi mdi-fire red" aria-hidden="true"></i>`
+    : { text: '<i class="mdi mdi-snowflake" aria-hidden="true"></i>', addClasses: 'lightblue', toolTip: 'Freezing' };
 };
 
 const customEnableButtonFormatter: Formatter<DataItem> = (_row: number, _cell: number, value: any) => {
@@ -29,7 +31,7 @@ const customEnableButtonFormatter: Formatter<DataItem> = (_row: number, _cell: n
 };
 
 @Component({
-  templateUrl: './grid-formatter.component.html'
+  templateUrl: './grid-formatter.component.html',
 })
 export class GridFormatterComponent implements OnInit {
   title = 'Example 2: Grid with Formatters';
@@ -59,26 +61,92 @@ export class GridFormatterComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, width: 70 },
-      { id: 'phone', name: 'Phone Number using mask', field: 'phone', sortable: true, type: FieldType.number, minWidth: 100, formatter: Formatters.mask, params: { mask: '(000) 000-0000' } },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', formatter: Formatters.decimal, params: { minDecimal: 1, maxDecimal: 2 }, sortable: true, type: FieldType.number, minWidth: 90, exportWithFormatter: true },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true, minWidth: 100 },
-      { id: 'percent2', name: '% Complete', field: 'percentComplete2', formatter: Formatters.progressBar, type: FieldType.number, sortable: true, minWidth: 100 },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, minWidth: 90, exportWithFormatter: true },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, minWidth: 90, exportWithFormatter: true },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: myCustomCheckmarkFormatter, type: FieldType.number, sortable: true, minWidth: 100 },
       {
-        id: 'completed', name: 'Completed', field: 'completed', type: FieldType.number, sortable: true, minWidth: 100,
+        id: 'phone',
+        name: 'Phone Number using mask',
+        field: 'phone',
+        sortable: true,
+        type: FieldType.number,
+        minWidth: 100,
+        formatter: Formatters.mask,
+        params: { mask: '(000) 000-0000' },
+      },
+      {
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
+        formatter: Formatters.decimal,
+        params: { minDecimal: 1, maxDecimal: 2 },
+        sortable: true,
+        type: FieldType.number,
+        minWidth: 90,
+        exportWithFormatter: true,
+      },
+      {
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        sortable: true,
+        minWidth: 100,
+      },
+      {
+        id: 'percent2',
+        name: '% Complete',
+        field: 'percentComplete2',
+        formatter: Formatters.progressBar,
+        type: FieldType.number,
+        sortable: true,
+        minWidth: 100,
+      },
+      {
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
+        minWidth: 90,
+        exportWithFormatter: true,
+      },
+      {
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
+        minWidth: 90,
+        exportWithFormatter: true,
+      },
+      {
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
+        formatter: myCustomCheckmarkFormatter,
+        type: FieldType.number,
+        sortable: true,
+        minWidth: 100,
+      },
+      {
+        id: 'completed',
+        name: 'Completed',
+        field: 'completed',
+        type: FieldType.number,
+        sortable: true,
+        minWidth: 100,
         formatter: customEnableButtonFormatter,
         onCellClick: (_e, args) => {
           this.toggleCompletedProperty(args?.dataContext);
-        }
-      }
+        },
+      },
     ];
 
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableAutoResize: true,
       enableCellNavigation: true,
@@ -87,7 +155,7 @@ export class GridFormatterComponent implements OnInit {
         // optionally display some text on the left footer container
         leftFooterText: 'custom footer text',
         hideTotalItemCount: true,
-        hideLastUpdateTimestamp: true
+        hideLastUpdateTimestamp: true,
       },
 
       // you customize all formatter at once certain options through "formatterOptions" in the Grid Options
@@ -117,20 +185,20 @@ export class GridFormatterComponent implements OnInit {
     for (let i = 0; i < 500; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
 
       tmpData[i] = {
         id: i,
         title: 'Task ' + i,
         phone: this.generatePhoneNumber(),
-        duration: (i % 33 === 0) ? null : Math.random() * 100 + '',
+        duration: i % 33 === 0 ? null : Math.random() * 100 + '',
         percentComplete: randomPercent,
         percentComplete2: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        effortDriven: (i % 5 === 0)
+        finish: new Date(randomYear, randomMonth + 1, randomDay),
+        effortDriven: i % 5 === 0,
       };
     }
     this.dataset = tmpData;

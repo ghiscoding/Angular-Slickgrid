@@ -1,25 +1,29 @@
 <div class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-custom-tooltip.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-custom-tooltip.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
   </h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <div style="margin-bottom: 20px;">
+  <div style="margin-bottom: 20px">
     <label for="pinned-rows">Simulated Server Delay (ms): </label>
-    <input type="number" id="server-delay" data-test="server-delay" style="width: 60px" [(ngModel)]="serverApiDelay">
+    <input type="number" id="server-delay" data-test="server-delay" style="width: 60px" [(ngModel)]="serverApiDelay" />
   </div>
 
-  <angular-slickgrid gridId="grid32"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)">
+  <angular-slickgrid
+    gridId="grid32"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

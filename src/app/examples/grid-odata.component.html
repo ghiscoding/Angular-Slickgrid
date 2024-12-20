@@ -1,10 +1,12 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{title}}
+    {{ title }}
     <span class="float-end">
-      <a style="font-size: 18px"
-         target="_blank"
-         href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-odata.component.ts">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid-odata.component.ts"
+      >
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
@@ -23,7 +25,7 @@
   <div class="row">
     <div class="col-sm-2">
       <div [class]="status.class" role="alert" data-test="status">
-        <strong>Status: </strong> {{status.text}}
+        <strong>Status: </strong> {{ status.text }}
         <span [hidden]="!processing">
           <i class="mdi mdi-sync mdi-spin-1s"></i>
         </span>
@@ -31,25 +33,23 @@
     </div>
     <div class="col-sm-10">
       <div class="alert alert-info" data-test="alert-odata-query">
-        <strong>OData Query:</strong> <span data-test="odata-query-result">{{odataQuery}}</span>
+        <strong>OData Query:</strong> <span data-test="odata-query-result">{{ odataQuery }}</span>
       </div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-4">
-      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter"
-              (click)="setFiltersDynamically()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
         Set Filters Dynamically
       </button>
-      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting"
-              (click)="setSortingDynamically()">
+      <button class="btn btn-outline-secondary btn-sm btn-icon" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
         Set Sorting Dynamically
       </button>
-      <br>
+      <br />
       <span *ngIf="metrics">
-        <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
-        | {{metrics.totalItemCount}} items
+        <b>Metrics:</b> {{ metrics.endTime | date: "yyyy-MM-dd hh:mm aaaaa'm'" }} | {{ metrics.executionTime }}ms |
+        {{ metrics.totalItemCount }} items
       </span>
     </div>
 
@@ -57,35 +57,64 @@
       <label>OData Version: </label>
       <span data-test="radioVersion">
         <label class="radio-inline control-label" for="radio2">
-          <input type="radio" name="inlineRadioOptions" data-test="version2" id="radio2" checked [value]="2"
-                 (change)="setOdataVersion(2)"> 2
+          <input
+            type="radio"
+            name="inlineRadioOptions"
+            data-test="version2"
+            id="radio2"
+            checked
+            [value]="2"
+            (change)="setOdataVersion(2)"
+          />
+          2
         </label>
         <label class="radio-inline control-label" for="radio4">
-          <input type="radio" name="inlineRadioOptions" data-test="version4" id="radio4" [value]="4"
-                 (change)="setOdataVersion(4)"> 4
+          <input
+            type="radio"
+            name="inlineRadioOptions"
+            data-test="version4"
+            id="radio4"
+            [value]="4"
+            (change)="setOdataVersion(4)"
+          />
+          4
         </label>
       </span>
       <label class="checkbox-inline control-label" for="enableCount" style="margin-left: 20px">
-        <input type="checkbox" id="enableCount" data-test="enable-count" [checked]="isCountEnabled"
-               (click)="changeCountEnableFlag()">
+        <input
+          type="checkbox"
+          id="enableCount"
+          data-test="enable-count"
+          [checked]="isCountEnabled"
+          (click)="changeCountEnableFlag()"
+        />
         <span style="font-weight: bold">Enable Count</span> (add to OData query)
       </label>
       <label class="checkbox-inline control-label" for="enableSelect" style="margin-left: 20px">
-        <input type="checkbox" id="enableSelect" data-test="enable-select" [checked]="isSelectEnabled"
-               (click)="changeEnableSelectFlag()">
+        <input
+          type="checkbox"
+          id="enableSelect"
+          data-test="enable-select"
+          [checked]="isSelectEnabled"
+          (click)="changeEnableSelectFlag()"
+        />
         <span style="font-weight: bold">Enable Select</span> (add to OData query)
       </label>
       <label class="checkbox-inline control-label" for="enableExpand" style="margin-left: 20px">
-        <input type="checkbox" id="enableExpand" data-test="enable-expand" [checked]="isExpandEnabled"
-               (click)="changeEnableExpandFlag()">
+        <input
+          type="checkbox"
+          id="enableExpand"
+          data-test="enable-expand"
+          [checked]="isExpandEnabled"
+          (click)="changeEnableExpandFlag()"
+        />
         <span style="font-weight: bold">Enable Expand</span> (add to OData query)
       </label>
     </div>
   </div>
   <div class="row mt-2 mb-1">
     <div class="col-md-12">
-      <button class="btn btn-outline-danger btn-sm btn-icon" data-test="throw-page-error-btn"
-              (click)="throwPageChangeError()">
+      <button class="btn btn-outline-danger btn-sm btn-icon" data-test="throw-page-error-btn" (click)="throwPageChangeError()">
         <span>Throw Error Going to Last Page... </span>
         <i class="mdi mdi-page-last"></i>
       </button>
@@ -104,15 +133,17 @@
     </div>
   </div>
 
-  <angular-slickgrid gridId="grid5"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [paginationOptions]="paginationOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event.detail)"
-                     (onGridStateChanged)="gridStateChanged($event.detail)"
-                     (onBeforeSort)="handleOnBeforeSort($event)"
-                     (onBeforeSearchChange)="handleOnBeforeSearchChange($event)"
-                     (onBeforePaginationChange)="handleOnBeforePaginationChange($event)">
+  <angular-slickgrid
+    gridId="grid5"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [paginationOptions]="paginationOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+    (onGridStateChanged)="gridStateChanged($event.detail)"
+    (onBeforeSort)="handleOnBeforeSort($event)"
+    (onBeforeSearchChange)="handleOnBeforeSearchChange($event)"
+    (onBeforePaginationChange)="handleOnBeforePaginationChange($event)"
+  >
   </angular-slickgrid>
 </div>
