@@ -20,8 +20,8 @@ const POSITION = Object.freeze({
   TOP: 'top',
   BOTTOM: 'bottom',
   LEFT: 'left',
-  RIGHT: 'right'
-})
+  RIGHT: 'right',
+});
 
 /**
  * Convert position string to object

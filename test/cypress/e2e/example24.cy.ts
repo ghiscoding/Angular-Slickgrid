@@ -16,17 +16,34 @@ describe('Example 24 - Grids in Bootstrap Tabs', () => {
   });
 
   it('should have "Task 0" incremented by 1 after each row', () => {
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 0');
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 1');
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 2');
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 3}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 3');
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 4}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 4');
-    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 5}px;"] > .slick-cell:nth(0)`).should('contain', 'Task 5');
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 0'
+    );
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 1'
+    );
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 2'
+    );
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 3}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 3'
+    );
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 4}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 4'
+    );
+    cy.get(`[data-test="javascript-tab"] [style="top: ${GRID_ROW_HEIGHT * 5}px;"] > .slick-cell:nth(0)`).should(
+      'contain',
+      'Task 5'
+    );
   });
 
   it('should change open next Tab "Http-Client" and expect a grid with 3 columns', () => {
-    cy.get('.tab-container')
-      .contains('Http-Client').click();
+    cy.get('.tab-container').contains('Http-Client').click();
 
     cy.get('#slickGridContainer-grid2:visible')
       .find('.slick-header-columns')

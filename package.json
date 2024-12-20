@@ -33,6 +33,8 @@
     "build:demo": "ng build --configuration=production --base-href=\"\"",
     "pack-lib": "npm pack ./dist",
     "preview:release": "release-it --only-version --dry-run",
+    "prettier:check": "prettier --check **/*.{js,ts}",
+    "prettier:write": "prettier --write **/*.{js,ts}",
     "release": "release-it --only-version",
     "serve:demo": "servor ./website index.html 4300"
   },
@@ -116,6 +118,7 @@
     "ng-packagr": "^18.2.1",
     "ngx-bootstrap": "^18.1.3",
     "npm-run-all2": "^7.0.1",
+    "prettier": "^3.4.2",
     "release-it": "^17.10.0",
     "rimraf": "^5.0.10",
     "rxjs": "^7.8.1",

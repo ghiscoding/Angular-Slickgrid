@@ -93,11 +93,11 @@ const routes: Routes = [
   { path: 'tree-data-hierarchical', component: GridTreeDataHierarchicalComponent },
   { path: 'swt', component: SwtCommonGridTestComponent },
   { path: '', redirectTo: '/trading', pathMatch: 'full' },
-  { path: '**', redirectTo: '/trading', pathMatch: 'full' }
+  { path: '**', redirectTo: '/trading', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true }), TranslateModule],
   exports: [RouterModule, TranslateModule],
 })
-export class AppRoutingRoutingModule { }
+export class AppRoutingRoutingModule {}

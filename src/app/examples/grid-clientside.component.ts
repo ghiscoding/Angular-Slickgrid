@@ -24,7 +24,7 @@ const NB_ITEMS = 10500;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
-  templateUrl: './grid-clientside.component.html'
+  templateUrl: './grid-clientside.component.html',
 })
 export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';
@@ -57,43 +57,65 @@ export class GridClientSideComponent implements OnInit {
   dataset!: any[];
   metrics!: Metrics;
 
-  constructor(private http: HttpClient, private translate: TranslateService) { }
+  constructor(
+    private http: HttpClient,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
-        type: FieldType.string, filterable: true, filter: { model: Filters.compoundInputText }
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        sortable: true,
+        minWidth: 55,
+        type: FieldType.string,
+        filterable: true,
+        filter: { model: Filters.compoundInputText },
       },
       {
-        id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
+        id: 'description',
+        name: 'Description',
+        field: 'description',
+        filterable: true,
+        sortable: true,
+        minWidth: 80,
         type: FieldType.string,
         filter: {
           model: CustomInputFilter, // create a new instance to make each Filter independent from each other
-          enableTrimWhiteSpace: true // or use global "enableFilterTrimWhiteSpace" to trim on all Filters
-        }
+          enableTrimWhiteSpace: true, // or use global "enableFilterTrimWhiteSpace" to trim on all Filters
+        },
       },
       {
-        id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
+        sortable: true,
+        type: FieldType.number,
+        exportCsvForceToKeepAsString: true,
         minWidth: 55,
         filterable: true,
         filter: {
-          collectionAsync: this.http.get<{ option: string; value: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          collectionAsync: this.http.get<{ option: string; value: string }[]>(URL_SAMPLE_COLLECTION_DATA),
           // collectionFilterBy & collectionSortBy accept a single or multiple options
           // we can exclude certains values 365 & 360 from the dropdown filter
-          collectionFilterBy: [{
-            property: 'value',
-            operator: OperatorType.notEqual,
-            value: 360
-          }, {
-            property: 'value',
-            operator: OperatorType.notEqual,
-            value: 365
-          }],
+          collectionFilterBy: [
+            {
+              property: 'value',
+              operator: OperatorType.notEqual,
+              value: 360,
+            },
+            {
+              property: 'value',
+              operator: OperatorType.notEqual,
+              value: 365,
+            },
+          ],
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
-            fieldType: FieldType.number
+            fieldType: FieldType.number,
           },
           customStructure: {
             value: 'value',
@@ -103,7 +125,7 @@ export class GridClientSideComponent implements OnInit {
           },
           collectionOptions: {
             separatorBetweenTextLabels: ' ',
-            filterResultAfterEachPass: 'chain' // options are "merge" or "chain" (defaults to "chain")
+            filterResultAfterEachPass: 'chain', // options are "merge" or "chain" (defaults to "chain")
           },
           model: Filters.multipleSelect,
 
@@ -114,33 +136,67 @@ export class GridClientSideComponent implements OnInit {
 
             // if we want to display shorter text as the selected text (on the select filter itself, parent element)
             // we can use "useSelectOptionLabel" or "useSelectOptionLabelToHtml" the latter will parse html
-            useSelectOptionLabelToHtml: true
-          } as MultipleSelectOption
-        }
+            useSelectOptionLabelToHtml: true,
+          } as MultipleSelectOption,
+        },
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
-        filterable: true, filter: { model: Filters.compoundInputNumber }
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        minWidth: 70,
+        type: FieldType.number,
+        sortable: true,
+        filterable: true,
+        filter: { model: Filters.compoundInputNumber },
       },
       {
-        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75,
-        type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 75,
+        type: FieldType.date,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, minWidth: 70, width: 70,
-        type: FieldType.dateUsShort, exportWithFormatter: true, filterable: true, filter: { model: Filters.compoundDate }
+        id: 'usDateShort',
+        name: 'US Date Short',
+        field: 'usDateShort',
+        sortable: true,
+        minWidth: 70,
+        width: 70,
+        type: FieldType.dateUsShort,
+        exportWithFormatter: true,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
-        type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateTimeIsoAmPm, filterable: true,
+        id: 'utcDate',
+        name: 'UTC Date',
+        field: 'utcDate',
+        formatter: Formatters.dateTimeIsoAmPm,
+        sortable: true,
+        minWidth: 115,
+        type: FieldType.dateUtc,
+        exportWithFormatter: true,
+        outputType: FieldType.dateTimeIsoAmPm,
+        filterable: true,
         filter: {
           model: Filters.compoundDate,
           // override any of the date picker options through "filterOptions"
-          filterOptions: { range: { date: 'today' } } as VanillaCalendarOption
-        }
+          filterOptions: { range: { date: 'today' } } as VanillaCalendarOption,
+        },
       },
       {
-        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven.isEffort', minWidth: 85, maxWidth: 85,
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven.isEffort',
+        minWidth: 85,
+        maxWidth: 85,
         type: FieldType.boolean,
         sortable: true,
         exportCustomFormatter: Formatters.complexObject,
@@ -157,23 +213,27 @@ export class GridClientSideComponent implements OnInit {
           // enableRenderHtml: true,
           // collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="mdi mdi-check"></i> ` }, { value: false, label: 'False' }],
 
-          collection: [{ isEffort: '', label: '' }, { isEffort: true, label: 'True' }, { isEffort: false, label: 'False' }],
+          collection: [
+            { isEffort: '', label: '' },
+            { isEffort: true, label: 'True' },
+            { isEffort: false, label: 'False' },
+          ],
           customStructure: {
             value: 'isEffort',
-            label: 'label'
+            label: 'label',
           },
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: { autoAdjustDropHeight: true } as MultipleSelectOption,
-        }
-      }
+        },
+      },
     ];
 
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableExcelExport: true,
       enableExcelCopyBuffer: true,
@@ -192,11 +252,11 @@ export class GridClientSideComponent implements OnInit {
         ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },
-          { columnId: 'complete', direction: 'ASC' }
+          { columnId: 'complete', direction: 'ASC' },
         ],
       },
       externalResources: [new ExcelExportService()],
-      preParseDateColumns: '__' // or true
+      preParseDateColumns: '__', // or true
     };
 
     // mock a dataset
@@ -214,33 +274,33 @@ export class GridClientSideComponent implements OnInit {
   mockData(itemCount: number, startingIndex = 0): any[] {
     // mock a dataset
     const tempDataset = [];
-    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
+    for (let i = startingIndex; i < startingIndex + itemCount; i++) {
       const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2035);
       const randomYearShort = randomBetween(10, 35);
       const randomMonth = randomBetween(1, 12);
-      const randomMonthStr = (randomMonth < 10) ? `0${randomMonth}` : randomMonth;
+      const randomMonthStr = randomMonth < 10 ? `0${randomMonth}` : randomMonth;
       const randomDay = randomBetween(10, 28);
       const randomPercent = randomBetween(0, 100);
       const randomHour = randomBetween(10, 23);
       const randomTime = randomBetween(10, 59);
       const randomMilliseconds = `${randomBetween(1, 9)}${randomBetween(10, 99)}`;
-      const randomIsEffort = (i % 3 === 0);
+      const randomIsEffort = i % 3 === 0;
 
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        description: (i % 5) ? 'desc ' + i : null, // also add some random to test NULL field
+        description: i % 5 ? 'desc ' + i : null, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: (i % 4) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
+        start: i % 4 ? null : new Date(randomYear, randomMonth, randomDay), // provide a Date format
         usDateShort: `${randomMonth}/${randomDay}/${randomYearShort}`, // provide a date US Short in the dataset
         utcDate: `${randomYear}-${randomMonthStr}-${randomDay}T${randomHour}:${randomTime}:${randomTime}.${randomMilliseconds}Z`,
         effortDriven: {
           isEffort: randomIsEffort,
           label: randomIsEffort ? 'Effort' : 'NoEffort',
-        }
+        },
       });
     }
     return tempDataset;
@@ -280,8 +340,8 @@ export class GridClientSideComponent implements OnInit {
         this.metrics = {
           startTime: new Date(),
           endTime: new Date(),
-          itemCount: args && args.current || 0,
-          totalItemCount: this.dataset.length || 0
+          itemCount: (args && args.current) || 0,
+          totalItemCount: this.dataset.length || 0,
         };
       });
     }

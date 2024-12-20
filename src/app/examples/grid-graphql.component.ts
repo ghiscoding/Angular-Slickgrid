@@ -1,4 +1,4 @@
-import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, } from '@slickgrid-universal/graphql';
+import { GraphqlService, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption } from '@slickgrid-universal/graphql';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { addDay, format as tempoFormat } from '@formkit/tempo';
 import { TranslateService } from '@ngx-translate/core';
@@ -25,7 +25,7 @@ const LOCAL_STORAGE_KEY = 'gridStateGraphql';
 const FAKE_SERVER_DELAY = 250;
 
 @Component({
-  templateUrl: './grid-graphql.component.html'
+  templateUrl: './grid-graphql.component.html',
 })
 export class GridGraphqlComponent implements OnInit, OnDestroy {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';
@@ -60,7 +60,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   selectedLanguage: string;
   serverWaitDelay = FAKE_SERVER_DELAY; // server simulation with default of 250ms but 50ms for Cypress tests
 
-  constructor(private readonly cd: ChangeDetectorRef, private translate: TranslateService) {
+  constructor(
+    private readonly cd: ChangeDetectorRef,
+    private translate: TranslateService
+  ) {
     // always start with English for Cypress E2E tests to be consistent
     const defaultLang = 'en';
     this.translate.use(defaultLang);
@@ -75,7 +78,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'name', field: 'name', nameKey: 'NAME', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
+        id: 'name',
+        field: 'name',
+        nameKey: 'NAME',
+        width: 60,
+        columnGroupKey: 'CUSTOMER_INFORMATION',
         type: FieldType.string,
         sortable: true,
         filterable: true,
@@ -89,42 +96,78 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
             { operator: 'a*', desc: 'Starts With' },
             { operator: 'Custom', desc: 'SQL Like' },
           ],
-        }
+        },
       },
       {
-        id: 'gender', field: 'gender', nameKey: 'GENDER', filterable: true, sortable: true, width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
+        id: 'gender',
+        field: 'gender',
+        nameKey: 'GENDER',
+        filterable: true,
+        sortable: true,
+        width: 60,
+        columnGroupKey: 'CUSTOMER_INFORMATION',
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
-        }
+          collection: [
+            { value: '', label: '' },
+            { value: 'male', label: 'male', labelKey: 'MALE' },
+            { value: 'female', label: 'female', labelKey: 'FEMALE' },
+          ],
+        },
       },
       {
-        id: 'company', field: 'company', nameKey: 'COMPANY', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
-        sortable: true, filterable: true,
+        id: 'company',
+        field: 'company',
+        nameKey: 'COMPANY',
+        width: 60,
+        columnGroupKey: 'CUSTOMER_INFORMATION',
+        sortable: true,
+        filterable: true,
         filter: {
           model: Filters.multipleSelect,
-          collection: [{ value: 'acme', label: 'Acme' }, { value: 'abc', label: 'Company ABC' }, { value: 'xyz', label: 'Company XYZ' }],
+          collection: [
+            { value: 'acme', label: 'Acme' },
+            { value: 'abc', label: 'Company ABC' },
+            { value: 'xyz', label: 'Company XYZ' },
+          ],
           filterOptions: {
-            filter: true // adds a filter on top of the multi-select dropdown
-          } as MultipleSelectOption
-        }
+            filter: true, // adds a filter on top of the multi-select dropdown
+          } as MultipleSelectOption,
+        },
       },
       {
-        id: 'billingAddressStreet', field: 'billing.address.street', nameKey: 'BILLING.ADDRESS.STREET',
-        width: 60, filterable: true, sortable: true, columnGroupKey: 'BILLING.INFORMATION',
+        id: 'billingAddressStreet',
+        field: 'billing.address.street',
+        nameKey: 'BILLING.ADDRESS.STREET',
+        width: 60,
+        filterable: true,
+        sortable: true,
+        columnGroupKey: 'BILLING.INFORMATION',
       },
       {
-        id: 'billingAddressZip', field: 'billing.address.zip', nameKey: 'BILLING.ADDRESS.ZIP', width: 60,
+        id: 'billingAddressZip',
+        field: 'billing.address.zip',
+        nameKey: 'BILLING.ADDRESS.ZIP',
+        width: 60,
         type: FieldType.number,
         columnGroupKey: 'BILLING.INFORMATION', // or use "columnGroup" without Translate
-        filterable: true, sortable: true,
+        filterable: true,
+        sortable: true,
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
         },
-        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] }
+        formatter: Formatters.multiple,
+        params: { formatters: [Formatters.complexObject, Formatters.translate] },
       },
       {
-        id: 'finish', field: 'finish', name: 'Date', formatter: Formatters.dateIso, sortable: true, minWidth: 90, width: 120, exportWithFormatter: true,
+        id: 'finish',
+        field: 'finish',
+        name: 'Date',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 90,
+        width: 120,
+        exportWithFormatter: true,
         type: FieldType.date,
         columnGroupKey: 'BILLING.INFORMATION', // or use "columnGroup" without Translate
         filterable: true,
@@ -136,8 +179,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
               iconCssClass: 'mdi mdi-calendar',
               searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD'), tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD')],
             },
-          ]
-        }
+          ],
+        },
       },
     ];
 
@@ -150,7 +193,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       gridWidth: 900,
       compoundOperatorAltTexts: {
         // where '=' is any of the `OperatorString` type shown above
-        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
+        text: { Custom: { operatorAlt: '%%', descAlt: 'SQL Like' } },
       },
       enableFiltering: true,
       enableCellNavigation: true,
@@ -167,21 +210,21 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
             title: 'Reset Grid',
             disabled: false,
             command: 'reset-grid',
-            positionOrder: 60
-          }
+            positionOrder: 60,
+          },
         ],
         onCommand: (e, args) => {
           if (args.command === 'reset-grid') {
             this.angularGrid.gridService.resetGrid(this.columnDefinitions);
             localStorage[LOCAL_STORAGE_KEY] = null;
           }
-        }
+        },
       },
       enablePagination: true, // you could optionally disable the Pagination
       pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
-        totalItems: 0
+        totalItems: 0,
       },
       presets: {
         columns: [
@@ -205,19 +248,22 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         sorters: [
           // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
           { columnId: 'name', direction: 'asc' },
-          { columnId: 'company', direction: SortDirection.DESC }
+          { columnId: 'company', direction: SortDirection.DESC },
         ],
-        pagination: { pageNumber: this.isWithCursor ? 1 : 2, pageSize: 20 } // if cursor based, start at page 1
+        pagination: { pageNumber: this.isWithCursor ? 1 : 2, pageSize: 20 }, // if cursor based, start at page 1
       },
       backendServiceApi: {
         service: new GraphqlService(),
         options: {
           datasetName: GRAPHQL_QUERY_DATASET_NAME, // the only REQUIRED property
-          addLocaleIntoQuery: true,   // optionally add current locale into the query
-          extraQueryArguments: [{     // optionally add some extra query arguments as input query arguments
-            field: 'userId',
-            value: 123
-          }],
+          addLocaleIntoQuery: true, // optionally add current locale into the query
+          extraQueryArguments: [
+            {
+              // optionally add some extra query arguments as input query arguments
+              field: 'userId',
+              value: 123,
+            },
+          ],
           filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValues }) => {
             if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
               // technically speaking GraphQL isn't a database query language like SQL, it's an application query language.
@@ -231,7 +277,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           useCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
           // when dealing with complex objects, we want to keep our field name with double quotes
           // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
-          keepArgumentFieldDoubleQuotes: true
+          keepArgumentFieldDoubleQuotes: true,
         },
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
         // onInit: (query) => this.getCustomerApiCall(query)
@@ -241,8 +287,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           this.metrics = result.metrics as Metrics;
           this.displaySpinner(false);
           this.cd.detectChanges();
-        }
-      } as GraphqlServiceApi
+        },
+      } as GraphqlServiceApi,
     };
   }
 
@@ -252,7 +298,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   displaySpinner(isProcessing: boolean) {
     this.processing = isProcessing;
-    this.status = (isProcessing)
+    this.status = isProcessing
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'finished', class: 'alert alert-success' };
   }
@@ -281,14 +327,14 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         hasPreviousPage: paginationService.dataFrom === 0,
         hasNextPage: paginationService.dataTo === 100,
         startCursor,
-        endCursor
+        endCursor,
       };
     } else {
       pageInfo = {
         hasPreviousPage: false,
         hasNextPage: true,
         startCursor: 'A',
-        endCursor: 'B'
+        endCursor: 'B',
       };
     }
 
@@ -301,19 +347,19 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         [GRAPHQL_QUERY_DATASET_NAME]: {
           nodes: [],
           totalCount: 100,
-          pageInfo
-        }
-      }
+          pageInfo,
+        },
+      },
     };
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       window.setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService!.buildQuery();
         if (this.isWithCursor) {
           // When using cursor pagination, the pagination service needs to be updated with the PageInfo data from the latest request
           // This might be done automatically if using a framework specific slickgrid library
           // Note because of this timeout, this may cause race conditions with rapid clicks!
-          this.angularGrid?.paginationService?.setCursorPageInfo((mockedResult.data[GRAPHQL_QUERY_DATASET_NAME].pageInfo));
+          this.angularGrid?.paginationService?.setCursorPageInfo(mockedResult.data[GRAPHQL_QUERY_DATASET_NAME].pageInfo);
         }
         resolve(mockedResult);
       }, this.serverWaitDelay);
@@ -386,7 +432,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     this.angularGrid.sortService.updateSorting([
       // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
       { columnId: 'name', direction: 'asc' },
-      { columnId: 'company', direction: SortDirection.DESC }
+      { columnId: 'company', direction: SortDirection.DESC },
     ]);
     window.setTimeout(() => {
       this.angularGrid.paginationService?.changeItemPerPage(20);
@@ -410,7 +456,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     this.subscriptions.push(
       this.translate.use(nextLanguage).subscribe(() => {
         this.selectedLanguage = nextLanguage;

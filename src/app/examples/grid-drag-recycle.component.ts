@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -46,8 +46,8 @@ export class GridDragRecycleComponent implements OnInit {
         field: 'name',
         width: 300,
         cssClass: 'cell-title',
-        editor: { model: Editors.Text, },
-        validator: this.requiredFieldValidator
+        editor: { model: Editors.Text },
+        validator: this.requiredFieldValidator,
       },
       {
         id: 'complete',
@@ -58,7 +58,7 @@ export class GridDragRecycleComponent implements OnInit {
         cannotTriggerInsert: true,
         formatter: Formatters.checkmarkMaterial,
         editor: { model: Editors.Checkbox },
-      }
+      },
     ];
 
     this.gridOptions = {
@@ -71,7 +71,7 @@ export class GridDragRecycleComponent implements OnInit {
       enableRowMoveManager: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       rowMoveManager: {
         columnIndexPosition: 0,
@@ -92,11 +92,11 @@ export class GridDragRecycleComponent implements OnInit {
       { id: 0, name: 'Make a list', complete: true },
       { id: 1, name: 'Check it twice', complete: false },
       { id: 2, name: `Find out who's naughty`, complete: false },
-      { id: 3, name: `Find out who's nice`, complete: false }
+      { id: 3, name: `Find out who's nice`, complete: false },
     ];
   }
 
-  onBeforeMoveRows(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
+  onBeforeMoveRows(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number }) {
     for (const dataRow of data.rows) {
       // no point in moving before or after itself
       if (dataRow === data.insertBefore || dataRow === data.insertBefore - 1) {
@@ -107,7 +107,7 @@ export class GridDragRecycleComponent implements OnInit {
     return true;
   }
 
-  onMoveRows(_e: MouseEvent | TouchEvent, args: { rows: number[]; insertBefore: number; }) {
+  onMoveRows(_e: MouseEvent | TouchEvent, args: { rows: number[]; insertBefore: number }) {
     const extractedRows: any[] = [];
     const rows = args.rows;
     const insertBefore = args.insertBefore;
@@ -168,7 +168,7 @@ export class GridDragRecycleComponent implements OnInit {
 
     let selectedRows: number[] = this.angularGrid.slickGrid?.getSelectedRows() || [];
 
-    if (!selectedRows.length || selectedRows.findIndex(row => row === row) === -1) {
+    if (!selectedRows.length || selectedRows.findIndex((row) => row === row) === -1) {
       selectedRows = [row];
       this.angularGrid.slickGrid?.setSelectedRows(selectedRows);
     }

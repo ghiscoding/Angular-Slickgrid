@@ -7,7 +7,7 @@ import {
   Filters,
   Formatters,
   GridOption,
-  GridStateChange
+  GridStateChange,
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -41,7 +41,7 @@ export class GridRowSelectionComponent implements OnInit {
   selectedTitle = '';
   selectedGrid2IDs!: number[];
 
-  constructor(private cd: ChangeDetectorRef) { }
+  constructor(private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -61,51 +61,107 @@ export class GridRowSelectionComponent implements OnInit {
     this.columnDefinitions1 = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, filterable: true },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, filterable: true },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
       {
-        id: 'start', name: 'Start', field: 'start',
-        formatter: Formatters.dateIso, exportWithFormatter: true, type: FieldType.date,
-        filterable: true, sortable: true, filter: { model: Filters.compoundDate },
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        filterable: true,
+        sortable: true,
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
-        formatter: Formatters.dateIso, exportWithFormatter: true, type: FieldType.date,
-        filterable: true, sortable: true, filter: { model: Filters.compoundDate },
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        sortable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmarkMaterial, type: FieldType.boolean,
-        sortable: true, filterable: true,
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        sortable: true,
+        filter: { model: Filters.compoundDate },
+      },
+      {
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
+        formatter: Formatters.checkmarkMaterial,
+        type: FieldType.boolean,
+        sortable: true,
+        filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'true' },
+            { value: false, label: 'false' },
+          ],
           model: Filters.singleSelect,
-        }
-      }
+        },
+      },
     ];
 
     this.columnDefinitions2 = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, filterable: true },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, filterable: true },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
       {
-        id: 'start', name: 'Start', field: 'start',
-        formatter: Formatters.dateIso, exportWithFormatter: true, type: FieldType.date,
-        filterable: true, sortable: true, filter: { model: Filters.compoundDate },
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        filterable: true,
+        sortable: true,
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
-        formatter: Formatters.dateIso, exportWithFormatter: true, type: FieldType.date,
-        filterable: true, sortable: true, filter: { model: Filters.compoundDate },
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        sortable: true,
+        filter: { model: Filters.compoundDate },
       },
       {
-        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmarkMaterial, type: FieldType.boolean,
-        sortable: true, filterable: true,
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        sortable: true,
+        filter: { model: Filters.compoundDate },
+      },
+      {
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
+        formatter: Formatters.checkmarkMaterial,
+        type: FieldType.boolean,
+        sortable: true,
+        filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'true' },
+            { value: false, label: 'false' },
+          ],
           model: Filters.singleSelect,
-        }
-      }
+        },
+      },
     ];
 
     this.gridOptions1 = {
@@ -133,15 +189,15 @@ export class GridRowSelectionComponent implements OnInit {
         selectActiveRow: true,
       },
       columnPicker: {
-        hideForceFitButton: true
+        hideForceFitButton: true,
       },
       gridMenu: {
-        hideForceFitButton: true
+        hideForceFitButton: true,
       },
       enablePagination: true,
       pagination: {
         pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
-        pageSize: 5
+        pageSize: 5,
       },
       // we can use some Presets, for the example Pagination
       presets: {
@@ -163,14 +219,14 @@ export class GridRowSelectionComponent implements OnInit {
       },
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       enableCheckboxSelector: true,
       enableRowSelection: true,
       enablePagination: true,
       pagination: {
         pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
-        pageSize: 5
+        pageSize: 5,
       },
       // 1. pre-select some grid row indexes (less recommended, better use the Presets, see below)
       // preselectedRows: [0, 2],
@@ -182,8 +238,8 @@ export class GridRowSelectionComponent implements OnInit {
         // the RECOMMENDED is to use "dataContextIds" since that will always work even with Pagination, while "gridRowIndexes" is only good for 1 page
         rowSelection: {
           // gridRowIndexes: [2],           // the row position of what you see on the screen (UI)
-          dataContextIds: [3, 12, 13, 522]  // (recommended) select by your data object IDs
-        }
+          dataContextIds: [3, 12, 13, 522], // (recommended) select by your data object IDs
+        },
       },
     };
 
@@ -197,7 +253,7 @@ export class GridRowSelectionComponent implements OnInit {
     for (let i = 0; i < count; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
 
       mockDataset[i] = {
@@ -207,8 +263,8 @@ export class GridRowSelectionComponent implements OnInit {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        effortDriven: (i % 5 === 0)
+        finish: new Date(randomYear, randomMonth + 1, randomDay),
+        effortDriven: i % 5 === 0,
       };
     }
     return mockDataset;
@@ -244,7 +300,7 @@ export class GridRowSelectionComponent implements OnInit {
     if (gridStateChanges!.gridState!.rowSelection) {
       this.selectedGrid2IDs = (gridStateChanges!.gridState!.rowSelection.filteredDataContextIds || []) as number[];
       this.selectedGrid2IDs = this.selectedGrid2IDs.sort((a, b) => a - b); // sort by ID
-      this.selectedTitles = this.selectedGrid2IDs.map(dataContextId => `Task ${dataContextId}`).join(',');
+      this.selectedTitles = this.selectedGrid2IDs.map((dataContextId) => `Task ${dataContextId}`).join(',');
       if (this.selectedTitles.length > 293) {
         this.selectedTitles = this.selectedTitles.substring(0, 293) + '...';
       }

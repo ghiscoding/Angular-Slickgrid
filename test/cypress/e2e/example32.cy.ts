@@ -1,5 +1,18 @@
 describe('Example 32 - Regular & Custom Tooltips', () => {
-  const titles = ['', 'Title', 'Duration', 'Description', 'Description 2', 'Cost', '% Complete', 'Start', 'Finish', 'Effort Driven', 'Prerequisites', 'Action'];
+  const titles = [
+    '',
+    'Title',
+    'Duration',
+    'Description',
+    'Description 2',
+    'Cost',
+    '% Complete',
+    'Start',
+    'Finish',
+    'Effort Driven',
+    'Prerequisites',
+    'Action',
+  ];
   const GRID_ROW_HEIGHT = 33;
 
   it('should display Example title', () => {
@@ -98,8 +111,14 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
     cy.get('@desc6-cell').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('be.visible');
-    cy.get('.slick-custom-tooltip').should('not.contain', `regular tooltip (from title attribute)\nTask 6 cell value:\n\nThis is a sample task description.\nIt can be multiline\n\nAnother line...`);
-    cy.get('.slick-custom-tooltip').should('contain', `This is a sample task description.\nIt can be multiline\n\nAnother line...`);
+    cy.get('.slick-custom-tooltip').should(
+      'not.contain',
+      `regular tooltip (from title attribute)\nTask 6 cell value:\n\nThis is a sample task description.\nIt can be multiline\n\nAnother line...`
+    );
+    cy.get('.slick-custom-tooltip').should(
+      'contain',
+      `This is a sample task description.\nIt can be multiline\n\nAnother line...`
+    );
 
     cy.get('@desc6-cell').trigger('mouseout');
   });
@@ -110,7 +129,10 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
     cy.get('@desc2-5-cell').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('be.visible');
-    cy.get('.slick-custom-tooltip').should('contain', `regular tooltip (from title attribute)\nTask 6 cell value:\n\nThis is a sample task description.\nIt can be multiline\n\nAnother line...`);
+    cy.get('.slick-custom-tooltip').should(
+      'contain',
+      `regular tooltip (from title attribute)\nTask 6 cell value:\n\nThis is a sample task description.\nIt can be multiline\n\nAnother line...`
+    );
 
     cy.get('@desc2-5-cell').trigger('mouseout');
   });
@@ -195,7 +217,9 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
 
     cy.get('.filter-prerequisites .ms-choice span').contains('15 of 500 selected');
     cy.get('.slick-custom-tooltip').should('be.visible');
-    cy.get('.slick-custom-tooltip').contains('Task 1, Task 3, Task 5, Task 7, Task 9, Task 12, Task 15, Task 18, Task 21, Task 25, Task 28, Task 29, Task 30, Task 32, Task 34');
+    cy.get('.slick-custom-tooltip').contains(
+      'Task 1, Task 3, Task 5, Task 7, Task 9, Task 12, Task 15, Task 18, Task 21, Task 25, Task 28, Task 29, Task 30, Task 32, Task 34'
+    );
 
     cy.get('@checkbox10-header').trigger('mouseout');
   });
@@ -231,27 +255,16 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
 
   it('should click Prerequisite editor of 1st row (Task 2) and expect Task1 & 2 to be selected in the multiple-select drop', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(10)`).as('prereq-cell');
-    cy.get('@prereq-cell')
-      .should('contain', 'Task 2, Task 1')
-      .click();
+    cy.get('@prereq-cell').should('contain', 'Task 2, Task 1').click();
 
-    cy.get('div.ms-drop[data-name=editor-prerequisites]')
-      .find('li.selected')
-      .should('have.length', 2);
+    cy.get('div.ms-drop[data-name=editor-prerequisites]').find('li.selected').should('have.length', 2);
 
-    cy.get('div.ms-drop[data-name=editor-prerequisites]')
-      .find('li.selected:nth(0) span')
-      .should('contain', 'Task 1');
+    cy.get('div.ms-drop[data-name=editor-prerequisites]').find('li.selected:nth(0) span').should('contain', 'Task 1');
 
-    cy.get('div.ms-drop[data-name=editor-prerequisites]')
-      .find('li.selected:nth(1) span')
-      .should('contain', 'Task 2');
+    cy.get('div.ms-drop[data-name=editor-prerequisites]').find('li.selected:nth(1) span').should('contain', 'Task 2');
 
-    cy.get('div.ms-drop[data-name=editor-prerequisites]')
-      .find('.ms-ok-button')
-      .click();
+    cy.get('div.ms-drop[data-name=editor-prerequisites]').find('.ms-ok-button').click();
 
-    cy.get('div.ms-drop[data-name=editor-prerequisites]')
-      .should('not.exist');
+    cy.get('div.ms-drop[data-name=editor-prerequisites]').should('not.exist');
   });
 });

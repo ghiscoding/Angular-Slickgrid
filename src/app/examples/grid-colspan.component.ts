@@ -46,7 +46,7 @@ export class GridColspanComponent implements OnInit {
       { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
       { id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period' },
       { id: '%', name: '% Complete', field: 'percentComplete', selectable: false, columnGroup: 'Analysis' },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' }
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' },
     ];
 
     this.gridOptions1 = {
@@ -61,11 +61,11 @@ export class GridColspanComponent implements OnInit {
       explicitInitialization: true,
       colspanCallback: this.renderDifferentColspan,
       gridMenu: {
-        iconButtonContainer: 'preheader' // we can display the grid menu icon in either the preheader or in the column header (default)
+        iconButtonContainer: 'preheader', // we can display the grid menu icon in either the preheader or in the column header (default)
       },
       enableExcelExport: true,
       excelExportOptions: {
-        exportWithFormatter: false
+        exportWithFormatter: false,
       },
       externalResources: [new ExcelExportService()],
     };
@@ -75,13 +75,22 @@ export class GridColspanComponent implements OnInit {
 
   prepareGrid2() {
     this.columnDefinitions2 = [
-      { id: 'sel', name: '#', field: 'num', behavior: 'select', cssClass: 'cell-selection', width: 40, resizable: false, selectable: false },
+      {
+        id: 'sel',
+        name: '#',
+        field: 'num',
+        behavior: 'select',
+        cssClass: 'cell-selection',
+        width: 40,
+        resizable: false,
+        selectable: false,
+      },
       { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
       { id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor' },
       { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
       { id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period' },
       { id: '%', name: '% Complete', field: 'percentComplete', selectable: false, columnGroup: 'Analysis' },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' }
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' },
     ];
 
     this.gridOptions2 = {
@@ -97,7 +106,7 @@ export class GridColspanComponent implements OnInit {
       headerMenu: { hideFreezeColumnsCommand: false },
       enableExcelExport: true,
       excelExportOptions: {
-        exportWithFormatter: false
+        exportWithFormatter: false,
       },
       externalResources: [new ExcelExportService()],
     };
@@ -117,7 +126,7 @@ export class GridColspanComponent implements OnInit {
         percentComplete: Math.round(Math.random() * 100),
         start: '01/01/2009',
         finish: '01/05/2009',
-        effortDriven: (i % 5 === 0)
+        effortDriven: i % 5 === 0,
       };
     }
     return mockDataset;
@@ -138,17 +147,17 @@ export class GridColspanComponent implements OnInit {
       return {
         columns: {
           duration: {
-            colspan: 3 // "duration" will span over 3 columns
-          }
-        }
+            colspan: 3, // "duration" will span over 3 columns
+          },
+        },
       };
     }
     return {
       columns: {
         0: {
-          colspan: '*' // starting at column index 0, we will span accross all column (*)
-        }
-      }
+          colspan: '*', // starting at column index 0, we will span accross all column (*)
+        },
+      },
     };
   }
 }

@@ -13,7 +13,7 @@ import { Logger } from './swt-logger.service';
  */
 @Component({
   selector: 'swt-common-grid-test',
-  templateUrl: './swt-common-grid-test.component.html'
+  templateUrl: './swt-common-grid-test.component.html',
 })
 export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
   title = 'Example 13: Custom Backend Server Pagination';
@@ -35,7 +35,6 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     if (this.commonGridPag) {
       this.commonGrid.paginationComponent = this.commonGridPag;
     }
-
   }
 
   ngAfterViewInit() {
@@ -81,9 +80,15 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     this.updateGridData();
   }
 
-
   updateGridData() {
-    this.currentUrl = this.testurl + '&currentPage=' + this.commonGrid.currentPage + '&selectedSort=' + this.commonGrid.sortedGridColumn + '&selectedFilter=' + this.commonGrid.filteredGridColumns;
+    this.currentUrl =
+      this.testurl +
+      '&currentPage=' +
+      this.commonGrid.currentPage +
+      '&selectedSort=' +
+      this.commonGrid.sortedGridColumn +
+      '&selectedFilter=' +
+      this.commonGrid.filteredGridColumns;
     // Real HTTP call
     /*this.httpClient.get(this.currentUrl).subscribe(
         (data: any) => {
@@ -99,110 +104,112 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
   }
 }
 
-
 export const data_sample = {
-  'pagination_samples': {
-    'grid': {
-      'metadata': {
-        'columns': {
-          'column': [{
-            'sort': true,
-            'filterable': false,
-            'width': 60,
-            'dataelement': 'hasNote',
-            'heading': 'Note'
-          },
-          {
-            'sort': true,
-            'filterable': true,
-            'width': 125,
-            'dataelement': 'status',
-            'heading': 'Status'
-          },
-          {
-            'sort': true,
-            'visible': true,
-            'filterable': true,
-            'width': 125,
-            'dataelement': 'currency',
-            'heading': 'Currency'
-          },
-          {
-            'sort': true,
-            'visible': true,
-            'filterable': true,
-            'width': 125,
-            'dataelement': 'amount',
-            'heading': 'Amount'
-          },
-          {
-            'sort': true,
-            'visible': true,
-            'filterable': true,
-            'width': 125,
-            'dataelement': 'inputDate',
-            'heading': 'Input Date'
-          },
-          {
-            'sort': true,
-            'visible': true,
-            'filterable': true,
-            'width': 125,
-            'dataelement': 'inputTime',
-            'heading': 'Input Time'
-          }]
-        }
-      },
-      'rows': {
-        'row': [{
-          'currency': {
-            'content': 'EUR'
-          },
-          'amount': {
-            'content': '2 203 677,000'
-          },
-          'startTime': {
-            'content': '06/19/2017 11:52:51'
-          },
-          'inputDate': {
-            'content': '06/19/2017'
-          },
-          'status': {
-            'content': 'New'
-          },
-          'inputTime': {
-            'content': '11:52:51'
-          },
-          'hasNote': {
-            'content': 'False'
-          }
+  pagination_samples: {
+    grid: {
+      metadata: {
+        columns: {
+          column: [
+            {
+              sort: true,
+              filterable: false,
+              width: 60,
+              dataelement: 'hasNote',
+              heading: 'Note',
+            },
+            {
+              sort: true,
+              filterable: true,
+              width: 125,
+              dataelement: 'status',
+              heading: 'Status',
+            },
+            {
+              sort: true,
+              visible: true,
+              filterable: true,
+              width: 125,
+              dataelement: 'currency',
+              heading: 'Currency',
+            },
+            {
+              sort: true,
+              visible: true,
+              filterable: true,
+              width: 125,
+              dataelement: 'amount',
+              heading: 'Amount',
+            },
+            {
+              sort: true,
+              visible: true,
+              filterable: true,
+              width: 125,
+              dataelement: 'inputDate',
+              heading: 'Input Date',
+            },
+            {
+              sort: true,
+              visible: true,
+              filterable: true,
+              width: 125,
+              dataelement: 'inputTime',
+              heading: 'Input Time',
+            },
+          ],
         },
-        {
-          'currency': {
-            'content': 'USD'
+      },
+      rows: {
+        row: [
+          {
+            currency: {
+              content: 'EUR',
+            },
+            amount: {
+              content: '2 203 677,000',
+            },
+            startTime: {
+              content: '06/19/2017 11:52:51',
+            },
+            inputDate: {
+              content: '06/19/2017',
+            },
+            status: {
+              content: 'New',
+            },
+            inputTime: {
+              content: '11:52:51',
+            },
+            hasNote: {
+              content: 'False',
+            },
           },
-          'amount': {
-            'content': '6 203 677,000'
+          {
+            currency: {
+              content: 'USD',
+            },
+            amount: {
+              content: '6 203 677,000',
+            },
+            startTime: {
+              content: '06/28/2017 10:42:00',
+            },
+            inputDate: {
+              content: '06/28/2017',
+            },
+            status: {
+              content: 'New',
+            },
+            inputTime: {
+              content: '10:40:12',
+            },
+            hasNote: {
+              content: 'True',
+            },
           },
-          'startTime': {
-            'content': '06/28/2017 10:42:00'
-          },
-          'inputDate': {
-            'content': '06/28/2017'
-          },
-          'status': {
-            'content': 'New'
-          },
-          'inputTime': {
-            'content': '10:40:12'
-          },
-          'hasNote': {
-            'content': 'True'
-          }
-        }
         ],
-        'maxpage': 5
-      }
-    }
-  }
+        maxpage: 5,
+      },
+    },
+  },
 };

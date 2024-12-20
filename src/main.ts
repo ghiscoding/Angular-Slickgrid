@@ -10,4 +10,4 @@ if (environment.production) {
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule, { preserveWhitespaces: true }) // preserveWhitespaces is now default to False since Angular 6
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));

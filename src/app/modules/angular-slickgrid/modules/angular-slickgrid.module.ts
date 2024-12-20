@@ -8,16 +8,9 @@ import { AngularUtilService } from '../services/angularUtil.service';
 import { ContainerService } from '../services/container.service';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    TranslateModule
-  ],
-  declarations: [
-    AngularSlickgridComponent,
-  ],
-  exports: [
-    AngularSlickgridComponent,
-  ]
+  imports: [CommonModule, TranslateModule],
+  declarations: [AngularSlickgridComponent],
+  exports: [AngularSlickgridComponent],
 })
 export class AngularSlickgridModule {
   static forRoot(config: GridOption = {}): ModuleWithProviders<AngularSlickgridModule> {
@@ -28,7 +21,7 @@ export class AngularSlickgridModule {
         { provide: 'externalService', useValue: null },
         AngularUtilService,
         ContainerService,
-      ]
+      ],
     };
   }
 }

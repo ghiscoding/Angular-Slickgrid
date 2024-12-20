@@ -11,7 +11,7 @@ interface JsonpOptions {
   nonce: string;
   referrerPolicy: string;
   crossorigin: boolean;
-};
+}
 
 const defaultOptions = {
   timeout: 5000,
@@ -27,7 +27,10 @@ const removeScript = (scriptId: string) => {
   }
 };
 
-function fetchJsonp<T = any>(_url: string, options: Partial<JsonpOptions> = {}): Promise<{ ok: boolean; json: () => Promise<T>; }> {
+function fetchJsonp<T = any>(
+  _url: string,
+  options: Partial<JsonpOptions> = {}
+): Promise<{ ok: boolean; json: () => Promise<T> }> {
   // to avoid param reassign
   let url = _url;
   const timeout = options.timeout || defaultOptions.timeout;
@@ -47,7 +50,7 @@ function fetchJsonp<T = any>(_url: string, options: Partial<JsonpOptions> = {}):
     };
 
     // Check if the user set their own params, and if not add a ? to start a list of params
-    url += (url.indexOf('?') === -1) ? '?' : '&';
+    url += url.indexOf('?') === -1 ? '?' : '&';
 
     const jsonpScript = document.createElement('script');
     jsonpScript.setAttribute('src', `${url}${jsonpCallback}=${callbackFunction}`);

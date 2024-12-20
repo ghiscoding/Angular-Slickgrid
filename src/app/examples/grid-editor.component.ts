@@ -61,7 +61,7 @@ const taskFormatter: Formatter = (_row, _cell, value) => {
   return '';
 };
 @Component({
-  templateUrl: './grid-editor.component.html'
+  templateUrl: './grid-editor.component.html',
 })
 export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors / Delete';
@@ -96,7 +96,10 @@ export class GridEditorComponent implements OnInit {
   selectedLanguage = 'en';
   duplicateTitleHeaderCount = 1;
 
-  constructor(private http: HttpClient, private translate: TranslateService) { }
+  constructor(
+    private http: HttpClient,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit() {
     this.prepareGrid();
@@ -125,8 +128,9 @@ export class GridEditorComponent implements OnInit {
           this.alertWarning = `Editing: ${args.dataContext.title}`;
           this.angularGrid.gridService.highlightRow(args.row, 1500);
           this.angularGrid.gridService.setSelectedRow(args.row);
-        }
-      }, {
+        },
+      },
+      {
         id: 'delete',
         field: 'id',
         excludeFromColumnPicker: true,
@@ -143,7 +147,8 @@ export class GridEditorComponent implements OnInit {
           this.alertWarning = `Deleting: ${args.dataContext.title}`;
         }
         */
-      }, {
+      },
+      {
         id: 'title',
         name: 'Title',
         field: 'title',
@@ -163,19 +168,19 @@ export class GridEditorComponent implements OnInit {
               /* you can change button texts (defaults to "Cancel", "Save") */
               // cancel: 'Close',
               // save: 'Done'
-
               /* or with translations (defaults to "CANCEL", "SAVE") */
               // cancelKey: 'CANCEL',
               // saveKey: 'SAVE'
-            }
+            },
           } as LongTextEditorOption,
           validator: myCustomTitleValidator,
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
           console.log(args);
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
-        }
-      }, {
+        },
+      },
+      {
         id: 'title2',
         name: 'Title, Custom Editor',
         field: 'title',
@@ -193,7 +198,8 @@ export class GridEditorComponent implements OnInit {
           model: CustomInputFilter,
           placeholder: '🔎︎ custom',
         },
-      }, {
+      },
+      {
         id: 'duration',
         name: 'Duration (days)',
         field: 'duration',
@@ -225,7 +231,8 @@ export class GridEditorComponent implements OnInit {
           params: { decimalPlaces: 2 },
         },
         */
-      }, {
+      },
+      {
         id: 'complete',
         name: '% Complete',
         field: 'percentComplete',
@@ -238,22 +245,26 @@ export class GridEditorComponent implements OnInit {
 
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           enableRenderHtml: true,
-          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, symbol: '<i class="mdi mdi-percent-outline" style="color:cadetblue"></i>' })),
+          collection: Array.from(Array(101).keys()).map((k) => ({
+            value: k,
+            label: k,
+            symbol: '<i class="mdi mdi-percent-outline" style="color:cadetblue"></i>',
+          })),
           customStructure: {
             value: 'value',
             label: 'label',
-            labelSuffix: 'symbol'
+            labelSuffix: 'symbol',
           },
 
           // collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '%' })),
           collectionSortBy: {
             property: 'label',
-            sortDesc: true
+            sortDesc: true,
           },
           collectionFilterBy: {
             property: 'value',
             value: 0,
-            operator: OperatorType.notEqual
+            operator: OperatorType.notEqual,
           },
           // you could also provide a collection override to filter/sort based on the item dataContext or whatever else
           // collectionOverride: (updatedCollection, args) => {
@@ -261,8 +272,8 @@ export class GridEditorComponent implements OnInit {
           //   return updatedCollection.filter((col) => args.dataContext.id % 2 ? col.value < 50 : col.value >= 50);
           // },
           editorOptions: {
-            maxHeight: 400
-          } as MultipleSelectOption
+            maxHeight: 400,
+          } as MultipleSelectOption,
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
@@ -273,7 +284,8 @@ export class GridEditorComponent implements OnInit {
         //   }
         //   return { valid: true, msg: '' };
         // }
-      }, {
+      },
+      {
         id: 'start',
         name: 'Start',
         field: 'start',
@@ -282,7 +294,7 @@ export class GridEditorComponent implements OnInit {
         filter: { model: Filters.compoundDate },
         formatter: Formatters.multiple,
         params: {
-          formatters: [Formatters.complexObject, Formatters.dateIso]
+          formatters: [Formatters.complexObject, Formatters.dateIso],
         },
         exportWithFormatter: true,
         sortable: true,
@@ -290,7 +302,8 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.date,
         },
-      }, {
+      },
+      {
         id: 'finish',
         name: 'Finish',
         field: 'finish',
@@ -300,7 +313,7 @@ export class GridEditorComponent implements OnInit {
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
         exportWithFormatter: true,
-        type: FieldType.date,              // dataset cell input format
+        type: FieldType.date, // dataset cell input format
         // outputType: FieldType.dateUs,   // date picker format
         saveOutputType: FieldType.dateUtc, // save output date formattype: FieldType.date,
         editor: {
@@ -318,10 +331,13 @@ export class GridEditorComponent implements OnInit {
             //   month: 6 - 1, // Note: JS Date month (only) is zero index based, so June is 6-1 => 5
             //   year: 2021
             // }
-          } as VanillaCalendarOption
+          } as VanillaCalendarOption,
         },
-      }, {
-        id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
+      },
+      {
+        id: 'cityOfOrigin',
+        name: 'City of Origin',
+        field: 'cityOfOrigin',
         filterable: true,
         minWidth: 100,
         editor: {
@@ -340,15 +356,15 @@ export class GridEditorComponent implements OnInit {
 
               const clearFunction = (functionName: string) => {
                 delete (window as any)[functionName];
-              }
+              };
               const processJSONPResponse = (data: any) => {
                 updateCallback(data);
                 clearFunction('processJSONPResponse');
-              }
+              };
 
               (window as any).processJSONPResponse = processJSONPResponse;
               const script = document.createElement('script');
-              script.src = `http://gd.geobytes.com/AutoCompleteCity?q=${searchText}&callback=processJSONPResponse`
+              script.src = `http://gd.geobytes.com/AutoCompleteCity?q=${searchText}&callback=processJSONPResponse`;
               document.getElementsByTagName('head')[0].appendChild(script);
 
               // fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
@@ -379,9 +395,12 @@ export class GridEditorComponent implements OnInit {
                 .catch((ex) => console.log('invalid JSONP response', ex));
             },
           } as AutocompleterOption,
-        }
-      }, {
-        id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',
+        },
+      },
+      {
+        id: 'countryOfOrigin',
+        name: 'Country of Origin',
+        field: 'countryOfOrigin',
         formatter: Formatters.complexObject,
         exportWithFormatter: true,
         dataKey: 'code',
@@ -400,9 +419,12 @@ export class GridEditorComponent implements OnInit {
           model: Filters.autocompleter,
           customStructure: { label: 'name', value: 'code' },
           collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
-        }
-      }, {
-        id: 'countryOfOriginName', name: 'Country of Origin Name', field: 'countryOfOriginName',
+        },
+      },
+      {
+        id: 'countryOfOriginName',
+        name: 'Country of Origin Name',
+        field: 'countryOfOriginName',
         filterable: true,
         sortable: true,
         minWidth: 100,
@@ -413,8 +435,9 @@ export class GridEditorComponent implements OnInit {
         filter: {
           model: Filters.autocompleter,
           collectionAsync: this.http.get(URL_COUNTRY_NAMES),
-        }
-      }, {
+        },
+      },
+      {
         id: 'effort-driven',
         name: 'Effort Driven',
         field: 'effortDriven',
@@ -423,13 +446,18 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.boolean,
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
         },
         formatter: Formatters.checkmarkMaterial,
         editor: {
           model: Editors.checkbox,
         },
-      }, {
+      },
+      {
         id: 'prerequisites',
         name: 'Prerequisites',
         field: 'prerequisites',
@@ -442,12 +470,12 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.string,
         editor: {
           placeholder: 'choose option',
-          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          collectionAsync: this.http.get<{ value: string; label: string }[]>(URL_SAMPLE_COLLECTION_DATA),
           // OR a regular collection load
           // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
           collectionSortBy: {
             property: 'label',
-            sortDesc: true
+            sortDesc: true,
           },
           customStructure: {
             label: 'label',
@@ -455,18 +483,18 @@ export class GridEditorComponent implements OnInit {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' '
+            separatorBetweenTextLabels: ' ',
           },
           model: Editors.multipleSelect,
-          required: true
+          required: true,
         },
         filter: {
-          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          collectionAsync: this.http.get<{ value: string; label: string }[]>(URL_SAMPLE_COLLECTION_DATA),
           // OR a regular collection load
           // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
           collectionSortBy: {
             property: 'label',
-            sortDesc: true
+            sortDesc: true,
           },
           customStructure: {
             label: 'label',
@@ -474,12 +502,12 @@ export class GridEditorComponent implements OnInit {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' '
+            separatorBetweenTextLabels: ' ',
           },
           model: Filters.multipleSelect,
           operator: OperatorType.inContains,
-        }
-      }
+        },
+      },
     ];
 
     this.gridOptions = {
@@ -488,7 +516,7 @@ export class GridEditorComponent implements OnInit {
       autoCommitEdit: false,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       editable: true,
       enableCellNavigation: true,
@@ -499,7 +527,7 @@ export class GridEditorComponent implements OnInit {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      i18n: this.translate
+      i18n: this.translate,
     };
 
     this.dataset = this.mockData(NB_ITEMS);
@@ -578,27 +606,27 @@ export class GridEditorComponent implements OnInit {
   mockData(itemCount: number, startingIndex = 0) {
     // mock a dataset
     const tempDataset = [];
-    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
+    for (let i = startingIndex; i < startingIndex + itemCount; i++) {
       const randomYear = 2000 + this.randomBetween(4, 15);
-      const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
+      const randomFinishYear = new Date().getFullYear() - 3 + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
-      const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
+      const randomFinish = new Date(randomFinishYear, randomMonth + 1, randomDay);
 
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
+        duration: i % 33 === 0 ? null : Math.round(Math.random() * 100) + '',
         start: new Date(randomYear, randomMonth, randomDay),
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
-        effortDriven: (i % 5 === 0),
-        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : [],
-        countryOfOrigin: (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
-        countryOfOriginName: (i % 2) ? 'Canada' : 'United States',
-        cityOfOrigin: (i % 2) ? 'Vancouver, BC, Canada' : 'Boston, MA, United States',
+        effortDriven: i % 5 === 0,
+        prerequisites: i % 2 === 0 && i !== 0 && i < 12 ? [i, i - 1] : [],
+        countryOfOrigin: i % 2 ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
+        countryOfOriginName: i % 2 ? 'Canada' : 'United States',
+        cityOfOrigin: i % 2 ? 'Vancouver, BC, Canada' : 'Boston, MA, United States',
       });
     }
     return tempDataset;
@@ -640,7 +668,7 @@ export class GridEditorComponent implements OnInit {
   changeAutoCommit() {
     this.gridOptions.autoCommitEdit = !this.gridOptions.autoCommitEdit;
     this.gridObj.setOptions({
-      autoCommitEdit: this.gridOptions.autoCommitEdit
+      autoCommitEdit: this.gridOptions.autoCommitEdit,
     });
     return true;
   }
@@ -655,7 +683,9 @@ export class GridEditorComponent implements OnInit {
         required: true,
         validator: myCustomTitleValidator, // use a custom validator
       },
-      sortable: true, minWidth: 100, filterable: true,
+      sortable: true,
+      minWidth: 100,
+      filterable: true,
     };
 
     // you can dynamically add your column to your column definitions

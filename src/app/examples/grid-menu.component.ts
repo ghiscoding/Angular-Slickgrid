@@ -1,5 +1,14 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, ExtensionName, FieldType, Filters, Formatters, GridOption, unsubscribeAllObservables } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  ExtensionName,
+  FieldType,
+  Filters,
+  Formatters,
+  GridOption,
+  unsubscribeAllObservables,
+} from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -46,26 +55,48 @@ export class GridMenuComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', nameKey: 'TITLE', filterable: true, type: FieldType.string },
-      { id: 'duration', name: 'Duration', field: 'duration', nameKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', sortable: true, filterable: true,
+        id: 'duration',
+        name: 'Duration',
+        field: 'duration',
+        nameKey: 'DURATION',
+        sortable: true,
+        filterable: true,
+        type: FieldType.string,
+      },
+      {
+        id: 'percentComplete',
+        name: '% Complete',
+        field: 'percentComplete',
+        nameKey: 'PERCENT_COMPLETE',
+        sortable: true,
+        filterable: true,
         type: FieldType.number,
         formatter: Formatters.percentCompleteBar,
-        filter: { model: Filters.compoundSlider, filterOptions: { hideSliderNumber: false } }
+        filter: { model: Filters.compoundSlider, filterOptions: { hideSliderNumber: false } },
       },
       { id: 'start', name: 'Start', field: 'start', nameKey: 'START', filterable: true, type: FieldType.string },
       { id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH', filterable: true, type: FieldType.string },
       {
-        id: 'effort-driven', name: 'Completed', field: 'effortDriven', nameKey: 'COMPLETED', maxWidth: 80, formatter: Formatters.checkmarkMaterial,
+        id: 'effort-driven',
+        name: 'Completed',
+        field: 'effortDriven',
+        nameKey: 'COMPLETED',
+        maxWidth: 80,
+        formatter: Formatters.checkmarkMaterial,
         type: FieldType.boolean,
         minWidth: 100,
         sortable: true,
         filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
-          model: Filters.singleSelect
-        }
-      }
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'true' },
+            { value: false, label: 'false' },
+          ],
+          model: Filters.singleSelect,
+        },
+      },
     ];
 
     this.gridOptions = {
@@ -74,13 +105,13 @@ export class GridMenuComponent implements OnInit, OnDestroy {
         hideSyncResizeButton: true,
         onColumnsChanged: (e, args) => {
           console.log('Column selection changed from Column Picker, visible columns: ', args.visibleColumns);
-        }
+        },
       },
       enableAutoResize: true,
       enableGridMenu: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableFiltering: true,
       enableCellNavigation: true,
@@ -109,8 +140,8 @@ export class GridMenuComponent implements OnInit, OnDestroy {
             disabled: false,
             command: 'help',
             positionOrder: 90,
-            cssClass: 'bold',     // container css class
-            textCssClass: 'blue'  // just the text css class
+            cssClass: 'bold', // container css class
+            textCssClass: 'blue', // just the text css class
           },
           // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
           // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
@@ -136,7 +167,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
             title: 'Command 2',
             command: 'command2',
             positionOrder: 92,
-            cssClass: 'red',        // container css class
+            cssClass: 'red', // container css class
             textCssClass: 'italic', // just the text css class
             action: (_e: Event, args: any) => alert(args.command),
             itemVisibilityOverride: () => {
@@ -151,38 +182,55 @@ export class GridMenuComponent implements OnInit, OnDestroy {
             title: 'Disabled command',
             disabled: true,
             command: 'disabled-command',
-            positionOrder: 98
+            positionOrder: 98,
           },
           { command: '', divider: true, positionOrder: 98 },
           {
             // we can also have multiple nested sub-menus
-            command: 'export', title: 'Exports', positionOrder: 99,
+            command: 'export',
+            title: 'Exports',
+            positionOrder: 99,
             commandItems: [
               { command: 'exports-txt', title: 'Text (tab delimited)' },
               {
-                command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+                command: 'sub-menu',
+                title: 'Excel',
+                cssClass: 'green',
+                subMenuTitle: 'available formats',
+                subMenuTitleCssClass: 'text-italic orange',
                 commandItems: [
                   { command: 'exports-csv', title: 'Excel (csv)' },
                   { command: 'exports-xlsx', title: 'Excel (xlsx)' },
-                ]
-              }
-            ]
+                ],
+              },
+            ],
           },
           {
-            command: 'feedback', title: 'Feedback', positionOrder: 100,
+            command: 'feedback',
+            title: 'Feedback',
+            positionOrder: 100,
             commandItems: [
-              { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
+              {
+                command: 'request-update',
+                title: 'Request update from supplier',
+                iconCssClass: 'mdi mdi-star',
+                tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update',
+              },
               'divider',
               {
-                command: 'sub-menu', title: 'Contact Us', iconCssClass: 'mdi mdi-account', subMenuTitle: 'contact us...', subMenuTitleCssClass: 'italic',
+                command: 'sub-menu',
+                title: 'Contact Us',
+                iconCssClass: 'mdi mdi-account',
+                subMenuTitle: 'contact us...',
+                subMenuTitleCssClass: 'italic',
                 commandItems: [
                   { command: 'contact-email', title: 'Email us', iconCssClass: 'mdi mdi-pencil-outline' },
                   { command: 'contact-chat', title: 'Chat with us', iconCssClass: 'mdi mdi-message-text-outline' },
                   { command: 'contact-meeting', title: 'Book an appointment', iconCssClass: 'mdi mdi-coffee' },
-                ]
-              }
-            ]
-          }
+                ],
+              },
+            ],
+          },
         ],
         // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
         onCommand: (_e: Event, args: any) => {
@@ -198,10 +246,10 @@ export class GridMenuComponent implements OnInit, OnDestroy {
         },
         onColumnsChanged: (_e: Event, args: any) => {
           console.log('Column selection changed from Grid Menu, visible columns: ', args.visibleColumns);
-        }
+        },
       },
       enableTranslate: true,
-      i18n: this.translate
+      i18n: this.translate,
     };
 
     this.getData();
@@ -223,7 +271,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
         percentComplete: Math.round(Math.random() * 100),
         start: '01/01/2009',
         finish: '01/05/2009',
-        effortDriven: (i % 5 === 0)
+        effortDriven: i % 5 === 0,
       };
     }
     this.dataset = mockDataset;
@@ -238,7 +286,7 @@ export class GridMenuComponent implements OnInit, OnDestroy {
   }
 
   switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     this.subscriptions.push(
       this.translate.use(nextLanguage).subscribe(() => {
         this.selectedLanguage = nextLanguage;

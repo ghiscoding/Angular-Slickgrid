@@ -16,15 +16,13 @@ describe('Example 37 - Footer Totals Row', () => {
 
   it('should have a total sum displayed in the footer for each column', () => {
     for (let i = 0; i < 10; i++) {
-      cy.get(`.slick-footerrow-columns .slick-footerrow-column:nth(${i})`)
-        .should($span => {
-          const totalStr = $span.text();
-          const totalVal = Number(totalStr.replace('Sum: ', ''));
+      cy.get(`.slick-footerrow-columns .slick-footerrow-column:nth(${i})`).should(($span) => {
+        const totalStr = $span.text();
+        const totalVal = Number(totalStr.replace('Sum: ', ''));
 
-          expect(totalStr).to.contain('Sum:');
-          expect(totalVal).to.gte(400);
-        });
-
+        expect(totalStr).to.contain('Sum:');
+        expect(totalVal).to.gte(400);
+      });
     }
   });
 
@@ -33,25 +31,22 @@ describe('Example 37 - Footer Totals Row', () => {
     let totalVal = 0;
     const increasingVal = 50;
 
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`)
-      .should($span => {
-        cellVal = Number($span.text());
-        expect(cellVal).to.gte(0);
-      });
-    cy.get('.slick-footerrow-columns .slick-footerrow-column:nth(0)')
-      .should($span => {
-        totalVal = parseInt($span.text().replace('Sum: ', ''));
-        expect(totalVal).to.gte(400);
-      });
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should(($span) => {
+      cellVal = Number($span.text());
+      expect(cellVal).to.gte(0);
+    });
+    cy.get('.slick-footerrow-columns .slick-footerrow-column:nth(0)').should(($span) => {
+      totalVal = parseInt($span.text().replace('Sum: ', ''));
+      expect(totalVal).to.gte(400);
+    });
 
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).click();
     cy.get('.editor-0').type(`${increasingVal}{enter}`);
     cy.wait(1);
 
-    cy.get('.slick-footerrow-columns .slick-footerrow-column:nth(0)')
-      .should($span => {
-        const newTotalVal = parseInt($span.text().replace('Sum: ', ''));
-        expect(newTotalVal).to.eq(totalVal - cellVal + increasingVal);
-      });
+    cy.get('.slick-footerrow-columns .slick-footerrow-column:nth(0)').should(($span) => {
+      const newTotalVal = parseInt($span.text().replace('Sum: ', ''));
+      expect(newTotalVal).to.eq(totalVal - cellVal + increasingVal);
+    });
   });
 });

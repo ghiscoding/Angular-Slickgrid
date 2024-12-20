@@ -1,9 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AngularGridInstance, Column, ExtensionName, Filters, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  ExtensionName,
+  Filters,
+  Formatters,
+  GridOption,
+  OnEventArgs,
+} from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-rowmove.component.html'
+  templateUrl: './grid-rowmove.component.html',
 })
 export class GridRowMoveComponent implements OnInit {
   title = 'Example 17: Row Move & Checkbox Selector';
@@ -38,34 +46,48 @@ export class GridRowMoveComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', filterable: true, },
+      { id: 'title', name: 'Title', field: 'title', filterable: true },
       { id: 'duration', name: 'Duration', field: 'duration', filterable: true, sortable: true },
       { id: '%', name: '% Complete', field: 'percentComplete', filterable: true, sortable: true },
       {
-        id: 'start', name: 'Start', field: 'start', filterable: true, sortable: true,
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
-        filterable: true, sortable: true,
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
       },
       {
-        id: 'effort-driven', name: 'Completed', field: 'effortDriven',
+        id: 'effort-driven',
+        name: 'Completed',
+        field: 'effortDriven',
         formatter: Formatters.checkmarkMaterial,
-        filterable: true, sortable: true,
+        filterable: true,
+        sortable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          model: Filters.singleSelect
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
+          model: Filters.singleSelect,
         },
-      }
+      },
     ];
 
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -75,12 +97,12 @@ export class GridRowMoveComponent implements OnInit {
 
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
-        hideInColumnTitleRow: true
+        hideInColumnTitleRow: true,
       },
       enableRowSelection: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       dataView: {
         syncGridSelection: true, // enable this flag so that the row selection follows the row even if we move it to another position
@@ -111,8 +133,8 @@ export class GridRowMoveComponent implements OnInit {
         // the RECOMMENDED is to use "dataContextIds" since that will always work even with Pagination, while "gridRowIndexes" is only good for 1 page
         rowSelection: {
           // gridRowIndexes: [2],       // the row position of what you see on the screen (UI)
-          dataContextIds: [1, 2, 6, 7]  // (recommended) select by your data object IDs
-        }
+          dataContextIds: [1, 2, 6, 7], // (recommended) select by your data object IDs
+        },
       },
     };
 
@@ -130,16 +152,19 @@ export class GridRowMoveComponent implements OnInit {
         percentComplete: Math.round(Math.random() * 100),
         start: '01/01/2009',
         finish: '01/05/2009',
-        effortDriven: (i % 5 === 0)
+        effortDriven: i % 5 === 0,
       };
     }
     this.dataset = mockDataset;
   }
 
-  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
+  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
-      if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.angularGrid.dataView.getItemCount()))) {
+      if (
+        rowIdx === data.insertBefore ||
+        (rowIdx === data.insertBefore - 1 && data.insertBefore - 1 !== this.angularGrid.dataView.getItemCount())
+      ) {
         e.stopPropagation();
         return false;
       }
@@ -166,11 +191,13 @@ export class GridRowMoveComponent implements OnInit {
     const filteredItems = this.angularGrid.dataView.getFilteredItems();
 
     const itemOnRight = this.angularGrid.dataView.getItem(insertBefore);
-    const insertBeforeFilteredIdx = itemOnRight ? this.angularGrid.dataView.getIdxById(itemOnRight.id) : this.angularGrid.dataView.getItemCount();
+    const insertBeforeFilteredIdx = itemOnRight
+      ? this.angularGrid.dataView.getIdxById(itemOnRight.id)
+      : this.angularGrid.dataView.getItemCount();
 
     const filteredRowItems: any[] = [];
-    rows.forEach(row => filteredRowItems.push(filteredItems[row]));
-    const filteredRows = filteredRowItems.map(item => this.angularGrid.dataView.getIdxById(item.id));
+    rows.forEach((row) => filteredRowItems.push(filteredItems[row]));
+    const filteredRows = filteredRowItems.map((item) => this.angularGrid.dataView.getIdxById(item.id));
 
     const left = tmpDataset.slice(0, insertBeforeFilteredIdx);
     const right = tmpDataset.slice(insertBeforeFilteredIdx, tmpDataset.length);
@@ -236,8 +263,9 @@ export class GridRowMoveComponent implements OnInit {
           maxWidth: 30,
           onCellClick: (clickEvent: Event, args: OnEventArgs) => {
             alert(`Technically we should Edit "Task ${args.dataContext.id}"`);
-          }
-        }, {
+          },
+        },
+        {
           id: 'delete-symbol',
           field: 'id',
           excludeFromColumnPicker: true,
@@ -251,8 +279,8 @@ export class GridRowMoveComponent implements OnInit {
             if (confirm('Are you sure?')) {
               this.angularGrid.gridService.deleteItemById(args.dataContext.id);
             }
-          }
-        }
+          },
+        },
       ];
 
       this.columnDefinitions.splice(0, 0, newCols[0], newCols[1]);

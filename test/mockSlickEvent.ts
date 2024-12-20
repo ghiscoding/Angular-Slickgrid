@@ -1,5 +1,5 @@
 import type { Handler, SlickEvent, SlickEventData } from '@slickgrid-universal/common';
-type MergeTypes<A, B> = { [key in keyof A]: key extends keyof B ? B[key] : A[key]; } & B;
+type MergeTypes<A, B> = { [key in keyof A]: key extends keyof B ? B[key] : A[key] } & B;
 
 // @ts-ignore
 export class MockSlickEvent<ArgType = any> implements SlickEvent {
@@ -33,7 +33,7 @@ export class MockSlickEventHandler {
   protected handlers: any[] = [];
 
   notify(eventName: string, data?: any) {
-    const pubSub = this.handlers.find(subscription => subscription.name === eventName);
+    const pubSub = this.handlers.find((subscription) => subscription.name === eventName);
     if (typeof pubSub?.handler === 'function') {
       pubSub.handler(data);
     }
@@ -51,8 +51,7 @@ export class MockSlickEventHandler {
   unsubscribe<T = any>(event: MockSlickEvent, handler: Handler<T>) {
     let i = this.handlers.length;
     while (i--) {
-      if (this.handlers[i].event === event &&
-        this.handlers[i].handler === handler) {
+      if (this.handlers[i].event === event && this.handlers[i].handler === handler) {
         this.handlers.splice(i, 1);
         if (event.unsubscribe) {
           event.unsubscribe(handler);
@@ -61,7 +60,7 @@ export class MockSlickEventHandler {
       }
     }
 
-    return this;  // allow chaining
+    return this; // allow chaining
   }
 
   unsubscribeAll() {
@@ -73,6 +72,6 @@ export class MockSlickEventHandler {
     }
     this.handlers = [];
 
-    return this;  // allow chaining
+    return this; // allow chaining
   }
 }

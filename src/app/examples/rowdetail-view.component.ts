@@ -15,11 +15,8 @@ interface Item {
 }
 
 @Component({
-  styles: [
-    '.detail-label { display: inline-flex; align-items: center; gap: 4px; padding: 4px; }',
-    'label { font-weight: 600; }'
-  ],
-  templateUrl: './rowdetail-view.component.html'
+  styles: ['.detail-label { display: inline-flex; align-items: center; gap: 4px; padding: 4px; }', 'label { font-weight: 600; }'],
+  templateUrl: './rowdetail-view.component.html',
 })
 export class RowDetailViewComponent {
   model!: Item;

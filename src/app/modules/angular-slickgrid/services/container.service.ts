@@ -6,7 +6,7 @@ export class ContainerService implements UniversalContainerService {
   dependencies: ContainerInstance[] = [];
 
   get<T = any>(key: string): T | null {
-    const dependency = this.dependencies.find(dep => dep.key === key);
+    const dependency = this.dependencies.find((dep) => dep.key === key);
     if (dependency?.instance) {
       return dependency.instance;
     }
@@ -18,7 +18,7 @@ export class ContainerService implements UniversalContainerService {
   }
 
   registerInstance(key: string, instance: any) {
-    const dependency = this.dependencies.some(dep => dep.key === key);
+    const dependency = this.dependencies.some((dep) => dep.key === key);
     if (!dependency) {
       this.dependencies.push({ key, instance });
     }

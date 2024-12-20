@@ -44,7 +44,7 @@ export class CustomAngularComponentFilter implements Filter {
 
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter || {};
+    return (this.columnDef && this.columnDef.filter) || {};
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -73,12 +73,21 @@ export class CustomAngularComponentFilter implements Filter {
       const headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
       if (headerElm) {
         headerElm.innerHTML = '';
-        const componentOuput = this.angularUtilService.createAngularComponentAppendToDom(this.columnFilter.params.component, headerElm, { collection: this.collection });
+        const componentOuput = this.angularUtilService.createAngularComponentAppendToDom(
+          this.columnFilter.params.component,
+          headerElm,
+          { collection: this.collection }
+        );
         this.componentRef = componentOuput.componentRef;
 
         this._subscriptions.push(
           componentOuput.componentRef.instance.onItemChanged.subscribe((item: any) => {
-            this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
+            this.callback(undefined, {
+              columnDef: this.columnDef,
+              operator: this.operator,
+              searchTerms: [item.id],
+              shouldTriggerQuery: this._shouldTriggerQuery,
+            });
             // reset flag for next use
             this._shouldTriggerQuery = true;
           })

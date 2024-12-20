@@ -1,10 +1,21 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs, SlickDataView, SlickGrid } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  Editors,
+  FieldType,
+  Formatters,
+  GridOption,
+  GridService,
+  OnEventArgs,
+  SlickDataView,
+  SlickGrid,
+} from './../modules/angular-slickgrid';
 
 @Component({
   styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid-additem.component.html'
+  templateUrl: './grid-additem.component.html',
 })
 export class GridAddItemComponent implements OnInit {
   title = 'Example 11: Add / Update / Highlight a Datagrid Item';
@@ -72,38 +83,46 @@ export class GridAddItemComponent implements OnInit {
           if (confirm('Are you sure?')) {
             this.angularGrid.gridService.deleteItemById(args.dataContext.id);
           }
-        }
+        },
       },
       {
-        id: 'title', name: 'Title', field: 'title',
+        id: 'title',
+        name: 'Title',
+        field: 'title',
         sortable: true,
         type: FieldType.string,
         editor: {
-          model: Editors.longText
-        }
+          model: Editors.longText,
+        },
       },
       {
-        id: 'duration', name: 'Duration (days)', field: 'duration',
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
         sortable: true,
         type: FieldType.number,
         editor: {
-          model: Editors.text
+          model: Editors.text,
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
           alert('onCellChange directly attached to the column definition');
           console.log(args);
-        }
+        },
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete',
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
         formatter: Formatters.percentCompleteBar,
         type: FieldType.number,
         editor: {
-          model: Editors.integer
-        }
+          model: Editors.integer,
+        },
       },
       {
-        id: 'start', name: 'Start', field: 'start',
+        id: 'start',
+        name: 'Start',
+        field: 'start',
         formatter: Formatters.dateIso,
         sortable: true,
         type: FieldType.date,
@@ -114,30 +133,35 @@ export class GridAddItemComponent implements OnInit {
         */
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
-        formatter: Formatters.dateIso, sortable: true,
-        type: FieldType.date
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
       },
       {
-        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
         formatter: Formatters.checkmarkMaterial,
         type: FieldType.number,
         editor: {
-          model: Editors.checkbox
-        }
-      }
+          model: Editors.checkbox,
+        },
+      },
     ];
 
     this.gridOptions = {
       asyncEditorLoading: false,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       editable: true,
       enableColumnPicker: true,
       enableCellNavigation: true,
-      enableRowSelection: true
+      enableRowSelection: true,
     };
   }
 
@@ -147,7 +171,7 @@ export class GridAddItemComponent implements OnInit {
     for (let i = 0; i < itemCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
       mockedDataset[i] = {
         id: i,
@@ -156,8 +180,8 @@ export class GridAddItemComponent implements OnInit {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        effortDriven: (i % 5 === 0)
+        finish: new Date(randomYear, randomMonth + 1, randomDay),
+        effortDriven: i % 5 === 0,
       };
     }
     return mockedDataset;
@@ -185,7 +209,7 @@ export class GridAddItemComponent implements OnInit {
     const newId = highestId + incrementIdByHowMany;
     const randomYear = 2000 + Math.floor(Math.random() * 10);
     const randomMonth = Math.floor(Math.random() * 11);
-    const randomDay = Math.floor((Math.random() * 29));
+    const randomDay = Math.floor(Math.random() * 29);
     const randomPercent = Math.round(Math.random() * 100);
 
     return {
@@ -195,8 +219,8 @@ export class GridAddItemComponent implements OnInit {
       percentComplete: randomPercent,
       percentCompleteNumber: randomPercent,
       start: new Date(randomYear, randomMonth, randomDay),
-      finish: new Date(randomYear, (randomMonth + 2), randomDay),
-      effortDriven: true
+      finish: new Date(randomYear, randomMonth + 2, randomDay),
+      effortDriven: true,
     };
   }
 
@@ -227,7 +251,7 @@ export class GridAddItemComponent implements OnInit {
     return (rowNumber: number) => {
       const item = this.dataView.getItem(rowNumber);
       let meta = {
-        cssClasses: ''
+        cssClasses: '',
       };
       if (typeof previousItemMetadata === 'object') {
         meta = previousItemMetadata(rowNumber);

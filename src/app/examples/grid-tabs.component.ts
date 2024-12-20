@@ -1,4 +1,4 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { AngularGridInstance, Column, GridOption, Filters } from '../modules/angular-slickgrid';
@@ -6,7 +6,7 @@ import { AngularGridInstance, Column, GridOption, Filters } from '../modules/ang
 const URL_CUSTOMERS = 'assets/data/customers_100.json';
 
 @Component({
-  templateUrl: './grid-tabs.component.html'
+  templateUrl: './grid-tabs.component.html',
 })
 export class GridTabsComponent implements OnInit {
   title = 'Example 24: Grids in Bootstrap Tabs';
@@ -24,7 +24,7 @@ export class GridTabsComponent implements OnInit {
   dataset1!: any[];
   dataset2!: any[];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   angularGrid2Ready(angularGrid: AngularGridInstance) {
     this.angularGrid2 = angularGrid;
@@ -38,7 +38,7 @@ export class GridTabsComponent implements OnInit {
     this.dataset1 = this.mockData();
 
     // load data with Http-Client
-    this.http.get((URL_CUSTOMERS)).subscribe(((data: any[]) => this.dataset2 = data) as any);
+    this.http.get(URL_CUSTOMERS).subscribe(((data: any[]) => (this.dataset2 = data)) as any);
   }
 
   // Grid2 definition
@@ -49,40 +49,48 @@ export class GridTabsComponent implements OnInit {
       { id: '%', name: '% Complete', field: 'percentComplete', sortable: true, minWidth: 100 },
       { id: 'start', name: 'Start', field: 'start', minWidth: 100 },
       { id: 'finish', name: 'Finish', field: 'finish', minWidth: 100 },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', sortable: true, minWidth: 100 }
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', sortable: true, minWidth: 100 },
     ];
     this.gridOptions1 = {
       enableAutoResize: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
-      enableSorting: true
+      enableSorting: true,
     };
   }
 
   // Grid2 definition
   defineGrid2() {
     this.columnDefinitions2 = [
-      { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, },
+      { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true },
       {
-        id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
+        id: 'gender',
+        name: 'Gender',
+        field: 'gender',
+        filterable: true,
+        sortable: true,
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
-        }
+          collection: [
+            { value: '', label: '' },
+            { value: 'male', label: 'male' },
+            { value: 'female', label: 'female' },
+          ],
+        },
       },
-      { id: 'company', name: 'Company', field: 'company', filterable: true, sortable: true }
+      { id: 'company', name: 'Company', field: 'company', filterable: true, sortable: true },
     ];
 
     this.gridOptions2 = {
       enableAutoResize: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       enableFiltering: true,
-      enableSorting: true
+      enableSorting: true,
     };
   }
 
@@ -92,7 +100,7 @@ export class GridTabsComponent implements OnInit {
     for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
 
       mockDataset[i] = {
@@ -102,7 +110,7 @@ export class GridTabsComponent implements OnInit {
         percentComplete: randomPercent,
         start: `${randomMonth}/${randomDay}/${randomYear}`,
         finish: `${randomMonth}/${randomDay}/${randomYear}`,
-        effortDriven: (i % 5 === 0)
+        effortDriven: i % 5 === 0,
       };
     }
 

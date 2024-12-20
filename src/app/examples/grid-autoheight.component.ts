@@ -13,7 +13,7 @@ import {
 @Component({
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./grid-autoheight.component.scss'],
-  templateUrl: './grid-autoheight.component.html'
+  templateUrl: './grid-autoheight.component.html',
 })
 export class GridAutoHeightComponent implements OnInit {
   title = 'Example 23: Grid AutoHeight';
@@ -48,33 +48,51 @@ export class GridAutoHeightComponent implements OnInit {
   prepareGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title',
-        sortable: true, type: FieldType.string
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        sortable: true,
+        type: FieldType.string,
       },
       {
-        id: 'duration', name: 'Duration (days)', field: 'duration',
-        sortable: true, type: FieldType.number
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
+        sortable: true,
+        type: FieldType.number,
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete',
-        formatter: Formatters.percentCompleteBar, sortable: true,
-        type: FieldType.number
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        sortable: true,
+        type: FieldType.number,
       },
       {
-        id: 'start', name: 'Start', field: 'start',
-        formatter: Formatters.dateIso, sortable: true,
-        type: FieldType.date
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish',
-        formatter: Formatters.dateIso, sortable: true,
-        type: FieldType.date
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
       },
       {
-        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
-        formatter: Formatters.checkmarkMaterial, sortable: true,
-        type: FieldType.number
-      }
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
+        formatter: Formatters.checkmarkMaterial,
+        sortable: true,
+        type: FieldType.number,
+      },
     ];
     this.selectedColumn = this.columnDefinitions[0];
 
@@ -87,7 +105,7 @@ export class GridAutoHeightComponent implements OnInit {
       autoHeight: true,
       autoResize: {
         container: '#demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
 
       // enable the filtering but hide the user filter row since we use our own single filter
@@ -97,7 +115,7 @@ export class GridAutoHeightComponent implements OnInit {
       alwaysShowVerticalScroll: false,
       enableColumnPicker: true,
       enableCellNavigation: true,
-      enableRowSelection: true
+      enableRowSelection: true,
     };
 
     // mock a dataset
@@ -105,7 +123,7 @@ export class GridAutoHeightComponent implements OnInit {
     for (let i = 0; i < 25; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
+      const randomDay = Math.floor(Math.random() * 29);
       const randomPercent = Math.round(Math.random() * 100);
 
       mockedDataset[i] = {
@@ -115,8 +133,8 @@ export class GridAutoHeightComponent implements OnInit {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        effortDriven: (i % 5 === 0)
+        finish: new Date(randomYear, randomMonth + 1, randomDay),
+        effortDriven: i % 5 === 0,
       };
     }
     this.dataset = mockedDataset;
@@ -135,7 +153,7 @@ export class GridAutoHeightComponent implements OnInit {
     this.angularGrid.filterService.updateSingleFilter({
       columnId: `${this.selectedColumn!.id || ''}`,
       operator: this.selectedOperator as OperatorString,
-      searchTerms: [this.searchValue || '']
+      searchTerms: [this.searchValue || ''],
     });
   }
 }

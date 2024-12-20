@@ -78,20 +78,21 @@ export function createTranslateLoader(http: HttpClient) {
 
 // use an Initializer Factory as describe here: https://github.com/ngx-translate/core/issues/517#issuecomment-299637956
 export function appInitializerFactory(translate: TranslateService, injector: Injector) {
-  return () => new Promise<any>((resolve: any) => {
-    const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
-    locationInitialized.then(() => {
-      const langToSet = 'en';
-      translate.setDefaultLang('en');
-      translate.use(langToSet).subscribe({
-        next: () => {
-          // console.info(`Successfully initialized '${langToSet}' language.'`);
-        },
-        error: () => console.error(`Problem with '${langToSet}' language initialization.'`),
-        complete: () => resolve(null)
+  return () =>
+    new Promise<any>((resolve: any) => {
+      const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+      locationInitialized.then(() => {
+        const langToSet = 'en';
+        translate.setDefaultLang('en');
+        translate.use(langToSet).subscribe({
+          next: () => {
+            // console.info(`Successfully initialized '${langToSet}' language.'`);
+          },
+          error: () => console.error(`Problem with '${langToSet}' language initialization.'`),
+          complete: () => resolve(null),
+        });
       });
     });
-  });
 }
 
 // @dynamic
@@ -163,9 +164,9 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
     }),
     AngularSlickgridModule.forRoot({
       // add any Global Grid Options/Config you might want
@@ -173,20 +174,20 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       enableAutoResize: true,
       autoResize: {
         container: '#grid-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       // we strongly suggest you add DOMPurify as a sanitizer
-      sanitizer: (dirtyHtml) => DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ['level'], RETURN_TRUSTED_TYPE: true })
-    })
+      sanitizer: (dirtyHtml) => DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ['level'], RETURN_TRUSTED_TYPE: true }),
+    }),
   ],
   providers: [
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializerFactory,
       deps: [TranslateService, Injector],
-      multi: true
+      multi: true,
     },
-    provideHttpClient(withInterceptorsFromDi())
-  ]
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
 })
-export class AppModule { }
+export class AppModule {}

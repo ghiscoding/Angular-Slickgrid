@@ -15,7 +15,9 @@ describe('Example 41 - Drag & Drop', () => {
 
   it('should expect first row to include "Task 0" and other specific properties', () => {
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Make a list');
-    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(2)`).find('.mdi.mdi-check').should('have.length', 1);
+    cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(2)`)
+      .find('.mdi.mdi-check')
+      .should('have.length', 1);
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'Check it twice');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(1)`).should('contain', `Find out who's naughty`);
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 3}px;"] > .slick-cell:nth(1)`).should('contain', `Find out who's nice`);
@@ -27,13 +29,9 @@ describe('Example 41 - Drag & Drop', () => {
 
     cy.get('@moveIconTask2').should('have.length', 1);
 
-    cy.get('@moveIconTask2')
-      .trigger('mousedown', { which: 1, force: true })
-      .trigger('mousemove', 'bottomRight');
+    cy.get('@moveIconTask2').trigger('mousedown', { which: 1, force: true }).trigger('mousemove', 'bottomRight');
 
-    cy.get('@moveIconTask1')
-      .trigger('mousemove', 'bottomRight')
-      .trigger('mouseup', 'bottomRight', { which: 1, force: true });
+    cy.get('@moveIconTask1').trigger('mousemove', 'bottomRight').trigger('mouseup', 'bottomRight', { which: 1, force: true });
 
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Make a list');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', `Find out who's naughty`);
@@ -48,8 +46,7 @@ describe('Example 41 - Drag & Drop', () => {
       .trigger('mousemove', 'bottomRight');
 
     cy.get('.recycle-bin.drag-dropzone').should('have.length', 1);
-    cy.get('.drag-message')
-      .contains('Drag to Recycle Bin to delete 1 selected row(s)');
+    cy.get('.drag-message').contains('Drag to Recycle Bin to delete 1 selected row(s)');
 
     cy.get('#dropzone').trigger('mousemove', 'center');
     cy.get('.recycle-bin.drag-hover').should('have.length', 1);
@@ -78,8 +75,7 @@ describe('Example 41 - Drag & Drop', () => {
       .trigger('mousemove', 'bottomRight');
 
     cy.get('.recycle-bin.drag-dropzone').should('have.length', 1);
-    cy.get('.drag-message')
-      .contains('Drag to Recycle Bin to delete 2 selected row(s)');
+    cy.get('.drag-message').contains('Drag to Recycle Bin to delete 2 selected row(s)');
 
     cy.get('#dropzone').trigger('mousemove', 'center');
 

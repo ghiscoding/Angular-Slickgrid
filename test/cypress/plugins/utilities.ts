@@ -1,8 +1,10 @@
 export function changeTimezone(date: Date, tz: string) {
   // suppose the date is 12:00 UTC
-  const invdate = new Date(date.toLocaleString('en-US', {
-    timeZone: tz
-  }));
+  const invdate = new Date(
+    date.toLocaleString('en-US', {
+      timeZone: tz,
+    })
+  );
 
   // then invdate will be 07:00 in Toronto
   // and the diff is 5 hours

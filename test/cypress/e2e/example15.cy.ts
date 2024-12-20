@@ -46,8 +46,7 @@ describe('Example 15 - Column Span & Header Grouping', () => {
   });
 
   it('should click on the "Remove Frozen Columns" button to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
-    cy.contains('Remove Frozen Columns')
-      .click({ force: true });
+    cy.contains('Remove Frozen Columns').click({ force: true });
 
     cy.get('#grid2').find('[style="top: 0px;"]').should('have.length', 1);
     cy.get('#grid2').find('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 7);
@@ -72,8 +71,7 @@ describe('Example 15 - Column Span & Header Grouping', () => {
   });
 
   it('should click on the "Set 3 Frozen Columns" button to switch frozen columns grid and expect 3 frozen columns on the left and 4 columns on the right', () => {
-    cy.contains('Set 3 Frozen Columns')
-      .click({ force: true });
+    cy.contains('Set 3 Frozen Columns').click({ force: true });
 
     cy.get('#grid2').find('[style="top: 0px;"]').should('have.length', 2);
     cy.get('#grid2').find('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 3);
@@ -100,12 +98,9 @@ describe('Example 15 - Column Span & Header Grouping', () => {
   });
 
   it('should click on the Grid Menu command "Unfreeze Columns/Rows" to switch to a regular grid without frozen columns and expect 7 columns on the left container', () => {
-    cy.get('#grid2')
-      .find('button.slick-grid-menu-button')
-      .click({ force: true });
+    cy.get('#grid2').find('button.slick-grid-menu-button').click({ force: true });
 
-    cy.contains('Unfreeze Columns/Rows')
-      .click({ force: true });
+    cy.contains('Unfreeze Columns/Rows').click({ force: true });
 
     cy.get('#grid2').find('[style="top: 0px;"]').should('have.length', 1);
     cy.get('#grid2').find('.grid-canvas-left > [style="top: 0px;"]').children().should('have.length', 7);

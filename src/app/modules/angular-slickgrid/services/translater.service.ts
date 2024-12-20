@@ -8,7 +8,7 @@ import { TranslaterService as UniversalTranslateService } from '@slickgrid-unive
  */
 @Injectable()
 export class TranslaterService implements UniversalTranslateService {
-  constructor(@Optional() private readonly translateService: TranslateService) { }
+  constructor(@Optional() private readonly translateService: TranslateService) {}
 
   /**
    * Method to return the current language used by the App

@@ -1,3 +1,7 @@
 {
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.validate": ["javascript", "typescript"],
+  "typescript.format.semicolons": "insert",
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

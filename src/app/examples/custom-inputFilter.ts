@@ -89,7 +89,11 @@ export class CustomInputFilter implements Filter {
     }
 
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this.callback(e, {
+        columnDef: this.columnDef,
+        clearFilterTriggered: this._clearFilterTriggered,
+        shouldTriggerQuery: this._shouldTriggerQuery,
+      });
       this.filterElm?.classList.remove('filled');
     } else {
       value === '' ? this.filterElm?.classList.remove('filled') : this.filterElm?.classList.add('filled');
@@ -124,7 +128,6 @@ export class CustomInputFilter implements Filter {
 
       // append the new DOM element to the header row
       headerElm.appendChild(this.filterElm);
-
     }
     return this.filterElm;
   }
