@@ -307,22 +307,18 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     this.gridEventService = externalServices?.gridEventService ?? new GridEventService();
     this.sharedService = externalServices?.sharedService ?? new SharedService();
     this.collectionService = externalServices?.collectionService ?? new CollectionService(this.translaterService);
-    this.extensionUtility =
-      externalServices?.extensionUtility ??
-      new ExtensionUtility(this.sharedService, this.backendUtilityService, this.translaterService);
+    // prettier-ignore
+    this.extensionUtility = externalServices?.extensionUtility ?? new ExtensionUtility(this.sharedService, this.backendUtilityService, this.translaterService);
     this.filterFactory = new FilterFactory(slickgridConfig, this.translaterService, this.collectionService);
-    this.filterService =
-      externalServices?.filterService ??
-      new FilterService(this.filterFactory as any, this._eventPubSubService, this.sharedService, this.backendUtilityService);
+    // prettier-ignore
+    this.filterService = externalServices?.filterService ?? new FilterService(this.filterFactory as any, this._eventPubSubService, this.sharedService, this.backendUtilityService);
     this.resizerService = externalServices?.resizerService ?? new ResizerService(this._eventPubSubService);
-    this.sortService =
-      externalServices?.sortService ??
-      new SortService(this.collectionService, this.sharedService, this._eventPubSubService, this.backendUtilityService);
+    // prettier-ignore
+    this.sortService = externalServices?.sortService ?? new SortService(this.collectionService, this.sharedService, this._eventPubSubService, this.backendUtilityService);
     this.treeDataService =
       externalServices?.treeDataService ?? new TreeDataService(this._eventPubSubService, this.sharedService, this.sortService);
-    this.paginationService =
-      externalServices?.paginationService ??
-      new PaginationService(this._eventPubSubService, this.sharedService, this.backendUtilityService);
+    // prettier-ignore
+    this.paginationService = externalServices?.paginationService ?? new PaginationService(this._eventPubSubService, this.sharedService, this.backendUtilityService);
 
     this.extensionService =
       externalServices?.extensionService ??
@@ -337,27 +333,26 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
         () => this.gridService
       );
 
-    this.gridStateService =
-      externalServices?.gridStateService ??
-      new GridStateService(
-        this.extensionService,
-        this.filterService,
-        this._eventPubSubService,
-        this.sharedService,
-        this.sortService,
-        this.treeDataService
-      );
-    this.gridService =
-      externalServices?.gridService ??
-      new GridService(
-        this.gridStateService,
-        this.filterService,
-        this._eventPubSubService,
-        this.paginationService,
-        this.sharedService,
-        this.sortService,
-        this.treeDataService
-      );
+    // prettier-ignore
+    this.gridStateService = externalServices?.gridStateService ?? new GridStateService(
+      this.extensionService,
+      this.filterService,
+      this._eventPubSubService,
+      this.sharedService,
+      this.sortService,
+      this.treeDataService
+    );
+
+    // prettier-ignore
+    this.gridService = externalServices?.gridService ?? new GridService(
+      this.gridStateService,
+      this.filterService,
+      this._eventPubSubService,
+      this.paginationService,
+      this.sharedService,
+      this.sortService,
+      this.treeDataService
+    );
     this.headerGroupingService = externalServices?.headerGroupingService ?? new HeaderGroupingService(this.extensionUtility);
 
     this.serviceList = [
@@ -1075,11 +1070,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     const backendApi = gridOptions.backendServiceApi;
     const backendApiService = backendApi?.service;
     const serviceOptions: BackendServiceOption = backendApiService?.options ?? {};
-    const isExecuteCommandOnInit = !serviceOptions
-      ? false
-      : serviceOptions && 'executeProcessCommandOnInit' in serviceOptions
-        ? serviceOptions['executeProcessCommandOnInit']
-        : true;
+    // prettier-ignore
+    const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && 'executeProcessCommandOnInit' in serviceOptions) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
     if (backendApiService) {
       // update backend filters (if need be) BEFORE the query runs (via the onInit command a few lines below)
@@ -1120,9 +1112,8 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       // execute onInit command when necessary
       if (backendApi && backendApiService && (backendApi.onInit || isExecuteCommandOnInit)) {
         const query = typeof backendApiService.buildQuery === 'function' ? backendApiService.buildQuery() : '';
-        const process = isExecuteCommandOnInit
-          ? (backendApi.process && backendApi.process(query)) || null
-          : (backendApi.onInit && backendApi.onInit(query)) || null;
+        // prettier-ignore
+        const process = (isExecuteCommandOnInit) ? (backendApi.process && backendApi.process(query) || null) : (backendApi.onInit && backendApi.onInit(query) || null);
 
         // wrap this inside a microtask to be executed at the end of the task and avoid timing issue since the gridOptions needs to be ready before running this onInit
         queueMicrotask(() => {
