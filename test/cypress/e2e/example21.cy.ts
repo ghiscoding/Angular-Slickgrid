@@ -52,7 +52,7 @@ describe('Example 21 - Row Detail View', () => {
       .find('[data-test=assignee-btn]')
       .click()
       .then(() => {
-        if (!assignee) {
+        if (typeof assignee !== 'string') {
           expect(alertStub.getCall(0)).to.be.calledWith('No one is assigned to this task.');
         } else {
           expect(alertStub.getCall(0)).to.be.calledWith(`Assignee on this task is: ${assignee.toUpperCase()}`);
