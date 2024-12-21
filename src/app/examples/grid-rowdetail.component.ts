@@ -292,8 +292,8 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
         const itemDetail = item;
 
         // let's add some extra properties to our item for a better async simulation
-        itemDetail.assignee = randomNames[this.randomNumber(0, 10)];
-        itemDetail.reporter = randomNames[this.randomNumber(0, 10)];
+        itemDetail.assignee = randomNames[this.randomNumber(0, 9)] || '';
+        itemDetail.reporter = randomNames[this.randomNumber(0, 9)] || '';
 
         // resolve the data after delay specified
         resolve(itemDetail);
