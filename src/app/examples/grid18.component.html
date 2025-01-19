@@ -1,11 +1,11 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    Example 43: Dynamically Create Grid from CSV / Excel import
+    Example 18: Dynamically Create Grid from CSV / Excel import
     <span class="float-end">
       <a
         style="font-size: 18px"
         target="_blank"
-        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid43.component.ts"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid18.component.ts"
       >
         <span class="mdi mdi-link mdi-v-align-sub"></span> code
       </a>
@@ -45,8 +45,7 @@
       <button id="uploadBtn" data-test="static-data-btn" class="btn btn-outline-secondary" (click)="handleDefaultCsv()">
         Use default CSV data
       </button>
-      &nbsp;/
-      <button class="btn btn-outline-danger btn-sm ms-2" (click)="destroyGrid()">Destroy Grid</button>
+      <button class="btn btn-outline-secondary" (click)="destroyGrid()">Destroy Grid</button>
     </div>
   </div>
 
@@ -54,7 +53,7 @@
 
   <angular-slickgrid
     *ngIf="gridCreated"
-    gridId="grid43"
+    gridId="grid18"
     [columnDefinitions]="columnDefinitions"
     [gridOptions]="gridOptions"
     [dataset]="dataset"

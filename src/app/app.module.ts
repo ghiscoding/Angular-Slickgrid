@@ -46,7 +46,6 @@ import { GridLocalizationComponent } from './examples/grid-localization.componen
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridRangeComponent } from './examples/grid-range.component';
-import { GridRemoteComponent } from './examples/grid-remote.component';
 import { GridResizeByContentComponent } from './examples/grid-resize-by-content.component';
 import { GridRowDetailComponent } from './examples/grid-rowdetail.component';
 import { GridRowMoveComponent } from './examples/grid-rowmove.component';
@@ -56,7 +55,7 @@ import { GridTabsComponent } from './examples/grid-tabs.component';
 import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
-import { Grid43Component } from './examples/grid43.component';
+import { Grid18Component } from './examples/grid18.component';
 import { HomeComponent } from './examples/home.component';
 import { CustomPagerComponent } from './examples/grid-custom-pager.component';
 import { RowDetailPreloadComponent } from './examples/rowdetail-preload.component';
@@ -136,7 +135,6 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridMenuComponent,
     GridOdataComponent,
     GridRangeComponent,
-    GridRemoteComponent,
     GridResizeByContentComponent,
     GridRowDetailComponent,
     GridRowMoveComponent,
@@ -146,7 +144,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridTradingComponent,
     GridTreeDataParentChildComponent,
     GridTreeDataHierarchicalComponent,
-    Grid43Component,
+    Grid18Component,
     RowDetailPreloadComponent,
     RowDetailViewComponent,
     SwtCommonGridTestComponent,

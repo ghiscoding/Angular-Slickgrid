@@ -7,9 +7,9 @@ const sampleDataRoot = 'assets/data';
 @Component({
   styles: ['.file-upload { max-width: 300px; }'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid43.component.html',
+  templateUrl: './grid18.component.html',
 })
-export class Grid43Component {
+export class Grid18Component {
   columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
   dataset: any[] = [];
@@ -21,16 +21,14 @@ export class Grid43Component {
   constructor(private readonly cd: ChangeDetectorRef) {}
 
   handleFileImport(event: any) {
-    const file: File = event.target.files[0];
-    if (file.name.endsWith('.csv')) {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const content = e.target.result;
         this.dynamicallyCreateGrid(content);
       };
       reader.readAsText(file);
-    } else {
-      alert('File must be a CSV file');
     }
   }
 
