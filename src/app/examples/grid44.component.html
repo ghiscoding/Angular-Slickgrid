@@ -1,0 +1,91 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 44: colspan/rowspan with large dataset
+    <span class="float-end">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid44.component.ts"
+      >
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="toggleSubTitle()"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
+  </h2>
+
+  <div class="subtitle" [hidden]="!showSubTitle">
+    <p class="italic example-details">
+      This page demonstrates <code>colspan</code> & <code>rowspan</code> using DataView with item metadata. <b>Note</b>:
+      <code>colspan</code> & <code>rowspan</code> are rendered via row/cell indexes, any operations that could change these
+      indexes (i.e. Filtering/Sorting/Paging/Column Reorder) will require you to implement proper logic to recalculate these
+      indexes (it becomes your responsability). This demo does not show this because it is up to you to decide what to do when the
+      span changes shape (i.e. you default to 3 rowspan but you filter a row in the middle, how do you want to proceed?).
+    </p>
+  </div>
+
+  <section class="row mb-2">
+    <div class="d-flex">
+      <button class="ms-1 btn btn-outline-secondary btn-sm" data-test="add-500-rows-btn" (click)="loadData(500)">500 rows</button>
+      <button class="ms-1 btn btn-outline-secondary btn-sm" data-test="add-5k-rows-btn" (click)="loadData(5000)">5k rows</button>
+      <button class="ms-1 btn btn-outline-secondary btn-sm" data-test="add-50k-rows-btn" (click)="loadData(50000)">
+        50k rows
+      </button>
+      <button class="mx-1 btn btn-outline-secondary btn-sm" data-test="add-50k-rows-btn" (click)="loadData(500000)">
+        500k rows
+      </button>
+      <div class="mx-2"><label>data length: </label><span id="dataLn" [textContent]="dataLn"></span></div>
+      <button
+        id="toggleSpans"
+        class="ms-1 btn btn-outline-secondary btn-sm btn-icon mx-1"
+        (click)="handleToggleSpans()"
+        data-test="toggleSpans"
+      >
+        <span class="mdi mdi-flip-vertical"></span>
+        <span>Toggle blue cell colspan &amp; rowspan</span>
+      </button>
+      <button
+        id="scrollTo"
+        class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+        (click)="handleScrollTo()"
+        data-test="scrollToBtn"
+      >
+        <span class="mdi mdi-arrow-down"></span>
+        <span>Scroll To Row</span>
+      </button>
+      <div class="input-group input-group-sm ms-1" style="width: 100px">
+        <input
+          [(ngModel)]="scrollToRow"
+          id="nRow"
+          type="text"
+          data-test="nbrows"
+          class="form-control search-string"
+          placeholder="search value"
+          autocomplete="off"
+        />
+        <button
+          class="btn btn-sm btn-outline-secondary d-flex align-items-center"
+          data-test="clearScrollTo"
+          (click)="clearScrollTo()"
+        >
+          <span class="icon mdi mdi-close-thick"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <angular-slickgrid
+    gridId="grid44"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
+  </angular-slickgrid>
+</div>

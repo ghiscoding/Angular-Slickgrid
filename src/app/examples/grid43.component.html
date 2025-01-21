@@ -1,0 +1,88 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 43: colspan/rowspan - Employees Timesheets
+    <span class="float-end">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid43.component.ts"
+      >
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+    <button
+      class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="toggleSubTitle()"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
+  </h2>
+
+  <div class="subtitle" [hidden]="!showSubTitle">
+    <p class="italic example-details">
+      <b>NOTES</b>: <code>rowspan</code> is an opt-in feature, because of its small perf hit (it needs to loop through all row
+      metadatas to map all rowspan), and requires the <code>enableCellRowSpan</code> grid option to be enabled to work properly.
+      The <code>colspan</code>/<code>rowspan</code> are both using DataView item metadata and are both based on row indexes and
+      will <b>not</b> keep the row in sync with the data. It is really up to you the user to update the metadata logic of how and
+      where the cells should span when a side effect kicks in. (i.e: Filtering/Sorting/Paging/Column Reorder... will
+      <b>not</b> change/update the spanning in the grid by itself and that is why they these features are all disabled in this
+      example). Also, column/row freezing (pinning) are also not supported, or at least not recommended unless you know exactly
+      what you're doing (like in this demo here because we know our pinning doesn't intersect)! Any freezing column/row that could
+      intersect with a <code>colspan</code>/<code>rowspan</code> <b>will cause problems</b>.
+    </p>
+  </div>
+
+  <button
+    class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+    data-test="goto-up"
+    (click)="navigateUp()"
+    title="from an active cell, navigate to cell above"
+  >
+    <span class="mdi mdi-chevron-down mdi-rotate-180"></span>
+    Navigate Up Cell
+  </button>
+  <button
+    class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+    data-test="goto-down"
+    (click)="navigateDown()"
+    title="from an active cell, navigate to cell below"
+  >
+    <span class="mdi mdi-chevron-down"></span>
+    Navigate Down Cell
+  </button>
+  <button
+    class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+    data-test="goto-prev"
+    (click)="navigatePrev()"
+    title="from an active cell, navigate to previous left cell"
+  >
+    <span class="mdi mdi-chevron-down mdi-rotate-90"></span>
+    Navigate to Left Cell
+  </button>
+  <button
+    class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+    data-test="goto-next"
+    (click)="navigateNext()"
+    title="from an active cell, navigate to next right cell"
+  >
+    <span class="mdi mdi-chevron-down mdi-rotate-270"></span>
+    Navigate to Right Cell
+  </button>
+  <button class="ms-1 btn btn-outline-secondary btn-sm btn-icon mx-1" (click)="toggleEditing()" data-test="toggle-editing">
+    <span class="mdi mdi-pencil-outline"></span>
+    <span
+      >Toggle Editing: <span id="isEditable" class="text-italic">{{ isEditable }}</span></span
+    >
+  </button>
+
+  <angular-slickgrid
+    gridId="grid43"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
+  </angular-slickgrid>
+</div>

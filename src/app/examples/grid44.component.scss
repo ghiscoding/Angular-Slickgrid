@@ -1,0 +1,50 @@
+#grid44 {
+  --slick-cell-active-box-shadow: inset 0 0 0 1px #e35ddc;
+
+  .slick-row.even .slick-cell.cell-very-high {
+    background-color: #f0ffe0;
+  }
+  .slick-row.odd .slick-cell.cell-var-span {
+    background-color: #87ceeb;
+  }
+  .slick-row .slick-cell.rowspan {
+    background-color: #95b7a2;
+    z-index: 10;
+  }
+  .slick-row[data-row='3'] .slick-cell.l3.rowspan {
+    background-color: #95b7a2;
+  }
+  .slick-row[data-row='2'] .slick-cell.l3.r5 {
+    background-color: #ddfffc;
+  }
+  .slick-row[data-row='0'] .slick-cell.rowspan,
+  .slick-row[data-row='8'] .slick-cell.rowspan {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAQ0lEQVQYV2N8/fr1fwY84M6dOwyM+BSBFKioqOBWBFMAsgSrScgKsCpCV4ChCJsCFEW4FMAV4VMAVnT8+PH/IG/iAwDA1DlezHn8bwAAAABJRU5ErkJggg==);
+  }
+  .slick-row[data-row='8'] .slick-cell.rowspan:nth-child(4) {
+    background: #f0ffe0;
+  }
+  .slick-row[data-row='12'] .slick-cell.rowspan {
+    background: #bd8b8b;
+  }
+  .slick-row[data-row='15'] .slick-cell.rowspan {
+    background: #edc12e;
+  }
+  .slick-row[data-row='85'] .slick-cell.rowspan {
+    background: #8baebd;
+  }
+  .slick-cell.active {
+    /* use a different active cell color to make it a bit more obvious */
+    box-shadow: inset 0 0 0 1px #e35ddc;
+  }
+  .cellValue {
+    float: right;
+    font-size: 14px;
+  }
+  .valueComment {
+    color: #7c8983;
+    font-size: 12px;
+    font-style: italic;
+    width: fit-content;
+  }
+}
