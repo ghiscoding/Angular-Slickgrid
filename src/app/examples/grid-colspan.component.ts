@@ -59,7 +59,11 @@ export class GridColspanComponent implements OnInit {
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,
       explicitInitialization: true,
-      colspanCallback: this.renderDifferentColspan,
+      dataView: {
+        globalItemMetadataProvider: {
+          getRowMetadata: (item: any, row: any) => this.renderDifferentColspan(item, row),
+        },
+      },
       gridMenu: {
         iconButtonContainer: 'preheader', // we can display the grid menu icon in either the preheader or in the column header (default)
       },
@@ -142,8 +146,8 @@ export class GridColspanComponent implements OnInit {
    * Your callback will always have the "item" argument which you can use to decide on the colspan
    * Your return must always be in the form of:: return { columns: {}}
    */
-  renderDifferentColspan(item: any): ItemMetadata {
-    if (item.id % 2 === 1) {
+  renderDifferentColspan(item: any, row: number): ItemMetadata {
+    if (item.id % 2 === 1 || row % 2 === 1) {
       return {
         columns: {
           duration: {

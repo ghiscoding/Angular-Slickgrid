@@ -40,6 +40,8 @@ import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { Grid18Component } from './examples/grid18.component';
+import { Grid43Component } from './examples/grid43.component';
+import { Grid44Component } from './examples/grid44.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 
 import { NgModule } from '@angular/core';
@@ -85,6 +87,8 @@ const routes: Routes = [
   { path: 'resize-by-content', component: GridResizeByContentComponent },
   { path: 'rowdetail', component: GridRowDetailComponent },
   { path: 'rowmove', component: GridRowMoveComponent },
+  { path: 'rowspan-timesheets', component: Grid43Component },
+  { path: 'rowspan-large', component: Grid44Component },
   { path: 'selection', component: GridRowSelectionComponent },
   { path: 'trading', component: GridTradingComponent },
   { path: 'tree-data-parent-child', component: GridTreeDataParentChildComponent },

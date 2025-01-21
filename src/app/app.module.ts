@@ -56,6 +56,8 @@ import { GridTradingComponent } from './examples/grid-trading.component';
 import { GridTreeDataHierarchicalComponent } from './examples/grid-tree-data-hierarchical.component';
 import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-parent-child.component';
 import { Grid18Component } from './examples/grid18.component';
+import { Grid43Component } from './examples/grid43.component';
+import { Grid44Component } from './examples/grid44.component';
 import { HomeComponent } from './examples/home.component';
 import { CustomPagerComponent } from './examples/grid-custom-pager.component';
 import { RowDetailPreloadComponent } from './examples/rowdetail-preload.component';
@@ -145,6 +147,8 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridTreeDataParentChildComponent,
     GridTreeDataHierarchicalComponent,
     Grid18Component,
+    Grid43Component,
+    Grid44Component,
     RowDetailPreloadComponent,
     RowDetailViewComponent,
     SwtCommonGridTestComponent,
