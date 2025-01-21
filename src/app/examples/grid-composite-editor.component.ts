@@ -782,7 +782,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
   removeUnsavedStylingFromCell(_item: any, column: Column, row: number) {
     // remove unsaved css class from that cell
     const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-    this.angularGrid.slickGrid.removeCellCssStyles(cssStyleKey);
+    this.angularGrid.slickGrid?.removeCellCssStyles(cssStyleKey);
     const foundIdx = this.cellCssStyleQueue.findIndex((styleKey) => styleKey === cssStyleKey);
     if (foundIdx >= 0) {
       this.cellCssStyleQueue.splice(foundIdx, 1);
@@ -791,7 +791,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
 
   removeAllUnsavedStylingFromCell() {
     for (const cssStyleKey of this.cellCssStyleQueue) {
-      this.angularGrid.slickGrid.removeCellCssStyles(cssStyleKey);
+      this.angularGrid.slickGrid?.removeCellCssStyles(cssStyleKey);
     }
     this.cellCssStyleQueue = [];
   }
@@ -815,7 +815,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
       if (row !== undefined && row >= 0) {
         const hash = { [row]: { [column.id]: 'unsaved-editable-field' } };
         const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-        this.angularGrid.slickGrid.setCellCssStyles(cssStyleKey, hash);
+        this.angularGrid.slickGrid?.setCellCssStyles(cssStyleKey, hash);
         this.cellCssStyleQueue.push(cssStyleKey);
       }
     }
