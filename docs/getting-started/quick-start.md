@@ -52,12 +52,15 @@ Default compiled `css` (if you use the plain Bootstrap Theme CSS, you could simp
 ],
 ```
 
+> **Note** Bootstrap is optional, you can use any other framework, other themes are also available as CSS and SCSS file extensions
+> `slickgrid-theme-default.css`, `slickgrid-theme-bootstrap.css`, `slickgrid-theme-material.css`, `slickgrid-theme-salesforce.css`
+
 #### SASS (scss)
 You could also compile the SASS files with your own customization, for that simply take any of the [_variables.scss](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/styles/_variables.scss) (without the `!default` flag) variable file and make sure to import the Bootstrap Theme afterward. For example, you could modify your `style.scss` with the following changes:
 
 ```scss
 /* for example, let's change the mouse hover color */
-@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-default.scss' with (
   $cell-odd-background-color: lightyellow,
   $row-mouse-hover-color: lightgreen
 );

@@ -17,15 +17,19 @@ Default compiled `css` (if you use the plain Bootstrap Theme CSS, you could simp
 ],
 ```
 
+> **Note** Bootstrap is optional, you can use any other framework, other themes are also available as CSS and SCSS file extensions
+> `slickgrid-theme-default.css`, `slickgrid-theme-bootstrap.css`, `slickgrid-theme-material.css`, `slickgrid-theme-salesforce.css`
+
 ### Using built-in Themes
 The Material & Salesforce Themes are using SVGs internally for the icons used by the grid. Each built-in Themes have CSS and SASS files associated with each theme. To take benefit of this, just import whichever CSS/SASS file associated with the Theme you wish to use.
 
 ##### with CSS
 ```scss
 /* style.css */
-@use '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-bootstrap.css';
+@use '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-default.css';
 
 // or other Themes
+@use '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-bootstrap.css';
 @use '@slickgrid-universal/common/dist/styles/styles/css/slickgrid-theme-material.css';
 @use '@slickgrid-universal/common/dist/styles/css/slickgrid-theme-salesforce.css';
 ```
@@ -33,7 +37,7 @@ The Material & Salesforce Themes are using SVGs internally for the icons used by
 ##### with SASS
 ```scss
 /* style.scss */
-@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-default.scss' with (
   $slick-primary-color: green,
   $slick-cell-odd-background-color: lightyellow,
   $slick-row-mouse-hover-color: lightgreen
@@ -68,7 +72,7 @@ You could use Custom SVGs and create your own Theme and/or a different set of SV
 $primary-color: blue;
 
 // then on the last line, import the Theme that you wish to override
-@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-bootstrap.scss' with (
+@use '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-default.scss' with (
   $slick-primary-color: $primary-color,
   $slick-icon-group-color: $primary-color,
   $slick-icon-group-collapsed-svg-path: "M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z",
