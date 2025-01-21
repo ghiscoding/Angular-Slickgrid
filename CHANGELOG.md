@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.11.0...v8.12.0) (2025-01-21)
+
+### Features
+
+* add `rowspan` implementation ([d583887](https://github.com/ghiscoding/angular-slickgrid/commit/d583887f9ed8601b3796098ea9dbba1295f93a20))
+
 ## [8.11.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.10.2...v8.11.0) (2024-12-14)
 
 ### Features
