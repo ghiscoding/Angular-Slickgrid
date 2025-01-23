@@ -16,7 +16,7 @@
 
 `Formatters` are functions that can be used to change and format certain column(s) in the grid. Please note that it does not alter the input data, it simply changes the styling by formatting the data differently to the screen (what the user visually see).
 
-A good example of a `Formatter` could be a column name `isActive` which is a `boolean` field with input data as `True` or `False`. User would prefer to simply see a checkbox as a visual indication representing the `True` flag, for this behavior you can use `Formatters.checkmarkMaterial` which will use Material Design icon of `mdi-check` when `True` or an empty string when `False`.
+A good example of a `Formatter` could be a timestamp or a `Date` object that we could format differently in the grid, for example using `Formatters.dateIso` or `Formatters.dateUs` which is more human readable.
 
 #### Provided Formatters
 
