@@ -11,7 +11,6 @@
   - [Example of Custom Formatter with Native DOM Element](#example-of-custom-formatter-with-native-dom-element)
 * [Common Formatter Options](#common-formatter-options)
 * [PostRenderer Formatter](#postrender-formatter)
-* [UI Sample](#ui-sample)
 
 #### Definition
 
@@ -28,55 +27,56 @@ A good example of a `Formatter` could be a column name `isActive` which is a `bo
 
 **List of provided `Formatters`**
 
-* `arrayObjectToCsv`: Takes an array of complex objects converts it to a comma delimited string.
-* `arrayToCsv` : takes an array of text and returns it as CSV string
-* `checkmarkMaterial` use Material Design to display a checkmark icon
-* `collection`: Looks up values from the columnDefinition.params.collection property and displays the label in CSV or string format
-* `complexObject`: takes a complex object (with a `field` that has a `.` notation) and pull correct value, there are multiple ways to use it
+* `Formatters.arrayObjectToCsv`: Takes an array of complex objects and converts it to a comma delimited string.
+  * you also need to pass the property name(s) for the complex object, i.e.: `formatter: Formatters.arrayObjectToCsv, params: { propertyNames: ['name'], useFormatterOuputToFilter: true }`
+* `Formatters.arrayToCsv` : takes an array of text and returns it as CSV string
+* `Formatters.checkmarkMaterial` use Material Design to display a checkmark icon
+* `Formatters.collection`: Looks up values from the columnDefinition.params.collection property and displays the label in CSV or string format
+* `Formatters.complexObject`: takes a complex object (with a `field` that has a `.` notation) and pull correct value, there are multiple ways to use it
   1. `{ id: 'firstName', field: 'user.firstName', formatter: Formatters.complexObject}`, will display the user's first name
   2. `{ id: 'firstName', field: 'user', labelKey: 'firstName', params: { complexField: 'user' }, ... }`
   3. `{ id: 'firstName', field: 'user', params: { complexField: 'user.firstName' }, ... }`
-* `currency`: will help with currency other than dollar (ie `€`), there are multiple `params` available for this formatter
+* `Formatters.currency`: will help with currency other than dollar (ie `€`), there are multiple `params` available for this formatter
   * `currencyPrefix`, `currencySuffix`, `minDecimal`, `maxDecimal`, `numberPrefix`, `numberSuffix`, `decimalSeparator`, `thousandSeparator` and `displayNegativeNumberWithParentheses`
   * the distinction between `numberPrefix` and `currencyPrefix` can be seen when using `displayNegativeNumberWithParentheses`, for example if we have a value of `-12.432` with the `Formatters.currency` and `params: { currencyPrefix: '€', numberPrefix: 'Price ', numberSuffix: 'EUR' }` the output will be `"Price (€12.432) EUR"`
-* `dateEuro`: Takes a Date object and displays it as an Euro Date format (DD/MM/YYYY)
-* `dateTimeEuro`: Takes a Date object and displays it as an Euro Date+Time format (DD/MM/YYYY HH:mm:ss)
-* `dateTimeShortEuro`: Takes a Date object and displays it as an Euro Date+Time (without seconds) format (DD/MM/YYYY HH:mm)
-* `dateTimeEuroAmPm`: Takes a Date object and displays it as an Euro Date+Time+(am/pm) format (DD/MM/YYYY hh:mm:ss a)
-* `dateIso` : Takes a Date object and displays it as an ISO Date format (YYYY-MM-DD)
-* `dateTimeIso` : Takes a Date object and displays it as an ISO Date+Time format (YYYY-MM-DD HH:mm:ss)
-* `dateTimeIsoAmPm` : Takes a Date object and displays it as an ISO Date+Time+(am/pm) format (YYYY-MM-DD h:mm:ss a)
-* `dateTimeShortIso`: Takes a Date object and displays it as an ISO Date+Time (without seconds) format (YYYY-MM-DD HH:mm)
-* `dateUs` : Takes a Date object and displays it as an US Date format (MM/DD/YYYY)
-* `dateTimeUs` : Takes a Date object and displays it as an US Date+Time format (MM/DD/YYYY HH:mm:ss)
-* `dateTimeShortUs`: Takes a Date object and displays it as an US Date+Time (without seconds) format (MM/DD/YYYY HH:mm:ss)
-* `dateTimeUsAmPm` : Takes a Date object and displays it as an US Date+Time+(am/pm) format (MM/DD/YYYY hh:mm:ss a)
-* `dateUtc` : Takes a Date object and displays it as a TZ format (YYYY-MM-DDThh:mm:ssZ)
-* `decimal`: Display the value as x decimals formatted, defaults to 2 decimals. You can pass "minDecimal" and/or "maxDecimal" to the "params" property.
-* `dollar`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value.
-* `dollarColored`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value
-* `dollarColoredBoldFormatter`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value, show it in bold font weight as well
-* `hyperlink`: takes a URL cell value and wraps it into a clickable hyperlink `<a href="value">value</a>`
+* `Formatters.dateEuro`: Takes a Date object and displays it as an Euro Date format (DD/MM/YYYY)
+* `Formatters.dateTimeEuro`: Takes a Date object and displays it as an Euro Date+Time format (DD/MM/YYYY HH:mm:ss)
+* `Formatters.dateTimeShortEuro`: Takes a Date object and displays it as an Euro Date+Time (without seconds) format (DD/MM/YYYY HH:mm)
+* `Formatters.dateTimeEuroAmPm`: Takes a Date object and displays it as an Euro Date+Time+(am/pm) format (DD/MM/YYYY hh:mm:ss a)
+* `Formatters.dateIso` : Takes a Date object and displays it as an ISO Date format (YYYY-MM-DD)
+* `Formatters.dateTimeIso` : Takes a Date object and displays it as an ISO Date+Time format (YYYY-MM-DD HH:mm:ss)
+* `Formatters.dateTimeIsoAmPm` : Takes a Date object and displays it as an ISO Date+Time+(am/pm) format (YYYY-MM-DD h:mm:ss a)
+* `Formatters.dateTimeShortIso`: Takes a Date object and displays it as an ISO Date+Time (without seconds) format (YYYY-MM-DD HH:mm)
+* `Formatters.dateUs` : Takes a Date object and displays it as an US Date format (MM/DD/YYYY)
+* `Formatters.dateTimeUs` : Takes a Date object and displays it as an US Date+Time format (MM/DD/YYYY HH:mm:ss)
+* `Formatters.dateTimeShortUs`: Takes a Date object and displays it as an US Date+Time (without seconds) format (MM/DD/YYYY HH:mm:ss)
+* `Formatters.dateTimeUsAmPm` : Takes a Date object and displays it as an US Date+Time+(am/pm) format (MM/DD/YYYY hh:mm:ss a)
+* `Formatters.dateUtc` : Takes a Date object and displays it as a TZ format (YYYY-MM-DDThh:mm:ssZ)
+* `Formatters.decimal`: Display the value as x decimals formatted, defaults to 2 decimals. You can pass "minDecimal" and/or "maxDecimal" to the "params" property.
+* `Formatters.dollar`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value.
+* `Formatters.dollarColored`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value
+* `Formatters.dollarColoredBoldFormatter`: Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value, show it in bold font weight as well
+* `Formatters.hyperlink`: takes a URL cell value and wraps it into a clickable hyperlink `<a href="value">value</a>`
   * the cell value **must contain** (`ftp://abc`, `http://abc` or `https://abc`), if it doesn't then use `fakeHyperlink`
-* `hyperlinkUriPrefix`: format a URI prefix into an hyperlink
-* `icon`: to display an icon with defined CSS class name, use `params` to pass a `cssClass` property
-* `iconBoolean`: similar to `icon` but will only be displayed on a Boolean truthy value, use `params` to pass a `cssClass` property
-* `mask`: to change the string output using a mask, use `params` to pass a `mask` property
+* `Formatters.hyperlinkUriPrefix`: format a URI prefix into an hyperlink
+* `Formatters.icon`: to display an icon with defined CSS class name, use `params` to pass a `cssClass` property
+* `Formatters.iconBoolean`: similar to `icon` but will only be displayed on a Boolean truthy value, use `params` to pass a `cssClass` property
+* `Formatters.mask`: to change the string output using a mask, use `params` to pass a `mask` property
   * example: `{ field: 'phone', formatter: Formatters.mask, params: { mask: '(000) 000-0000' }}`
-* `multiple`: pipe multiple formatters (executed in sequence), use `params` to pass the list of formatters.
+* `Formatters.multiple`: pipe multiple formatters (executed in sequence), use `params` to pass the list of formatters.
   * example: `{ field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }`
-* `percent`: Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar
-* `percentComplete` : takes a percentage value (0-100%), displays a bar following this logic:
+* `Formatters.percent`: Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar
+* `Formatters.percentComplete` : takes a percentage value (0-100%), displays a bar following this logic:
   * `red`: < 30%, `grey`: < 70%, `green`: >= 70%
-* `percentCompleteBar` : same as `percentComplete` but uses [Bootstrap - Progress Bar with label](https://getbootstrap.com/docs/3.3/components/#progress-label).
-* `percentCompleteBarWithText`: Takes a cell value number (between 0-100) and displays SlickGrid custom "percent-complete-bar" with Text a red (<30), silver (>30 & <70) or green (>=70) bar
-* `percentSymbol`: Takes a cell value number (between 0-100) and add the "%" after the number
-* `progressBar`: Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar
-* `translate`: Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: \`i18n: this.translate
-* `translateBoolean`: Takes a boolean value, cast it to upperCase string and finally translates it (i18n).
-* `tree`: Formatter that must be used when the column is a Tree Data column
+* `Formatters.percentCompleteBar` : same as `percentComplete` but uses [Bootstrap - Progress Bar with label](https://getbootstrap.com/docs/3.3/components/#progress-label).
+* `Formatters.percentCompleteBarWithText`: Takes a cell value number (between 0-100) and displays SlickGrid custom "percent-complete-bar" with Text a red (<30), silver (>30 & <70) or green (>=70) bar
+* `Formatters.percentSymbol`: Takes a cell value number (between 0-100) and add the "%" after the number
+* `Formatters.progressBar`: Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar
+* `Formatters.translate`: Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: \`i18n: translate
+* `Formatters.translateBoolean`: Takes a boolean value, cast it to upperCase string and finally translates it (i18n).
+* `Formatters.tree`: Formatter that must be used when the column is a Tree Data column
 
-> **Note:** The list is certainly not up to date (especially for Dates), please refer to the [Formatters export](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/formatters/index.ts#L37) to know exactly which formatters are available.
+> **Note:** The list might not be up to date (especially for Dates), please refer to the [Formatters export](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/formatters/index.ts#L37) to know exactly which formatters are available.
 
 > **Note** all Date formatters are formatted using [Tempo](https://tempo.formkit.com/#format-tokens). There are also many more Date formats not shown above, simply visit the [formatters.index](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/formatters/formatters.index.ts#L101) to see all available Date/Time formats.
 
