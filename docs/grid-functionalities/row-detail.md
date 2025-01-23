@@ -14,6 +14,12 @@
 ### Description
 A Row Detail allows you to open a detail panel which can contain extra and/or more detailed information about a row. For example, we have a user list but we want to display detailed information about this user (his full address, account info, last purchasers, ...) but we don't want to display this in the user grid (for performance and real estate reasons), so a Row Detail is perfect for this.
 
+> **NOTE** Please note that because of the complexity behind Row Detail, the following features cannot be mixed with Row Detail because they will cause UI problems
+> - Grouping
+> - Pagination
+> - Tree Data
+> - RowSpan
+
 ## Usage
 
 ##### View
