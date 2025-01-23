@@ -19,13 +19,12 @@
 
 A good example of a `Formatter` could be a column name `isActive` which is a `boolean` field with input data as `True` or `False`. User would prefer to simply see a checkbox as a visual indication representing the `True` flag, for this behavior you can use `Formatters.checkmark` which will use Material Design icon of `mdi-check` when `True` or an empty string when `False`.
 
-For a [UI sample](#ui-sample), scroll down below.
-
 #### Provided Formatters
 
 `Slickgrid-Universal` ships with a few `Formatters` by default which helps with common fields, you can see the [entire list here](https://github.com/ghiscoding/slickgrid-universal/blob/master/packages/common/src/formatters/index.ts#L37).
 
-> **Note** you might not need a Formatter when a simple CSS style and class might be enough, think about using `cssClass` column property as much as possible since it has much better perf.
+> **Note** you might not need a Formatter when simple CSS styling and class might be enough, think about using `cssClass` column property as much as possible since it has much better perf.
+> For example: `{ cssClass: 'text-right' }` on your column definition (or any other class) to align on the right.
 
 **List of provided `Formatters`**
 
@@ -322,7 +321,3 @@ A **Better Solution** is to use Custom Formatters **as much as possible** becaus
 * [Example 22](https://ghiscoding.github.io/Angular-Slickgrid/#/angular-components) | [Component](../../src/app/examples/grid-angular.component.ts) | [animated gif](https://user-images.githubusercontent.com/643976/53061045-87346580-348a-11e9-95f3-dfe33be6e966.gif)
 
 In the [animated gif](https://user-images.githubusercontent.com/643976/53061045-87346580-348a-11e9-95f3-dfe33be6e966.gif), you can see the 3rd column is using `asyncPostRender` and before it gets rendered we show 3 dots (...), and if you look carefully you can see them being rendered before the actual result, it's short but it is visible.
-
-### UI Sample
-
-![Default Slickgrid Example](https://github.com/ghiscoding/angular-slickgrid/blob/master/screenshots/formatters.png)
