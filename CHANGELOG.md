@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.12.0...v8.12.1) (2025-01-25)
+
+### Bug Fixes
+
+* add `autoResize.autoHeight` to resize by dataset length ([26838d9](https://github.com/ghiscoding/angular-slickgrid/commit/26838d96191b46c2876887df3db164cf2c176a75))
+* RowSpan should work with Excel Export and merge cells ([e41fe93](https://github.com/ghiscoding/angular-slickgrid/commit/e41fe932f6e43ed2e53183d57d3639a5219fa4c2))
+
 ## [8.12.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.11.0...v8.12.0) (2025-01-21)
 
 ### Features
