@@ -183,6 +183,8 @@ Object.defineProperty(paginationServiceStub, 'totalItems', {
 });
 
 const resizerServiceStub = {
+  isAutoHeightEnabled: true,
+  autoHeightRecalcRow: 100,
   init: jest.fn(),
   dispose: jest.fn(),
   bindAutoResizeDataGrid: jest.fn(),
@@ -2270,6 +2272,32 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(invalidateSpy).toHaveBeenCalled();
         expect(component.metrics).toEqual(expectation);
         expect(footerSpy).toHaveBeenCalledWith(expectation);
+      });
+
+      it('should call a grid resize when the DataView "onRowCountChanged" event is triggered with a low dataset length and autoResize.autoHeight is enabled', () => {
+        const mockData = [
+          { firstName: 'John', lastName: 'Doe' },
+          { firstName: 'Jane', lastName: 'Smith' },
+        ];
+        const invalidateSpy = jest.spyOn(mockGrid, 'invalidate');
+        const expectation = {
+          startTime: expect.any(Date),
+          endTime: expect.any(Date),
+          itemCount: 2,
+          totalItemCount: 2,
+        };
+        jest.spyOn(mockDataView, 'getItemCount').mockReturnValue(mockData.length);
+        jest.spyOn(mockDataView, 'getFilteredItemCount').mockReturnValue(mockData.length);
+        jest.spyOn(mockDataView, 'getLength').mockReturnValue(mockData.length);
+        const resizerSpy = jest.spyOn(resizerServiceStub, 'resizeGrid');
+
+        component.gridOptions = { enableAutoResize: true, autoResize: { autoHeight: true } };
+        component.initialization(slickEventHandler);
+        mockDataView.onRowCountChanged.notify({ current: 2, previous: 0, dataView: mockDataView, itemCount: 0, callingOnRowsChanged: false });
+
+        expect(invalidateSpy).toHaveBeenCalled();
+        expect(component.metrics).toEqual(expectation);
+        expect(resizerSpy).toHaveBeenCalled();
       });
 
       it('should have custom footer with metrics when the DataView "onSetItemsCalled" event is triggered', () => {
