@@ -76,6 +76,9 @@
       >Toggle Editing: <span id="isEditable" class="text-italic">{{ isEditable }}</span></span
     >
   </button>
+  <button class="btn btn-outline-secondary btn-sm btn-icon mx-1" data-test="export-excel-btn" (click)="exportToExcel()">
+    <i class="mdi mdi-file-excel-outline text-success"></i> Export to Excel
+  </button>
 
   <angular-slickgrid
     gridId="grid43"

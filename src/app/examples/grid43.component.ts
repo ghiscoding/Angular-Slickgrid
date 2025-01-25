@@ -9,6 +9,7 @@ import { ExcelExportService } from '@slickgrid-universal/excel-export';
 })
 export class Grid43Component implements OnInit {
   columnDefinitions: Column[] = [];
+  excelExportService = new ExcelExportService();
   angularGrid!: AngularGridInstance;
   gridOptions!: GridOption;
   dataset: any[] = [];
@@ -152,7 +153,7 @@ export class Grid43Component implements OnInit {
       enableColumnReorder: true,
       enableCellRowSpan: true,
       enableExcelExport: true,
-      externalResources: [new ExcelExportService()],
+      externalResources: [this.excelExportService],
       enableExcelCopyBuffer: true,
       autoEdit: true,
       editable: false,
@@ -169,6 +170,10 @@ export class Grid43Component implements OnInit {
       },
       rowTopOffsetRenderType: 'top', // rowspan doesn't render well with 'transform', default is 'top'
     };
+  }
+
+  exportToExcel() {
+    this.excelExportService.exportToExcel({ filename: 'export', format: 'xlsx' });
   }
 
   navigateDown() {
