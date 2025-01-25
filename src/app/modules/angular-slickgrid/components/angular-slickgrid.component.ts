@@ -1262,6 +1262,11 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     if (this._isLocalGrid && this.gridOptions?.enableEmptyDataWarningMessage) {
       this.displayEmptyDataWarning(currentPageRowItemCount === 0);
     }
+
+    // when autoResize.autoHeight is enabled, we'll want to call a resize
+    if (this.gridOptions.enableAutoResize && this.resizerService.isAutoHeightEnabled && currentPageRowItemCount > 0) {
+      this.resizerService.resizeGrid();
+    }
   }
 
   protected initializePaginationService(paginationOptions: Pagination) {
