@@ -40,19 +40,20 @@ import { type Column, type GridOption } from 'angular-slickgrid';
 
 export class GridComponent implements OnInit {
   columnDefinitions: Column[] = [];
-  gridOptions!: GridOption;
-  dataset!: any[];
+  gridOptions: GridOption;
+  dataset: any[] = [];
 
   onInit() {
     this.columnDefinitions = [
-      { id: 'username', name: 'Username', field: 'username'},
+      { id: 'firstName', name: 'First Name', field: 'firstName'},
+      { id: 'lastName', name: 'Last Name', field: 'lastName'},
       { id: 'age', name: 'Age', field: 'age' }
     ];
-    this.gridOptions = { /*...*/ };
     this.dataset = [
-      { id: 1, username: 'John', age: 20 },
-      { id: 2, username: 'Jane', age: 21 }
+      { id: 1, firstName: 'John', lastName: 'Doe', age: 20 },
+      { id: 2, firstName: 'Jane', lastName: 'Smith', age: 21 }
     ];
+    this.gridOptions = { /*...*/ }; // optional grid options
   }
 }
 ```
@@ -67,19 +68,20 @@ export class GridComponent implements OnInit {
 ### Troubleshooting
 
 > [!WARNING]
-> This project **does not** work well with `strictTemplates` because of its use of native Custom Event, so please make sure to either disable `strictTemplates` or cast your event as `any` (see this [discussion](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815) for more info)
+> Because of its use of native Custom Event, this project **does not** work well with `strictTemplates`, so please make sure to either disable `strictTemplates` or cast your event as `any` (see this [discussion](https://github.com/ghiscoding/Angular-Slickgrid/discussions/815) for more info)
 
 ### Styling Themes
 
 Multiple styling themes are available
+- Default (UI agnostic)
 - Bootstrap (see all Angular-Slickgrid [live demos](https://ghiscoding.github.io/Angular-Slickgrid/))
 - Material (see [Slickgrid-Universal](https://ghiscoding.github.io/slickgrid-universal/#/example07))
 - Salesforce (see [Slickgrid-Universal](https://ghiscoding.github.io/slickgrid-universal/#/example16))
 
-Also note that all of these themes also have **Dark Theme** equivalent and even though Bootstrap if often used as the default, it also works well with any other UI framework like Bulma, Material, ...
+Also note that all of these themes also have **Dark Theme** equivalent and even though Bootstrap is often used for live demos, it does work as well with any other UI framework like Bulma, Material, ...
 
 ### Demo page
-`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. It also works well with any other frameworks like Material or Bulma and there are also couple of extra styling themes based on Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons)
+`Angular-Slickgrid` works with all `Bootstrap` versions, you can see a demo of each one below. It also works well with any other frameworks like Material or Bulma and there are also couple of extra styling themes based on Material & Salesforce which are also available. You can also use different SVG icons, you may want to look at the [Docs - SVG Icons](https://ghiscoding.gitbook.io/angular-slickgrid/styling/svg-icons) for more info.
 
 [Angular-Slickgrid-Demos](https://github.com/ghiscoding/angular-slickgrid-demos) includes the following:
 - [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-translate) - Code samples which uses `ngx-translate` to support multiple locales.
@@ -101,14 +103,14 @@ You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and maybe support m
 <a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
 ### Contributions
-If you wish to contribute then make sure to follow the steps shown in the [CONTRIBUTING](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/CONTRIBUTING.md) guide.
+If you wish to contribute, please make sure to follow the steps shown in the [CONTRIBUTING](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/CONTRIBUTING.md) guide.
 
 ## Latest News & Releases
 Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Angular Compatibility
 
-> **Note** please be aware that only the latest version of Angular-Slickgrid is supported and will receive bug fixes. The reason older versions are not supported is simply because it's already a lot of work to maintain for a single developer.
+> **Note** please be aware that only the latest major version of Angular-Slickgrid is supported and will receive bug fixes. It's already a lot of work for a single developer like me to support.
 
 | Angular-Slickgrid | Angular version | Migration Guide | Notes |
 |-------------------|-----------------|-----------------|-------|
