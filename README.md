@@ -45,9 +45,9 @@ export class GridComponent implements OnInit {
 
   onInit() {
     this.columnDefinitions = [
-      { id: 'firstName', name: 'First Name', field: 'firstName'},
-      { id: 'lastName', name: 'Last Name', field: 'lastName'},
-      { id: 'age', name: 'Age', field: 'age' }
+      { id: 'firstName', name: 'First Name', field: 'firstName', sortable: true },
+      { id: 'lastName', name: 'Last Name', field: 'lastName', sortable: true },
+      { id: 'age', name: 'Age', field: 'age', type: 'number', sortable: true }
     ];
     this.dataset = [
       { id: 1, firstName: 'John', lastName: 'Doe', age: 20 },
@@ -88,7 +88,7 @@ Also note that all of these themes also have **Dark Theme** equivalent and even 
 - [Bootstrap 5 (single Locale)](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-locales) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap5-demo-with-locales) - Code Sample with a single Locale (without `ngx-translate`)
 
 #### Working Demo
-For a complete set of working demos (40+ examples), we strongly suggest you clone [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository (instructions are provided in the demo repo). The repo provides multiple demos and they are updated for every new project release, so it is updated frequently and is also used as the GitHub live demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 5 demo (single Locale)](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete set of working demos (40+ examples), we strongly suggest you clone [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository (instructions are provided inside it). The demo repo provides multiple examples and are updated on every new project release, so it is updated frequently and is also the GitHub live demo page for both the [Bootstrap 5 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 5 demo (single Locale)](https://ghiscoding.github.io/angular-slickgrid-demos).
 
 ```sh
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
@@ -98,7 +98,7 @@ npm start
 ```
 
 ### Like it? ⭐ it
-You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and maybe support me with caffeine [☕](https://ko-fi.com/ghiscoding) and feel free to contribute. 👷👷‍♀️
+You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and perhaps support me with caffeine [☕](https://ko-fi.com/ghiscoding) or GitHub sponsoring and feel free to contribute.
 
 <a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 
@@ -106,11 +106,11 @@ You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and maybe support m
 If you wish to contribute, please make sure to follow the steps shown in the [CONTRIBUTING](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/CONTRIBUTING.md) guide.
 
 ## Latest News & Releases
-Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
+Make sure to check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/releases) section for all latest News & Releases.
 
 ## Angular Compatibility
 
-> **Note** please be aware that only the latest major version of Angular-Slickgrid is supported and will receive bug fixes. It's already a lot of work for a single developer like me to support.
+> **Note** please be aware that only the latest major version of Angular-Slickgrid will be supported and receive bug fixes (it's already a lot of work for a single developer like me to support).
 
 | Angular-Slickgrid | Angular version | Migration Guide | Notes |
 |-------------------|-----------------|-----------------|-------|
@@ -123,7 +123,7 @@ Check out the [Releases](https://github.com/ghiscoding/Angular-Slickgrid/release
 | 2.x               | 7-11.x | [Migration 2.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-2.x) | support multiple grids on same page     |
 | 1.x               | 4-6.x  |                 |      |
 
-**Note** For a full compatibility table of Angular-Slickgrid with Slickgrid-Universal, please take a look at the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table).
+**Note** For a full compatibility table of every Angular-Slickgrid versions with Slickgrid-Universal, please take a look at the [Versions Compatibility Table - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table).
 
 For Angular 12+ see the instructions below - [Angular 12 with WebPack 5 - polyfill issue](#angular-12-with-webpack-5---how-to-fix-polyfill-error).
 
@@ -149,6 +149,8 @@ Slickgrid-Universal has **100%** Unit Test Coverage and all Angular-Slickgrid Ex
 - [`strictTemplates` error](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Versions-Compatibility-Table#stricttemplates-error)
 
 ## Sponsors
+
+Thanks to all my sponsors!
 
 <div>
   <span>
