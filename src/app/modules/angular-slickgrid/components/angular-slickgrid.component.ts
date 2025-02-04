@@ -925,6 +925,13 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     return showing;
   }
 
+  /**
+   * Toggle the empty data warning message visibility.
+   * @param showWarning
+   */
+  displayEmptyDataWarning(showWarning = true) {
+    this.slickEmptyWarning?.showEmptyDataMessage(showWarning);
+  }
   //
   // protected functions
   // ------------------
@@ -935,10 +942,6 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
    */
   protected copyColumnWidthsReference(columnDefinitions: Column[]) {
     columnDefinitions.forEach((col) => (col.originalWidth = col.width));
-  }
-
-  protected displayEmptyDataWarning(showWarning = true) {
-    this.slickEmptyWarning?.showEmptyDataMessage(showWarning);
   }
 
   protected bindDifferentHooks(grid: SlickGrid, gridOptions: GridOption, dataView: SlickDataView) {
