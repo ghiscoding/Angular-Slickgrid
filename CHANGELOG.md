@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.13.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.12.1...v8.13.0) (2025-02-08)
+
+### Features
+
+* expose displayEmptyDataWarning ([4b917af](https://github.com/ghiscoding/angular-slickgrid/commit/4b917af0fb371331119b5d93845cbbbf6079643c))
+
 ## [8.12.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.12.0...v8.12.1) (2025-01-25)
 
 ### Bug Fixes
