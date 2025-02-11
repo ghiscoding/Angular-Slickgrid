@@ -100,7 +100,7 @@ npm start
 ### Like it? ⭐ it
 You like to use **Angular-Slickgrid**? Be sure to upvote ⭐ and perhaps support me with caffeine [☕](https://ko-fi.com/ghiscoding) or GitHub sponsoring and feel free to contribute.
 
-<a href='https://ko-fi.com/ghiscoding' target='_blank'><img height='32' style='border:0px;height:32px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+<a href='https://ko-fi.com/N4N679OT' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ### Contributions
 If you wish to contribute, please make sure to follow the steps shown in the [CONTRIBUTING](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/CONTRIBUTING.md) guide.
