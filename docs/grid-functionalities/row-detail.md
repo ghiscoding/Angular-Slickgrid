@@ -20,7 +20,9 @@ A Row Detail allows you to open a detail panel which can contain extra and/or mo
 > - Tree Data
 > - RowSpan
 
-> **NOTE 2** Also please note that whenever you scroll back and forth, the Row Detail will be rendered and re-rendered multiple times when you scroll or open/collapse other Row Details. For that reason, you should avoid adding too many dynamic elements (like form with inputs) because whenever a re-render kicks in, it will most often reset these elements. So it is totally fine to use it to show extra details (hence where its name comes from "Row Detail" to show more detailed info) and even though it works with dynamic elements, you have to know its limitation.
+> **NOTE 2** Also please note that because SlickGrid is using its built-in Virtual Scroll feature by default (for perf reasons), this will call render and re-render multiple times and that happens whenever the Row Detail gets out of the grid viewport.
+> For this reason, you should avoid using dynamic elements (i.e. form inputs) because whenever a re-render kicks in, it will reset and re-render these elements as if nothing happened.
+> So you should consider using Row Detail mainly for showing static data (hence where its name comes from "Row Detail" to show more detailed info) and even though it works with dynamic elements, you have to know its limitation.
 
 ## Usage
 
