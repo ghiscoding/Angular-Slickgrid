@@ -318,7 +318,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
-      compRef?.destroy();
+      if (compRef?.destroy) {
+        compRef.destroy();
+      }
       return expandedView;
     }
   }
