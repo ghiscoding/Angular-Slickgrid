@@ -284,6 +284,9 @@ describe('SlickRowDetailView', () => {
         const onBeforeRowSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onBeforeRowDetailToggle');
         const onRowOutViewSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowOutOfViewportRange');
         const onRowBackViewSpy = jest.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowBackToViewportRange');
+        const appendSpy = jest
+          .spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom')
+          .mockReturnValue({ componentRef: { instance: jest.fn() } } as any);
 
         plugin.init(gridStub);
         plugin.onAfterRowDetailToggle = new SlickEvent();
@@ -295,6 +298,7 @@ describe('SlickRowDetailView', () => {
         //   { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
         //   expect.anything()
         // );
+        expect(appendSpy).toHaveBeenCalled();
         expect(onAsyncRespSpy).not.toHaveBeenCalled();
         expect(onAsyncEndSpy).not.toHaveBeenCalled();
         expect(onAfterRowSpy).toHaveBeenCalledWith(expect.anything(), { item: columnsMock[0], expandedRows: [0], grid: gridStub });
@@ -406,7 +410,7 @@ describe('SlickRowDetailView', () => {
         const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
         const appendSpy = jest
           .spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom')
-          .mockReturnValue({ componentRef: { instance: jest.fn() } } as any);
+          .mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
 
         plugin.init(gridStub);
         plugin.onBeforeRowDetailToggle = new SlickEvent();
