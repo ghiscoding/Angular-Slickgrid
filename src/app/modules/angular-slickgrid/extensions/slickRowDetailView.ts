@@ -33,6 +33,7 @@ export interface CreatedView {
 export class SlickRowDetailView extends UniversalSlickRowDetailView {
   rowDetailContainer!: ViewContainerRef;
   protected _preloadComponent: Type<object> | undefined;
+  protected _preloadCompRef?: ComponentRef<any>;
   protected _views: CreatedView[] = [];
   protected _viewComponent!: Type<object>;
   protected _subscriptions: EventSubscription[] = [];
@@ -154,6 +155,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
         if (this.onAsyncEndUpdate) {
           this.eventHandler.subscribe(this.onAsyncEndUpdate, (e, args) => {
+            // destroy preload if exists
+            this._preloadCompRef?.destroy();
+
             // triggers after backend called "onAsyncResponse.notify()"
             this.renderViewModel(args?.item);
 
@@ -269,10 +273,11 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       `${PRELOAD_CONTAINER_PREFIX}`
     ) as HTMLCollectionOf<HTMLElement>;
     if (this._preloadComponent && containerElements?.length >= 0) {
-      this.angularUtilService.createAngularComponentAppendToDom(
+      const preloadComp = this.angularUtilService.createAngularComponentAppendToDom(
         this._preloadComponent,
         containerElements[containerElements.length - 1]
       );
+      this._preloadCompRef = preloadComp.componentRef;
     }
   }
 
@@ -282,6 +287,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       `${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`
     ) as HTMLCollectionOf<HTMLElement>;
     if (this._viewComponent && containerElements?.length > 0) {
+      // render row detail
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(
         this._viewComponent,
         containerElements[containerElements.length - 1],
@@ -312,9 +318,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
-      if (compRef?.destroy) {
-        compRef.destroy();
-      }
+      compRef?.destroy();
       return expandedView;
     }
   }
