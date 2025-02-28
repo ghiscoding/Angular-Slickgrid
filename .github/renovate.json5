@@ -3,7 +3,9 @@
   labels: ['dependencies'],
   ignorePaths: ['**/__tests__/**'],
   dependencyDashboard: false,
-  lockFileMaintenance: { enabled: true },
+  lockFileMaintenance: {
+    enabled: false,
+  },
   pin: false,
   rangeStrategy: 'bump',
   packageRules: [
