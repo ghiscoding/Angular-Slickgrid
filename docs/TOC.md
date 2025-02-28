@@ -17,8 +17,7 @@
 * [Cell Menu (Action Menu)](column-functionalities/Cell-Menu.md)
 * [Editors](column-functionalities/Editors.md)
   * [Autocomplete](column-functionalities/editors/autocomplete-editor-kraaden-lib.md)
-  * [old Date Picker (flatpickr)](column-functionalities/editors/Date-Editor-flatpickr.md)
-  * [new Date Picker (vanilla-calendar)](column-functionalities/editors/date-editor-vanilla-calendar.md)
+  * [Date Picker (vanilla-calendar)](column-functionalities/editors/date-editor-vanilla-calendar.md)
   * [LongText (textarea)](column-functionalities/editors/longtext-editor-textarea.md)
   * [Select Dropdown Editor (single/multiple)](column-functionalities/editors/select-dropdown-editor.md)
 * [Filters](column-functionalities/filters/filter-intro.md)
@@ -66,7 +65,7 @@
 * [Providing data to the grid](grid-functionalities/providing-grid-data.md)
 * [Row Detail](grid-functionalities/row-detail.md)
 * [Row Selection](grid-functionalities/Row-Selection.md)
-* [Tree Data Grid](grid-functionalities/Tree-Data-Grid.md)
+* [Tree Data Grid](grid-functionalities/tree-data-grid.md)
 * [Row Based Editing Plugin](grid-functionalities/Row-based-edit.md)
 * [FAQ](grid-functionalities/FAQ.md)
 
