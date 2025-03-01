@@ -671,6 +671,18 @@ describe('SlickRowDetailView', () => {
         expect(onRowOutViewSpy).not.toHaveBeenCalled();
         expect(onRowBackViewSpy).not.toHaveBeenCalled();
       });
+
+      it('should call internal event handler subscribe and expect the "onBeforeRowOutOfViewportRange" callback to be called', () => {
+        const onBeforeSpy = jest.fn();
+        gridOptionsMock.rowDetailView!.onBeforeRowOutOfViewportRange = onBeforeSpy;
+
+        plugin.init(gridStub);
+        plugin.onBeforeRowOutOfViewportRange = new SlickEvent();
+        plugin.register();
+        plugin.onBeforeRowOutOfViewportRange.notify({ item: columnsMock[0], rowId: columnsMock[0].id, grid: gridStub } as any, new SlickEventData(), gridStub);
+
+        expect(onBeforeSpy).toHaveBeenCalled();
+      });
     });
 
     describe('possible error thrown', () => {
