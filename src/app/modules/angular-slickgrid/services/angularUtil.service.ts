@@ -9,6 +9,7 @@ interface CreateComponentOption {
   ngModuleRef?: NgModuleRef<unknown>;
   environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
   projectableNodes?: Node[][];
+  sanitizer?: (dirtyHtml: string) => string;
 }
 
 @Injectable()
@@ -82,7 +83,10 @@ export class AngularUtilService {
 
       // when user provides the DOM element target, we will read the new Component html and use it to replace the target html
       if (targetElement && domElem) {
-        targetElement.innerHTML = domElem.innerHTML;
+        targetElement.innerHTML =
+          typeof createCompOptions?.sanitizer === 'function'
+            ? createCompOptions.sanitizer(domElem.innerHTML || '')
+            : domElem.innerHTML;
       }
     }
 

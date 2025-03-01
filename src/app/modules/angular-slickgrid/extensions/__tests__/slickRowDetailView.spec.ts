@@ -416,13 +416,18 @@ describe('SlickRowDetailView', () => {
         plugin.register();
         plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
           gridStub.onColumnsReordered.notify({ impactedColumns: [mockColumn] } as any, new SlickEventData(), gridStub);
-          expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-            model: mockColumn,
-            addon: expect.anything(),
-            grid: gridStub,
-            dataView: undefined,
-            parent: undefined,
-          });
+          expect(appendSpy).toHaveBeenCalledWith(
+            TestComponent,
+            expect.objectContaining({ className: 'container_field1' }),
+            {
+              model: mockColumn,
+              addon: expect.anything(),
+              grid: gridStub,
+              dataView: undefined,
+              parent: undefined,
+            },
+            { sanitizer: expect.any(Function) }
+          );
           done();
         });
         plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
@@ -448,13 +453,18 @@ describe('SlickRowDetailView', () => {
             new SlickEventData(),
             gridStub
           );
-          expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-            model: mockColumn,
-            addon: expect.anything(),
-            grid: gridStub,
-            dataView: undefined,
-            parent: undefined,
-          });
+          expect(appendSpy).toHaveBeenCalledWith(
+            TestComponent,
+            expect.objectContaining({ className: 'container_field1' }),
+            {
+              model: mockColumn,
+              addon: expect.anything(),
+              grid: gridStub,
+              dataView: undefined,
+              parent: undefined,
+            },
+            { sanitizer: expect.any(Function) }
+          );
         });
         plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
         plugin.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new SlickEventData(), gridStub);
@@ -478,13 +488,18 @@ describe('SlickRowDetailView', () => {
 
           plugin.eventHandler.subscribe(plugin.onBeforeRowDetailToggle, () => {
             eventPubSubService.publish(eventName, { columnId: 'field1', operator: '=', searchTerms: [] });
-            expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-              model: mockColumn,
-              addon: expect.anything(),
-              grid: gridStub,
-              dataView: undefined,
-              parent: undefined,
-            });
+            expect(appendSpy).toHaveBeenCalledWith(
+              TestComponent,
+              expect.objectContaining({ className: 'container_field1' }),
+              {
+                model: mockColumn,
+                addon: expect.anything(),
+                grid: gridStub,
+                dataView: undefined,
+                parent: undefined,
+              },
+              { sanitizer: expect.any(Function) }
+            );
           });
           plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
           plugin.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new SlickEventData(), gridStub);
