@@ -4,13 +4,13 @@ import type {
   OnBeforeRowDetailToggleArgs,
   OnRowBackToViewportRangeArgs,
   RxJsFacade,
-  SlickEventData,
   SlickEventHandler,
   SlickGrid,
 } from '@slickgrid-universal/common';
 import {
   addToArrayWhenNotExists,
   castObservableToPromise,
+  SlickEventData,
   SlickRowSelectionModel,
   unsubscribeAll,
 } from '@slickgrid-universal/common';
@@ -28,6 +28,7 @@ export interface CreatedView {
   id: string | number;
   dataContext: any;
   componentRef?: ComponentRef<any>;
+  rendered?: boolean;
 }
 
 export class SlickRowDetailView extends UniversalSlickRowDetailView {
@@ -86,8 +87,12 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Dispose of all the opened Row Detail Panels Angular View Components */
   disposeAllViewComponents() {
-    this._views.forEach((compRef) => this.disposeViewComponent(compRef));
-    this._views = [];
+    do {
+      const view = this._views.pop();
+      if (view) {
+        this.disposeView(view);
+      }
+    } while (this._views.length > 0);
   }
 
   /** Get the instance of the SlickGrid addon (control or plugin). */
@@ -174,7 +179,6 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
               // display preload template & re-render all the other Detail Views after toggling
               // the preload View will eventually go away once the data gets loaded after the "onAsyncEndUpdate" event
               this.renderPreloadView();
-              this.renderAllViewComponents();
 
               if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAfterRowDetailToggle === 'function') {
                 this.rowDetailViewOptions.onAfterRowDetailToggle(e, args);
@@ -203,6 +207,15 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
             if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowBackToViewportRange === 'function') {
               this.rowDetailViewOptions.onRowBackToViewportRange(e, args);
             }
+          });
+        }
+
+        if (this.onBeforeRowOutOfViewportRange) {
+          this._eventHandler.subscribe(this.onBeforeRowOutOfViewportRange, (event, args) => {
+            if (typeof this.rowDetailViewOptions?.onBeforeRowOutOfViewportRange === 'function') {
+              this.rowDetailViewOptions.onBeforeRowOutOfViewportRange(event, args);
+            }
+            this.disposeViewByItem(args.item);
           });
         }
 
@@ -245,16 +258,10 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Redraw (re-render) all the expanded row detail View Components */
   redrawAllViewComponents() {
-    this._views.forEach((compRef) => {
-      this.redrawViewComponent(compRef);
-    });
-  }
-
-  /** Render all the expanded row detail View Components */
-  renderAllViewComponents() {
+    this.resetRenderedRows();
     this._views.forEach((view) => {
-      if (view?.dataContext) {
-        this.renderViewModel(view.dataContext);
+      if (!view.rendered) {
+        this.redrawViewComponent(view);
       }
     });
   }
@@ -286,6 +293,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     const containerElements = this.gridContainerElement.getElementsByClassName(
       `${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`
     ) as HTMLCollectionOf<HTMLElement>;
+
     if (this._viewComponent && containerElements?.length > 0) {
       // render row detail
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(
@@ -303,6 +311,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         const viewObj = this._views.find((obj) => obj.id === item[this.datasetIdPropName]);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;
+          viewObj.rendered = true;
         }
         return viewObj;
       }
@@ -314,12 +323,24 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   // protected functions
   // ------------------
 
-  protected disposeViewComponent(expandedView: CreatedView): CreatedView | void {
+  protected disposeViewByItem(item: any, removeFromArray = false): void {
+    const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === item[this.datasetIdPropName]);
+    if (foundViewIndex >= 0 && foundViewIndex in this._views) {
+      const expandedView = this._views[foundViewIndex];
+      this.disposeView(expandedView);
+      if (removeFromArray) {
+        this._views.splice(foundViewIndex, 1);
+      }
+    }
+  }
+
+  protected disposeView(expandedView: CreatedView): CreatedView | void {
     const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
       if (compRef?.destroy) {
         compRef.destroy();
+        expandedView.rendered = false;
       }
       return expandedView;
     }
@@ -332,7 +353,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
    */
   protected notifyTemplate(item: any) {
     if (this.onAsyncResponse) {
-      this.onAsyncResponse.notify({ item, itemDetail: item }, undefined, this);
+      this.onAsyncResponse.notify({ item, itemDetail: item }, new SlickEventData(), this);
     }
   }
 
@@ -377,27 +398,21 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       const viewInfo: CreatedView = {
         id: args.item[this.datasetIdPropName],
         dataContext: args.item,
+        rendered: false,
       };
       const idPropName = this.gridOptions.datasetIdPropertyName || 'id';
       addToArrayWhenNotExists(this._views, viewInfo, idPropName);
     } else {
       // collapsing, so dispose of the View/Component
-      const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item[this.datasetIdPropName]);
-      if (foundViewIndex >= 0 && foundViewIndex in this._views) {
-        const compRef = this._views[foundViewIndex].componentRef;
-        if (compRef) {
-          this.appRef.detachView(compRef.hostView);
-          compRef.destroy();
-        }
-        this._views.splice(foundViewIndex, 1);
-      }
+      this.disposeViewByItem(args.item, true);
     }
   }
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
   protected handleOnRowBackToViewportRange(_e: SlickEventData<OnRowBackToViewportRangeArgs>, args: OnRowBackToViewportRangeArgs) {
-    if (args?.item) {
-      this.redrawAllViewComponents();
+    const viewModel = Array.from(this._views).find((x) => x.id === args.rowId);
+    if (viewModel && !viewModel.rendered) {
+      this.redrawViewComponent(viewModel);
     }
   }
 }

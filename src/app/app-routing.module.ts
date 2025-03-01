@@ -42,6 +42,7 @@ import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-pare
 import { Grid18Component } from './examples/grid18.component';
 import { Grid43Component } from './examples/grid43.component';
 import { Grid44Component } from './examples/grid44.component';
+import { Grid45Component } from './examples/grid45.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 
 import { NgModule } from '@angular/core';
@@ -86,6 +87,7 @@ const routes: Routes = [
   { path: 'range', component: GridRangeComponent },
   { path: 'resize-by-content', component: GridResizeByContentComponent },
   { path: 'rowdetail', component: GridRowDetailComponent },
+  { path: 'rowdetail-innergrid', component: Grid45Component },
   { path: 'rowmove', component: GridRowMoveComponent },
   { path: 'rowspan-timesheets', component: Grid43Component },
   { path: 'rowspan-large', component: Grid44Component },
