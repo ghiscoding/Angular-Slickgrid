@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.13.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.0...v8.13.1) (2025-03-01)
+
+### Bug Fixes
+
+* add sanitizer to Row Detail create dynamic component ([363065a](https://github.com/ghiscoding/angular-slickgrid/commit/363065ad66dc12da0d082e4ceb6cae99ddd1b99d))
+* **deps:** update all non-major dependencies ([f276e6b](https://github.com/ghiscoding/angular-slickgrid/commit/f276e6b16adabc62559432891785a9d4da007b35))
+* Row Detail preload comp should call destroy lifecycle ([fd0185e](https://github.com/ghiscoding/angular-slickgrid/commit/fd0185edd1e4abd6f5115fed38f79945dcd6569e))
+* Row Detail with inner grids ([193b366](https://github.com/ghiscoding/angular-slickgrid/commit/193b3664f5fdfa84bb7c28314d5229e40223b550))
+
 ## [8.13.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.12.1...v8.13.0) (2025-02-08)
 
 ### Features
