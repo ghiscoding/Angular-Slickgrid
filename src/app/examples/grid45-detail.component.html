@@ -1,0 +1,14 @@
+<div [class]="innerGridClass">
+  <h4>{{ model.companyName }} - Order Details (id: {{ model.id }})</h4>
+  <div class="container-fluid">
+    <angular-slickgrid
+      [gridId]="innerGridId"
+      [columnDefinitions]="innerColDefs"
+      [gridOptions]="innerGridOptions"
+      [dataset]="innerDataset"
+      (onAngularGridCreated)="angularGridReady($event.detail)"
+      (onBeforeGridDestroy)="handleBeforeGridDestroy()"
+    >
+    </angular-slickgrid>
+  </div>
+</div>

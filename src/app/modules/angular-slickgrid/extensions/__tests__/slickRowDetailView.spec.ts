@@ -52,7 +52,6 @@ const gridOptionsMock = {
     panelRows: 1,
     keyPrefix: '__',
     useRowClick: true,
-    useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
     process: () => new Promise((resolve) => resolve('process resolved')),
     viewComponent: null as any,
@@ -539,62 +538,19 @@ describe('SlickRowDetailView', () => {
         });
       });
 
-      it('should call "renderAllViewModels" when grid event "onAfterRowDetailToggle" is triggered', () => {
+      it('should call "redrawViewComponent" when grid event "onRowBackToViewportRange" is triggered', () => {
         const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
-        const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
-        const getElementSpy = jest.spyOn(document.body, 'getElementsByClassName');
-        const appendSpy = jest
-          .spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom')
-          .mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
-
-        plugin.init(gridStub);
-        plugin.onAfterRowDetailToggle = new SlickEvent();
-        plugin.onBeforeRowDetailToggle = new SlickEvent();
-        plugin.register();
-        plugin.onAfterRowDetailToggle.subscribe(() => {
-          expect(getElementSpy).toHaveBeenCalledWith('container_field1');
-          expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-            model: mockColumn,
-            addon: expect.anything(),
-            grid: gridStub,
-            dataView: undefined,
-            parent: undefined,
-          });
-        });
-        plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub } as any, new SlickEventData(), gridStub);
-        plugin.onAfterRowDetailToggle.notify({ item: mockColumn, grid: gridStub } as any, new SlickEventData(), gridStub);
-
-        expect(handlerSpy).toHaveBeenCalled();
-      });
-
-      it('should call "redrawViewSlot" when grid event "onRowBackToViewportRange" is triggered', () => {
-        const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
-        const handlerSpy = jest.spyOn(plugin.eventHandler, 'subscribe');
-        const getElementSpy = jest.spyOn(document.body, 'getElementsByClassName');
-        const appendSpy = jest
-          .spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom')
-          .mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
-        const redrawSpy = jest.spyOn(plugin, 'redrawAllViewComponents');
+        const redrawSpy = jest.spyOn(plugin, 'redrawViewComponent');
 
         plugin.init(gridStub);
         plugin.onBeforeRowDetailToggle = new SlickEvent();
         plugin.onRowBackToViewportRange = new SlickEvent();
         plugin.register();
-        plugin.onRowBackToViewportRange.subscribe(() => {
-          expect(getElementSpy).toHaveBeenCalledWith('container_field1');
-          expect(appendSpy).toHaveBeenCalledWith(TestComponent, expect.objectContaining({ className: 'container_field1' }), {
-            model: mockColumn,
-            addon: expect.anything(),
-            grid: gridStub,
-            dataView: undefined,
-            parent: undefined,
-          });
-          expect(redrawSpy).toHaveBeenCalled();
-        });
-        plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub } as any, new SlickEventData(), gridStub);
-        plugin.onRowBackToViewportRange.notify({ item: mockColumn, grid: gridStub } as any, new SlickEventData(), gridStub);
+        plugin.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new SlickEventData(), gridStub);
+        plugin.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new SlickEventData(), gridStub);
+        plugin.onRowBackToViewportRange.notify({ item: mockColumn, grid: gridStub, rowId: 'field1' } as any, new SlickEventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalled();
+        expect(redrawSpy).toHaveBeenCalled();
       });
 
       it('should run the internal "onProcessing" and call "notifyTemplate" with a Promise when "process" method is defined and executed', (done) => {
@@ -714,6 +670,18 @@ describe('SlickRowDetailView', () => {
         expect(onAfterRowSpy).not.toHaveBeenCalled();
         expect(onRowOutViewSpy).not.toHaveBeenCalled();
         expect(onRowBackViewSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call internal event handler subscribe and expect the "onBeforeRowOutOfViewportRange" callback to be called', () => {
+        const onBeforeSpy = jest.fn();
+        gridOptionsMock.rowDetailView!.onBeforeRowOutOfViewportRange = onBeforeSpy;
+
+        plugin.init(gridStub);
+        plugin.onBeforeRowOutOfViewportRange = new SlickEvent();
+        plugin.register();
+        plugin.onBeforeRowOutOfViewportRange.notify({ item: columnsMock[0], rowId: columnsMock[0].id, grid: gridStub } as any, new SlickEventData(), gridStub);
+
+        expect(onBeforeSpy).toHaveBeenCalled();
       });
     });
 

@@ -247,6 +247,7 @@ const mockGrid = {
   destroy: jest.fn(),
   init: jest.fn(),
   invalidate: jest.fn(),
+  invalidateRows: jest.fn(),
   getActiveCellNode: jest.fn(),
   getColumns: jest.fn(),
   getCellEditor: jest.fn(),
@@ -1964,6 +1965,27 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(component.eventHandler).toEqual(slickEventHandler);
         expect(renderSpy).toHaveBeenCalled();
         expect(updateRowSpy).toHaveBeenCalledTimes(3);
+      });
+
+      it('should call invalidateRows individually when Row Detail is enabled and changed rows is different than the rows count', () => {
+        const renderSpy = jest.spyOn(mockGrid, 'render');
+        const invalidateRowSpy = jest.spyOn(mockGrid, 'invalidateRows');
+        jest.spyOn(mockGrid, 'getRenderedRange').mockReturnValue({ bottom: 10, top: 0, leftPx: 0, rightPx: 890 });
+
+        component.gridOptions.enableRowDetailView = true;
+        component.initialization(slickEventHandler);
+        mockDataView.onRowCountChanged.notify({
+          current: 2,
+          previous: 0,
+          dataView: mockDataView,
+          changedRows: [1, 2],
+          itemCount: 5,
+          callingOnRowsChanged: false,
+        });
+
+        expect(component.eventHandler).toEqual(slickEventHandler);
+        expect(invalidateRowSpy).toHaveBeenCalled();
+        expect(renderSpy).toHaveBeenCalled();
       });
     });
 

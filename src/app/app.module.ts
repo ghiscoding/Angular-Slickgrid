@@ -58,10 +58,12 @@ import { GridTreeDataParentChildComponent } from './examples/grid-tree-data-pare
 import { Grid18Component } from './examples/grid18.component';
 import { Grid43Component } from './examples/grid43.component';
 import { Grid44Component } from './examples/grid44.component';
+import { Grid45Component } from './examples/grid45.component';
 import { HomeComponent } from './examples/home.component';
 import { CustomPagerComponent } from './examples/grid-custom-pager.component';
 import { RowDetailPreloadComponent } from './examples/rowdetail-preload.component';
 import { RowDetailViewComponent } from './examples/rowdetail-view.component';
+import { Grid45DetailComponent } from './examples/grid45-detail.component';
 
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 import { SwtCommonGridPaginationComponent } from './examples/swt-common-grid-pagination.component';
@@ -149,6 +151,8 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     Grid18Component,
     Grid43Component,
     Grid44Component,
+    Grid45Component,
+    Grid45DetailComponent,
     RowDetailPreloadComponent,
     RowDetailViewComponent,
     SwtCommonGridTestComponent,

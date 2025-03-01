@@ -1,0 +1,97 @@
+<div id="demo-container" class="container-fluid">
+  <h2>
+    Example 45: Row Detail with inner Grid
+    <span class="float-end">
+      <a
+        style="font-size: 18px"
+        target="_blank"
+        href="https://github.com/ghiscoding/Angular-Slickgrid/blob/master/src/app/examples/grid45.component.ts"
+      >
+        <span class="mdi mdi-link-variant"></span> code
+      </a>
+    </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="toggleSubTitle()"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
+      <span class="mdi mdi-theme-light-dark"></span>
+      <span>Toggle Dark Mode</span>
+    </button>
+  </h2>
+
+  <div class="subtitle">
+    Add functionality to show extra information with a Row Detail View, (<a
+      href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/row-detail"
+      target="_blank"
+      >Wiki docs</a
+    >), we'll use an inner grid inside our Row Detail Component. Note that because SlickGrid uses Virtual Scroll, the rows and row
+    details are often be re-rendered (when row is out of viewport range) and this means unmounting Row Detail Component which
+    indirectly mean that all component states (dynamic elements, forms, ...) will be disposed as well, however you can use Grid
+    State/Presets to reapply previous state whenever the row detail gets re-rendered when back to viewport.
+  </div>
+
+  <div class="row">
+    <div class="col-sm-10">
+      <button class="btn btn-outline-secondary btn-sm btn-icon ms-1" data-test="collapse-all-btn" (click)="closeAllRowDetail()">
+        Close all Row Details
+      </button>
+      &nbsp;&nbsp;
+
+      <span class="d-inline-flex gap-4px">
+        <label for="detailViewRowCount">Detail View Rows Shown: </label>
+        <input
+          id="detailViewRowCount"
+          data-test="detail-view-row-count"
+          type="number"
+          style="height: 22px; width: 40px"
+          [(ngModel)]="detailViewRowCount"
+        />
+        <button
+          class="btn btn-outline-secondary btn-xs btn-icon"
+          style="height: 26px"
+          data-test="set-count-btn"
+          (click)="changeDetailViewRowCount()"
+        >
+          Set
+        </button>
+        <label for="serverdelay" class="ms-2">Server Delay: </label>
+        <input
+          id="serverdelay"
+          [(ngModel)]="serverWaitDelay"
+          type="number"
+          data-test="server-delay"
+          style="height: 26px; width: 55px"
+          title="input a fake timer delay to simulate slow server response"
+        />
+        <label class="checkbox-inline control-label ms-2" for="useInnerGridStatePresets">
+          <input
+            type="checkbox"
+            id="useInnerGridStatePresets"
+            data-test="use-inner-grid-state-presets"
+            [checked]="isUsingInnerGridStatePresets"
+            (click)="changeUsingInnerGridStatePresets()"
+          />
+          <span
+            title="should we use Grid State/Presets to keep the inner grid state whenever Row Details are out and back to viewport and re-rendered"
+          >
+            Use Inner Grid State/Presets
+          </span>
+        </label>
+      </span>
+    </div>
+  </div>
+
+  <angular-slickgrid
+    gridId="grid45"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
+  </angular-slickgrid>
+</div>
