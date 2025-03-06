@@ -260,7 +260,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     if (this._preloadComponent && containerElements?.length >= 0) {
       const preloadComp = this.angularUtilService.createAngularComponentAppendToDom(
         this._preloadComponent,
-        containerElements[containerElements.length - 1]
+        containerElements[containerElements.length - 1],
+        {},
+        { sanitizer: this._grid.sanitizeHtmlString }
       );
       this._preloadCompRef = preloadComp.componentRef;
     }
@@ -283,6 +285,9 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
           grid: this._grid,
           dataView: this.dataView,
           parent: this.rowDetailViewOptions?.parent,
+        },
+        {
+          sanitizer: this._grid.sanitizeHtmlString,
         }
       );
       if (componentOutput?.componentRef) {
