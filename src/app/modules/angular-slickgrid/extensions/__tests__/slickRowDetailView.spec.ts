@@ -16,7 +16,6 @@ import { AngularUtilService } from '../../services';
 import { RowDetailView } from '../../models/rowDetailView.interface';
 import { RxJsResourceStub } from '../../../../../../test/rxjsResourceStub';
 import { SlickRowDetailView } from '../slickRowDetailView';
-jest.mock('@slickgrid-universal/row-detail-view-plugin');
 
 jest.mock('@slickgrid-universal/common', () => ({
   ...(jest.requireActual('@slickgrid-universal/common') as any),
@@ -31,6 +30,16 @@ jest.mock('@slickgrid-universal/common', () => ({
     setSelectedRanges: jest.fn(),
     onSelectedRangesChanged: new SlickEvent(),
   })),
+}));
+
+jest.mock('@slickgrid-universal/row-detail-view-plugin', () => ({
+  ...(jest.requireActual('@slickgrid-universal/row-detail-view-plugin') as any),
+  onAsyncResponse: new SlickEvent(),
+  onAsyncEndUpdate: new SlickEvent(),
+  onAfterRowDetailToggle: new SlickEvent(),
+  onBeforeRowDetailToggle: new SlickEvent(),
+  onRowOutOfViewportRange: new SlickEvent(),
+  onRowBackToViewportRange: new SlickEvent(),
 }));
 
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
@@ -74,6 +83,9 @@ const dataViewStub = {
   getItem: jest.fn(),
   getItems: jest.fn(),
   getItemCount: jest.fn(),
+  onRowCountChanged: new SlickEvent(),
+  onRowsChanged: new SlickEvent(),
+  onSetItemsCalled: new SlickEvent(),
 };
 
 const gridStub = {
@@ -85,6 +97,10 @@ const gridStub = {
   sanitizeHtmlString: (s: string) => s,
   onColumnsReordered: new SlickEvent(),
   onSelectedRowsChanged: new SlickEvent(),
+  onBeforeEditCell: new SlickEvent(),
+  onBeforeRemoveCachedRow: new SlickEvent(),
+  onClick: new SlickEvent(),
+  onScroll: new SlickEvent(),
   onSort: new SlickEvent(),
 } as unknown as SlickGrid;
 
@@ -109,7 +125,7 @@ describe('SlickRowDetailView', () => {
     rxjsResourceStub = new RxJsResourceStub();
 
     plugin = new SlickRowDetailView(angularUtilServiceStub, applicationRefStub, eventPubSubService, document.body as HTMLDivElement, rxjsResourceStub);
-    plugin.eventHandler = new SlickEventHandler();
+    jest.spyOn(plugin, 'eventHandler', 'get').mockReturnValue(eventHandler);
     jest.spyOn(plugin, 'getOptions').mockReturnValue(gridOptionsMock.rowDetailView as RowDetailView);
   });
 
@@ -423,7 +439,7 @@ describe('SlickRowDetailView', () => {
               model: mockColumn,
               addon: expect.anything(),
               grid: gridStub,
-              dataView: undefined,
+              dataView: dataViewStub,
               parent: undefined,
             },
             { sanitizer: expect.any(Function) }
@@ -460,7 +476,7 @@ describe('SlickRowDetailView', () => {
               model: mockColumn,
               addon: expect.anything(),
               grid: gridStub,
-              dataView: undefined,
+              dataView: dataViewStub,
               parent: undefined,
             },
             { sanitizer: expect.any(Function) }
@@ -495,7 +511,7 @@ describe('SlickRowDetailView', () => {
                 model: mockColumn,
                 addon: expect.anything(),
                 grid: gridStub,
-                dataView: undefined,
+                dataView: dataViewStub,
                 parent: undefined,
               },
               { sanitizer: expect.any(Function) }
