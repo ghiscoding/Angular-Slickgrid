@@ -279,6 +279,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
     this.gridOptions = {
       autoResize: {
         container: '.trading-platform',
+        autoHeight: false,
         rightPadding: 0,
         bottomPadding: 10,
       },
