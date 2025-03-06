@@ -439,7 +439,7 @@ describe('SlickRowDetailView', () => {
               model: mockColumn,
               addon: expect.anything(),
               grid: gridStub,
-              dataView: undefined,
+              dataView: dataViewStub,
               parent: undefined,
             },
             { sanitizer: expect.any(Function) }
@@ -476,7 +476,7 @@ describe('SlickRowDetailView', () => {
               model: mockColumn,
               addon: expect.anything(),
               grid: gridStub,
-              dataView: undefined,
+              dataView: dataViewStub,
               parent: undefined,
             },
             { sanitizer: expect.any(Function) }
@@ -511,7 +511,7 @@ describe('SlickRowDetailView', () => {
                 model: mockColumn,
                 addon: expect.anything(),
                 grid: gridStub,
-                dataView: undefined,
+                dataView: dataViewStub,
                 parent: undefined,
               },
               { sanitizer: expect.any(Function) }
