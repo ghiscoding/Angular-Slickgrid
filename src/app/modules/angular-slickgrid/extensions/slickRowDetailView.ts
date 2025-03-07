@@ -336,9 +336,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
    * @param item
    */
   protected notifyTemplate(item: any) {
-    if (this.onAsyncResponse) {
-      this.onAsyncResponse.notify({ item, itemDetail: item }, new SlickEventData(), this);
-    }
+    this.onAsyncResponse.notify({ item, itemDetail: item }, new SlickEventData(), this);
   }
 
   /**
