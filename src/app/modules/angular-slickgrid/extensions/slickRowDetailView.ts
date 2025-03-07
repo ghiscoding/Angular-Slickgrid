@@ -209,11 +209,11 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         // hook some events needed by the Plugin itself
 
         // we need to redraw the open detail views if we change column position (column reorder)
-        this.eventHandler.subscribe(this._grid.onColumnsReordered, this.redrawAllViewComponents.bind(this));
+        this.eventHandler.subscribe(this._grid.onColumnsReordered, () => this.redrawAllViewComponents());
 
         // on row selection changed, we also need to redraw
         if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
-          this.eventHandler.subscribe(this._grid.onSelectedRowsChanged, this.redrawAllViewComponents.bind(this));
+          this.eventHandler.subscribe(this._grid.onSelectedRowsChanged, () => this.redrawAllViewComponents());
         }
 
         // on sort, all row detail are collapsed so we can dispose of all the Views as well
@@ -223,7 +223,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         this._subscriptions.push(
           this.eventPubSubService?.subscribe(
             ['onFilterChanged', 'onGridMenuColumnsChanged', 'onColumnPickerColumnsChanged'],
-            this.redrawAllViewComponents.bind(this)
+            () => this.redrawAllViewComponents()
           ),
           this.eventPubSubService?.subscribe(['onGridMenuClearAllFilters', 'onGridMenuClearAllSorting'], () =>
             window.setTimeout(() => this.redrawAllViewComponents())
@@ -235,10 +235,11 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   }
 
   /** Redraw (re-render) all the expanded row detail View Components */
-  redrawAllViewComponents() {
+  redrawAllViewComponents(forceRedraw = false) {
     this.resetRenderedRows();
     this._views.forEach((view) => {
-      if (!view.rendered) {
+      if (!view.rendered || forceRedraw) {
+        forceRedraw && view.componentRef?.destroy();
         this.redrawViewComponent(view);
       }
     });
@@ -321,7 +322,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
     const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
-      if (compRef?.destroy) {
+      if (typeof compRef?.destroy === 'function') {
         compRef.destroy();
         expandedView.rendered = false;
       }

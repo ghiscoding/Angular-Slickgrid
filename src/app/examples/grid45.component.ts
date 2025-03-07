@@ -160,9 +160,11 @@ export class Grid45Component implements OnDestroy, OnInit {
   }
 
   closeAllRowDetail() {
-    if (this.angularGrid?.extensionService) {
-      this.rowDetailInstance.collapseAll();
-    }
+    this.rowDetailInstance?.collapseAll();
+  }
+
+  redrawAllRowDetail() {
+    this.rowDetailInstance?.redrawAllViewComponents(true);
   }
 
   /** Just for demo purposes, we will simulate an async server call and return more details on the selected row item */
@@ -230,5 +232,6 @@ export class Grid45Component implements OnDestroy, OnInit {
     this.showSubTitle = !this.showSubTitle;
     const action = this.showSubTitle ? 'remove' : 'add';
     document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService?.resizeGrid(1);
   }
 }

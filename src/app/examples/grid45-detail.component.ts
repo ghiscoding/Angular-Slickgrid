@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularGridInstance, Column, GridOption, GridState } from '../modules/angular-slickgrid';
 
 export interface Distributor {
@@ -25,7 +25,7 @@ export interface OrderData {
   templateUrl: './grid45-detail.component.html',
   encapsulation: ViewEncapsulation.None,
 })
-export class Grid45DetailComponent implements OnInit {
+export class Grid45DetailComponent implements OnDestroy, OnInit {
   model!: Distributor;
   innerColDefs: Column[] = [];
   innerGridOptions!: GridOption;
@@ -44,6 +44,10 @@ export class Grid45DetailComponent implements OnInit {
     // mock some data (different in each dataset)
     this.innerDataset = [...this.model.orderData];
     this.showGrid = true;
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroying row detail');
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
