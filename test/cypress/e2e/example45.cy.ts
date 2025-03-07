@@ -101,6 +101,26 @@ describe('Example 45 - Row Detail with inner Grid', () => {
     cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'München');
   });
 
+  it('should force redraw of all Row Details and expect same row details to be opened and opened', () => {
+    cy.get('[data-test="redraw-all-btn"]').click();
+    cy.wait(10);
+
+    // 2nd row detail
+    cy.get(`#innergrid-1 [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should('contain', '10261');
+    cy.get(`#innergrid-1 [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Rio de Janeiro');
+    cy.get(`#innergrid-1 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0)`).should('contain', '10267');
+    cy.get(`#innergrid-1 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'München');
+
+    // 3rd row detail
+    cy.get('#innergrid-2 .search-filter.filter-orderId').should('have.value', '');
+    cy.get('#innergrid-2 .search-filter.filter-shipCity').should('have.value', '');
+    cy.get('#innergrid-2 .slick-sort-indicator-asc').should('not.exist');
+    cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should('contain', '10261');
+    cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(1)`).should('contain', 'Rio de Janeiro');
+    cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(0)`).should('contain', '10267');
+    cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'München');
+  });
+
   it('should close all rows', () => {
     cy.get('[data-test="collapse-all-btn"]').click();
   });

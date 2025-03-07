@@ -24,7 +24,7 @@
     </button>
   </h2>
 
-  <div class="subtitle">
+  <div class="subtitle" [hidden]="!showSubTitle">
     Add functionality to show extra information with a Row Detail View, (<a
       href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/row-detail"
       target="_blank"
@@ -40,7 +40,9 @@
       <button class="btn btn-outline-secondary btn-sm btn-icon ms-1" data-test="collapse-all-btn" (click)="closeAllRowDetail()">
         Close all Row Details
       </button>
-      &nbsp;&nbsp;
+      <button class="btn btn-outline-secondary btn-sm btn-icon mx-1" data-test="redraw-all-btn" (click)="redrawAllRowDetail()">
+        Force redraw all Row Details
+      </button>
 
       <span class="d-inline-flex gap-4px">
         <label for="detailViewRowCount">Detail View Rows Shown: </label>
