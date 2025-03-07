@@ -83,7 +83,7 @@ const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col
 export class GridTradingComponent implements OnDestroy, OnInit {
   private _darkMode = false;
   title = 'Example 33: Real-Time Trading Platform';
-  subTitle = `Simulate a stock trading platform with lot of price changes, it is strongly suggested to disable the `autoResize.autoHeight` grid option for this type of grid.
+  subTitle = `Simulate a stock trading platform with lot of price changes, it is strongly suggested to disable the <code>autoResize.autoHeight</code> grid option for this type of grid.
     <ul>
       <li>you can start/stop the simulation, you can see SlickGrid huge perf by setting: (1) lower Changes Rate, (2) increase both Changes per Cycle, and (3) lower Highlight Duration</li>
       <li>optionally change random numbers, between 0 and 10 symbols, per cycle (higher numbers means more changes)</li>
