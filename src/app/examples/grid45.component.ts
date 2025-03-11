@@ -19,7 +19,7 @@ export class Grid45Component implements OnDestroy, OnInit {
   gridOptions!: GridOption;
   angularGrid!: AngularGridInstance;
   dataset: Distributor[] = [];
-  detailViewRowCount = 8;
+  detailViewRowCount = 9;
   showSubTitle = true;
   isUsingInnerGridStatePresets = false;
   serverWaitDelay = FAKE_SERVER_DELAY;
@@ -100,6 +100,7 @@ export class Grid45Component implements OnDestroy, OnInit {
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
+        autoHeight: false, // works with/without autoHeight
         bottomPadding: 20,
       },
       autoHeight: false,
@@ -230,8 +231,6 @@ export class Grid45Component implements OnDestroy, OnInit {
 
   toggleSubTitle() {
     this.showSubTitle = !this.showSubTitle;
-    const action = this.showSubTitle ? 'remove' : 'add';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
     this.angularGrid.resizerService?.resizeGrid(1);
   }
 }

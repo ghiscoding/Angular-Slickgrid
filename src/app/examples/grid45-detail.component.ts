@@ -21,7 +21,7 @@ export interface OrderData {
 }
 
 @Component({
-  styles: ['.detail-label { display: inline-flex; align-items: center; gap: 4px; padding: 4px; }', 'label { font-weight: 600; }'],
+  styles: ['.innergrid { --slick-header-menu-display: inline-block; }'],
   templateUrl: './grid45-detail.component.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -47,7 +47,7 @@ export class Grid45DetailComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    console.log('destroying row detail');
+    console.log('destroying row detail', this.model.id);
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {

@@ -175,24 +175,24 @@ describe('SlickRowDetailView', () => {
       jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
 
       plugin.init(gridStub);
-      const output = await (gridOptionsMock.rowDetailView as RowDetailView).preTemplate!();
+      const output = (await (gridOptionsMock.rowDetailView as RowDetailView).preTemplate!()) as HTMLElement;
 
-      expect(output).toEqual(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
+      expect(output.outerHTML).toEqual(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`);
     });
 
     it('should provide a sanitized "postTemplate" when only a "viewComponent" is provided (meaning no "postTemplate" is originally provided)', async () => {
       (gridOptionsMock.rowDetailView as RowDetailView).viewComponent = TestComponent;
       jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
 
-      const output = await gridOptionsMock.rowDetailView!.postTemplate!({ id: 'field1', field: 'field1' });
-      expect(output).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
+      const output = (await gridOptionsMock.rowDetailView!.postTemplate!({ id: 'field1', field: 'field1' })) as HTMLElement;
+      expect(output.outerHTML).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
     });
 
     it('should define "datasetIdPropertyName" with different "id" and provide a sanitized "postTemplate" when only a "viewComponent" is provided (meaning no "postTemplate" is originally provided)', async () => {
       (gridOptionsMock.rowDetailView as RowDetailView).viewComponent = TestComponent;
       gridOptionsMock.datasetIdPropertyName = 'rowId';
-      const output = await gridOptionsMock.rowDetailView!.postTemplate!({ rowId: 'field1', field: 'field1' });
-      expect(output).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
+      const output = (await gridOptionsMock.rowDetailView!.postTemplate!({ rowId: 'field1', field: 'field1' })) as HTMLElement;
+      expect(output.outerHTML).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
     });
 
     describe('registered addon', () => {

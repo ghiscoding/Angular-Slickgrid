@@ -16,7 +16,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
       .each(($child, index) => expect($child.text()).to.eq(rootGridTitles[index]));
   });
 
-  it('should row detail height to 8 rows and change server delay to 40ms for faster testing', () => {
+  it('should set row detail height to 8 rows and change server delay to 40ms for faster testing', () => {
     cy.get('[data-test="detail-view-row-count"]').clear().type('8');
     cy.get('[data-test="set-count-btn"]').click();
     cy.get('[data-test="server-delay"]').type('{backspace}');
@@ -25,7 +25,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
   it('should open the Row Detail of the 2nd row and expect to find an inner grid with all inner column titles', () => {
     cy.get('.slick-cell.detail-view-toggle:nth(1)').click().wait(40);
 
-    cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', `- Order Details (id: ${1})`);
+    cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', '- Order Details (id: 1)');
 
     cy.get('#innergrid-1')
       .find('.slick-header-columns')
@@ -35,12 +35,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
   it('should sort 2nd Row Detail inner grid "Freight" column in ascending order and filter "Ship City" with "m" and expect 2 sorted rows', () => {
     cy.get('#grid45 .slick-viewport-top.slick-viewport-left').first().scrollTo(0, 0);
-    cy.get('#innergrid-1')
-      .find('.slick-header-column:nth(2)')
-      .trigger('mouseover')
-      .children('.slick-header-menu-button')
-      .invoke('show')
-      .click();
+    cy.get('#innergrid-1').find('.slick-header-column:nth(2)').children('.slick-header-menu-button').click();
 
     cy.get('#innergrid-1 .slick-header-menu .slick-menu-command-list')
       .should('be.visible')
@@ -132,12 +127,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
     cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', `- Order Details (id: ${1})`);
 
-    cy.get('#innergrid-1')
-      .find('.slick-header-column:nth(2)')
-      .trigger('mouseover')
-      .children('.slick-header-menu-button')
-      .invoke('show')
-      .click();
+    cy.get('#innergrid-1').find('.slick-header-column:nth(2)').children('.slick-header-menu-button').click();
 
     cy.get('#innergrid-1 .slick-header-menu .slick-menu-command-list')
       .should('be.visible')
@@ -181,12 +171,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
     cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', `- Order Details (id: ${1})`);
 
-    cy.get('#innergrid-1')
-      .find('.slick-header-column:nth(2)')
-      .trigger('mouseover')
-      .children('.slick-header-menu-button')
-      .invoke('show')
-      .click();
+    cy.get('#innergrid-1').find('.slick-header-column:nth(2)').children('.slick-header-menu-button').click();
 
     cy.get('#innergrid-1 .slick-header-menu .slick-menu-command-list')
       .should('be.visible')
@@ -235,12 +220,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
     cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', `- Order Details (id: ${1})`);
 
-    cy.get('#innergrid-1')
-      .find('.slick-header-column:nth(2)')
-      .trigger('mouseover')
-      .children('.slick-header-menu-button')
-      .invoke('show')
-      .click();
+    cy.get('#innergrid-1').find('.slick-header-column:nth(2)').children('.slick-header-menu-button').click();
 
     cy.get('#innergrid-1 .slick-header-menu .slick-menu-command-list')
       .should('be.visible')
@@ -264,11 +244,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
     cy.get('.slick-cell + .dynamic-cell-detail').find('h4').should('contain', `- Order Details (id: ${2})`);
 
-    cy.get('#innergrid-2 .slick-header-column:nth(2)')
-      .trigger('mouseover')
-      .children('.slick-header-menu-button')
-      .invoke('show')
-      .click();
+    cy.get('#innergrid-2 .slick-header-column:nth(2)').children('.slick-header-menu-button').click();
 
     cy.get('#innergrid-2 .slick-header-menu .slick-menu-command-list')
       .should('be.visible')
@@ -289,10 +265,11 @@ describe('Example 45 - Row Detail with inner Grid', () => {
 
   it('should go to the bottom end of the grid and open row 987', () => {
     cy.get('#grid45').type('{ctrl}{end}', { release: false });
-    cy.wait(50);
     cy.get('.slick-row[data-row=1001] .detail-view-toggle').first().click();
 
-    cy.get('#innergrid-987 .search-filter.filter-orderId').clear().type('>987');
+    cy.get('#innergrid-987 .search-filter.filter-orderId').as('orderIdSearch');
+    cy.get('@orderIdSearch').clear();
+    cy.get('@orderIdSearch').type('>987');
     cy.get('.slick-empty-data-warning').should('be.visible');
   });
 
@@ -315,7 +292,9 @@ describe('Example 45 - Row Detail with inner Grid', () => {
   it('should go back to the bottom of the grid and still expect row detail 987 to be opened with same filter and no rows inside it', () => {
     cy.get('#grid45').type('{ctrl}{end}', { release: false });
 
-    cy.get('#innergrid-987 .search-filter.filter-orderId').clear().type('>987');
+    cy.get('#innergrid-987 .search-filter.filter-orderId').as('orderIdSearch');
+    cy.get('@orderIdSearch').clear();
+    cy.get('@orderIdSearch').type('>987');
     cy.get('.slick-empty-data-warning').should('be.visible');
   });
 
@@ -351,7 +330,9 @@ describe('Example 45 - Row Detail with inner Grid', () => {
   it('should change Row Detail panel height to 15, open 2nd and 3rd then execute PageDown twice', () => {
     ROW_DETAIL_PANEL_COUNT = 15;
     cy.get('[data-test="collapse-all-btn"]').click();
-    cy.get('[data-test="detail-view-row-count"]').clear().type('15');
+    cy.get('[data-test="detail-view-row-count"]').as('rowCount');
+    cy.get('@rowCount').clear();
+    cy.get('@rowCount').type('15');
     cy.get('[data-test="set-count-btn"]').click();
 
     cy.get('.slick-cell.detail-view-toggle:nth(1)').click().wait(40);
@@ -363,9 +344,7 @@ describe('Example 45 - Row Detail with inner Grid', () => {
     cy.get(`#innergrid-1 [style="top: ${GRID_ROW_HEIGHT * 1}px;"] > .slick-cell:nth(1)`).should('contain', 'München');
 
     // open 3rd row detail
-    cy.get(`.slick-row[data-row="${ROW_DETAIL_PANEL_COUNT - 1}"] .slick-cell:nth(0)`)
-      .click()
-      .wait(40);
+    cy.get(`.slick-row[data-row="14"] .slick-cell:nth(0)`).click().wait(40);
 
     // 3rd row detail
     cy.get(`#innergrid-2 [style="top: ${GRID_ROW_HEIGHT * 0}px;"] > .slick-cell:nth(0)`).should('contain', '10281');
@@ -393,7 +372,9 @@ describe('Example 45 - Row Detail with inner Grid', () => {
   it('should change Row Detail panel height back to 8, open 2nd and 3rd and filter Company ID with "1..2" and expect only these 2 rows to be rendered in the grid', () => {
     ROW_DETAIL_PANEL_COUNT = 8;
     cy.get('[data-test="collapse-all-btn"]').click();
-    cy.get('[data-test="detail-view-row-count"]').clear().type('8');
+    cy.get('[data-test="detail-view-row-count"]').as('rowCount');
+    cy.get('@rowCount').clear();
+    cy.get('@rowCount').type('8');
     cy.get('[data-test="set-count-btn"]').click();
 
     cy.get('.slick-cell.detail-view-toggle:nth(1)').click().wait(40);
