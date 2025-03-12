@@ -12,6 +12,7 @@ import {
 import { RowDetailViewComponent } from './rowdetail-view.component';
 import { RowDetailPreloadComponent } from './rowdetail-preload.component';
 
+const FAKE_SERVER_DELAY = 250;
 const NB_ITEMS = 1000;
 
 @Component({
@@ -36,6 +37,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
   detailViewRowCount = 9;
   flashAlertType = 'info';
   message = '';
+  serverWaitDelay = FAKE_SERVER_DELAY;
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
@@ -297,7 +299,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
 
         // resolve the data after delay specified
         resolve(itemDetail);
-      }, 1000);
+      }, this.serverWaitDelay);
     });
   }
 
