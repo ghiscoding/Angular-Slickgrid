@@ -22,6 +22,7 @@ export class Grid45Component implements OnDestroy, OnInit {
   detailViewRowCount = 9;
   showSubTitle = true;
   isUsingInnerGridStatePresets = false;
+  isUsingAutoHeight = false;
   serverWaitDelay = FAKE_SERVER_DELAY;
 
   get rowDetailInstance(): SlickRowDetailView {
@@ -100,7 +101,7 @@ export class Grid45Component implements OnDestroy, OnInit {
     this.gridOptions = {
       autoResize: {
         container: '#demo-container',
-        autoHeight: false, // works with/without autoHeight
+        autoHeight: this.isUsingAutoHeight, // works with/without autoHeight
         bottomPadding: 20,
       },
       autoHeight: false,
@@ -157,6 +158,15 @@ export class Grid45Component implements OnDestroy, OnInit {
   changeUsingInnerGridStatePresets() {
     this.isUsingInnerGridStatePresets = !this.isUsingInnerGridStatePresets;
     this.closeAllRowDetail();
+    return true;
+  }
+
+  changeUsingResizerAutoHeight() {
+    this.isUsingAutoHeight = !this.isUsingAutoHeight;
+    this.angularGrid.slickGrid?.setOptions({
+      autoResize: { ...this.gridOptions.autoResize, autoHeight: this.isUsingAutoHeight },
+    });
+    this.angularGrid.resizerService.resizeGrid();
     return true;
   }
 
