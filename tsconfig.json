@@ -15,19 +15,12 @@
     "experimentalDecorators": true,
     "isolatedModules": true,
     "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2022",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2022", "dom"],
     "module": "es2022",
     "baseUrl": "./",
     "paths": {
-      "stream": [
-        "./node_modules/stream-browserify"
-      ]
+      "stream": ["./node_modules/stream-browserify"]
     },
     "strict": true
   },

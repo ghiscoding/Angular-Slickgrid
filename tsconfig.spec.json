@@ -1,20 +1,12 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./out-tsc/spec",
-    "module": "commonjs",
-    "types": [
-      "jest",
-      "jest-extended",
-      "node"
-    ]
+    "types": ["node", "vitest/globals"],
+    "target": "es2016"
   },
-  "files": [],
-  "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
-  ]
+  "files": ["test/test-setup.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

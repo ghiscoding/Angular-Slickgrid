@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 const mock = () => {
   let storage: any = {};
   return {
@@ -7,6 +9,8 @@ const mock = () => {
     clear: () => (storage = {}),
   };
 };
+
+window.HTMLElement.prototype.scrollIntoView = () => {};
 
 Object.defineProperty(window, 'localStorage', { value: mock() });
 Object.defineProperty(window, 'sessionStorage', { value: mock() });
@@ -24,10 +28,14 @@ Object.defineProperty(window, 'getComputedStyle', {
   }),
 });
 
-// Mock
-Object.defineProperty(window, 'location', {
-  value: {
-    pathname: '/terminals',
-    assign: jest.fn(),
-  },
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });

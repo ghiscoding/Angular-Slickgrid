@@ -6,10 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      '.angular/*',
-      'test/jest-coverage/',
-    ],
+    ignores: ['.angular/*', 'coverage/', 'test/jest-coverage/'],
   },
   {
     extends: [
@@ -21,7 +18,7 @@ export default tseslint.config(
     ],
     plugins: {
       cypress,
-      n
+      n,
     },
     // Everything in this config object targets our TypeScript files (Components, Directives, Pipes etc)
     files: ['**/*.ts'],
@@ -35,7 +32,10 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'destructuredArrayIgnorePattern': '^_', caughtErrors: 'none' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_', caughtErrors: 'none' },
+      ],
       '@typescript-eslint/no-explicit-any': 'off',
       'no-case-declarations': 'off',
     },
@@ -54,5 +54,5 @@ export default tseslint.config(
       '@angular-eslint/template/click-events-have-key-events': 'off',
       '@angular-eslint/template/interactive-supports-focus': 'off',
     },
-  },
+  }
 );

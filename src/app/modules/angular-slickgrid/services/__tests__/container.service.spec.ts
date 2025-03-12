@@ -1,4 +1,6 @@
 import { SharedService } from '@slickgrid-universal/common';
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { ContainerService } from '../container.service';
 
 describe('Container Service', () => {
