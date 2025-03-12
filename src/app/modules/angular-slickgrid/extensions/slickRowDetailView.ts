@@ -9,6 +9,7 @@ import type {
 import {
   addToArrayWhenNotExists,
   castObservableToPromise,
+  createDomElement,
   SlickEventData,
   SlickRowSelectionModel,
   unsubscribeAll,
@@ -119,15 +120,12 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       // when those are Angular View/ViewModel, we need to create View Component & provide the html containers to the Plugin (preTemplate/postTemplate methods)
       if (!this.gridOptions.rowDetailView.preTemplate) {
         this._preloadComponent = this.gridOptions?.rowDetailView?.preloadComponent;
-        this.addonOptions.preTemplate = () =>
-          this._grid.sanitizeHtmlString(`<div class="${PRELOAD_CONTAINER_PREFIX}"></div>`) as string;
+        this.addonOptions.preTemplate = () => createDomElement('div', { className: `${PRELOAD_CONTAINER_PREFIX}` });
       }
       if (!this.gridOptions.rowDetailView.postTemplate) {
         this._viewComponent = this.gridOptions?.rowDetailView?.viewComponent;
         this.addonOptions.postTemplate = (itemDetail: any) =>
-          this._grid.sanitizeHtmlString(
-            `<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`
-          ) as string;
+          createDomElement('div', { className: `${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}` });
       }
 
       // this also requires the Row Selection Model to be registered as well
@@ -247,21 +245,19 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
-    const containerElements = this.gridContainerElement.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
-    if (containerElements?.length >= 0) {
+    const containerElement = this.gridContainerElement.querySelector(`.${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
+    if (containerElement) {
       this.renderViewModel(createdView.dataContext);
     }
   }
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderPreloadView() {
-    const containerElements = this.gridContainerElement.getElementsByClassName(
-      `${PRELOAD_CONTAINER_PREFIX}`
-    ) as HTMLCollectionOf<HTMLElement>;
-    if (this._preloadComponent && containerElements?.length >= 0) {
+    const containerElement = this.gridContainerElement.querySelector(`.${PRELOAD_CONTAINER_PREFIX}`);
+    if (this._preloadComponent && containerElement) {
       const preloadComp = this.angularUtilService.createAngularComponentAppendToDom(
         this._preloadComponent,
-        containerElements[containerElements.length - 1],
+        containerElement,
         {},
         { sanitizer: this._grid.sanitizeHtmlString }
       );
@@ -271,15 +267,14 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** Render (or re-render) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | undefined {
-    const containerElements = this.gridContainerElement.getElementsByClassName(
-      `${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`
-    ) as HTMLCollectionOf<HTMLElement>;
-
-    if (this._viewComponent && containerElements?.length > 0) {
+    const containerElement = this.gridContainerElement.querySelector(
+      `.${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`
+    );
+    if (this._viewComponent && containerElement) {
       // render row detail
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(
         this._viewComponent,
-        containerElements[containerElements.length - 1],
+        containerElement,
         {
           model: item,
           addon: this,
@@ -291,6 +286,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
           sanitizer: this._grid.sanitizeHtmlString,
         }
       );
+
       if (componentOutput?.componentRef) {
         const viewObj = this._views.find((obj) => obj.id === item[this.datasetIdPropName]);
         if (viewObj) {
@@ -309,9 +305,8 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   protected disposeViewByItem(item: any, removeFromArray = false): void {
     const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === item[this.datasetIdPropName]);
-    if (foundViewIndex >= 0 && foundViewIndex in this._views) {
-      const expandedView = this._views[foundViewIndex];
-      this.disposeView(expandedView);
+    if (foundViewIndex >= 0) {
+      this.disposeView(this._views[foundViewIndex]);
       if (removeFromArray) {
         this._views.splice(foundViewIndex, 1);
       }
@@ -319,12 +314,12 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
   }
 
   protected disposeView(expandedView: CreatedView): CreatedView | void {
+    expandedView.rendered = false;
     const compRef = expandedView?.componentRef;
     if (compRef) {
       this.appRef.detachView(compRef.hostView);
       if (typeof compRef?.destroy === 'function') {
         compRef.destroy();
-        expandedView.rendered = false;
       }
       return expandedView;
     }
@@ -358,8 +353,10 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
       }
 
       if (!awaitedItemDetail || !(this.datasetIdPropName in awaitedItemDetail)) {
-        throw new Error(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback
-          (a Promise or an HttpClient call returning an Observable) returns an item object that has an "${this.datasetIdPropName}" property`);
+        throw new Error(
+          '[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback ' +
+            `returns an item object that has an "${this.datasetIdPropName}" property`
+        );
       }
 
       // notify the plugin with the new item details
@@ -382,8 +379,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
         dataContext: args.item,
         rendered: false,
       };
-      const idPropName = this.gridOptions.datasetIdPropertyName || 'id';
-      addToArrayWhenNotExists(this._views, viewInfo, idPropName);
+      addToArrayWhenNotExists(this._views, viewInfo, this.datasetIdPropName);
     } else {
       // collapsing, so dispose of the View/Component
       this.disposeViewByItem(args.item, true);
@@ -392,7 +388,7 @@ export class SlickRowDetailView extends UniversalSlickRowDetailView {
 
   /** When Row comes back to Viewport Range, we need to redraw the View */
   protected handleOnRowBackToViewportRange(_e: SlickEventData<OnRowBackToViewportRangeArgs>, args: OnRowBackToViewportRangeArgs) {
-    const viewModel = Array.from(this._views).find((x) => x.id === args.rowId);
+    const viewModel = this._views.find((x) => x.id === args.rowId);
     if (viewModel && !viewModel.rendered) {
       this.redrawViewComponent(viewModel);
     }
