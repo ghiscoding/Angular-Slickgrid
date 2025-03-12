@@ -13,6 +13,11 @@ describe('Example 21 - Row Detail View', () => {
       .each(($child, index) => expect($child.text()).to.eq(titles[index]));
   });
 
+  it('should change server delay to 40ms for faster testing', () => {
+    cy.get('[data-test="set-count-btn"]').click();
+    cy.get('[data-test="server-delay"]').type('{backspace}');
+  });
+
   it('should display first few rows of Task 0 to 5', () => {
     const expectedTasks = ['Task 0', 'Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5'];
 
