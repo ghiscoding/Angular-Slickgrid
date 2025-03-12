@@ -334,6 +334,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
       );
 
     // prettier-ignore
+    /* v8 ignore next 8 */
     this.gridStateService = externalServices?.gridStateService ?? new GridStateService(
       this.extensionService,
       this.filterService,
@@ -344,6 +345,7 @@ export class AngularSlickgridComponent<TData = any> implements AfterViewInit, On
     );
 
     // prettier-ignore
+    /* v8 ignore next 9 */
     this.gridService = externalServices?.gridService ?? new GridService(
       this.gridStateService,
       this.filterService,

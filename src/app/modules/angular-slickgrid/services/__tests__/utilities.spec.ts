@@ -1,5 +1,5 @@
-import 'jest-extended';
 import { of, Subscription } from 'rxjs';
+import { describe, expect, it } from 'vitest';
 
 import { unsubscribeAllObservables } from '../utilities';
 

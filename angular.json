@@ -14,14 +14,9 @@
             "outputPath": "website",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "allowedCommonJsDependencies": [
-              "@fnando/sparkline",
-              "stream"
-            ],
+            "allowedCommonJsDependencies": ["@fnando/sparkline", "stream"],
             "assets": [
               "src/assets",
               "src/favicon.ico",
@@ -46,13 +41,8 @@
                 "output": "/assets/i18n"
               }
             ],
-            "styles": [
-              "node_modules/@ng-select/ng-select/themes/default.theme.css",
-              "src/styles.scss"
-            ],
-            "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ],
+            "styles": ["node_modules/@ng-select/ng-select/themes/default.theme.css", "src/styles.scss"],
+            "scripts": ["node_modules/bootstrap/dist/js/bootstrap.min.js"],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -114,11 +104,11 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
+        },
+        "test": {
+          "builder": "@analogjs/vitest-angular:test"
         }
       }
     }
@@ -134,9 +124,7 @@
   },
   "cli": {
     "packageManager": "yarn",
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

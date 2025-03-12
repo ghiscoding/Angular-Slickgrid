@@ -32,15 +32,15 @@
       "problemMatcher": []
     },
     {
-      "label": "Run Jest Tests with Coverage",
+      "label": "Run Vitest with Coverage",
       "type": "shell",
-      "command": "yarn jest:coverage",
+      "command": "yarn test:coverage",
       "problemMatcher": []
     },
     {
-      "label": "Run Jest Watch",
+      "label": "Run Vitest Watch",
       "type": "shell",
-      "command": "yarn jest:watch",
+      "command": "yarn test:watch",
       "problemMatcher": []
     },
     {
