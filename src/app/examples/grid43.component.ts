@@ -153,6 +153,7 @@ export class Grid43Component implements OnInit {
       enableCellNavigation: true,
       enableColumnReorder: true,
       enableCellRowSpan: true,
+      enableHeaderMenu: false,
       enableExcelExport: true,
       externalResources: [this.excelExportService],
       enableExcelCopyBuffer: true,
