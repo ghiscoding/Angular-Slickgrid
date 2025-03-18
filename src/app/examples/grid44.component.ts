@@ -274,6 +274,7 @@ export class Grid44Component implements OnInit {
       enableCellNavigation: true,
       enableColumnReorder: true,
       enableCellRowSpan: true,
+      enableHeaderMenu: false,
       gridHeight: 600,
       gridWidth: 900,
       rowHeight: 30,
