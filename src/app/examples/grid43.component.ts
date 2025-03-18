@@ -424,9 +424,9 @@ export class Grid43Component implements OnInit {
     // direction to calculate new column indexes (-1 or +1 on the column index)
     // e.g. metadata = `{0:{columns:{1:{rowspan: 2}}}}` if we hide then new result is `{0:{columns:{0:{rowspan: 2}}}}`
     const dir = this.showEmployeeId ? 1 : -1;
-    for (let row of Object.keys(this.metadata)) {
+    for (const row of Object.keys(this.metadata)) {
       newMetadata[row] = { columns: {} };
-      for (let col of Object.keys((this.metadata as any)[row].columns)) {
+      for (const col of Object.keys((this.metadata as any)[row].columns)) {
         newMetadata[row].columns[Number(col) + dir] = (this.metadata as any)[row].columns[col];
       }
     }
