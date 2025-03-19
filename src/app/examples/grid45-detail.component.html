@@ -2,6 +2,7 @@
   <h4>{{ model.companyName }} - Order Details (id: {{ model.id }})</h4>
   <div class="container-fluid">
     <angular-slickgrid
+      class="innergrid"
       [gridId]="innerGridId"
       [columnDefinitions]="innerColDefs"
       [gridOptions]="innerGridOptions"
