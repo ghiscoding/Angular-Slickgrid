@@ -14,13 +14,13 @@
       class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
       type="button"
       data-test="toggle-subtitle"
-      (click)="toggleSubTitle()"
+      (click)="hideSubTitle = !hideSubTitle"
     >
       <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
     </button>
   </h2>
 
-  <div class="subtitle" [hidden]="!showSubTitle">
+  <div class="subtitle" [hidden]="hideSubTitle">
     <p class="italic example-details">
       This page demonstrates <code>colspan</code> & <code>rowspan</code> using DataView with item metadata. <b>Note</b>:
       <code>colspan</code> & <code>rowspan</code> are rendered via row/cell indexes, any operations that could change these

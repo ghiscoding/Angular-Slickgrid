@@ -38,6 +38,7 @@ export class GridHeaderButtonComponent implements OnInit {
   dataset2: any[] = [];
   angularGrid1!: AngularGridInstance;
   angularGrid2!: AngularGridInstance;
+  hideSubTitle = false;
 
   constructor() {
     columns1WithHighlightingById = {};

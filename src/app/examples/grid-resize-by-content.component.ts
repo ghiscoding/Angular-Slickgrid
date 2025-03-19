@@ -80,6 +80,7 @@ export class GridResizeByContentComponent implements OnInit {
   dataset: any[] = [];
   editQueue: any[] = [];
   editedItems: any = {};
+  hideSubTitle = false;
   isUsingDefaultResize = false;
   isGridEditable = true;
   isMassSelectionDisabled = true;

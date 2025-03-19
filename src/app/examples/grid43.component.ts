@@ -14,8 +14,8 @@ export class Grid43Component implements OnInit {
   gridOptions!: GridOption;
   dataset: any[] = [];
   isEditable = false;
+  hideSubTitle = false;
   showEmployeeId = true;
-  showSubTitle = true;
   metadata: ItemMetadata | Record<number, ItemMetadata> = {
     // 10001: Davolio
     0: {
@@ -444,11 +444,5 @@ export class Grid43Component implements OnInit {
     this.metadata = newMetadata;
     this.angularGrid.slickGrid.remapAllColumnsRowSpan();
     this.angularGrid.slickGrid.invalidate();
-  }
-
-  toggleSubTitle() {
-    this.showSubTitle = !this.showSubTitle;
-    const action = this.showSubTitle ? 'remove' : 'add';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
   }
 }

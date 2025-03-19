@@ -10,8 +10,16 @@
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="hideSubTitle = !hideSubTitle"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
   </h2>
-  <div class="subtitle" [innerHTML]="subTitle"></div>
+  <div class="subtitle" [hidden]="hideSubTitle" [innerHTML]="subTitle"></div>
 
   <br />
 

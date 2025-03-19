@@ -23,6 +23,7 @@ export class GridBaseRowEditingComponent implements OnInit {
   fetchResult = '';
   statusClass = 'alert alert-light';
   statusStyle = 'display: none';
+  hideSubTitle = false;
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent

@@ -14,7 +14,7 @@ export class Grid18Component {
   gridOptions!: GridOption;
   dataset: any[] = [];
   gridCreated = false;
-  showSubTitle = true;
+  hideSubTitle = false;
   uploadFileRef = '';
   templateUrl = `${sampleDataRoot}/users.csv`;
 
@@ -98,11 +98,5 @@ export class Grid18Component {
     this.columnDefinitions = colDefs;
     this.gridCreated = true;
     this.cd.detectChanges();
-  }
-
-  toggleSubTitle() {
-    this.showSubTitle = !this.showSubTitle;
-    const action = this.showSubTitle ? 'remove' : 'add';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
   }
 }

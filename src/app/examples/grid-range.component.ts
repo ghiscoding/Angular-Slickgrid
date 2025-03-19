@@ -63,6 +63,7 @@ export class GridRangeComponent implements OnInit, OnDestroy {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
+  hideSubTitle = false;
   selectedLanguage: string;
   metrics!: Metrics;
   filterList = [

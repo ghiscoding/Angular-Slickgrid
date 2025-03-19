@@ -47,6 +47,7 @@ export class GridOdataComponent implements OnInit {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset = [];
+  hideSubTitle = false;
   metrics!: Metrics;
   paginationOptions!: Pagination;
 

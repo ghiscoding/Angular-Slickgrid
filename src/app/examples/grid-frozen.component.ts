@@ -35,6 +35,7 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
   dataset!: any[];
   frozenColumnCount = 2;
   frozenRowCount = 3;
+  hideSubTitle = false;
   isFrozenBottom = false;
   gridObj: any;
   slickEventHandler: any;

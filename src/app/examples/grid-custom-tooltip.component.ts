@@ -41,6 +41,7 @@ export class GridCustomTooltipComponent implements OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   serverApiDelay = 500;
+  hideSubTitle = false;
 
   ngOnInit(): void {
     this.initializeGrid();

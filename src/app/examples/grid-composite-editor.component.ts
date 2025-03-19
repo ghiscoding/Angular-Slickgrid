@@ -104,6 +104,7 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
   isCompositeDisabled = false;
   isMassSelectionDisabled = true;
   cellCssStyleQueue: string[] = [];
+  hideSubTitle = false;
   complexityLevelList = [
     { value: 0, label: 'Very Simple' },
     { value: 1, label: 'Simple' },

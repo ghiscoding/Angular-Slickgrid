@@ -31,6 +31,7 @@ export class GridCustomPaginationComponent implements OnInit {
   dataset: any[] = [];
   paginationPosition: 'bottom' | 'top' = 'top';
   angularGrid!: AngularGridInstance;
+  hideSubTitle = false;
 
   constructor(protected readonly angularUtilService: AngularUtilService) {}
 

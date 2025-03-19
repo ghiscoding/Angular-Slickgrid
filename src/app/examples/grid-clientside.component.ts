@@ -56,6 +56,7 @@ export class GridClientSideComponent implements OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   metrics!: Metrics;
+  hideSubTitle = false;
 
   constructor(
     private http: HttpClient,

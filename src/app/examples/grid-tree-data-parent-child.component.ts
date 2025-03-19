@@ -39,6 +39,7 @@ export class GridTreeDataParentChildComponent implements OnInit {
   columnDefinitions!: Column[];
   dataset!: any[];
   loadingClass = '';
+  hideSubTitle = false;
   isLargeDataset = false;
   hasNoExpandCollapseChanged = true;
   treeToggleItems: TreeToggledItem[] = [];
