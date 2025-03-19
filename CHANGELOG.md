@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.13.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.1...v8.13.2) (2025-03-19)
+
+### Bug Fixes
+
+* Row Detail redraw all should work as expected ([dd4beab](https://github.com/ghiscoding/angular-slickgrid/commit/dd4beab0d47d70e1c34dbd97aa7a23268d53a10e))
+* Row Detail should also work with fixed grid height or no autoHeight ([e56d435](https://github.com/ghiscoding/angular-slickgrid/commit/e56d4353690890d2ca3c020dfe14b3f3ec272334))
+
 ## [8.13.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.0...v8.13.1) (2025-03-01)
 
 ### Bug Fixes
