@@ -1,6 +1,6 @@
-import 'jest-extended';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TranslaterService } from '../translater.service';
 
