@@ -23,6 +23,7 @@ export class GridInfiniteJsonComponent implements OnInit {
   angularGrid!: AngularGridInstance;
   columnDefinitions!: Column[];
   dataset: any[] = [];
+  hideSubTitle = false;
   gridOptions!: GridOption;
   metrics!: Partial<Metrics>;
   shouldResetOnSort = false;

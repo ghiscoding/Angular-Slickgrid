@@ -92,6 +92,7 @@ export class GridTradingComponent implements OnDestroy, OnInit {
     </ul>`;
   angularGrid!: AngularGridInstance;
   gridOptions!: GridOption;
+  hideSubTitle = false;
   columnDefinitions: Column[] = [];
   dataset: any[] = [];
   isFullScreen = false;

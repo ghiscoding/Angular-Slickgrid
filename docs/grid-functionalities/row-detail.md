@@ -408,7 +408,6 @@ export class MainGridComponent implements OnInit {
   gridOptions!: GridOption;
   angularGrid!: AngularGridInstance;
   dataset: Distributor[] = [];
-  showSubTitle = true;
 
   get rowDetailInstance(): SlickRowDetailView {
     return this.angularGrid.extensions.rowDetailView?.instance || {};

@@ -1,13 +1,15 @@
 import { Component, ViewContainerRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AngularUtilService } from '..';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { AngularUtilService } from '../angularUtil.service';
 
 const DOM_ELEMENT_ID = 'row-detail123';
 const DOM_PARENT_ID = 'parent-detail';
 
 const viewContainerRefStub = {
-  createComponent: jest.fn(),
-  detectChanges: jest.fn(),
+  createComponent: vi.fn(),
+  detectChanges: vi.fn(),
 } as unknown as ViewContainerRef;
 
 @Component({ template: `<h4>Loading...</h4>` })
@@ -52,12 +54,12 @@ describe('AngularUtilService', () => {
     beforeEach(() => {
       domElm = document.getElementById(DOM_ELEMENT_ID) as HTMLDivElement;
       domParentElm = document.getElementById(DOM_PARENT_ID) as HTMLDivElement;
-      mockComponentFactory = { hostView: { rootNodes: [domElm] }, instance: {}, changeDetectorRef: { detectChanges: jest.fn() } };
+      mockComponentFactory = { hostView: { rootNodes: [domElm] }, instance: {}, changeDetectorRef: { detectChanges: vi.fn() } };
     });
 
     it('should create an Angular Component and add it to the current component DOM tree', () => {
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
 
       const output = service.createAngularComponent(TestPreloadComponent);
 
@@ -71,7 +73,7 @@ describe('AngularUtilService', () => {
       h1Mock.textContent = titleMock;
       mockComponentFactory.hostView.rootNodes[0] = h1Mock;
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const output = service.createAngularComponent(TestComponent, domParentElm, { title: titleMock });
 
       expect(createCompSpy).toHaveBeenCalled();
@@ -84,10 +86,10 @@ describe('AngularUtilService', () => {
       const h1Mock = document.createElement('h1');
       h1Mock.textContent = titleMock;
       mockComponentFactory.hostView.rootNodes[0] = h1Mock;
-      const sanitizerMock = jest.fn().mockReturnValue(titleMock);
+      const sanitizerMock = vi.fn().mockReturnValue(titleMock);
 
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const output = service.createAngularComponent(TestComponent, domParentElm, { title: titleMock }, { sanitizer: sanitizerMock });
 
       expect(sanitizerMock).toHaveBeenCalled();
@@ -106,7 +108,7 @@ describe('AngularUtilService', () => {
       };
 
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
       const output = service.createInteractiveAngularComponent(TestComponent, domParentElm, { title: titleMock });
 
       expect(createCompSpy).toHaveBeenCalled();
@@ -128,8 +130,8 @@ describe('AngularUtilService', () => {
 
     it('should an angular component and append it to the DOM tree in the document body', () => {
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyBody = jest.spyOn(document.body, 'appendChild');
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const spyBody = vi.spyOn(document.body, 'appendChild');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent);
 
@@ -140,8 +142,8 @@ describe('AngularUtilService', () => {
 
     it('should an angular component and append it to the current component DOM tree, which will have its parent node replaced by the new html', () => {
       // @ts-ignore
-      const createCompSpy = jest.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
-      const spyElement = jest.spyOn(domParentElm, 'replaceChildren');
+      const createCompSpy = vi.spyOn(viewContainerRefStub, 'createComponent').mockReturnValue(mockComponentFactory);
+      const spyElement = vi.spyOn(domParentElm, 'replaceChildren');
 
       const output = service.createAngularComponentAppendToDom(TestPreloadComponent, domParentElm);
 

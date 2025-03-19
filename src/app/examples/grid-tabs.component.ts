@@ -23,6 +23,7 @@ export class GridTabsComponent implements OnInit {
   gridOptions2!: GridOption;
   dataset1!: any[];
   dataset2!: any[];
+  hideSubTitle = false;
 
   constructor(private http: HttpClient) {}
 

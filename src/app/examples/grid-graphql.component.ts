@@ -51,6 +51,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset = [];
+  hideSubTitle = false;
   metrics!: Metrics;
 
   isWithCursor = false;

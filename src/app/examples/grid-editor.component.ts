@@ -90,6 +90,7 @@ export class GridEditorComponent implements OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   gridObj: any;
+  hideSubTitle = false;
   isAutoEdit = true;
   alertWarning: any;
   updatedObject: any;

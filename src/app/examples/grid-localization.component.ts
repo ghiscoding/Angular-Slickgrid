@@ -64,6 +64,7 @@ export class GridLocalizationComponent implements OnInit, OnDestroy {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
+  hideSubTitle = false;
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
   gridObj: any;

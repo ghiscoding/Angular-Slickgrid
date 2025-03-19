@@ -14,7 +14,8 @@ export class Grid43Component implements OnInit {
   gridOptions!: GridOption;
   dataset: any[] = [];
   isEditable = false;
-  showSubTitle = true;
+  hideSubTitle = false;
+  showEmployeeId = true;
   metadata: ItemMetadata | Record<number, ItemMetadata> = {
     // 10001: Davolio
     0: {
@@ -152,6 +153,7 @@ export class Grid43Component implements OnInit {
       enableCellNavigation: true,
       enableColumnReorder: true,
       enableCellRowSpan: true,
+      enableHeaderMenu: false,
       enableExcelExport: true,
       externalResources: [this.excelExportService],
       enableExcelCopyBuffer: true,
@@ -412,9 +414,35 @@ export class Grid43Component implements OnInit {
     ];
   }
 
-  toggleSubTitle() {
-    this.showSubTitle = !this.showSubTitle;
-    const action = this.showSubTitle ? 'remove' : 'add';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
+  // when a side effect happens (e.g. show/hide EmployeeID),
+  // you have to recalculate the metadata by yourself
+  // if column index(es) aren't changing then "invalidateRows()" or "invalidate()" might be sufficient
+  // however, when column index(es) changed then you will have to call "remapAllColumnsRowSpan()" to clear & reevaluate the rowspan cache
+  toggleEmployeeIdVisibility() {
+    const newMetadata: any = {};
+    this.showEmployeeId = !this.showEmployeeId;
+
+    // direction to calculate new column indexes (-1 or +1 on the column index)
+    // e.g. metadata = `{0:{columns:{1:{rowspan: 2}}}}` if we hide then new result is `{0:{columns:{0:{rowspan: 2}}}}`
+    const dir = this.showEmployeeId ? 1 : -1;
+    for (const row of Object.keys(this.metadata)) {
+      newMetadata[row] = { columns: {} };
+      for (const col of Object.keys((this.metadata as any)[row].columns)) {
+        newMetadata[row].columns[Number(col) + dir] = (this.metadata as any)[row].columns[col];
+      }
+    }
+
+    // update column definitions
+    if (this.showEmployeeId) {
+      this.columnDefinitions.unshift({ id: 'employeeID', name: 'Employee ID', field: 'employeeID', width: 100 });
+    } else {
+      this.columnDefinitions.splice(0, 1);
+    }
+    this.angularGrid.slickGrid.setColumns(this.columnDefinitions);
+
+    // update & remap rowspans
+    this.metadata = newMetadata;
+    this.angularGrid.slickGrid.remapAllColumnsRowSpan();
+    this.angularGrid.slickGrid.invalidate();
   }
 }

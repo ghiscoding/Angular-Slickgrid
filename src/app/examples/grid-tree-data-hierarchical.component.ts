@@ -36,6 +36,7 @@ export class GridTreeDataHierarchicalComponent implements OnInit {
   gridOptions!: GridOption;
   columnDefinitions!: Column[];
   datasetHierarchical: any[] = [];
+  hideSubTitle = false;
   isExcludingChildWhenFiltering = false;
   isAutoApproveParentItemWhenTreeColumnIsValid = true;
   isAutoRecalcTotalsOnFilterChange = false;

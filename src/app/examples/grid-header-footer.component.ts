@@ -31,6 +31,7 @@ export class GridHeaderFooterComponent implements OnInit {
   columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
   dataset!: any[];
+  hideSubTitle = false;
 
   ngOnInit(): void {
     this.columnDefinitions = [

@@ -11,16 +11,16 @@
       </a>
     </span>
     <button
-      class="ms-1 btn btn-outline-secondary btn-sm btn-icon"
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
       type="button"
       data-test="toggle-subtitle"
-      (click)="toggleSubTitle()"
+      (click)="hideSubTitle = !hideSubTitle"
     >
       <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
     </button>
   </h2>
 
-  <div class="subtitle" [hidden]="!showSubTitle">
+  <div class="subtitle" [hidden]="hideSubTitle">
     <p class="italic example-details">
       <b>NOTES</b>: <code>rowspan</code> is an opt-in feature, because of its small perf hit (it needs to loop through all row
       metadatas to map all rowspan), and requires the <code>enableCellRowSpan</code> grid option to be enabled to work properly.
@@ -69,6 +69,13 @@
   >
     <span class="mdi mdi-chevron-down mdi-rotate-270"></span>
     Navigate to Right Cell
+  </button>
+  <button
+    class="ms-2 btn btn-outline-secondary btn-sm btn-icon mx-1"
+    data-test="toggle-employee-id"
+    (click)="toggleEmployeeIdVisibility()"
+  >
+    Show/Hide EmployeeID
   </button>
   <button class="ms-1 btn btn-outline-secondary btn-sm btn-icon mx-1" (click)="toggleEditing()" data-test="toggle-editing">
     <span class="mdi mdi-pencil-outline"></span>

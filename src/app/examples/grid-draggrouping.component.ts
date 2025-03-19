@@ -48,6 +48,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   durationOrderByCount = false;
   gridObj: any;
   gridOptions!: GridOption;
+  hideSubTitle = false;
   processing = false;
   selectedGroupingFields: Array<string | GroupingGetterFunction> = ['', '', ''];
   excelExportService = new ExcelExportService();

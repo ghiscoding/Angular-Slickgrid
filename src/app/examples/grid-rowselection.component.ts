@@ -36,6 +36,7 @@ export class GridRowSelectionComponent implements OnInit {
   dataset2!: any[];
   gridObj1!: any;
   gridObj2!: any;
+  hideSubTitle = false;
   isGrid2WithPagination = true;
   selectedTitles = '';
   selectedTitle = '';

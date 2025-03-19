@@ -38,6 +38,7 @@ export class GridGroupingComponent implements OnInit {
   dataset!: any[];
   gridObj: any;
   dataviewObj: any;
+  hideSubTitle = false;
   processing = false;
   excelExportService = new ExcelExportService();
   textExportService = new TextExportService();

@@ -21,6 +21,7 @@ export class CustomPagerComponent implements BasePaginationComponent {
   protected _paginationService!: PaginationService;
   protected _pubSubService!: PubSubService;
   currentPagination = {} as PaginationMetadata;
+  hideSubTitle = false;
 
   constructor(protected readonly elm: ElementRef) {}
 
