@@ -97,6 +97,7 @@ export class GridContextMenuComponent implements OnInit, OnDestroy {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset!: any[];
+  hideSubTitle = false;
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {

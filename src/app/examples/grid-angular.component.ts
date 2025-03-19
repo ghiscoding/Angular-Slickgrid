@@ -59,6 +59,7 @@ export class GridAngularComponent implements OnInit {
   dataset!: any[];
   gridObj: any;
   isAutoEdit = true;
+  hideSubTitle = false;
   alertWarning: any;
   updatedObject: any;
   selectedLanguage = 'en';

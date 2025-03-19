@@ -54,6 +54,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset = [];
+  hideSubTitle = false;
   metrics!: Metrics;
 
   graphqlQuery = '';

@@ -21,6 +21,7 @@ export class GridDragRecycleComponent implements OnInit {
   dragHelper?: HTMLElement;
   dragRows: number[] = [];
   dragMode = '';
+  hideSubTitle = false;
 
   ngOnInit(): void {
     this.defineGrids();

@@ -35,6 +35,7 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
   gridOptions!: GridOption;
   dataset: any[] = [];
   detailViewRowCount = 9;
+  hideSubTitle = false;
   flashAlertType = 'info';
   message = '';
   serverWaitDelay = FAKE_SERVER_DELAY;

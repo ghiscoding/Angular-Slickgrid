@@ -17,7 +17,7 @@ export class Grid44Component implements OnInit {
   angularGrid!: AngularGridInstance;
   dataLn: number | string = 'loading...';
   dataset: any[] = [];
-  showSubTitle = true;
+  hideSubTitle = false;
   scrollToRow = 100;
   metadata: Record<number, ItemMetadata> = {
     0: {
@@ -370,11 +370,5 @@ export class Grid44Component implements OnInit {
     // const args = event.detail && event.detail.args;
     this.angularGrid.slickGrid?.scrollRowToTop(this.scrollToRow);
     return false;
-  }
-
-  toggleSubTitle() {
-    this.showSubTitle = !this.showSubTitle;
-    const action = this.showSubTitle ? 'remove' : 'add';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
   }
 }

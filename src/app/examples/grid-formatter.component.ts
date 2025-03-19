@@ -52,6 +52,7 @@ export class GridFormatterComponent implements OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   angularGrid!: AngularGridInstance;
+  hideSubTitle = false;
   resizerPaused = false;
 
   angularGridReady(angularGrid: AngularGridInstance) {

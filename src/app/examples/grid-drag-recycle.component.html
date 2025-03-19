@@ -10,15 +10,23 @@
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="hideSubTitle = !hideSubTitle"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
   </h2>
 
-  <h6 class="subtitle italic">
+  <div class="subtitle" [hidden]="hideSubTitle">
     <ul>
       <li>Click to select, Ctrl-click to toggle selection(s).</li>
       <li>Drag one or more rows by the handle icon (1st column) to reorder.</li>
       <li>Drag one or more rows by selection (2nd or 3rd column) and drag to the recycle bin to delete.</li>
     </ul>
-  </h6>
+  </div>
 
   <div class="row">
     <div class="col">

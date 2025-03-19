@@ -24,6 +24,7 @@ export class GridBasicComponent implements OnDestroy, OnInit {
   gridOptions2!: GridOption;
   dataset1!: any[];
   dataset2!: any[];
+  hideSubTitle = false;
 
   ngOnInit(): void {
     this.prepareGrid();

@@ -39,6 +39,7 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   metrics!: Partial<Metrics>;
   tagDataClass = '';
   graphqlQuery = '...';
+  hideSubTitle = false;
   processing = false;
   selectedLanguage: string;
   status = { text: 'processing...', class: 'alert alert-danger' };

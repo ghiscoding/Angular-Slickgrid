@@ -44,6 +44,7 @@ export class GridAddItemComponent implements OnInit {
   dataView!: SlickDataView;
   columnDefinitions: Column[] = [];
   gridOptions!: GridOption;
+  hideSubTitle = false;
   dataset: any[];
   updatedObject: any;
 

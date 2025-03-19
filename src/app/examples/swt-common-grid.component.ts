@@ -66,6 +66,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
   dataset!: any[];
   gridObj: any;
   dataviewObj: any;
+  hideSubTitle = false;
   isAutoEdit = false;
   updatedObject: any;
   isMultiSelect = true;

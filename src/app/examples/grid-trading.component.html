@@ -1,10 +1,7 @@
 <div class="container-fluid">
   <h2>
     {{ title }}
-    <button class="btn btn-outline-secondary btn-sm btn-icon ms-3" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
-      <span class="mdi mdi-theme-light-dark"></span>
-      <span>Toggle Dark Mode</span>
-    </button>
+
     <span class="float-end">
       <a
         style="font-size: 18px"
@@ -14,8 +11,20 @@
         <span class="mdi mdi-link-variant"></span> code
       </a>
     </span>
+    <button
+      class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
+      type="button"
+      data-test="toggle-subtitle"
+      (click)="hideSubTitle = !hideSubTitle"
+    >
+      <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm btn-icon" (click)="toggleDarkMode()" data-test="toggle-dark-mode">
+      <span class="mdi mdi-theme-light-dark"></span>
+      <span>Toggle Dark Mode</span>
+    </button>
   </h2>
-  <div class="subtitle" [innerHTML]="subTitle"></div>
+  <div class="subtitle" [hidden]="hideSubTitle" [innerHTML]="subTitle"></div>
 
   <div class="trading-platform">
     <div class="row mb-4 simulation-form">

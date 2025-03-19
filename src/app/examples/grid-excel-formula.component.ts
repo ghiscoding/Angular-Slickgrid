@@ -106,6 +106,7 @@ export class GridExcelFormulaComponent implements OnInit {
   angularGrid!: AngularGridInstance;
   excelExportService: ExcelExportService;
   isDataGrouped = false;
+  hideSubTitle = false;
   taxRate = 7.5;
 
   constructor() {

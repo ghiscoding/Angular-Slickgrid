@@ -29,6 +29,7 @@ export class GridInfiniteOdataComponent implements OnInit {
   columnDefinitions!: Column[];
   gridOptions!: GridOption;
   dataset: any[] = [];
+  hideSubTitle = false;
   isPageErrorTest = false;
   metrics!: Partial<Metrics>;
   tagDataClass = '';

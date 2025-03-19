@@ -22,6 +22,7 @@ export class GridFooterTotalsComponent implements OnDestroy, OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   angularGrid!: AngularGridInstance;
+  hideSubTitle = false;
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
