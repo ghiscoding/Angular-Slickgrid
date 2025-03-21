@@ -1,8 +1,6 @@
 @use 'sass:color';
 
-$navbar-height: 56px;
 $primary-color: #0d6efd;
-$side-menu-width: 250px;
 
 @use 'bootstrap/scss/bootstrap' with (
   $primary: $primary-color
@@ -104,42 +102,6 @@ $button-style-bg-color: #fff;
 }
 .mdi-trash-can.pointer:hover {
   color: #ff002b;
-}
-
-.panel-wm {
-  padding: #{$navbar-height} 0 0 0;
-
-  .nav-stacked {
-    padding-bottom: 30px;
-
-    .nav-item {
-      width: 100%;
-    }
-  }
-
-  .nav > li > a {
-    padding: 10px 15px;
-    border-radius: 0;
-  }
-
-  .panel-wm-content {
-    margin-left: $side-menu-width;
-    padding-right: 20px;
-  }
-
-  .panel-wm-left {
-    position: fixed;
-    z-index: 400;
-    transition: left 0.15s;
-    top: $navbar-height;
-    bottom: 0;
-    left: 0;
-    background-color: #f5f5f5;
-    transform: translate3d(0, 0, 0);
-    border-right: 1px solid #d0d0d0;
-    overflow-y: auto;
-    width: $side-menu-width;
-  }
 }
 
 .github-button-container {
