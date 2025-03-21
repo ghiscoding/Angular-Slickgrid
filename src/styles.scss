@@ -26,6 +26,14 @@ $primary-color: #0d6efd;
 $button-border-color: #ababab;
 $button-style-bg-color: #fff;
 
+.italic {
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
 .btn-group-xs > .btn,
 .btn-xs {
   padding: 1px 5px;
@@ -62,9 +70,6 @@ $button-style-bg-color: #fff;
   }
 }
 
-.italic {
-  font-style: italic;
-}
 .subtitle {
   font-size: 15px;
   font-style: italic;
