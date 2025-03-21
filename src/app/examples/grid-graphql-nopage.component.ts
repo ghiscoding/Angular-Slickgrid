@@ -64,6 +64,10 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
+
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'countryCode', field: 'code', name: 'Code', maxWidth: 90, sortable: true, filterable: true, columnGroup: 'Country' },

@@ -34,6 +34,12 @@
     </div>
   </div>
 
-  <angular-slickgrid gridId="grid27" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+  <angular-slickgrid
+    gridId="grid27"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>
