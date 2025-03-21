@@ -47,7 +47,7 @@ describe('Example 30  Composite Editor Modal', () => {
 
   it('should display 2 different tooltips when hovering icons on "Title" column', () => {
     cy.get('.slick-column-name').as('title-column');
-    cy.get('@title-column').find('.mdi-alert-outline').trigger('mouseover');
+    cy.get('@title-column').find('.mdi-alert-outline').trigger('mouseover', { force: true });
 
     cy.get('.slick-custom-tooltip').should('be.visible');
     cy.get('.slick-custom-tooltip .tooltip-body').contains('Task must always be followed by a number');

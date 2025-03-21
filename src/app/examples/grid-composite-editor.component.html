@@ -1,7 +1,6 @@
 <div id="demo-container" class="container-fluid">
   <h2>
-    {{ title }}
-
+    Example 30: Composite Editor Modal
     <span class="float-end">
       <a
         style="font-size: 18px"
@@ -24,7 +23,14 @@
       <span>Toggle Dark Mode</span>
     </button>
   </h2>
-  <div class="subtitle" [innerHTML]="subTitle"></div>
+  <div class="subtitle">
+    Composite Editor allows you to Create, Clone, Edit, Mass Update & Mass Selection Changes inside a nice Modal Window.
+    <br />The modal is simply populated by looping through your column definition list and also uses a lot of the same logic as
+    inline editing (see
+    <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/composite-editor-modal" target="_blank"
+      >Composite Editor - Wiki</a
+    >.)
+  </div>
 
   <div class="mb-2">
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic Editing Commands">
