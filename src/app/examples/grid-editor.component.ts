@@ -730,4 +730,11 @@ export class GridEditorComponent implements OnInit {
       this.gridObj.gotoCell(command.row, command.cell, false);
     }
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

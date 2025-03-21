@@ -1,6 +1,13 @@
 <div class="container-fluid">
   <h2>
-    <span [innerHTML]="title"></span>
+    <span
+      >Example 29: Tree Data with Aggregators
+      <small
+        ><span class="mdi mdi-file-tree mdi-27px"></span> (from a Hierarchical Dataset -
+        <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/tree-data-grid" target="_blank">Wiki</a
+        >)</small
+      ></span
+    >
     <span class="float-end">
       <a
         style="font-size: 18px"
@@ -19,7 +26,18 @@
       <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
     </button>
   </h2>
-  <div class="subtitle" [hidden]="hideSubTitle" [innerHTML]="subTitle"></div>
+  <div class="subtitle">
+    <ul>
+      <li>
+        <b>NOTE #1:</b> The grid will automatically sort Ascending with the column that has the Tree Data, you could add a
+        "sortByFieldId" in your column "treeData" option if you wish to sort on a different column
+      </li>
+      <li>
+        <b>NOTE #2:</b> Tree Totals are only calculated once and are <b>NOT</b> recalculated while filtering data, if you do want
+        that feature then you will need to enable <code>autoRecalcTotalsOnFilterChange</code> <i>(see checkbox below)</i>
+      </li>
+    </ul>
+  </div>
 
   <div class="row">
     <div class="col-md-7">

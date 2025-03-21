@@ -103,6 +103,7 @@ export class Grid45Component implements OnDestroy, OnInit {
         container: '#demo-container',
         autoHeight: this.isUsingAutoHeight, // works with/without autoHeight
         bottomPadding: 20,
+        rightPadding: 20,
       },
       autoHeight: false,
       enableFiltering: true,
@@ -237,5 +238,12 @@ export class Grid45Component implements OnDestroy, OnInit {
       document.querySelector('.panel-wm-content')!.classList.remove('dark-mode');
       document.querySelector<HTMLDivElement>('#demo-container')!.dataset.bsTheme = 'light';
     }
+  }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
   }
 }

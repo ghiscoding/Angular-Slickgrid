@@ -375,4 +375,11 @@ export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
     // we could also force a query since we provide a Locale and it changed
     this.getCustomerApiCall(this.backendService.buildQuery() || '');
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

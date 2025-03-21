@@ -352,4 +352,11 @@ export class GridFrozenComponent implements OnInit, OnDestroy {
       this.isFrozenBottom = !this.isFrozenBottom; // toggle the variable
     }
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

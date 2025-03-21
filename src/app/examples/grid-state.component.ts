@@ -321,4 +321,11 @@ export class GridStateComponent implements OnInit, OnDestroy {
       ],
     } as GridState;
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

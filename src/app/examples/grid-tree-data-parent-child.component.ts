@@ -22,16 +22,6 @@ const NB_ITEMS = 500;
   encapsulation: ViewEncapsulation.None,
 })
 export class GridTreeDataParentChildComponent implements OnInit {
-  title =
-    'Example 28: Tree Data <small> <span class="mdi mdi-file-tree mdi-27px"></span> (from a flat dataset with <code>parentId</code> references - <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/tree-data-grid" target="_blank">Wiki</a>)</small>';
-  subTitle = `<ul>
-    <li>It is assumed that your dataset will have Parent/Child references AND also Tree Level (indent) property.</li>
-    <ul>
-      <li>If you do not have the Tree Level (indent), you could call "convertParentChildArrayToHierarchicalView()" then call "convertHierarchicalViewToParentChildArray()"</li>
-      <li>You could also pass the result of "convertParentChildArrayToHierarchicalView()" to "dataset-hierarchical.bind" as defined in the next Hierarchical Example</li>
-    </ul>
-  </ul>`;
-
   angularGrid!: AngularGridInstance;
   dataViewObj: any;
   gridObj: any;
@@ -378,5 +368,12 @@ export class GridTreeDataParentChildComponent implements OnInit {
 
   reapplyToggledItems() {
     this.angularGrid.treeDataService.applyToggledItemStateChanges(this.treeToggleItems);
+  }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
   }
 }

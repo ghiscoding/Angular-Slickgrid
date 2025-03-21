@@ -203,4 +203,11 @@ export class GridCustomPaginationComponent implements OnInit {
     (this.angularGrid.paginationComponent as CustomPagerComponent)?.disposeElement();
     (this.angularGrid.paginationComponent as CustomPagerComponent)?.renderPagination(gridContainerElm, this.paginationPosition);
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

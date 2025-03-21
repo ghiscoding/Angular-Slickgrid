@@ -427,4 +427,11 @@ export class GridInfiniteOdataComponent implements OnInit {
   setSortingDynamically() {
     this.angularGrid?.sortService.updateSorting([{ columnId: 'name', direction: 'DESC' }]);
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

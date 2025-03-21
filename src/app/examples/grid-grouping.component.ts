@@ -371,4 +371,11 @@ export class GridGroupingComponent implements OnInit {
     ] as Grouping[]);
     this.gridObj.invalidate(); // invalidate all rows and re-render
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

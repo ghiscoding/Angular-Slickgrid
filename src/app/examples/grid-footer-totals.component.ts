@@ -130,4 +130,11 @@ export class GridFooterTotalsComponent implements OnDestroy, OnInit {
       columnElement.textContent = `Sum: ${total}`;
     }
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

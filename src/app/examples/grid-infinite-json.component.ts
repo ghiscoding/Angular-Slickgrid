@@ -197,4 +197,11 @@ export class GridInfiniteJsonComponent implements OnInit {
   setSortingDynamically() {
     this.angularGrid?.sortService.updateSorting([{ columnId: 'title', direction: 'DESC' }]);
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

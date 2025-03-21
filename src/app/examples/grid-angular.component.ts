@@ -408,4 +408,11 @@ export class GridAngularComponent implements OnInit {
     const item = this.angularGrid.dataView.getItem(rowNumber);
     this.angularGrid.gridService.deleteItemById(item.id);
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

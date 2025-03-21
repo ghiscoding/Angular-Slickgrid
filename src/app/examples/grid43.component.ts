@@ -445,4 +445,11 @@ export class Grid43Component implements OnInit {
     this.angularGrid.slickGrid.remapAllColumnsRowSpan();
     this.angularGrid.slickGrid.invalidate();
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    queueMicrotask(() => this.angularGrid.resizerService.resizeGrid());
+  }
 }

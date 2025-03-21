@@ -355,4 +355,11 @@ export class GridClientSideComponent implements OnInit {
   scrollGridTop() {
     this.angularGrid.slickGrid.navigateTop();
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

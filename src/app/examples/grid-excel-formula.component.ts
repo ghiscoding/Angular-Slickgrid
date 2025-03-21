@@ -505,4 +505,11 @@ export class GridExcelFormulaComponent implements OnInit {
 
     this.angularGrid?.dataView?.refresh();
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

@@ -371,4 +371,11 @@ export class Grid44Component implements OnInit {
     this.angularGrid.slickGrid?.scrollRowToTop(this.scrollToRow);
     return false;
   }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
 }

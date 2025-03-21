@@ -436,6 +436,13 @@ export class GridTradingComponent implements OnDestroy, OnInit {
     }
   }
 
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
+
   private randomNumber(min: number, max: number, floor = true) {
     const number = Math.random() * (max - min + 1) + min;
     return floor ? Math.floor(number) : number;

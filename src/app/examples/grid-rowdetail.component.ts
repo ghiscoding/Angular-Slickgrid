@@ -321,6 +321,13 @@ export class GridRowDetailComponent implements OnDestroy, OnInit {
     }
   }
 
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
+  }
+
   private randomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
