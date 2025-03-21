@@ -14,13 +14,13 @@
       class="ms-2 btn btn-outline-secondary btn-sm btn-icon"
       type="button"
       data-test="toggle-subtitle"
-      (click)="hideSubTitle = !hideSubTitle"
+      (click)="toggleSubTitle()"
     >
       <span class="mdi mdi-information-outline" title="Toggle example sub-title details"></span>
     </button>
   </h2>
   <div class="subtitle row">
-    <div class="col-12" [hidden]="hideSubTitle" [innerHTML]="subTitle"></div>
+    <div class="col-12" [innerHTML]="subTitle"></div>
   </div>
 
   <div class="row">
@@ -34,6 +34,12 @@
     </div>
   </div>
 
-  <angular-slickgrid gridId="grid27" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+  <angular-slickgrid
+    gridId="grid27"
+    [columnDefinitions]="columnDefinitions"
+    [gridOptions]="gridOptions"
+    [dataset]="dataset"
+    (onAngularGridCreated)="angularGridReady($event.detail)"
+  >
   </angular-slickgrid>
 </div>

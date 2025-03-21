@@ -64,6 +64,10 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
+
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'countryCode', field: 'code', name: 'Code', maxWidth: 90, sortable: true, filterable: true, columnGroup: 'Country' },
@@ -287,5 +291,12 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
   getLanguages(): Observable<GraphqlResult<{ code: string; name: string; native: string }>> {
     const languageQuery = `query { languages { code, name, native  }}`;
     return this.http.post<GraphqlResult<{ code: string; name: string; native: string }>>(COUNTRIES_API, { query: languageQuery });
+  }
+
+  toggleSubTitle() {
+    this.hideSubTitle = !this.hideSubTitle;
+    const action = this.hideSubTitle ? 'add' : 'remove';
+    document.querySelector('.subtitle')?.classList[action]('hidden');
+    this.angularGrid.resizerService.resizeGrid(2);
   }
 }
