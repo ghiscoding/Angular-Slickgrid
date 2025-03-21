@@ -89,6 +89,10 @@ const myCustomTitleValidator = (value: any, args: any) => {
 })
 export class GridCompositeEditorComponent implements OnDestroy, OnInit {
   private _darkMode = false;
+  title = 'Example 30: Composite Editor Modal';
+  subTitle = `Composite Editor allows you to Create, Clone, Edit, Mass Update & Mass Selection Changes inside a nice Modal Window.
+  <br>The modal is simply populated by looping through your column definition list and also uses a lot of the same logic as inline editing (see <a href="https://ghiscoding.gitbook.io/angular-slickgrid/grid-functionalities/composite-editor-modal" target="_blank">Composite Editor - Wiki</a>.)`;
+
   angularGrid!: AngularGridInstance;
   compositeEditorInstance!: SlickCompositeEditorComponent;
   gridOptions!: GridOption;
@@ -1067,12 +1071,5 @@ export class GridCompositeEditorComponent implements OnDestroy, OnInit {
           <div class="autocomplete-bottom-left">${item.itemNameTranslated}</div>
           <span class="autocomplete-bottom-right">Type: <b>${item.itemTypeName === 'I' ? 'Item' : item.itemTypeName === 'C' ? 'PdCat' : 'Cat'}</b></span>
         </div>`;
-  }
-
-  toggleSubTitle() {
-    this.hideSubTitle = !this.hideSubTitle;
-    const action = this.hideSubTitle ? 'add' : 'remove';
-    document.querySelector('.subtitle')?.classList[action]('hidden');
-    this.angularGrid.resizerService.resizeGrid(2);
   }
 }
