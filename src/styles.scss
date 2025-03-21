@@ -1,10 +1,8 @@
 @use 'sass:color';
 
 $navbar-height: 56px;
+$primary-color: #0d6efd;
 $side-menu-width: 250px;
-$button-border-color: #ababab;
-$button-style-bg-color: #fff;
-$primary-color: #0e6cfa;
 
 @use 'bootstrap/scss/bootstrap' with (
   $primary: $primary-color
@@ -27,30 +25,15 @@ $primary-color: #0e6cfa;
   //   --slick-button-border-color: #c7c7c7;
 }
 
-.bold {
-  font-weight: bold;
-}
+$button-border-color: #ababab;
+$button-style-bg-color: #fff;
 
 .italic {
   font-style: italic;
 }
 
-.font18 {
-  font-size: 18px;
-}
-
 .hidden {
   display: none;
-}
-
-.btn-icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.gap-4px {
-  gap: 4px;
 }
 
 .btn-group-xs > .btn,
@@ -65,54 +48,62 @@ $primary-color: #0e6cfa;
   vertical-align: middle;
 }
 
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gap-4px {
+  gap: 4px;
+}
+
+.side-menu {
+  margin-left: 15px;
+
+  .links {
+    background-color: #f9f9f9;
+    border-right: 1px solid #d0d0d0;
+    overflow-y: auto;
+    padding: 10px;
+    li {
+      width: 100%;
+    }
+  }
+}
+
+.subtitle {
+  font-size: 15px;
+  font-style: italic;
+  color: grey;
+  margin-bottom: 10px;
+}
+.lightblue {
+  color: lightblue;
+}
+.red {
+  color: red;
+}
+.faded {
+  opacity: 0.7;
+}
+.faded:hover {
+  opacity: 1;
+}
+.pointer {
+  cursor: pointer !important;
+}
+.padding10 {
+  padding: 10px !important;
+}
+.text-danger {
+  color: red !important;
+}
 .mdi-pencil.pointer:hover {
   color: #00bfff;
 }
 .mdi-trash-can.pointer:hover {
   color: #ff002b;
-}
-
-.body-content {
-  margin-top: $navbar-height;
-}
-
-.lightblue {
-  color: lightblue;
-}
-
-.red {
-  color: red;
-}
-
-.subtitle {
-  font-size: 0.875em;
-  font-style: italic;
-  color: grey;
-  margin-bottom: 10px;
-}
-
-.faded {
-  opacity: 0.7;
-}
-
-.faded:hover {
-  opacity: 0.9;
-}
-
-section {
-  margin: 0;
-}
-
-/** Sidebar (left) and Content (right) */
-@media (min-width: 1200px) {
-  .panel-wm-content .container {
-    width: calc(1170px - #{$side-menu-width});
-  }
-}
-
-.nav-docs {
-  background-color: #fff;
-  border-bottom: 1px solid #d6d6d6;
 }
 
 .panel-wm {
@@ -133,7 +124,7 @@ section {
 
   .panel-wm-content {
     margin-left: $side-menu-width;
-    padding: 0 1rem;
+    padding-right: 20px;
   }
 
   .panel-wm-left {
@@ -148,15 +139,6 @@ section {
     border-right: 1px solid #d0d0d0;
     overflow-y: auto;
     width: $side-menu-width;
-  }
-}
-
-.navbar {
-  .navbar-brand {
-    margin-right: 0px;
-  }
-  .logo {
-    margin: 0 8px;
   }
 }
 
@@ -190,7 +172,11 @@ section {
   background-color: #fff;
   /* the height is 100% minus the 2 navbars */
   height: calc(100vh - 56px);
-  padding: 0 10px;
+  padding: 0 20px;
+
+  #demo-container {
+    padding-bottom: 15px;
+  }
 
   h3 {
     color: #333;
