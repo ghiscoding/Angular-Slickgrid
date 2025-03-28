@@ -1,245 +1,134 @@
-#### index
-- [Description](#descriptions)
-- [Grid State](#grid-state-1)
-- [Grid Presets](#grid-presets)
-- [Grid State Event](#grid-state-event)
-- [How to Load Grid with Certain Columns Hidden](#how-to-load-grid-with-certain-columns-preset-example-hide-certain-columns-on-load)
+The `Grid Menu` (also known as the `Hamburger Menu`) is now part of `Angular-Slickgrid` and is enabled by default). 
 
-## Demo
-Look at your developer console before leaving the page
-#### Regular grid
-[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/clientside) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-clientside.component.ts)
+## How to use it? 
+#### It's Enabled by default
+Technically, it's enable by default and so you don't have anything to do to enjoy it. However if you want to customize the content of the Grid Menu, then continue reading.
 
-#### with Backend Service
-[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/gridgraphql) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-graphql.component.ts)
+### Demo
+[Demo Page](https://ghiscoding.github.io/Angular-Slickgrid/#/gridmenu) / [Demo Component](https://github.com/ghiscoding/angular-slickgrid/blob/master/src/app/examples/grid-menu.component.ts)
 
-## Descriptions
-#### Grid State
-The `Grid State` are what we defined as the currently used `Columns` / `Filters` / `Sorters` / `Pagination` of the actual grid (pagination is only returned when used with Backend Service API). The columns also include their (size, position order & visibility (show/hidden)).
-#### Presets
-Presets can be used to preset a grid with certain `Columns` / `Filters` / `Sorters` / `Pagination`. When we say `Columns`, we actually mean their size, order position and visibility (shown/hidden) in the grid.
-#### Combining the two together
-So basically, the idea is to save the `Grid State` in Local Storage (or DB) before the grid gets destroyed and once we come back to that same page we can preset the grid with the exact same state as it was before leaving the page (just like if we were doing a forward/back button with browser history).
+## Customization 
+### Column Picker
+The Grid Menu comes, by default, with a `Column Picker`. This brings an easy way to show/hide certain column(s) from the grid. This functionality was copied from the [Column Picker Plugin](https://github.com/ghiscoding/angular-slickgrid/wiki/SlickGrid-Controls-&-Plugins#column-picker) and brought over to the Grid Menu. 
 
-## Grid State
-You can get the `Grid State` at any point in time. However if you wish to save the grid state before leaving the page and store that in Local Storage, then the best way is to use the `onBeforeGridDestroy` Event Emitter.
+### Custom Commands
 
-##### View
-```html
-<angular-slickgrid
-     gridId="grid2"
-     [columnDefinitions]="columnDefinitions"
-     [gridOptions]="gridOptions"
-     [dataset]="dataset"
-     (onAngularGridCreated)="angularGridReady($event.detail)"
-     (onBeforeGridDestroy)="saveCurrentGridState($event)">
-</angular-slickgrid>
-```
+The Grid Menu also comes, by default, with a list of built-in custom commands (all their `positionOrder` are in the reserved range of 40 to 60)
+- Clear all Filters (you can hide it with `hideClearAllFiltersCommand: true`)
+- Clear all Sorting (you can hide it with `hideClearAllSortingCommand: true`)
+- Toggle the Filter Row (you can hide it with `hideToggleFilterCommand: true`)
+- _Export to CSV_ (you can hide it with `hideExportCsvCommand: true`)
+- _Export to Text Delimited (you can hide it with `hideExportTextDelimitedCommand: true`)
+- _Refresh Dataset_, only shown when using Backend Service API (you can hide it with `hideRefreshDatasetCommand: true`)
 
-##### Component
-```typescript
-import { GridState } from 'angular-slickgrid';
-
-@Component({
-  templateUrl: './grid-demo.component.html'
-})
-export class GridDemoComponent {
-  angularGrid: AngularGridInstance;
-
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
-  }
-
-  // you can save it to Local Storage of DB in this call
-  saveCurrentGridState(grid) {
-    const gridState: GridState = this.angularGrid.gridStateService.getCurrentGridState();
-    console.log('Leaving page with current grid state', gridState);
-  }
-}
-```
-
-### Using Grid Presets & Filter SearchTerm(s)
-What happens when we use the grid `presets` and a [Filter Default SearchTerms](../column-functionalities/filters/select-filter.md#default-search-terms)? In this case, the `presets` will win over filter `searchTerms`. The cascading order of priorities is the following
-1. Do we have any `presets`? Yes use them, else go to step 2
-2. Do we have any Filter `searchTerms`? Yes use them, else go to step 3
-3. No `presets` and no `searchTerms`, load grid with default grid & column definitions
-
-## Grid Presets
-### Structure
-The current structure of a Grid Presets is the following
-```typescript
-export interface CurrentColumn {
-  columnId: string;
-  cssClass?: string;
-  headerCssClass?: string;
-  width?: number;
-}
-export interface CurrentFilter {
-  columnId: string;
-  operator?: OperatorType | OperatorString;
-  searchTerms?: SearchTerm[];
-}
-export interface CurrentSorter {
-  columnId: string;
-  direction: SortDirection | SortDirectionString;
-}
-export interface GridState {
-  columns?: CurrentColumn[] | null;
-  filters?: CurrentFilter[] | null;
-  sorters?: CurrentSorter[] | null;
-  pagination?: {
-    pageNumber: number;
-    pageSize: number;
-  };
-}
-```
-
-#### Example
-For example, we can set `presets` on a grid like so:
-**Component**
-```typescript
-import { GridState } from 'angular-slickgrid';
-
-@Component({
-  templateUrl: './grid-demo.component.html'
-})
-export class GridDemoComponent {
-  angularGrid: AngularGridInstance;
-
-  ngOnInit(): void {
-    this.columnDefinitions = [
-      { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, sortable: true },
-      { id: 'duration', name: 'Duration', field: 'duration', filterable: true, sortable: true },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', filterable: true, sortable: true },
-    ];
-
-    this.gridOptions = {
-      enableFiltering: true,
-
-      // use columnDef searchTerms OR use presets as shown below
-      presets: {
-        // the column position in the array is very important and represent
-        // the position that will show in the grid
-        columns: [
-          { columnId: 'duration', width: 88, headerCssClass: 'customHeaderClass' },
-          { columnId: 'complete', width: 57 }
-        ],
-        filters: [
-          { columnId: 'duration', searchTerms: [2, 22, 44] },
-          { columnId: 'complete', searchTerms: ['>5'] }
-        ],
-        sorters: [
-          { columnId: 'duration', direction: 'DESC' },
-          { columnId: 'complete', direction: 'ASC' }
-        ],
-
-        // with Backend Service ONLY, you can also add Pagination info
-        pagination: { pageNumber: 2, pageSize: 20 }
-      }
-    };
-}
-```
-
-### Grid State Event
-There are 2 ways of subscribing to GridState Service event changed.
-1. Through `(onGridStateChanged)` Event Emitter (recommended)
-2. Through `onGridStateChanged` Observable on the GridState Service.
-
-Examples
-#### 1. `(onGridStateChanged)` Event Emitter (recommended)
-##### View
-```html
-<angular-slickgrid gridId="grid1"
-         [columnDefinitions]="columnDefinitions"
-         [gridOptions]="gridOptions"
-         [dataset]="dataset"
-         (onGridStateChanged)="gridStateChanged($event)">
-</angular-slickgrid>
-```
-##### Component
-```typescript
-import { GridStateChange } from 'angular-slickgrid';
-
-export class ExampleComponent implements OnInit {
-  gridStateChanged(gridState: GridStateChange) {
-    console.log('Grid State changed:: ', gridState);
-  }
-}
-```
-
-#### 2. Through `onGridStateChanged` Observable on the GridState Service
-##### View
-```html
-<angular-slickgrid
-     gridId="grid2"
-     [columnDefinitions]="columnDefinitions"
-     [gridOptions]="gridOptions"
-     [dataset]="dataset"
-     (onAngularGridCreated)="angularGridReady($event.detail)"
-     (onBeforeGridDestroy)="saveCurrentGridState($event)">
-</angular-slickgrid>
-```
-
-##### Component
-```typescript
-import { AngularGridInstance, GridStateChange } from 'angular-slickgrid';
-
-export class ExampleComponent implements OnInit, OnDestroy {
-  angularGrid: AngularGridInstance;
-  gridStateSub: Subscription;
-
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
-    this.gridStateSub = this.angularGrid.gridStateService.onGridStateChanged.subscribe((data: GridStateChange) => console.log(data));
-  }
-
-  ngOnDestroy() {
-    this.gridStateSub.unsubscribe();
-  }
-}
-```
-
-## How to Load Grid with certain Columns Preset (example hide certain Column(s) on load)
-You can show/hide or even change column position all via the `presets`, yes `presets` is that powerful. All you need is to pass all Columns that you want to show as part of the `columns` property of `presets`. Typically you already have the entire columns definition since you just defined it, so you can re-use that and just use `map` to loop through and populate the `columns` according to the structure needed (see [preset structure](#structure)). What you have to know is that whatever array you pass will drive what the user will see and at which order the columns will show (basically the array order does matter). If a Columns is omitted from that array, then it will become a hidden column (you can still show it through Grid Menu or Column Picker).
-
-So let say that we want to hide the last Column on page load, we can just find the column by it's `id` that you want to hide and pass the new column definition to the `presets` (again make sure to follow the correct preset structure).
-
-##### Component
-```ts
-this.columnDefinitions = [
-  // your definition
-];
-
-// for example, let's hide last column, we can just use `pop()` last column
-// and use `map()` to only pull required field for presets to work
-const mappedColumnDefinitions = this.columnDefinitions.map((col) => {
-  return { columnId: col.id, width: col.width };
-});
-mappedColumnDefinitions.pop();
-
-// then pass it to the presets
+This section is called Custom Commands because you can also customize this section with your own commands. To do that, you need to fill in 2 properties (an array of `commandItems` and define `onGridMenuCommand` callback) in your Grid Options. For example, `Angular-Slickgrid` is configured by default with these settings (you can overwrite any one of them): 
+```javascript
 this.gridOptions = {
-  presets: {
-    columns: mappedColumnDefinitions
-  }
-};
-```
-This would be the easiest way to do it.
-
-As pointed out earlier, the `presets` requires a specific structure where the `columns` is the list of columns to show/hide with their possible widths and also the position in the array is very important as it defines the position shown in the UI
-```ts
-this.gridOptions = {
-      enableFiltering: true,
-
-      // use columnDef searchTerms OR use presets as shown below
-      presets: {
-        // the column position in the array is very important and represent
-        // the position that will show in the grid
-        columns: [
-          { columnId: 'duration', width: 88, headerCssClass: 'customHeaderClass' },
-          { columnId: 'complete', width: 57 }
-        ],
+   enableAutoResize: true,
+   enableGridMenu: true,   // <<-- this will automatically add extra custom commands
+   enableFiltering: true,
+   gridMenu: {
+     commandTitle: 'Custom Commands',
+     columnTitle: 'Columns',
+     iconCssClass: 'fa fa-ellipsis-v',
+     menuWidth: 17,
+     resizeOnShowHeaderRow: true,
+     commandItems: [
+       {
+         iconCssClass: 'fa fa-filter text-danger',
+         title: 'Clear All Filters',
+         disabled: false,
+         command: 'clear-filter'
+       },
+       {
+         iconCssClass: 'fa fa-random',
+         title: 'Toggle Filter Row',
+         disabled: false,
+         command: 'toggle-filter'
+       },
+       // you can add sub-menus by adding nested `commandItems`
+       {
+         // we can also have multiple nested sub-menus
+         command: 'export', title: 'Exports', positionOrder: 99,
+         commandItems: [
+           { command: 'exports-txt', title: 'Text (tab delimited)' },
+           {
+              command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+              commandItems: [
+                { command: 'exports-csv', title: 'Excel (csv)' },
+                { command: 'exports-xlsx', title: 'Excel (xlsx)' },
+             ]
+           }
+         ]
+       },
+     ],
+     onCommand: (e, args) => {
+       if (args.command === 'toggle-filter') {
+         this.gridObj.setHeaderRowVisibility(!this.gridObj.getOptions().showHeaderRow);
+       } else if (args.command === 'clear-filter') {
+         this.filterService.clearFilters();
+         this.dataviewObj.refresh();
+       }
+     }
    }
 };
 ```
-You could technically redefine by hand the complete list of `columns` that the `presets` requires. I would personally do it via the Column Definitions looping with `map()`, but go manual is also perfectly fine. You would just re-declare the `columns` again with the `id` and `width` and that would work as well.
+
+#### Events
+
+There are multiple events/callback hooks which are accessible from the Grid Options
+- `onBeforeMenuShow`
+- `onAfterMenuShow`
+- `onMenuClose`
+- `onColumnsChanged`
+- `onCommand`
+
+```ts
+gridMenu: {
+  // commandItems: [
+  //   { command: 'help', title: 'Help', positionOrder: 70, action: (e, args) => console.log(args) },
+  //   { command: '', divider: true, positionOrder: 72 },
+  //   { command: 'hello', title: 'Hello', positionOrder: 69, action: (e, args) => alert('Hello World'), cssClass: 'red', tooltip: 'Hello World', iconCssClass: 'mdi mdi-close' },
+  // ],
+  // menuUsabilityOverride: () => false,
+  onBeforeMenuShow: () => {
+    console.log('onGridMenuBeforeMenuShow');
+    // return false; // returning false would prevent the grid menu from opening
+  },
+  onAfterMenuShow: () => console.log('onGridMenuAfterMenuShow'),
+  onColumnsChanged: (_e, args) => console.log('onGridMenuColumnsChanged', args),
+  onCommand: (e, args) => {
+    // e.preventDefault(); // preventing default event would keep the menu open after the execution
+    console.log('onGridMenuCommand', args.command);
+  },
+  onMenuClose: (e, args) => console.log('onGridMenuMenuClose - visible columns count', args.visibleColumns.length),
+},
+```
+
+For more info on all the available properties of the custom commands, you can read refer to the doc written in the Grid Menu [implementation](https://github.com/6pac/SlickGrid/blob/master/controls/slick.gridmenu.js) itself.
+
+### How to change an icon of all default commands?
+
+You can change any of the default command icon(s) by changing the `icon[Command]`, for example, see below for the defaults.
+```javascript
+this.gridOptions = {
+   enableGridMenu: true,
+   gridMenu: {
+     iconClearAllFiltersCommand: 'fa fa-filter text-danger'
+     iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
+     iconExportCsvCommand: 'fa fa-download',
+     iconExportTextDelimitedCommand: 'fa fa-download',
+     iconRefreshDatasetCommand: 'fa fa-refresh',
+     iconToggleFilterCommand: 'fa fa-random',
+   },
+};
+```
+
+### How to Disable the Grid Menu?
+
+You can disable the Grid Menu, by calling `enableGridMenu: false` from the Grid Options.
+```javascript
+this.gridOptions = {
+   enableGridMenu: false
+};
+```
