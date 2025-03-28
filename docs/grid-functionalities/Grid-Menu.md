@@ -1,4 +1,4 @@
-The `Grid Menu` (also known as the `Hamburger Menu`) is now part of `Angular-Slickgrid` and is enabled by default). 
+The `Grid Menu` (also known as the `Hamburger Menu`) is now part of the project and is enabled by default.
 
 ## How to use it? 
 #### It's Enabled by default
