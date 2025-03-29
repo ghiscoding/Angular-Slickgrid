@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.13.3](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.2...v8.13.3) (2025-03-29)
+
+### Bug Fixes
+
+* shift + a should not select all cells upwards ([1bf2e96](https://github.com/ghiscoding/angular-slickgrid/commit/1bf2e964baa5e44514f45fb0b3314aea1eb301db))
+
 ## [8.13.2](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.1...v8.13.2) (2025-03-19)
 
 ### Bug Fixes
