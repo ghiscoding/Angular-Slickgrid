@@ -2,9 +2,9 @@
   extends: ['config:base', 'group:allNonMajor'],
   labels: ['dependencies'],
   ignorePaths: ['**/__tests__/**'],
-  dependencyDashboard: false,
+  dependencyDashboard: true,
   lockFileMaintenance: {
-    enabled: false,
+    enabled: true,
   },
   pin: false,
   rangeStrategy: 'bump',
