@@ -51,7 +51,7 @@
     "url": "https://ko-fi.com/ghiscoding"
   },
   "dependencies": {
-    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/core": "^16.0.4",
     "@slickgrid-universal/common": "~5.13.3",
     "@slickgrid-universal/custom-footer-component": "~5.13.3",
     "@slickgrid-universal/empty-warning-component": "~5.13.3",
@@ -92,7 +92,7 @@
     "@fnando/sparkline": "^0.3.10",
     "@formkit/tempo": "^0.1.2",
     "@ng-select/ng-select": "^14.2.6",
-    "@ngx-translate/http-loader": "^8.0.0",
+    "@ngx-translate/http-loader": "^16.0.1",
     "@nx/angular": "^20.7.0",
     "@nx/devkit": "^20.7.0",
     "@nx/vite": "^20.7.0",
