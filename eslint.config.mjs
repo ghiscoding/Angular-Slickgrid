@@ -37,6 +37,7 @@ export default tseslint.config(
         { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_', caughtErrors: 'none' },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
+      '@angular-eslint/prefer-standalone': 'off',
       'no-case-declarations': 'off',
     },
   },
