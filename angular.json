@@ -9,11 +9,11 @@
       "projectType": "library",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "website",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": ["@fnando/sparkline", "stream"],
@@ -43,9 +43,7 @@
             ],
             "styles": ["node_modules/@ng-select/ng-select/themes/default.theme.css", "src/styles.scss"],
             "scripts": ["node_modules/bootstrap/dist/js/bootstrap.min.js"],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true
@@ -80,7 +78,6 @@
               "namedChunks": false,
               "aot": false,
               "extractLicenses": true,
-              "vendorChunk": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
