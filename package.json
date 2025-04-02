@@ -32,7 +32,7 @@
     "prettier:check": "prettier --check **/*.{html,js,ts}",
     "prettier:write": "prettier --write **/*.{html,js,ts}",
     "release": "release-it --only-version",
-    "serve:demo": "servor ./website/browser index.html 4300",
+    "serve:demo": "servor ./website index.html 4300",
     "test": "ng test",
     "test:watch": "ng test --watch",
     "test:coverage": "vitest --no-watch --coverage"
