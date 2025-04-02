@@ -17,6 +17,7 @@
   },
   "scripts": {
     "start": "ng serve --port 4300",
+    "vite:preview": "vite preview --outDir=website --port=4300",
     "prebuild": "npm-run-all delete:dist lint prettier:check",
     "build": "ng-packagr -p ng-package.json -c tsconfig.json",
     "postbuild": "npm-run-all copy:i18n",
@@ -32,7 +33,6 @@
     "prettier:check": "prettier --check **/*.{html,js,ts}",
     "prettier:write": "prettier --write **/*.{html,js,ts}",
     "release": "release-it --only-version",
-    "serve:demo": "servor ./website index.html 4300",
     "test": "ng test",
     "test:watch": "ng test --watch",
     "test:coverage": "vitest --no-watch --coverage"
@@ -127,7 +127,6 @@
     "rimraf": "^6.0.1",
     "rxjs": "^7.8.2",
     "sass": "^1.86.1",
-    "servor": "^4.0.2",
     "sortablejs": "^1.15.6",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.2",

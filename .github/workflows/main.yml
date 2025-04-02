@@ -84,7 +84,7 @@ jobs:
         with:
           install: false
           # working-directory: packages/dnd
-          start: yarn serve:demo
+          start: yarn vite:preview
           wait-on: 'http://localhost:4300'
           config-file: test/cypress.config.ts
           browser: chrome
