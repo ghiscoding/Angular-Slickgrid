@@ -69,6 +69,7 @@ const myCustomTitleValidator = (value: any) => {
   templateUrl: './grid-resize-by-content.component.html',
   styleUrls: ['./grid-resize-by-content.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridResizeByContentComponent implements OnInit {
   title = 'Example 31: Columns Resize by Content';

@@ -79,6 +79,7 @@ const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col
   templateUrl: './grid-trading.component.html',
   styleUrls: ['./grid-trading.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridTradingComponent implements OnDestroy, OnInit {
   private _darkMode = false;

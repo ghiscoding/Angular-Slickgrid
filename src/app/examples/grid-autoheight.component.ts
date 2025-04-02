@@ -14,6 +14,7 @@ import {
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./grid-autoheight.component.scss'],
   templateUrl: './grid-autoheight.component.html',
+  standalone: false,
 })
 export class GridAutoHeightComponent implements OnInit {
   title = 'Example 23: Grid AutoHeight';

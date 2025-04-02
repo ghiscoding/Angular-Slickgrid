@@ -24,6 +24,7 @@ const NB_ITEMS = 500;
 
 @Component({
   templateUrl: './grid-state.component.html',
+  standalone: false,
 })
 export class GridStateComponent implements OnInit, OnDestroy {
   title = 'Example 16: Grid State & Presets using Local Storage';

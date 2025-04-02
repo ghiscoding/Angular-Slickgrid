@@ -22,6 +22,7 @@ const PERCENT_HTML_ESCAPED = '%25';
   styleUrls: ['./grid-infinite-odata.component.scss'],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid-infinite-odata.component.html',
+  standalone: false,
 })
 export class GridInfiniteOdataComponent implements OnInit {
   angularGrid!: AngularGridInstance;

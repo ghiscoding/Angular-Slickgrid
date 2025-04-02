@@ -30,6 +30,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
 
 @Component({
   templateUrl: './grid-localization.component.html',
+  standalone: false,
 })
 export class GridLocalizationComponent implements OnInit, OnDestroy {
   title = 'Example 12: Localization (i18n)';

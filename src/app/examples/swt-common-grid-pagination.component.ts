@@ -77,6 +77,7 @@ import { type GridOption } from '../modules/angular-slickgrid';
       }
     `,
   ],
+  standalone: false,
 })
 export class SwtCommonGridPaginationComponent implements OnInit {
   private logger: Logger;

@@ -20,6 +20,7 @@ const NB_ITEMS = 500;
   templateUrl: './grid-tree-data-parent-child.component.html',
   styleUrls: ['grid-tree-data-parent-child.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridTreeDataParentChildComponent implements OnInit {
   angularGrid!: AngularGridInstance;

@@ -6,6 +6,7 @@ const NB_ITEMS = 995;
 
 @Component({
   templateUrl: './grid-basic.component.html',
+  standalone: false,
 })
 export class GridBasicComponent implements OnDestroy, OnInit {
   private _darkModeGrid1 = false;

@@ -10,6 +10,7 @@ const rowCellValueExportFormatter: Formatter = (_row, _cell, value) => value.toF
   styleUrls: ['grid44.component.scss'],
   templateUrl: './grid44.component.html',
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class Grid44Component implements OnInit {
   columnDefinitions: Column[] = [];

@@ -86,6 +86,7 @@ const myCustomTitleValidator = (value: any, args: any) => {
   templateUrl: './grid-composite-editor.component.html',
   styleUrls: ['./grid-composite-editor.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridCompositeEditorComponent implements OnDestroy, OnInit {
   private _darkMode = false;

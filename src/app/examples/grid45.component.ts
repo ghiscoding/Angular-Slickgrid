@@ -12,6 +12,7 @@ const NB_ITEMS = 995;
   styleUrls: ['grid45.component.scss'],
   templateUrl: './grid45.component.html',
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class Grid45Component implements OnDestroy, OnInit {
   private _darkMode = false;

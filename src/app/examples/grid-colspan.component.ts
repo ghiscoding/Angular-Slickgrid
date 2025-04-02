@@ -6,6 +6,7 @@ import { AngularGridInstance, Column, FieldType, GridOption, ItemMetadata } from
 @Component({
   templateUrl: './grid-colspan.component.html',
   styleUrls: ['./grid-colspan.component.scss'],
+  standalone: false,
 })
 export class GridColspanComponent implements OnInit {
   title = 'Example 15: Column Span & Header Grouping';

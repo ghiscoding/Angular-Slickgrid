@@ -10,6 +10,7 @@ let columns2WithHighlightingById: any = {};
   styleUrls: ['./grid-headerbutton.component.scss'],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid-headerbutton.component.html',
+  standalone: false,
 })
 export class GridHeaderButtonComponent implements OnInit {
   title = 'Example 7: Header Button Plugin';

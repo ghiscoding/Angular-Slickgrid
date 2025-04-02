@@ -24,6 +24,7 @@ export interface OrderData {
   styles: ['.innergrid { --slick-header-menu-display: inline-block; }'],
   templateUrl: './grid45-detail.component.html',
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class Grid45DetailComponent implements OnDestroy, OnInit {
   model!: Distributor;

@@ -18,6 +18,7 @@ import { Subject } from 'rxjs';
       {{ item?.name }}
     </ng-template>
   </ng-select>`,
+  standalone: false,
 })
 export class FilterNgSelectComponent {
   selectedId = '';

@@ -94,6 +94,7 @@ const WARN_NO_PREPARSE_DATE_SIZE = 10000; // data size to warn user when pre-par
     AngularUtilService,
     TranslaterService,
   ],
+  standalone: false,
 })
 export class AngularSlickgridComponent<TData = any> implements AfterViewInit, OnDestroy {
   protected _dataset?: TData[] | null;

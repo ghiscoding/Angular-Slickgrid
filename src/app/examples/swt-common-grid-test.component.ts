@@ -14,6 +14,7 @@ import { Logger } from './swt-logger.service';
 @Component({
   selector: 'swt-common-grid-test',
   templateUrl: './swt-common-grid-test.component.html',
+  standalone: false,
 })
 export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
   title = 'Example 13: Custom Backend Server Pagination';

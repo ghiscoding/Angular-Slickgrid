@@ -98,6 +98,7 @@ export class CustomSumAggregator implements Aggregator {
   templateUrl: './grid-excel-formula.component.html',
   styleUrls: ['./grid-excel-formula.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridExcelFormulaComponent implements OnInit {
   columnDefinitions: Column<GroceryItem>[] = [];

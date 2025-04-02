@@ -34,6 +34,7 @@ export interface Country {
   templateUrl: './grid-graphql-nopage.component.html',
   styleUrls: ['./grid-graphql-nopage.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridGraphqlWithoutPaginationComponent implements OnInit {
   title = 'Example 27: GraphQL Basic API without Pagination';

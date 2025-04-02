@@ -12,6 +12,7 @@ import {
   templateUrl: './grid-drag-recycle.component.html',
   styleUrls: ['./grid-drag-recycle.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridDragRecycleComponent implements OnInit {
   angularGrid!: AngularGridInstance;
