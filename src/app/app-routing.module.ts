@@ -46,7 +46,7 @@ import { Grid45Component } from './examples/grid45.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 const routes: Routes = [
@@ -103,5 +103,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true }), TranslateModule],
   exports: [RouterModule, TranslateModule],
+  providers: [provideRouter(routes)],
 })
 export class AppRoutingRoutingModule {}
