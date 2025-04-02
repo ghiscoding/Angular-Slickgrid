@@ -105,7 +105,7 @@ const gridStub = {
   onSort: new SlickEvent(),
 } as unknown as SlickGrid;
 
-@Component({ template: `<h4>Loading...</h4>` })
+@Component({ template: `<h4>Loading...</h4>`, standalone: false })
 class TestPreloadComponent {}
 
 @Component({ template: `<h1>Some Title</h1>` })
