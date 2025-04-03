@@ -12,6 +12,7 @@ const NB_ITEMS = 100;
 
 @Component({
   templateUrl: './grid-footer-totals.component.html',
+  standalone: false,
 })
 export class GridFooterTotalsComponent implements OnDestroy, OnInit {
   private _darkMode = false;

@@ -21,6 +21,7 @@ import {
 
 @Component({
   templateUrl: './grid-draggrouping.component.html',
+  standalone: false,
 })
 export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
   private _darkMode = false;

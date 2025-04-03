@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './grid-headermenu.component.html',
   styleUrls: ['./grid-headermenu.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridHeaderMenuComponent implements OnInit, OnDestroy {
   title = 'Example 8: Header Menu Plugin';

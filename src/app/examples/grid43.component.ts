@@ -6,6 +6,7 @@ import { ExcelExportService } from '@slickgrid-universal/excel-export';
   styleUrls: ['grid43.component.scss'],
   templateUrl: './grid43.component.html',
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class Grid43Component implements OnInit {
   columnDefinitions: Column[] = [];

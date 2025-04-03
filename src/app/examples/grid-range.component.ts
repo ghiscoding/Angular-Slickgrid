@@ -37,6 +37,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
 
 @Component({
   templateUrl: './grid-range.component.html',
+  standalone: false,
 })
 export class GridRangeComponent implements OnInit, OnDestroy {
   title = 'Example 25: Filtering from Range of Search Values';

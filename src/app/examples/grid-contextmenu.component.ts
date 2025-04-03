@@ -62,6 +62,7 @@ const taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataCont
   templateUrl: './grid-contextmenu.component.html',
   styleUrls: ['./grid-contextmenu.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridContextMenuComponent implements OnInit, OnDestroy {
   title = 'Example 26: Cell Menu & Context Menu Plugins';

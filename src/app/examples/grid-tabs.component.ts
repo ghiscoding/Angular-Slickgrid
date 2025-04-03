@@ -7,6 +7,7 @@ const URL_CUSTOMERS = 'assets/data/customers_100.json';
 
 @Component({
   templateUrl: './grid-tabs.component.html',
+  standalone: false,
 })
 export class GridTabsComponent implements OnInit {
   title = 'Example 24: Grids in Bootstrap Tabs';

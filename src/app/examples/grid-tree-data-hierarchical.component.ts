@@ -21,6 +21,7 @@ import {
   templateUrl: './grid-tree-data-hierarchical.component.html',
   styleUrls: ['grid-tree-data-hierarchical.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridTreeDataHierarchicalComponent implements OnInit {
   angularGrid!: AngularGridInstance;

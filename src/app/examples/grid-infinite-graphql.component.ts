@@ -28,6 +28,7 @@ function unescapeAndLowerCase(val: string) {
   styleUrls: ['./grid-infinite-graphql.component.scss'],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid-infinite-graphql.component.html',
+  standalone: false,
 })
 export class GridInfiniteGraphqlComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];

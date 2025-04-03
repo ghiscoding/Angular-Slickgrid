@@ -26,6 +26,7 @@ const FAKE_SERVER_DELAY = 250;
 
 @Component({
   templateUrl: './grid-graphql.component.html',
+  standalone: false,
 })
 export class GridGraphqlComponent implements OnInit, OnDestroy {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';

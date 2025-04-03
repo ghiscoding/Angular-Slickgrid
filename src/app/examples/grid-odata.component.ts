@@ -20,6 +20,7 @@ const PERCENT_HTML_ESCAPED = '%25';
 
 @Component({
   templateUrl: './grid-odata.component.html',
+  standalone: false,
 })
 export class GridOdataComponent implements OnInit {
   title = 'Example 5: Grid connected to Backend Server with OData';

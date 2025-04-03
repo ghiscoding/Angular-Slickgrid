@@ -16,6 +16,7 @@ import {
   styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid-additem.component.html',
+  standalone: false,
 })
 export class GridAddItemComponent implements OnInit {
   title = 'Example 11: Add / Update / Highlight a Datagrid Item';

@@ -27,6 +27,7 @@ const NB_ITEMS = 100;
   styleUrls: ['./grid-angular.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [AngularUtilService],
+  standalone: false,
 })
 export class GridAngularComponent implements OnInit {
   title = 'Example 22: Use of Angular Components';

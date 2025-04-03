@@ -17,6 +17,7 @@ const NB_ITEMS = 1000;
 
 @Component({
   templateUrl: './grid-rowdetail.component.html',
+  standalone: false,
 })
 export class GridRowDetailComponent implements OnDestroy, OnInit {
   private _darkMode = false;

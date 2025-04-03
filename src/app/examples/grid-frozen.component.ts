@@ -16,6 +16,7 @@ import {
   templateUrl: './grid-frozen.component.html',
   styleUrls: ['./grid-frozen.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridFrozenComponent implements OnInit, OnDestroy {
   title = 'Example 20: Pinned (frozen) Columns/Rows';

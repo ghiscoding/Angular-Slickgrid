@@ -49,6 +49,7 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
       }
     `,
   ],
+  standalone: false,
 })
 export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendService {
   private logger: Logger;

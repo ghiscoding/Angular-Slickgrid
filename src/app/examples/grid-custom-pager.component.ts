@@ -12,6 +12,7 @@ import type {
 @Component({
   templateUrl: './grid-custom-pager.component.html',
   styleUrls: ['./grid-custom-pager.component.scss'],
+  standalone: false,
 })
 export class CustomPagerComponent implements BasePaginationComponent {
   protected _paginationElement!: HTMLDivElement;

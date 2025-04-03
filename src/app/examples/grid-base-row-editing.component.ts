@@ -11,6 +11,7 @@ const NB_ITEMS = 20;
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./grid-base-row-editing.component.scss'],
   templateUrl: './grid-base-row-editing.component.html',
+  standalone: false,
 })
 export class GridBaseRowEditingComponent implements OnInit {
   private subscriptions: Subscription[] = [];

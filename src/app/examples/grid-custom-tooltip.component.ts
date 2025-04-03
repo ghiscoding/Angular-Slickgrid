@@ -22,6 +22,7 @@ const NB_ITEMS = 500;
   templateUrl: './grid-custom-tooltip.component.html',
   styleUrls: ['./grid-custom-tooltip.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridCustomTooltipComponent implements OnInit {
   title = 'Example 32: Regular & Custom Tooltips';

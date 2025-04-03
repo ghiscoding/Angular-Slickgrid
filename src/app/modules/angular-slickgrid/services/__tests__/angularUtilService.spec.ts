@@ -12,7 +12,7 @@ const viewContainerRefStub = {
   detectChanges: vi.fn(),
 } as unknown as ViewContainerRef;
 
-@Component({ template: `<h4>Loading...</h4>` })
+@Component({ template: `<h4>Loading...</h4>`, standalone: false })
 class TestPreloadComponent {}
 
 @Component({ template: `<h1>{{ title }}</h1>` })

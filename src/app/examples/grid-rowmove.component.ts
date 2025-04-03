@@ -12,6 +12,7 @@ import {
 
 @Component({
   templateUrl: './grid-rowmove.component.html',
+  standalone: false,
 })
 export class GridRowMoveComponent implements OnInit {
   title = 'Example 17: Row Move & Checkbox Selector';

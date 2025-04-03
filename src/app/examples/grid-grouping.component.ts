@@ -19,6 +19,7 @@ import {
 
 @Component({
   templateUrl: './grid-grouping.component.html',
+  standalone: false,
 })
 export class GridGroupingComponent implements OnInit {
   title = 'Example 14: Grouping & Aggregators';

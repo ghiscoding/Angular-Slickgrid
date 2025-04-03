@@ -25,6 +25,7 @@ const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
   templateUrl: './grid-clientside.component.html',
+  standalone: false,
 })
 export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';

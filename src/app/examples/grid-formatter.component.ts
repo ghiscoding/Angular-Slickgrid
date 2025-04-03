@@ -32,6 +32,7 @@ const customEnableButtonFormatter: Formatter<DataItem> = (_row: number, _cell: n
 
 @Component({
   templateUrl: './grid-formatter.component.html',
+  standalone: false,
 })
 export class GridFormatterComponent implements OnInit {
   title = 'Example 2: Grid with Formatters';

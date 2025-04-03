@@ -8,6 +8,7 @@ const sampleDataRoot = 'assets/data';
   styles: ['.file-upload { max-width: 300px; }'],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './grid18.component.html',
+  standalone: false,
 })
 export class Grid18Component {
   columnDefinitions: Column[] = [];

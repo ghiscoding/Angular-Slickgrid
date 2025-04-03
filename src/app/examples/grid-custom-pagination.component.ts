@@ -22,6 +22,7 @@ function randomBetween(min: number, max: number): number {
 @Component({
   templateUrl: './grid-custom-pagination.component.html',
   providers: [AngularUtilService],
+  standalone: false,
 })
 export class GridCustomPaginationComponent implements OnInit {
   pageSize = 50;

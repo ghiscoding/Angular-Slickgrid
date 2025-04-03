@@ -5,6 +5,7 @@ import { Component, OnDestroy } from '@angular/core';
     <i class="mdi mdi-sync mdi-spin mdi-50px"></i>
     <h4>Loading...</h4>
   </div>`,
+  standalone: false,
 })
 export class RowDetailPreloadComponent implements OnDestroy {
   ngOnDestroy(): void {

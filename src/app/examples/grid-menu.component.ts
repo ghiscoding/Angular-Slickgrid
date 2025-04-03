@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './grid-menu.component.html',
   styleUrls: ['./grid-menu.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class GridMenuComponent implements OnInit, OnDestroy {
   title = 'Example 9: Grid Menu Control';

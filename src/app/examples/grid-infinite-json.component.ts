@@ -18,6 +18,7 @@ const FETCH_SIZE = 50;
 
 @Component({
   templateUrl: './grid-infinite-json.component.html',
+  standalone: false,
 })
 export class GridInfiniteJsonComponent implements OnInit {
   angularGrid!: AngularGridInstance;

@@ -7,6 +7,7 @@ const NB_ITEMS = 995;
   template: `<button (click)="clickMe()">I'm a button from an Angular component (click me)</button>
     <div *ngIf="clickedTimes">You've clicked me {{ clickedTimes }} time(s)</div>`,
   selector: 'custom-footer',
+  standalone: false,
 })
 export class CustomFooterComponent {
   clickedTimes = 0;
@@ -18,6 +19,7 @@ export class CustomFooterComponent {
 
 @Component({
   templateUrl: './grid-header-footer.component.html',
+  standalone: false,
 })
 export class GridHeaderFooterComponent implements OnInit {
   title = 'Example 34: Custom header & footer Templates';
