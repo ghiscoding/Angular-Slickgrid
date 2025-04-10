@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.13.5](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.4...v8.13.5) (2025-04-10)
+
+### Bug Fixes
+
+* error in CSS file ([e5def62](https://github.com/ghiscoding/angular-slickgrid/commit/e5def62275f390d073aabb2465c6225fcdf2b604))
+
 ## [8.13.4](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.3...v8.13.4) (2025-04-02)
 
 ### Bug Fixes
