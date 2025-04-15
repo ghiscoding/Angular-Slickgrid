@@ -13,7 +13,7 @@
 ## Structure Change (happening soon)
 > [!NOTE]
 > Please note that Angular-Slickgrid (and all other supported frameworks) will soon be moved under the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project.
-> This will happen in the next major version, which is expected in Q2 of 2025. The installation remains the same `npm install angular-slickgrid`, it's just the project that will be moved into a central location (easier to maintain).
+> This will happen in the next major version, which is expected by end of April 2025. The installation will remain the same `npm install angular-slickgrid`, it's just the project that will be moved into a central location (much easier to maintain).
 
 ### Brief introduction
 One of the best JavasSript data grid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to the Angular world. SlickGrid beats most other data grids in terms of features, customizability and performance (running smoothly with even a million rows). Angular-Slickgrid is a wrapper on top of [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) (which is a dependency), in the early beginning we used the `6pac/SlickGrid` fork but that was dropped in >=[v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3) since Slickgrid-Universal is now a standalone project. SlickGrid was also recently rewritten with browser native code (no more ~jQuery~ 🎉).
