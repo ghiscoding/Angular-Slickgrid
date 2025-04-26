@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.14.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.5...v8.14.0) (2025-04-26)
+
+### Features
+
+* allow providing custom date format via base Date Formatter ([14097d3](https://github.com/ghiscoding/angular-slickgrid/commit/14097d37c9f665ba9b5181f49ad1f7184b7fae86))
+* **filter:** add `collectionLazy` callback to Column Filter ([d38e8b3](https://github.com/ghiscoding/angular-slickgrid/commit/d38e8b39bccc5be12ee547db71497fefe18a2c3c))
+
 ## [8.13.5](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.4...v8.13.5) (2025-04-10)
 
 ### Bug Fixes
