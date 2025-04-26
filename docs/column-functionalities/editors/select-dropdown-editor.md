@@ -173,7 +173,7 @@ this.columnDefinitions = [
 ```
 
 ### Collection Watch
-Sometime you wish that whenever you change your filter collection, you'd like the filter to be updated, it won't do that by default but you could use `enableCollectionWatch` for that purpose to add collection observers and re-render the Filter DOM element whenever the collection changes. Also note that using `collectionAsync` will automatically watch for changes, so there's no need to enable this flag for that particular use case.
+Sometime you wish that whenever you make a change in your filter collection, you'd like the filter to be updated but it won't do that by default. You could use `enableCollectionWatch` for that purpose which will add a collection observers and re-render the Filter DOM element whenever the collection changes. Also note that using `collectionAsync` will automatically watch for changes, so there's no need to enable this flag for that particular use case.
 
 ```typescript
 this.columnDefinitions = [
