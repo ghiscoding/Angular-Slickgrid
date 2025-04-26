@@ -4273,7 +4273,7 @@
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/binding/-/binding-5.12.2.tgz#102dc7db985dc3c52cfd13a176153f385f15a5b0"
   integrity sha512-o7dTmmW4DVBZi01VQHjO/cIJEH5RNz+rIrnQKwldTRoKC05vKOQTF/vuQAqTkhI7YHzFaspfvdy92oagEt5niw==
 
-"@slickgrid-universal/common@5.14.0":
+"@slickgrid-universal/common@5.14.0", "@slickgrid-universal/common@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/common/-/common-5.14.0.tgz#acee0a082cdf8c4c691a5cdb3a6548382b174ebb"
   integrity sha512-Mme6d5G+lUqXCt0VOrzSscOJ1oYRSEIOC1v3Gdg+P4rQK0Hhgl0lSAzsGQX6yBrIw7rOX1VN+OZ9zoEqYidILA==
@@ -4301,7 +4301,7 @@
     "@slickgrid-universal/common" "5.14.0"
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/custom-footer-component@5.14.0":
+"@slickgrid-universal/custom-footer-component@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/custom-footer-component/-/custom-footer-component-5.14.0.tgz#3309db744f807b3b7c676d3f0f7cc78833a0a709"
   integrity sha512-4Fr5F+40KF15rI0VixWdNk4VSvjnsSI5DVqSanrmTCNfntJ7sYQ+UBF/LIQMqj99GMkztzPLOdaniFyABk2+Wg==
@@ -4318,7 +4318,7 @@
     "@slickgrid-universal/common" "5.14.0"
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/empty-warning-component@5.14.0":
+"@slickgrid-universal/empty-warning-component@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/empty-warning-component/-/empty-warning-component-5.14.0.tgz#8c82f1e9df514797aec07b62d5023e9048ad67e5"
   integrity sha512-RaEBZ5Wg24SkSylKpCbfduC9d9uDaMv7KusCLXvws7z2V4nCoAIBZdb694E6lVBXsZu3UMPZMRw5QBukZQJs9g==
@@ -4357,7 +4357,7 @@
     "@slickgrid-universal/common" "5.14.0"
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/pagination-component@5.14.0":
+"@slickgrid-universal/pagination-component@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/pagination-component/-/pagination-component-5.14.0.tgz#9caabcfb68153226f2f0dd95828d95f9c906d242"
   integrity sha512-+HrGGdsnjYcEeT4xB6trCBvOgNHv847X58ccpCYORxXmLIDUmToCNuN+lYvCKvFQh1on3GPpy0v+6A+qZrmLbQ==
@@ -4365,7 +4365,7 @@
     "@slickgrid-universal/binding" "5.12.2"
     "@slickgrid-universal/common" "5.14.0"
 
-"@slickgrid-universal/row-detail-view-plugin@5.14.0":
+"@slickgrid-universal/row-detail-view-plugin@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/row-detail-view-plugin/-/row-detail-view-plugin-5.14.0.tgz#00bb5d87b3383ada85d5e804be62d5d89ef991cb"
   integrity sha512-xyEr0ucwchqAshuidKhcBPDrw/jwtGxUbQJg28W1LiMD+vQbsF5LlGiIB53lfBGniC34lHWiX1B/RI3Z9z0kXA==
@@ -4373,7 +4373,7 @@
     "@slickgrid-universal/common" "5.14.0"
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/rxjs-observable@5.14.0":
+"@slickgrid-universal/rxjs-observable@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/rxjs-observable/-/rxjs-observable-5.14.0.tgz#91b17dc147604d0848b9d7b3fc4b23ba1f2b3c33"
   integrity sha512-RA5CiFicA0P8IUOLBJjmkCZNJ5Qzfwk8NKNXfh0RSFKrr53386m/59XYh2pmDt65YmgGbpu5iTZ1qgDhUMiKoA==
