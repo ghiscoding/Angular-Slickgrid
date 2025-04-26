@@ -28,7 +28,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should change server delay to 10ms for faster testing', () => {
-    cy.get('[data-test="server-delay"]').type('{backspace}{backspace}{backspace}10');
+    cy.get('[data-test="server-delay"]').clear().type('50');
   });
 
   it('should mouse over 1st row checkbox column and NOT expect any tooltip to show since it is disabled on that column', () => {
@@ -83,7 +83,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   it('should mouse over Task 6 cell on "Start" column and expect a delayed tooltip opening via async process', () => {
     cy.get('.slick-custom-tooltip').should('not.exist');
     cy.get(`[style="top: ${GRID_ROW_HEIGHT * 2}px;"] > .slick-cell:nth(7)`).as('start6-cell');
-    cy.get('@start6-cell').contains(/\d{4}-\d{1,2}-\d{1,2}$/); // use regexp to make sure it's a number
+    cy.get('@start6-cell').contains(/\d{4}-\d{2}-\d{2}$/); // use regexp to make sure it's a number
     cy.get('@start6-cell').trigger('mouseover');
 
     cy.wait(10);
@@ -211,11 +211,20 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
     cy.get('@finish-filter').trigger('mouseout');
   });
 
+  it('should open PreRequisite dropdown and expect it be lazily loaded', () => {
+    cy.get('.slick-headerrow-columns .slick-headerrow-column:nth(10)').as('checkbox10-header');
+    cy.get('@checkbox10-header').click();
+    cy.get('[data-test="alert-lazy"]').should('be.visible');
+    cy.wait(50);
+    cy.get('@checkbox10-header').click();
+    cy.get('[data-test="alert-lazy"]').should('not.be.visible');
+  });
+
   it('should mouse over header-row (filter) Prerequisite column and expect to see tooltip of selected filter options', () => {
-    cy.get(`.slick-headerrow-columns .slick-headerrow-column:nth(10)`).as('checkbox10-header');
+    cy.get('.slick-headerrow-columns .slick-headerrow-column:nth(10)').as('checkbox10-header');
     cy.get('@checkbox10-header').trigger('mouseover');
 
-    cy.get('.filter-prerequisites .ms-choice span').contains('15 of 500 selected');
+    cy.get('.filter-prerequisites .ms-choice span').contains('15 of 1000 selected');
     cy.get('.slick-custom-tooltip').should('be.visible');
     cy.get('.slick-custom-tooltip').contains(
       'Task 1, Task 3, Task 5, Task 7, Task 9, Task 12, Task 15, Task 18, Task 21, Task 25, Task 28, Task 29, Task 30, Task 32, Task 34'
@@ -225,7 +234,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over header title on 1st column with checkbox and NOT expect any tooltip to show since it is disabled on that column', () => {
-    cy.get(`.slick-header-columns .slick-header-column:nth(0)`).as('checkbox-header');
+    cy.get('.slick-header-columns .slick-header-column:nth(0)').as('checkbox-header');
     cy.get('@checkbox-header').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('not.exist');
@@ -233,7 +242,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over header title on 2nd column with Title name and expect a tooltip to show rendered from an headerFormatter', () => {
-    cy.get(`.slick-header-columns .slick-header-column:nth(1)`).as('checkbox0-header');
+    cy.get('.slick-header-columns .slick-header-column:nth(1)').as('checkbox0-header');
     cy.get('@checkbox0-header').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('be.visible');
@@ -246,7 +255,7 @@ describe('Example 32 - Regular & Custom Tooltips', () => {
   });
 
   it('should mouse over header title on 2nd column with Finish name and NOT expect any tooltip to show since it is disabled on that column', () => {
-    cy.get(`.slick-header-columns .slick-header-column:nth(8)`).as('finish-header');
+    cy.get('.slick-header-columns .slick-header-column:nth(8)').as('finish-header');
     cy.get('@finish-header').trigger('mouseover');
 
     cy.get('.slick-custom-tooltip').should('not.exist');

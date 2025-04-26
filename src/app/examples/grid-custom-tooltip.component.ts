@@ -16,7 +16,7 @@ import {
   SlickGrid,
 } from '../modules/angular-slickgrid';
 
-const NB_ITEMS = 500;
+const NB_ITEMS = 1000;
 
 @Component({
   templateUrl: './grid-custom-tooltip.component.html',
@@ -41,6 +41,7 @@ export class GridCustomTooltipComponent implements OnInit {
   gridOptions!: GridOption;
   dataset!: any[];
   serverApiDelay = 500;
+  showLazyLoading = false;
   hideSubTitle = false;
 
   ngOnInit(): void {
@@ -309,12 +310,23 @@ export class GridCustomTooltipComponent implements OnInit {
           model: Editors.multipleSelect,
         },
         filter: {
-          // collectionAsync: fetch(URL_SAMPLE_COLLECTION_DATA),
-          collectionAsync: new Promise((resolve) => {
-            window.setTimeout(() => {
-              resolve(Array.from(Array(this.dataset.length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
+          // collectionAsync: fetch(SAMPLE_COLLECTION_DATA_URL),
+          // collectionAsync: new Promise((resolve) => {
+          //   window.setTimeout(() => {
+          //     resolve(Array.from(Array(dataset.value?.length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
+          //   });
+          // }),
+          collectionLazy: () => {
+            this.showLazyLoading = true;
+
+            return new Promise((resolve) => {
+              window.setTimeout(() => {
+                this.showLazyLoading = false;
+                resolve(Array.from(Array((this.dataset || []).length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
+              }, this.serverApiDelay);
             });
-          }),
+          },
+          // onInstantiated: (msSelect) => console.log('ms-select instance', msSelect),
           customStructure: {
             label: 'label',
             value: 'value',
@@ -322,6 +334,9 @@ export class GridCustomTooltipComponent implements OnInit {
           },
           collectionOptions: {
             separatorBetweenTextLabels: ' ',
+          },
+          filterOptions: {
+            minHeight: 70,
           },
           model: Filters.multipleSelect,
           operator: OperatorType.inContains,

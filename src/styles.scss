@@ -34,6 +34,10 @@ $button-style-bg-color: #fff;
   display: none;
 }
 
+.invisible {
+  opacity: 0;
+}
+
 .btn-group-xs > .btn,
 .btn-xs {
   padding: 1px 5px;
