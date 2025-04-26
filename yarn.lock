@@ -4292,7 +4292,7 @@
     un-flatten-tree "^2.0.12"
     vanilla-calendar-pro "^2.9.10"
 
-"@slickgrid-universal/composite-editor-component@5.14.0":
+"@slickgrid-universal/composite-editor-component@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/composite-editor-component/-/composite-editor-component-5.14.0.tgz#bceee64c63aedcf7bfa6125e9ee0a4653ed8904f"
   integrity sha512-oE30MbN2oZ7H6+HFvwuIyokgAotx0f71hBqAGReXLRCBB2E1FavN3SlZ4NgUauviWX/EAsHAT/6CQ3KzKlXH+w==
@@ -4310,7 +4310,7 @@
     "@slickgrid-universal/binding" "5.12.2"
     "@slickgrid-universal/common" "5.14.0"
 
-"@slickgrid-universal/custom-tooltip-plugin@5.14.0":
+"@slickgrid-universal/custom-tooltip-plugin@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/custom-tooltip-plugin/-/custom-tooltip-plugin-5.14.0.tgz#b6806f1dc7386ecdd80579c1fc01f4a9f0f33674"
   integrity sha512-K5zocRcCDLSixbpIbCKlARyziTQPEWgd/sPRfy9afbFErORo/rENLUBl2wdNy8K+tnApgB6RIvCSXCSXoudaNA==
@@ -4332,7 +4332,7 @@
   dependencies:
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/excel-export@5.14.0":
+"@slickgrid-universal/excel-export@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/excel-export/-/excel-export-5.14.0.tgz#5ef360c70f6106221e414b5f0797e09c073c260d"
   integrity sha512-CTqWaj7wuWZDKgAiF3qVS3Ejb6cunDNdRrrLOoBmi6qGMu8vwvCna9RoTH15d5MSqoDJUSD/YWyO+iGTYOJQvA==
@@ -4341,7 +4341,7 @@
     "@slickgrid-universal/utils" "5.12.0"
     excel-builder-vanilla "^3.1.0"
 
-"@slickgrid-universal/graphql@5.14.0":
+"@slickgrid-universal/graphql@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/graphql/-/graphql-5.14.0.tgz#4eb0f53a716ee77e101a5f20749aa787b13fb799"
   integrity sha512-mkq8kev6jrLdYWbHviiHocTjHUKmmf+GDYWo0vsOcyhEyZf9KiQPhDjUJ+QlpujJixHNsAJKRuQeLByvoQiapQ==
@@ -4349,7 +4349,7 @@
     "@slickgrid-universal/common" "5.14.0"
     "@slickgrid-universal/utils" "5.12.0"
 
-"@slickgrid-universal/odata@5.14.0":
+"@slickgrid-universal/odata@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/odata/-/odata-5.14.0.tgz#74a05b7f556d9c286759d15edf913c7d3cb9e1ea"
   integrity sha512-HQOcvhLNlOYUcMkYgAGXsF5OWcHCaWsGknbVV2kMMXAKxCjMPQyHm246LkJEUX7hlSMKCBBbHHXmjen+vTpzNg==
@@ -4381,7 +4381,7 @@
     "@slickgrid-universal/common" "5.14.0"
     rxjs "^7.8.2"
 
-"@slickgrid-universal/text-export@5.14.0":
+"@slickgrid-universal/text-export@~5.14.0":
   version "5.14.0"
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/text-export/-/text-export-5.14.0.tgz#d10c25e129f7f2bdfd47f132c2d1118240f2d157"
   integrity sha512-1zzVaGIWtAaFephZEIUNWZqIoVS4XOdcHvvRIR4Q1wuzSok6+uK1TN7z4zDT5/vh22dKbMPuNb6eNPPOOZWZLg==
