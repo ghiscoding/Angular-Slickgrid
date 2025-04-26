@@ -77,7 +77,7 @@
     (onAngularGridCreated)="angularGridReady($event.detail)"
     (onSort)="handleOnSort()"
     (onScroll)="handleOnScroll($event.detail.args)"
-    (onRowCountChanged)="refreshMetrics($event.detail.args)"
+    (onRowCountChanged)="handleOnRowCountChanged($event.detail.args)"
   >
   </angular-slickgrid>
 </div>

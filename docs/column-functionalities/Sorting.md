@@ -4,6 +4,7 @@
 - [Custom Sort Comparer](#custom-sort-comparer)
 - [Update Sorting Dynamically](#update-sorting-dynamically)
 - [Dynamic Query Field](#dynamic-query-field)
+- [Sorting Dates](#sorting-dates)
 - [Pre-Parse Date Columns for better perf](#pre-parse-date-columns-for-better-perf)
 
 ### Demo
@@ -134,6 +135,14 @@ queryFieldNameGetterFn: (dataContext) => {
 },
 ```
 
+### Sorting Dates
+
+Date sorting should work out of the box as long as you provide the correct column field type. Note that there are various field types that can be provided and they all do different things. For the Sorting to work properly, you need to make sure to use the correct type for Date parsing to work accordingly. Below is a list of column definition types that you can provide:
+
+- `type`: input/output of date fields, or in other words, parsing/formatting dates with the field `type` provided
+- `outputType`: when a `type` is provided for parsing (i.e. from your dataset), you could use a different `outputType` to format your date differently
+- `saveOutputType`: if you already have a `type` and an `outputType` but you wish to save your date (i.e. save to DB) in yet another format
+
 ### Pre-Parse Date Columns for better perf
 ##### requires v8.8.0 and higher
 
@@ -149,11 +158,11 @@ The summary, is that we get a 10x boost **but** not only that, we also get an ex
 
 #### Usage
 
-You can use the `preParseDateColumns` grid option, it can be either set as either `boolean` or a `string` but there's big distinction between the 2 approaches (both approaches will mutate the dataset).
+You can use the `preParseDateColumns` grid option, it can be set as either a `boolean` or a `string` but there's a big distinction between the 2 approaches as shown below (note that both approaches will mutate the dataset).
 1. `string` (i.e. set to `"__"`, it will parse a `"start"` date string and assign it as a `Date` object to a new `"__start"` prop)
 2. `boolean` (i.e. parse `"start"` date string and reassign it as a `Date` object on the same `"start"` prop)
 
-> **Note** this option **does not work** with Backend Services because it simply has no effect.
+> **Note** this option **does not work** with the Backend Service API because it simply has no effect.
 
 For example if our dataset has 2 columns named "start" and "finish", then pre-parse the dataset,
 
@@ -179,7 +188,7 @@ data = [
 ]
 ```
 
-Which approach to choose? Both have pros and cons, overwriting the same props might cause problems with the column `type` that you use, you will have to give it a try yoursel. On the other hand, with the other approach, it will duplicate all date properties and take a bit more memory usage and when changing cells we'll need to make sure to keep these props in sync, however you will likely have less `type` issues.
+Which approach to choose? Both have pros and cons, overwriting the same props might cause problems with the column `type` that you use, you will have to give it a try yourself. On the other hand, with the other approach, it will duplicate all date properties and take a bit more memory usage and when changing cells we'll need to make sure to keep these props in sync, however you will likely have less `type` issues.
 
 What happens when we do any cell changes (for our use case, it would be Create/Update), for any Editors we simply subscribe to the `onCellChange` change event and we re-parse the date strings when detected. We also subscribe to certain CRUD functions as long as they come from the `GridService` then all is fine... However, if you use the DataView functions directly then we have no way of knowing when to parse because these functions from the DataView don't have any events. Lastly, if we overwrite the entire dataset, we will also detect this (via an internal flag) and the next time you sort a date then the pre-parse kicks in again.
 
