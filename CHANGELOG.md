@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.14.1](https://github.com/ghiscoding/angular-slickgrid/compare/v8.14.0...v8.14.1) (2025-05-08)
+
+### Bug Fixes
+
+* Row Detail open/close multiple times should always re-render ([c78cb9c](https://github.com/ghiscoding/angular-slickgrid/commit/c78cb9ca927d73ee94957b953e8588e7c89a73ff))
+
 ## [8.14.0](https://github.com/ghiscoding/angular-slickgrid/compare/v8.13.5...v8.14.0) (2025-04-26)
 
 ### Features
