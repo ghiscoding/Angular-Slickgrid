@@ -262,35 +262,39 @@ describe('SlickRowDetailView', () => {
         expect(onRowBackViewSpy).not.toHaveBeenCalled();
       });
 
-      it('should call internal event handler subscribe and expect the "onAsyncEndUpdate" option to be called when addon notify is called', () => {
-        // const handlerSpy = vi.spyOn(plugin.eventHandler, 'subscribe');
-        const renderSpy = vi.spyOn(plugin, 'renderViewModel');
+      it('should call internal event handler subscribe and expect the "onAsyncEndUpdate" option to be called when addon notify is called', () =>
+        new Promise((done: any) => {
+          // const handlerSpy = vi.spyOn(plugin.eventHandler, 'subscribe');
+          const renderSpy = vi.spyOn(plugin, 'renderViewModel');
 
-        const onAsyncRespSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncResponse');
-        const onAsyncEndSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncEndUpdate');
-        const onAfterRowSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAfterRowDetailToggle');
-        const onBeforeRowSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onBeforeRowDetailToggle');
-        const onRowOutViewSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowOutOfViewportRange');
-        const onRowBackViewSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowBackToViewportRange');
+          const onAsyncRespSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncResponse');
+          const onAsyncEndSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAsyncEndUpdate');
+          const onAfterRowSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onAfterRowDetailToggle');
+          const onBeforeRowSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onBeforeRowDetailToggle');
+          const onRowOutViewSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowOutOfViewportRange');
+          const onRowBackViewSpy = vi.spyOn(gridOptionsMock.rowDetailView as RowDetailView, 'onRowBackToViewportRange');
 
-        plugin.init(gridStub);
-        plugin.onAsyncEndUpdate = new SlickEvent();
-        plugin.register();
-        plugin.onAsyncEndUpdate.notify({ item: columnsMock[0], itemDetail: columnsMock[0], grid: gridStub }, new SlickEventData(), gridStub);
+          plugin.init(gridStub);
+          plugin.onAsyncEndUpdate = new SlickEvent();
+          plugin.register();
+          plugin.onAsyncEndUpdate.notify({ item: columnsMock[0], itemDetail: columnsMock[0], grid: gridStub }, new SlickEventData(), gridStub);
 
-        // expect(handlerSpy).toHaveBeenCalledTimes(8); // there are an extra 2x on the grid itself
-        // expect(handlerSpy).toHaveBeenCalledWith(
-        //   { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
-        //   expect.anything()
-        // );
-        expect(onAsyncRespSpy).not.toHaveBeenCalled();
-        expect(onAsyncEndSpy).toHaveBeenCalledWith(expect.anything(), { item: columnsMock[0], itemDetail: columnsMock[0], grid: gridStub });
-        expect(renderSpy).toHaveBeenCalledWith({ cssClass: 'red', field: 'field1', id: 'field1', width: 100 });
-        expect(onAfterRowSpy).not.toHaveBeenCalled();
-        expect(onBeforeRowSpy).not.toHaveBeenCalled();
-        expect(onRowOutViewSpy).not.toHaveBeenCalled();
-        expect(onRowBackViewSpy).not.toHaveBeenCalled();
-      });
+          // expect(handlerSpy).toHaveBeenCalledTimes(8); // there are an extra 2x on the grid itself
+          // expect(handlerSpy).toHaveBeenCalledWith(
+          //   { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+          //   expect.anything()
+          // );
+          setTimeout(() => {
+            expect(onAsyncRespSpy).not.toHaveBeenCalled();
+            expect(onAsyncEndSpy).toHaveBeenCalledWith(expect.anything(), { item: columnsMock[0], itemDetail: columnsMock[0], grid: gridStub });
+            expect(renderSpy).toHaveBeenCalledWith({ cssClass: 'red', field: 'field1', id: 'field1', width: 100 });
+            expect(onAfterRowSpy).not.toHaveBeenCalled();
+            expect(onBeforeRowSpy).not.toHaveBeenCalled();
+            expect(onRowOutViewSpy).not.toHaveBeenCalled();
+            expect(onRowBackViewSpy).not.toHaveBeenCalled();
+            done();
+          });
+        }));
 
       it('should call internal event handler subscribe and expect the "onAfterRowDetailToggle" option to be called when addon notify is called', () => {
         // const handlerSpy = vi.spyOn(plugin.eventHandler, 'subscribe');
