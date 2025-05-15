@@ -10,11 +10,11 @@
 [![Vitest](https://img.shields.io/badge/tested%20with-vitest-fcc72b.svg?logo=vitest)](https://vitest.dev/)
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
 
-## Project is moving under [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) repo
+## Project got moved under [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) repo
 > [!CAUTION]
 > This project (and all other supported frameworks) got moved into the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project.
 > From v9.0 and above, any new code change will happen strictly and only under the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project and no longer in here.
-> Note that Angular-Slickgrid installation remains the same `npm install angular-slickgrid`, head over to [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) for more details.
+> Note that Angular-Slickgrid installation remains the same as before `npm install angular-slickgrid`, head over to [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) for more details and latest codebase.
 
 ### Brief introduction
 One of the best JavasSript data grid [SlickGrid](https://github.com/mleibman/SlickGrid), which was originally developed by @mleibman, is now available to the Angular world. SlickGrid beats most other data grids in terms of features, customizability and performance (running smoothly with even a million rows). Angular-Slickgrid is a wrapper on top of [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal/) (which is a dependency), in the early beginning we used the `6pac/SlickGrid` fork but that was dropped in >=[v7.0](https://github.com/ghiscoding/Angular-Slickgrid/releases/tag/v7.0.3) since Slickgrid-Universal is now a standalone project. SlickGrid was also recently rewritten with browser native code (no more ~jQuery~ 🎉).
@@ -119,6 +119,7 @@ Make sure to check out the [Releases](https://github.com/ghiscoding/Angular-Slic
 
 | Angular-Slickgrid | Angular version | Migration Guide | Notes |
 |-------------------|-----------------|-----------------|-------|
+| 9.x               | >=19.0 | [Migration 9.x](https://ghiscoding.gitbook.io/angular-slickgrid/migrations/migration-to-9.x)     | ESM-Only and project move, requires Slickgrid-Universal [9.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v9.0.0) version |
 | 8.x               | >=18.0 | [Migration 8.x](https://ghiscoding.gitbook.io/angular-slickgrid/migrations/migration-to-8.x)     | Modern UI / Dark Mode, requires Slickgrid-Universal [5.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v5.0.0) version |
 | 7.x               | >=17.0 | [Migration 7.x](https://ghiscoding.gitbook.io/angular-slickgrid/migrations/migration-to-7.x)     | merge SlickGrid into Slickgrid-Universal, requires Slickgrid-Universal [4.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v4.0.2) version |
 | 6.x               | >=16.0 | [Migration 6.x](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Migration-to-6.x)     | removal of jQuery (now uses browser native code), requires Slickgrid-Universal [3.x](https://github.com/ghiscoding/slickgrid-universal/releases/tag/v3.0.0) version |
