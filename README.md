@@ -13,7 +13,7 @@
 ## Project is moving under [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) repo
 > [!CAUTION]
 > This project (and all other supported frameworks) got moved into the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project.
-> From v9.0 and above, any new code change will happen stricly under the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project and no longer in here.
+> From v9.0 and above, any new code change will happen strictly and only under the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project and no longer in here.
 > Note that Angular-Slickgrid installation remains the same `npm install angular-slickgrid`, head over to [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) for more details.
 
 ### Brief introduction
